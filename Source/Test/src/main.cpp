@@ -1,7 +1,3 @@
-#include "SurvivantTest/EventManager.h"
-#include "SurvivantTest/InputManager.h"
-#include "SurvivantTest/Window.h"
-
 #include <SurvivantCore/Debug/Assertion.h>
 #include <SurvivantCore/Utility/FileSystem.h>
 #include <SurvivantCore/Utility/Timer.h>
@@ -9,11 +5,23 @@
 #include <SurvivantRendering/Core/Camera.h>
 #include <SurvivantRendering/Core/Color.h>
 #include <SurvivantRendering/Resources/Model.h>
+#include <SurvivantRendering/RHI/IFrameBuffer.h>
 #include <SurvivantRendering/RHI/IRenderAPI.h>
 #include <SurvivantRendering/RHI/IShader.h>
 #include <SurvivantRendering/RHI/ITexture.h>
+#include <SurvivantRendering/RHI/OpenGL/OpenGLTexture.h>
+
+#include "SurvivantApp/Inputs/InputManager.h"
+#include "SurvivantApp/Inputs/KeyboardInputs.h"
+#include "SurvivantApp/Inputs/MouseInputs.h"
+#include "SurvivantApp/Windows/Window.h"
+#include "SurvivantCore/Events/EventManager.h"
+#include "SurvivantUI/EditorWindow.h"
+#include "SurvivantUI/UI.h"
 
 #include <Transform.h>
+// TODO: Implement relevant parts in corresponding libs to get rid of glfw dependency
+#include <GLFW/glfw3.h>
 
 using namespace LibMath;
 using namespace SvCore::Utility;
@@ -46,6 +54,55 @@ ITexture& GetTexture()
     return *texture;
 }
 
+static std::shared_ptr<IFrameBuffer> frameBufferId;
+
+ITexture& GetDefaultFrameBuffer()
+{
+    static std::shared_ptr<ITexture> texture = ITexture::Create(800, 600, EPixelDataFormat::RGB);
+    static bool isInitialized = false;
+
+    if (isInitialized)
+        return *texture;
+
+    frameBufferId = IFrameBuffer::Create();
+    frameBufferId->attach(*texture, EFrameBufferAttachment::COLOR);
+
+    texture->Bind(0);
+    return *texture;
+
+    //static GLuint textureId;
+
+    //if (textureId == 0)
+    //{
+    //    glGenFramebuffers(1, &frameBufferId);
+    //    glBindFramebuffer(GL_FRAMEBUFFER, frameBufferId);
+
+    //    glGenTextures(1, &textureId);
+    //    glBindTexture(GL_TEXTURE_2D, textureId);
+
+    //    //screen width here
+    //    constexpr GLsizei width = 800;
+    //    constexpr GLsizei height = 600;
+
+    //    //Vector4 c(0.5);
+    //    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+
+    //    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    //    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    //    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureId, 0);
+
+
+    //    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
+    //    {
+    //        int i = 0; i;
+    //    }
+    //}
+
+    //return textureId;
+}
+
+
 std::tuple<int, int> AddInputTranslate(char i)
 {
     return { i, 10 };
@@ -54,6 +111,12 @@ std::tuple<int, int> AddInputTranslate(char i)
 std::tuple<int, int> AddMouseTranslate(float i, float j)
 {
     return { (int)i, (int)j };
+}
+
+std::tuple<> SpaceTranslate(char c)
+{
+    c;
+    return { };
 }
 
 void DrawModel(const Model& p_model)
@@ -79,15 +142,14 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow* window = glfwCreateWindow(800, 600, "Test", nullptr, nullptr);
-    glfwMakeContextCurrent(window);
+    //window
+    UI::EditorWindow window;
+    //GLFWwindow* windowPtr = window.GetWindow();
 
     IRenderAPI& renderAPI = IRenderAPI::SetCurrent(EGraphicsAPI::OPENGL);
     renderAPI.Init(true)
              .SetCapability(ERenderingCapability::DEPTH_TEST, true)
              .SetCullFace(ECullFace::BACK);
-
-    App::Window::SetupInputManager(window);
 
     Model model;
 
@@ -106,6 +168,9 @@ int main()
     Vector3   camPos(0.f, 1.8f, 2.f);
     Transform camTransform(camPos, Quaternion::identity(), Vector3::one());
 
+    //const GLuint textureId = Texture();
+    App::Window::m_textureId = dynamic_cast<OpenGLTexture&>(GetDefaultFrameBuffer()).GetId();
+
     const Vector3 testPos      = camPos + Vector3::front();
     const Matrix4 testModelMat = translation(testPos) * scaling(1.5f, .5f, .1f);
 
@@ -121,28 +186,32 @@ int main()
     using namespace Core;
     using namespace App;
     using AddEvent = Event<int, int>;
+    class ToggleEvent : public Core::Event<> {};
 
-    EventManager& em = EventManager::GetInstance();
     InputManager& im = InputManager::GetInstance();
-
-    AddEvent::EventDelegate printAdd = [](int i, int j)
     {
-        std::cout << "Add = " << i + j << std::endl;
-    };
+        InputManager::GetInstance().InitWindow(&window);
 
-    std::shared_ptr<AddEvent> ligEvent = std::make_shared<AddEvent>();
-    ligEvent->AddListener(printAdd);
-    em.AddEvent<AddEvent>(ligEvent);
+        EventManager& em = EventManager::GetInstance();
 
-    InputManager::KeyboardKeyType a(EKey::A, EKeyState::RELEASED, EInputModifier::ALT);
-    InputManager::KeyboardKeyType b(EKey::B, EKeyState::PRESSED, EInputModifier());
-    InputManager::MouseKeyType    mouse(EMouseButton::MOUSE_1, EMouseButtonState::PRESSED, EInputModifier());
+        AddEvent::EventDelegate printAdd = [](int i, int j) { std::cout << "Add = " << i + j << std::endl; };
+        ToggleEvent::EventDelegate toggle = std::bind(&App::Window::ToggleFullScreenMode, &window);
+        em.AddListenner<AddEvent>(printAdd);
+        em.AddListenner<ToggleEvent>(toggle);
 
-    im.AddInputEventBinding<AddEvent>(a, &AddInputTranslate);
-    im.AddInputEventBinding<AddEvent>(b, &AddInputTranslate);
-    //mouse, &AddMouseTranslate
-    im.AddInputEventBinding<AddEvent>(mouse, &AddMouseTranslate);
-    //im.CallInput(b, 'b');
+        InputManager::KeyboardKeyType   a(EKey::A, EKeyState::RELEASED, EInputModifier::MOD_ALT);
+        InputManager::KeyboardKeyType   b(EKey::B, EKeyState::PRESSED, EInputModifier());
+        InputManager::MouseKeyType      mouse(EMouseButton::MOUSE_1, EMouseButtonState::PRESSED, EInputModifier());
+        InputManager::KeyboardKeyType   space(EKey::SPACE, EKeyState::PRESSED, EInputModifier());
+        im.AddInputEventBinding<AddEvent>(a, &AddInputTranslate);
+        im.AddInputEventBinding<AddEvent>(b, &AddInputTranslate);
+        im.AddInputEventBinding<AddEvent>(mouse, &AddMouseTranslate);
+        im.AddInputEventBinding<ToggleEvent>(space, &SpaceTranslate);
+    }
+
+    //ui
+    UI::EditorUI ui;
+    window.SetupUI(&ui);
 
     Vector2 moveInput, rotateInput;
 
@@ -233,13 +302,14 @@ int main()
 
     im.AddInputBinding({ EKey::ESCAPE, EKeyState::RELEASED, {} }, [&window](const char)
     {
-        glfwSetWindowShouldClose(window, true);
+        glfwSetWindowShouldClose(window.GetWindow(), true);
     });
 
-    while (!glfwWindowShouldClose(window))
+    while (!window.ShouldClose())
     {
         timer.tick();
-        glfwPollEvents();
+        //glfwPollEvents();
+        window.StartRender();
 
         angle += 20_deg * timer.getDeltaTime();
 
@@ -249,6 +319,9 @@ int main()
 
         Vector3    newPos = camTransform.getPosition();
         Quaternion newRot = camTransform.getRotation();
+
+        frameBufferId->bind();
+        renderAPI.SetViewport({ 0, 0 }, { 800, 600 });
 
         if (moveInput.magnitudeSquared() > 0.f)
         {
@@ -291,10 +364,16 @@ int main()
             DrawModel(model);
         }
 
-        glfwSwapBuffers(window);
+        frameBufferId->unbind();
+        renderAPI.SetViewport({ 0, 0 }, { 800, 600 });
+
+        window.RenderUI();
+        window.EndRender();
+
+        //glfwSwapBuffers(window.GetWindow());
     }
 
-    glfwDestroyWindow(window);
+    //glfwDestroyWindow(window);
     glfwTerminate();
 
     return 0;

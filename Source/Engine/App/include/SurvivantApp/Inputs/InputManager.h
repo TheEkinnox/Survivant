@@ -1,43 +1,48 @@
 //InputManager.h
 
 #pragma once
-#include "EventManager.h"
-#include "EInputModifier.h"
-#include "EKey.h"
-#include "EKeyState.h"
-#include "EMouseButton.h"
-#include "EMouseButtonState.h"
-#include "Event.h"
+#include "KeyboardInputs.h"
+#include "MouseInputs.h"
 #include "InputType.h"
+
+#include "SurvivantCore/Events/Event.h"
+#include "SurvivantCore/Events/EventManager.h"
 
 #include <memory>
 #include <tuple>
+#include <string>
+
 
 namespace App
 {
+	//foward declaration
+	class Window;
+
 	class InputManager
 	{
-	private:
-		//friend class EventManager;
-
 	public:
-		using GLFWwindow = int;
+		//events
+		using WindowCloseEvent = Core::Event<>;
+
 		using KeyboardKeyType = InputType<EKey, EKeyState, EInputModifier>;
 		using KeyCallbackParam = char;
 		using KeyCallback = std::function<void(KeyCallbackParam)>;
-		
 		using MouseKeyType = InputType<EMouseButton, EMouseButtonState, EInputModifier>;
 		using MouseCallback = std::function<void(float, float)>;
 
-	public:
 		InputManager() {}
 		InputManager(InputManager const&) = delete;
 		void operator=(InputManager const&) = delete;
 
-	public:
 		static InputManager& GetInstance();
+		static std::string KeyBindingToString(const KeyboardKeyType& p_key);
+		static std::string KeyNameToString(const EKey& p_name);
+		static std::string KeyModifToString(const EInputModifier& p_modif);
+		static EKey GetModifKey(const EInputModifier& p_modif);
 
-	public:
+
+		void InitWindow(Window* p_window);
+
 		void CallInput(const KeyboardKeyType& p_type, char p_scancode);
 
 		void AddInputBinding(const KeyboardKeyType& p_type, const KeyCallback& p_callback);
@@ -45,29 +50,34 @@ namespace App
 		template<class Event, typename ...Args>
 		void AddInputEventBinding(const KeyboardKeyType& p_type, std::tuple<Args...> (*p_translate)(KeyCallbackParam));
 
-
 		void CallInput(const MouseKeyType& p_type, float p_x, float p_y);
+
+		void CallInput(const MouseKeyType& p_type);
 
 		void AddInputBinding(const MouseKeyType& p_type, const MouseCallback& p_callback);
 
 		template<class Event, typename ...Args>
 		void AddInputEventBinding(const MouseKeyType& p_type, std::tuple<Args...>(*p_translate)(float, float));
 
-		//void AddInputBinding();
-		//void AddInputBinding();
+		void GetMousePos(double& p_x, double& p_y);
+
+		bool EvaluateInput(const KeyboardKeyType& p_key);
+		bool EvaluateInput(const MouseKeyType& p_key);
+
 
 	public:
 		//container peripherique
 		std::unordered_map<KeyboardKeyType, KeyCallback> m_keyCallbacks;
 		std::unordered_map<MouseKeyType, MouseCallback> m_mouseKeyCallbacks;
 
+		App::Window* m_glfwWindow = nullptr;
 
 	};
 
 	template<class T, typename ...Args>
 	void InputManager::AddInputEventBinding(const KeyboardKeyType& p_type, std::tuple<Args...>(*p_translate)(KeyCallbackParam))
 	{
-		if constexpr (!std::is_base_of_v<Core::Event<Args...>, T> || !std::is_same_v<Core::Event<Args...>, T>)
+		if constexpr (!std::is_base_of_v<Core::Event<Args...>, T> && !std::is_same_v<Core::Event<Args...>, T>)
 			return;
 
 		//needs to capture a copy of translate ptr
@@ -84,7 +94,7 @@ namespace App
 	template<class T, typename ...Args>
 	inline void InputManager::AddInputEventBinding(const MouseKeyType& p_type, std::tuple<Args...>(*p_translate)(float, float))
 	{
-		if constexpr (!std::is_base_of_v<Core::Event<Args...>, T> || !std::is_same_v<Core::Event<Args...>, T>)
+		if constexpr (!std::is_base_of_v<Core::Event<Args...>, T> && !std::is_same_v<Core::Event<Args...>, T>)
 			return;
 
 		//needs to capture a copy of translate ptr
