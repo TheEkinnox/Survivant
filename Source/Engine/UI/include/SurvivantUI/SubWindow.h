@@ -7,7 +7,11 @@
 #include "Menu.h"
 
 #include "SurvivantApp/Inputs/InputManager.h"
+#include "SurvivantCore/Utility/UnusedIdGenerator.h"
 #include "SurvivantUI/UI.h"
+
+#include "Vector/Vector3.h"
+#include "Quaternion.h"
 
 #include <ctime>
 #include <functional>
@@ -63,7 +67,7 @@ namespace UI
 		bool*			m_isCheked;
 	};
 
-	class PanelButton : IPanelable
+	class PanelButton : public IPanelable
 	{
 	public:
 		PanelButton(const std::string& p_name, const std::function<void()>& p_callback) :
@@ -89,7 +93,7 @@ namespace UI
 		std::vector<PanelButton> m_buttons;
 	};
 
-	class PanelTextInput : IPanelable
+	class PanelTextInput : public IPanelable
 	{
 	public:
 		PanelTextInput(std::string p_name, std::function<void(PanelTextInput&)> p_callback);
@@ -110,7 +114,7 @@ namespace UI
 	};
 
 
-	class PanelTextBox : IPanelable
+	class PanelTextBox : public IPanelable
 	{
 	public:
 		using FilterSet = std::unordered_set<std::string>;
@@ -149,45 +153,49 @@ namespace UI
 		bool										m_copy = false;
 	};
 
-	class PanelUniqueSelection : IPanelable
+	class PanelUniqueSelection : public IPanelable
 	{
 	public:
+		using Callback = std::function<void(int)>;
+
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="p_selectable">Displayed options</param>
 		/// <param name="p_callback">callback with all selected flags as a parameter</param>
 		PanelUniqueSelection(
-			std::string p_name,
-			std::vector<std::string> p_selectable, 
-			std::function<void(int)> p_callback);
+			const std::string& p_name,
+			const std::vector<std::string>& p_selectable, 
+			const Callback& p_callback);
 		~PanelUniqueSelection() = default;
 
-		virtual void DisplayAndUpdatePanel();
+		virtual void DisplayAndUpdatePanel() override;
 
 	private:
-		std::string					m_name;
-		std::string					m_items;
-		int							m_count;
-		int							m_curentSelection;
-		std::function<void(int)>	m_callback;
+		std::string		m_name;
+		std::string		m_items;
+		int				m_count;
+		int				m_curentSelection;
+		Callback		m_callback;
 	};
 
-	class PanelMultipleSelection : IPanelable
+	class PanelMultipleSelection : public IPanelable
 	{
 	public:
+		using Callback = std::function<void(int)>;
+
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="p_selectable">Displayed options</param>
 		/// <param name="p_callback">callback with the new selected index as parameter</param>
 		PanelMultipleSelection(
-			std::string p_name,
-			std::vector<std::string> p_selectable, 
-			std::function<void(int)> p_callback);
+			const std::string& p_name,
+			const std::vector<std::string>& p_selectable, 
+			const Callback& p_callback);
 		~PanelMultipleSelection() = default;
 
-		virtual void DisplayAndUpdatePanel();
+		virtual void DisplayAndUpdatePanel() override;
 
 	private:
 		std::string GetDisplayString();
@@ -196,7 +204,92 @@ namespace UI
 		std::vector<std::string>	m_items;
 		int							m_count;
 		int							m_curentSelection;
-		std::function<void(int)>	m_callback;
+		Callback					m_callback;
+	};
+
+	class PanelFloatInput : public IPanelable
+	{
+	public:
+		using Callback = std::function<void(float)>;
+
+		PanelFloatInput(
+			const std::string& p_name,
+			const float& p_value,
+			const Callback& p_callback);
+		~PanelFloatInput() = default;
+
+		virtual void DisplayAndUpdatePanel() override;
+
+	private:
+		std::string		m_name;
+		Callback		m_callback;
+		float			m_value;
+	};
+
+	class PanelIntInput : public IPanelable
+	{
+	public:
+		using Callback = std::function<void(int)>;
+
+		PanelIntInput(
+			const std::string& p_name,
+			int p_value,
+			const Callback& p_callback);
+		~PanelIntInput() = default;
+
+		virtual void DisplayAndUpdatePanel() override;
+
+	private:
+		std::string		m_name;
+		Callback		m_callback;
+		int				m_value;
+	};
+
+	class PanelVec3Input : public IPanelable
+	{
+	public:
+		using Callback = std::function<void(LibMath::Vector3)>;
+
+		PanelVec3Input(
+			const std::string& p_name,
+			const LibMath::Vector3& p_value,
+			const Callback& p_callback);
+		~PanelVec3Input() = default;
+
+		virtual void DisplayAndUpdatePanel() override;
+
+	private:
+		std::string			m_name;
+		Callback			m_callback;
+		LibMath::Vector3	m_value;
+
+	};
+
+	class PanelTransformInput : public IPanelable
+	{
+	public:
+		using Callback = std::function<void(const LibMath::Vector3 * const, const LibMath::Quaternion * const, const LibMath::Vector3 * const)>;
+
+		PanelTransformInput(
+			const std::string& p_name,
+			const LibMath::Vector3&		p_position,
+			const LibMath::Quaternion&	p_rotation,
+			const LibMath::Vector3&		p_scale,
+			const Callback& p_callback);
+		~PanelTransformInput() = default;
+
+		virtual void DisplayAndUpdatePanel() override;
+
+	private:
+		LibMath::Vector3 					ToVector3Degree(const LibMath::TVector3<LibMath::Radian>& p_radians);
+		LibMath::TVector3<LibMath::Radian>	ToVector3Radian(const LibMath::Vector3& p_degrees);
+
+		std::string							m_name;
+		Callback							m_callback;
+		LibMath::Vector3					m_position;
+		LibMath::Quaternion					m_rotation;
+		LibMath::Vector3					m_scale;
+		LibMath::TVector3<LibMath::Radian>	m_yawPitchRoll;
 	};
 
 	class ISelectionBoxable
@@ -432,7 +525,7 @@ namespace UI
 		bool SetGridDisplay(PanelTreeBranch& p_branch);
 		bool TryOpenFile(PanelTreeBranch& p_branch);
 
-		static int GetPanelCount() { return s_panelCount; };
+		static size_t GetPanelCount() { return s_idGenerator.GetNumUsedIds(); };
 
 	private:
 		void SetupTree();
@@ -442,9 +535,30 @@ namespace UI
 		static constexpr char DIRECTORY_PATH[] =	"Source";
 		static constexpr char BACKSLASH[] =			"/";
 
-		static inline int s_panelCount = 0;
+		static inline SvCore::Utility::UnusedIdGenerator s_idGenerator;
 
 		std::shared_ptr<PanelTreeBranch>					m_tree;
 		PanelSelectionBox									m_grid;
+	};
+
+	class InspectorPanel : public Panel
+	{
+	public:
+		using InpectorInfo = std::vector<std::shared_ptr<IPanelable>>;
+
+		InspectorPanel();
+		~InspectorPanel();
+
+		void SetInpectorInfo(const InpectorInfo& p_info);
+		void ClearInfo();
+
+		virtual ERenderFlags Render()override;
+
+	private:
+		static constexpr char NAME[] = "Inspector";
+		static inline SvCore::Utility::UnusedIdGenerator s_idGenerator;
+
+		InpectorInfo m_info;
+
 	};
 }

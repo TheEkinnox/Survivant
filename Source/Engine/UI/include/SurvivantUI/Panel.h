@@ -24,6 +24,8 @@ namespace UI
 		Panel(const std::string& p_name);
 
 		std::string GetUniqueName(const char p_name[], size_t p_count);
+		size_t GetUniqueIdInName();
+
 		std::string m_name;
 	};
 }

@@ -663,9 +663,9 @@ void UI::PanelTextInput::ClearPanelText(PanelTextInput& p_panel)
 }
 
 UI::PanelUniqueSelection::PanelUniqueSelection(
-    std::string p_name,
-    std::vector<std::string> p_selectable, 
-    std::function<void(int)> p_callback) :
+    const std::string& p_name,
+    const std::vector<std::string>& p_selectable, 
+    const Callback& p_callback) :
     m_name(p_name),
     m_callback(p_callback)
 {
@@ -683,9 +683,9 @@ void UI::PanelUniqueSelection::DisplayAndUpdatePanel()
 }
 
 UI::PanelMultipleSelection::PanelMultipleSelection(
-    std::string p_name, 
-    std::vector<std::string> p_selectable, 
-    std::function<void(int)> p_callback) :
+    const std::string& p_name, 
+    const std::vector<std::string>& p_selectable, 
+    const Callback& p_callback) :
     m_name(p_name),
     m_callback(p_callback)
 {
@@ -748,7 +748,7 @@ std::string UI::PanelMultipleSelection::GetDisplayString()
 UI::ContentDrawerPanel::ContentDrawerPanel() :
     m_tree()
 {
-    m_name = GetUniqueName(NAME, s_panelCount);
+    m_name = GetUniqueName(NAME, s_idGenerator.GetUnusedId());
     //m_tree = std::make_shared<PanelTreeBranch>("TREE");
 
   /*  auto& branches = m_tree->SetBranches({ std::make_shared<PanelTreeBranch>("0"), std::make_shared<PanelTreeBranch>("1"), std::make_shared<PanelTreeBranch>("2") });
@@ -777,17 +777,16 @@ UI::ContentDrawerPanel::ContentDrawerPanel() :
         std::bind(&ContentDrawerPanel::TryOpenFile, this, std::placeholders::_1));
     m_tree.get()->SetAllLeavesOnClickCallback(tryOpenFileFunc);
 
-    s_panelCount++;
 }
 
 UI::ContentDrawerPanel::~ContentDrawerPanel()
 {
-    s_panelCount--;
+    s_idGenerator.RemoveId(GetUniqueIdInName());
 }
 
 Panel::ERenderFlags UI::ContentDrawerPanel::Render()
 {
-    static bool open = true;
+    bool open = true;
     static float treeWidth = ImGui::GetContentRegionAvail().x * 0.5f;
 
     auto panelSize = ImGui::GetContentRegionAvail();
@@ -1236,4 +1235,152 @@ void UI::PanelSelectionBox::DisplayCenteredText(const std::string& p_text, float
     ImGui::PushTextWrapPos(p_maxWidth - text_indentation);
     ImGui::TextWrapped(p_text.c_str());
     ImGui::PopTextWrapPos();
+}
+
+UI::InspectorPanel::InspectorPanel()
+{
+    m_name = GetUniqueName(NAME, s_idGenerator.GetUnusedId());
+}
+
+UI::InspectorPanel::~InspectorPanel()
+{
+}
+
+void UI::InspectorPanel::SetInpectorInfo(const InpectorInfo& p_info)
+{
+    m_info = p_info;
+}
+
+void UI::InspectorPanel::ClearInfo()
+{
+    m_info.clear();
+}
+
+UI::Panel::ERenderFlags UI::InspectorPanel::Render()
+{
+    static bool open = true;
+
+    if (!ImGui::Begin(m_name.c_str(), &open))
+    {
+        ImGui::End();
+        return Panel::ERenderFlags();
+    }
+
+    for (auto& panelInfo : m_info)
+    {
+        if (ImGui::BeginChild("##", ImVec2(0, 0), ImGuiChildFlags_AutoResizeX, ImGuiWindowFlags_HorizontalScrollbar))
+        {
+            panelInfo->DisplayAndUpdatePanel();
+
+        }
+
+        ImGui::EndChild();
+    }
+
+    ImGui::End();
+
+    return ERenderFlags();
+}
+
+UI::PanelVec3Input::PanelVec3Input(
+    const std::string& p_name, 
+    const LibMath::Vector3& p_value, 
+    const Callback& p_callback) :
+    m_name(p_name),
+    m_value(p_value),
+    m_callback(p_callback)
+{}
+
+void UI::PanelVec3Input::DisplayAndUpdatePanel()
+{
+    static int flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll;
+
+    if (ImGui::InputFloat3(m_name.c_str(), m_value.getArray(), "%3.f", flags))
+        m_callback(m_value);
+}
+
+UI::PanelFloatInput::PanelFloatInput(
+    const std::string & p_name, 
+    const float & p_value, 
+    const Callback & p_callback) :
+    m_name(p_name),
+    m_value(p_value),
+    m_callback(p_callback)
+{}
+
+void UI::PanelFloatInput::DisplayAndUpdatePanel()
+{
+    static int flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll;
+
+    if (ImGui::InputFloat(m_name.c_str(), &m_value, 0, 0, "%.3f", flags))
+        m_callback(m_value);
+}
+
+UI::PanelIntInput::PanelIntInput(
+    const std::string & p_name,
+    int p_value, 
+    const Callback & p_callback) :
+    m_name(p_name),
+    m_value(p_value),
+    m_callback(p_callback)
+{}
+
+void UI::PanelIntInput::DisplayAndUpdatePanel()
+{
+    static int flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll;
+
+    if (ImGui::InputInt(m_name.c_str(), &m_value, 0, 0, flags))
+        m_callback(m_value);
+}
+
+UI::PanelTransformInput::PanelTransformInput(
+    const std::string & p_name,
+    const LibMath::Vector3 & p_position, 
+    const LibMath::Quaternion & p_rotation, 
+    const LibMath::Vector3 & p_scale, 
+    const Callback & p_callback) :
+    m_name(p_name),
+    m_position(p_position),
+    m_rotation(p_rotation),
+    m_scale(p_scale),
+    m_callback(p_callback)
+{
+    m_yawPitchRoll = m_rotation.toYawPitchRoll();
+}
+
+void UI::PanelTransformInput::DisplayAndUpdatePanel()
+{
+    static int flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll;
+
+    if (ImGui::InputFloat3("Position", m_position.getArray(), "%3.f", flags))
+        m_callback(&m_position, nullptr, nullptr);
+
+    LibMath::Vector3 asDegree = ToVector3Degree(m_yawPitchRoll);
+    if (ImGui::InputFloat3("Rotation", asDegree.getArray(), "%3.f", flags))
+    {
+        LibMath::Vector3 diffDegree = asDegree - ToVector3Degree(m_yawPitchRoll); //m_yawPitchRoll hasnt been modified so still prev
+
+        //add diff to current quat
+        auto diffRad = ToVector3Radian(diffDegree);
+        m_rotation += LibMath::Quaternion(diffRad);
+        m_yawPitchRoll = m_rotation.toYawPitchRoll(); // m_yawPitchRoll += ToVector3Radian(diffDegree);
+
+        m_callback(nullptr, &m_rotation, nullptr);
+    }
+
+    if (ImGui::InputFloat3("Scale", m_scale.getArray(), "%3.f", flags))
+        m_callback(nullptr, nullptr, &m_scale);
+}
+
+LibMath::Vector3 UI::PanelTransformInput::ToVector3Degree(const LibMath::TVector3<LibMath::Radian>& p_radians)
+{
+    return LibMath::Vector3(p_radians[0].radian(), p_radians[1].radian(), p_radians[2].radian());
+}
+
+LibMath::TVector3<LibMath::Radian> UI::PanelTransformInput::ToVector3Radian(const LibMath::Vector3& p_degrees)
+{
+    return LibMath::TVector3<LibMath::Radian>(
+        LibMath::Radian(p_degrees[0]), 
+        LibMath::Radian(p_degrees[1]), 
+        LibMath::Radian(p_degrees[2]));
 }
