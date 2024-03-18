@@ -60,17 +60,17 @@ namespace SvRendering::RHI
         return *this;
     }
 
-    void OpenGLFrameBuffer::bind()
+    void OpenGLFrameBuffer::Bind()
     {
         glBindFramebuffer(GL_FRAMEBUFFER, m_id);
     }
 
-    void OpenGLFrameBuffer::unbind()
+    void OpenGLFrameBuffer::Unbind()
     {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    void OpenGLFrameBuffer::attach(const ITexture& p_texture, const EFrameBufferAttachment p_attachment)
+    void OpenGLFrameBuffer::Attach(const ITexture& p_texture, const EFrameBufferAttachment p_attachment)
     {
         const OpenGLTexture& openGLTexture = dynamic_cast<const OpenGLTexture&>(p_texture);
 
@@ -79,7 +79,7 @@ namespace SvRendering::RHI
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    void OpenGLFrameBuffer::detach(const EFrameBufferAttachment p_attachment)
+    void OpenGLFrameBuffer::Detach(const EFrameBufferAttachment p_attachment)
     {
         glBindFramebuffer(GL_FRAMEBUFFER, m_id);
         glFramebufferTexture2D(GL_FRAMEBUFFER, ToGLEnum(p_attachment), GL_TEXTURE_2D, 0, 0);

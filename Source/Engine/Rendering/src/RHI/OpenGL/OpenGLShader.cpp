@@ -337,7 +337,7 @@ namespace SvRendering::RHI
         {
             char infoLog[INFO_LOG_SIZE];
             glGetShaderInfoLog(shaderId, INFO_LOG_SIZE, nullptr, infoLog);
-            SV_LOG_ERROR("ERROR::SHADER::%s::COMPILATION_FAILED\n%s", GetTokenFromType(p_shaderType).c_str(), infoLog);
+            SV_LOG_ERROR("ERROR::SHADER::%s::COMPILATION_FAILED\n%s", ToUpper(GetTokenFromType(p_shaderType)).c_str(), infoLog);
             glDeleteShader(shaderId);
             return 0;
         }

@@ -1,14 +1,12 @@
-#version 330 core
+#version 420 core
 
-layout(location = 0) in vec3 _pos;
-layout(location = 2) in vec2 _texCoords;
+#include "assets/shaders/Core.verth"
 
 out vec2 TexCoords;
 
-uniform mat4 sv_mvp;
-
 void main()
 {
-	gl_Position = sv_mvp * vec4(_pos, 1.0);
+	mat4 mvp = sv_viewProjection * sv_modelMat;
+	gl_Position = mvp * vec4(_pos, 1.0);
 	TexCoords = _texCoords;
 }

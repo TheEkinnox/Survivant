@@ -1,20 +1,32 @@
-#include "SurvivantTest/EventManager.h"
-#include "SurvivantTest/InputManager.h"
-#include "SurvivantTest/Window.h"
-
 #include <SurvivantCore/Debug/Assertion.h>
 #include <SurvivantCore/Utility/FileSystem.h>
 #include <SurvivantCore/Utility/Timer.h>
 
 #include <SurvivantRendering/Core/Camera.h>
 #include <SurvivantRendering/Core/Color.h>
+#include <SurvivantRendering/Core/Light.h>
 #include <SurvivantRendering/Resources/Material.h>
 #include <SurvivantRendering/Resources/Model.h>
+#include <SurvivantRendering/RHI/IFrameBuffer.h>
 #include <SurvivantRendering/RHI/IRenderAPI.h>
 #include <SurvivantRendering/RHI/IShader.h>
+#include <SurvivantRendering/RHI/IShaderStorageBuffer.h>
 #include <SurvivantRendering/RHI/ITexture.h>
+#include <SurvivantRendering/RHI/IUniformBuffer.h>
+#include <SurvivantRendering/RHI/OpenGL/OpenGLTexture.h>
+
+#include "SurvivantApp/Inputs/InputManager.h"
+#include "SurvivantApp/Inputs/KeyboardInputs.h"
+#include "SurvivantApp/Inputs/MouseInputs.h"
+#include "SurvivantApp/Windows/Window.h"
+#include "SurvivantCore/Events/EventManager.h"
+#include "SurvivantUI/EditorWindow.h"
+#include "SurvivantUI/UI.h"
 
 #include <Transform.h>
+
+// TODO: Implement relevant parts in corresponding libs to get rid of glfw dependency
+#include <GLFW/glfw3.h>
 
 using namespace LibMath;
 using namespace SvCore::Utility;
@@ -24,9 +36,11 @@ using namespace SvRendering::Geometry;
 using namespace SvRendering::Resources;
 using namespace SvRendering::RHI;
 
-constexpr const char* UNLIT_SHADER_PATH  = "assets/shaders/Unlit.glsl";
-constexpr float       CAM_MOVE_SPEED     = 3.f;
-constexpr Radian      CAM_ROTATION_SPEED = 90_deg;
+constexpr const char* UNLIT_SHADER_PATH = "assets/shaders/Unlit.glsl";
+constexpr const char* LIT_SHADER_PATH   = "assets/shaders/Lit.glsl";
+
+constexpr float  CAM_MOVE_SPEED     = 3.f;
+constexpr Radian CAM_ROTATION_SPEED = 90_deg;
 
 std::shared_ptr<ITexture> GetTexture()
 {
@@ -47,6 +61,59 @@ std::shared_ptr<ITexture> GetTexture()
     return texture;
 }
 
+std::unique_ptr<IFrameBuffer> g_frameBuffer;
+
+ITexture& GetDefaultFrameBuffer()
+{
+    static std::shared_ptr<ITexture> color = ITexture::Create(800, 600, EPixelDataFormat::RGB);
+    static std::shared_ptr<ITexture> depth = ITexture::Create(800, 600, EPixelDataFormat::DEPTH_COMPONENT);
+
+    static bool isInitialized = false;
+
+    if (isInitialized)
+        return *color;
+
+    color->Bind(0);
+
+    g_frameBuffer = IFrameBuffer::Create();
+    g_frameBuffer->Attach(*color, EFrameBufferAttachment::COLOR);
+    g_frameBuffer->Attach(*depth, EFrameBufferAttachment::DEPTH);
+
+    isInitialized = true;
+    return *color;
+
+    //static GLuint textureId;
+
+    //if (textureId == 0)
+    //{
+    //    glGenFramebuffers(1, &frameBufferId);
+    //    glBindFramebuffer(GL_FRAMEBUFFER, frameBufferId);
+
+    //    glGenTextures(1, &textureId);
+    //    glBindTexture(GL_TEXTURE_2D, textureId);
+
+    //    //screen width here
+    //    constexpr GLsizei width = 800;
+    //    constexpr GLsizei height = 600;
+
+    //    //Vector4 c(0.5);
+    //    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+
+    //    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    //    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    //    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureId, 0);
+
+
+    //    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
+    //    {
+    //        int i = 0; i;
+    //    }
+    //}
+
+    //return textureId;
+}
+
 std::tuple<int, int> AddInputTranslate(char i)
 {
     return { i, 10 };
@@ -57,13 +124,61 @@ std::tuple<int, int> AddMouseTranslate(float i, float j)
     return { (int)i, (int)j };
 }
 
-void DrawModel(const Model& p_model, const Camera& p_camera, const Matrix4& p_transform, const Material& p_material)
+std::tuple<> SpaceTranslate(char /*c*/)
 {
-    if (!p_camera.GetFrustum().Intersects(TransformBoundingBox(p_model.GetBoundingBox(), p_transform)))
+    return { };
+}
+
+void BindCamUBO(const Matrix4& p_viewProj, const Vector3& p_viewPos)
+{
+    static std::unique_ptr<IUniformBuffer> camBuffer = IUniformBuffer::Create(EAccessMode::DYNAMIC_DRAW, 0);
+
+    struct CameraUBO
+    {
+        Matrix4 m_viewProjection;
+        Vector3 m_viewPos;
+    };
+
+    CameraUBO ubo
+    {
+        p_viewProj.transposed(),
+        p_viewPos
+    };
+
+    camBuffer->SetData(&ubo, 1);
+    camBuffer->Bind();
+}
+
+void BindModelUBO(const Matrix4& p_modelMat)
+{
+    static std::unique_ptr<IUniformBuffer> modelBuffer = IUniformBuffer::Create(EAccessMode::DYNAMIC_DRAW, 1);
+
+    struct ModelUBO
+    {
+        Matrix4 m_modelMat;
+        Matrix4 m_normalMat;
+    };
+
+    ModelUBO ubo
+    {
+        p_modelMat.transposed(),
+        p_modelMat.inverse()
+    };
+
+    modelBuffer->SetData(&ubo, 1);
+    modelBuffer->Bind();
+}
+
+void DrawModel(const Model& p_model, const Frustum& p_viewFrustum, const Matrix4& p_transform, const Material& p_material)
+{
+    if (!p_viewFrustum.Intersects(TransformBoundingBox(p_model.GetBoundingBox(), p_transform)))
         return;
 
+    BindModelUBO(p_transform);
+
     p_material.Bind();
-    p_material.GetShader().SetUniformMat4("sv_mvp", p_camera.GetViewProjection() * p_transform);
+    p_material.GetShader().SetUniformMat4("sv_modelMat", p_transform);
+    p_material.GetShader().SetUniformMat4("sv_normalMat", p_transform.transposed().inverse());
 
     for (size_t i = 0; i < p_model.GetMeshCount(); ++i)
     {
@@ -86,15 +201,17 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow* window = glfwCreateWindow(800, 600, "Test", nullptr, nullptr);
-    glfwMakeContextCurrent(window);
+    //window
+    UI::EditorWindow window;
+    //GLFWwindow* windowPtr = window.GetWindow();
 
     IRenderAPI& renderAPI = IRenderAPI::SetCurrent(EGraphicsAPI::OPENGL);
     renderAPI.Init(true)
              .SetCapability(ERenderingCapability::DEPTH_TEST, true)
              .SetCullFace(ECullFace::BACK);
 
-    App::Window::SetupInputManager(window);
+    //const GLuint textureId = Texture();
+    App::Window::m_textureId = dynamic_cast<OpenGLTexture&>(GetDefaultFrameBuffer()).GetId();
 
     Model model;
 
@@ -105,6 +222,10 @@ int main()
     ASSERT(unlitShader->Load(UNLIT_SHADER_PATH), "Failed to load shader at path \"%s\"", UNLIT_SHADER_PATH);
     ASSERT(unlitShader->Init(), "Failed to initialize shader at path \"%s\"", UNLIT_SHADER_PATH);
 
+    std::shared_ptr<IShader> litShader = IShader::Create();
+    ASSERT(litShader->Load(LIT_SHADER_PATH), "Failed to load shader at path \"%s\"", LIT_SHADER_PATH);
+    ASSERT(litShader->Init(), "Failed to initialize shader at path \"%s\"", LIT_SHADER_PATH);
+
     Material whiteMaterial(unlitShader);
     whiteMaterial.GetProperty<std::shared_ptr<ITexture>>("u_diffuse") = GetTexture();
     whiteMaterial.GetProperty<Vector4>("u_tint")                      = Color::white;
@@ -112,8 +233,11 @@ int main()
     Material redMaterial(whiteMaterial);
     redMaterial.GetProperty<Vector4>("u_tint") = Color::red;
 
-    Material yellowMaterial(whiteMaterial);
-    yellowMaterial.GetProperty<Vector4>("u_tint") = Color::yellow;
+    Material litMaterial(litShader);
+    litMaterial.GetProperty<std::shared_ptr<ITexture>>("u_diffuse") = GetTexture();
+    litMaterial.GetProperty<Vector4>("u_tint")                      = Color::white;
+    litMaterial.GetProperty<Vector4>("u_specularColor")             = Color(.2f, .2f, .2f);
+    litMaterial.GetProperty<float>("u_shininess")                   = 32.f;
 
     const Matrix4 projMat = perspectiveProjection(90_deg, 4.f / 3.f, .01f, 14.f);
 
@@ -135,28 +259,32 @@ int main()
     using namespace Core;
     using namespace App;
     using AddEvent = Event<int, int>;
+    class ToggleEvent : public Core::Event<> {};
 
-    EventManager& em = EventManager::GetInstance();
     InputManager& im = InputManager::GetInstance();
-
-    AddEvent::EventDelegate printAdd = [](int i, int j)
     {
-        std::cout << "Add = " << i + j << std::endl;
-    };
+        InputManager::GetInstance().InitWindow(&window);
 
-    std::shared_ptr<AddEvent> ligEvent = std::make_shared<AddEvent>();
-    ligEvent->AddListener(printAdd);
-    em.AddEvent<AddEvent>(ligEvent);
+        EventManager& em = EventManager::GetInstance();
 
-    InputManager::KeyboardKeyType a(EKey::A, EKeyState::RELEASED, EInputModifier::ALT);
-    InputManager::KeyboardKeyType b(EKey::B, EKeyState::PRESSED, EInputModifier());
-    InputManager::MouseKeyType    mouse(EMouseButton::MOUSE_1, EMouseButtonState::PRESSED, EInputModifier());
+        AddEvent::EventDelegate printAdd = [](int i, int j) { std::cout << "Add = " << i + j << std::endl; };
+        ToggleEvent::EventDelegate toggle = std::bind(&App::Window::ToggleFullScreenMode, &window);
+        em.AddListenner<AddEvent>(printAdd);
+        em.AddListenner<ToggleEvent>(toggle);
 
-    im.AddInputEventBinding<AddEvent>(a, &AddInputTranslate);
-    im.AddInputEventBinding<AddEvent>(b, &AddInputTranslate);
-    //mouse, &AddMouseTranslate
-    im.AddInputEventBinding<AddEvent>(mouse, &AddMouseTranslate);
-    //im.CallInput(b, 'b');
+        InputManager::KeyboardKeyType   a(EKey::A, EKeyState::RELEASED, EInputModifier::MOD_ALT);
+        InputManager::KeyboardKeyType   b(EKey::B, EKeyState::PRESSED, EInputModifier());
+        InputManager::MouseKeyType      mouse(EMouseButton::MOUSE_1, EMouseButtonState::PRESSED, EInputModifier());
+        InputManager::KeyboardKeyType   space(EKey::SPACE, EKeyState::PRESSED, EInputModifier());
+        im.AddInputEventBinding<AddEvent>(a, &AddInputTranslate);
+        im.AddInputEventBinding<AddEvent>(b, &AddInputTranslate);
+        im.AddInputEventBinding<AddEvent>(mouse, &AddMouseTranslate);
+        im.AddInputEventBinding<ToggleEvent>(space, &SpaceTranslate);
+    }
+
+    //ui
+    UI::EditorUI ui;
+    window.SetupUI(&ui);
 
     Vector2 moveInput, rotateInput;
 
@@ -247,13 +375,25 @@ int main()
 
     im.AddInputBinding({ EKey::ESCAPE, EKeyState::RELEASED, {} }, [&window](const char)
     {
-        glfwSetWindowShouldClose(window, true);
+        glfwSetWindowShouldClose(window.GetWindow(), true);
     });
 
-    while (!glfwWindowShouldClose(window))
+    std::vector<Matrix4> lightMatrices;
+    lightMatrices.emplace_back(Light(cam.GetClearColor()).getMatrix());
+    lightMatrices.emplace_back(DirectionalLight(Color::magenta, Vector3::back()).getMatrix());
+    lightMatrices.emplace_back(SpotLight(Color(0.f, 1.f, 0.f, 3.f), camPos, Vector3::front(), Attenuation(10),
+        { cos(0_deg), cos(30_deg) }).getMatrix());
+    lightMatrices.emplace_back(PointLight(Light{ Color::red }, Vector3{ -1, 1, 1 }, Attenuation(16)).getMatrix());
+
+    std::unique_ptr<IShaderStorageBuffer> lightsSSBO = IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, 0);
+    lightsSSBO->Bind();
+    lightsSSBO->SetData(lightMatrices.data(), lightMatrices.size());
+
+    while (!window.ShouldClose())
     {
         timer.tick();
-        glfwPollEvents();
+        //glfwPollEvents();
+        window.StartRender();
 
         angle += 20_deg * timer.getDeltaTime();
 
@@ -263,6 +403,9 @@ int main()
 
         Vector3    newPos = camTransform.getPosition();
         Quaternion newRot = camTransform.getRotation();
+
+        g_frameBuffer->Bind();
+        renderAPI.SetViewport({ 0, 0 }, { 800, 600 });
 
         if (moveInput.magnitudeSquared() > 0.f)
         {
@@ -286,14 +429,24 @@ int main()
         cam.SetView(camTransform.getWorldMatrix().inverse());
         cam.Clear();
 
-        DrawModel(model, cam, modelMat1, whiteMaterial);
-        DrawModel(model, cam, modelMat2, redMaterial);
-        DrawModel(model, cam, testModelMat, yellowMaterial);
+        BindCamUBO(cam.GetViewProjection(), camTransform.getWorldPosition());
 
-        glfwSwapBuffers(window);
+        Frustum camFrustum = cam.GetFrustum();
+
+        DrawModel(model, camFrustum, modelMat1, whiteMaterial);
+        DrawModel(model, camFrustum, modelMat2, redMaterial);
+        DrawModel(model, camFrustum, testModelMat, litMaterial);
+
+        g_frameBuffer->Unbind();
+        renderAPI.SetViewport({ 0, 0 }, { 800, 600 });
+
+        window.RenderUI();
+        window.EndRender();
+
+        //glfwSwapBuffers(window.GetWindow());
     }
 
-    glfwDestroyWindow(window);
+    //glfwDestroyWindow(window);
     glfwTerminate();
 
     return 0;

@@ -42,25 +42,25 @@ namespace SvRendering::RHI
         /**
          * \brief Binds the frame buffer
          */
-        void bind() override;
+        void Bind() override;
 
         /**
          * \brief Unbinds the frame buffer
          */
-        void unbind() override;
+        void Unbind() override;
 
         /**
          * \brief Attaches the given texture to the frame buffer
          * \param p_texture The texture to attach
          * \param p_attachment The target attachment
          */
-        void attach(const ITexture& p_texture, Enums::EFrameBufferAttachment p_attachment) override;
+        void Attach(const ITexture& p_texture, Enums::EFrameBufferAttachment p_attachment) override;
 
         /**
          * \brief Detaches the given attachment from the frame buffer
          * \param p_attachment The attachment to detach
          */
-        void detach(Enums::EFrameBufferAttachment p_attachment) override;
+        void Detach(Enums::EFrameBufferAttachment p_attachment) override;
 
     private:
         uint32_t m_id;

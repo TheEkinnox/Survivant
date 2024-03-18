@@ -17,9 +17,9 @@ namespace SvRendering::RHI
 
         /**
          * \brief Creates a move copy of the given frame buffer
-         * \param other The moved frame buffer
+         * \param p_other The moved frame buffer
          */
-        IFrameBuffer(IFrameBuffer&& other) noexcept = default;
+        IFrameBuffer(IFrameBuffer&& p_other) noexcept = default;
 
         /**
          * \brief Destroys the given frame buffer
@@ -33,33 +33,33 @@ namespace SvRendering::RHI
 
         /**
          * \brief Moves the given frame buffer into this one
-         * \param other The moved frame buffer
+         * \param p_other The moved frame buffer
          * \return A reference to the modified frame buffer
          */
-        IFrameBuffer& operator=(IFrameBuffer&& other) noexcept = default;
+        IFrameBuffer& operator=(IFrameBuffer&& p_other) noexcept = default;
 
         /**
          * \brief Binds the frame buffer
          */
-        virtual void bind() = 0;
+        virtual void Bind() = 0;
 
         /**
          * \brief Unbinds the frame buffer
          */
-        virtual void unbind() = 0;
+        virtual void Unbind() = 0;
 
         /**
          * \brief Attaches the given texture to the frame buffer
-         * \param texture The texture to attach
-         * \param attachment The target attachment
+         * \param p_texture The texture to attach
+         * \param p_attachment The target attachment
          */
-        virtual void attach(const ITexture& texture, Enums::EFrameBufferAttachment attachment) = 0;
+        virtual void Attach(const ITexture& p_texture, Enums::EFrameBufferAttachment p_attachment) = 0;
 
         /**
          * \brief Detaches the given attachment from the frame buffer
-         * \param attachment The attachment to detach
+         * \param p_attachment The attachment to detach
          */
-        virtual void detach(Enums::EFrameBufferAttachment attachment) = 0;
+        virtual void Detach(Enums::EFrameBufferAttachment p_attachment) = 0;
 
         /**
          * \brief Creates a frame buffer for the current render api
