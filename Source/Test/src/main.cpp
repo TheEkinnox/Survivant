@@ -5,33 +5,34 @@
 #include <SurvivantRendering/Core/Camera.h>
 #include <SurvivantRendering/Core/Color.h>
 #include <SurvivantRendering/Core/Light.h>
-#include <SurvivantRendering/Core/Buffers/ShaderStorageBuffer.h>
 #include <SurvivantRendering/Resources/Model.h>
-#include <SurvivantRendering/Resources/Shader.h>
+#include <SurvivantRendering/RHI/IFrameBuffer.h>
+#include <SurvivantRendering/RHI/IRenderAPI.h>
+#include <SurvivantRendering/RHI/IShader.h>
+#include <SurvivantRendering/RHI/IShaderStorageBuffer.h>
+#include <SurvivantRendering/RHI/ITexture.h>
+#include <SurvivantRendering/RHI/OpenGL/OpenGLTexture.h>
 
-#include "SurvivantCore/Events/EventManager.h"
 #include "SurvivantApp/Inputs/InputManager.h"
-#include "SurvivantApp/Windows/Window.h"
 #include "SurvivantApp/Inputs/KeyboardInputs.h"
 #include "SurvivantApp/Inputs/MouseInputs.h"
-#include "SurvivantUI/UI.h"
+#include "SurvivantApp/Windows/Window.h"
+#include "SurvivantCore/Events/EventManager.h"
 #include "SurvivantUI/EditorWindow.h"
-#include <SurvivantRendering/Resources/Texture.h>
-#include <SurvivantRendering/Core/Buffers/FrameBuffer.h>
+#include "SurvivantUI/UI.h"
 
 #include <Transform.h>
 
-// TODO: Implement relevant parts in corresponding libs to get rid of glad dependency
-#include <glad/gl.h>
+// TODO: Implement relevant parts in corresponding libs to get rid of glfw dependency
 #include <GLFW/glfw3.h>
 
 using namespace LibMath;
 using namespace SvCore::Utility;
 using namespace SvRendering::Core;
-using namespace SvRendering::Core::Buffers;
 using namespace SvRendering::Enums;
 using namespace SvRendering::Geometry;
 using namespace SvRendering::Resources;
+using namespace SvRendering::RHI;
 
 constexpr const char* UNLIT_SHADER_PATH = "assets/shaders/Unlit.glsl";
 constexpr const char* LIT_SHADER_PATH   = "assets/shaders/Lit.glsl";
@@ -39,38 +40,45 @@ constexpr const char* LIT_SHADER_PATH   = "assets/shaders/Lit.glsl";
 constexpr float  CAM_MOVE_SPEED     = 3.f;
 constexpr Radian CAM_ROTATION_SPEED = 90_deg;
 
-Texture& GetTexture()
+ITexture& GetTexture()
 {
-    static Texture texture;
-    static bool    isLoaded = false;
+    static std::shared_ptr<ITexture> texture  = ITexture::Create();
+    static bool                      isLoaded = false;
 
     if (!isLoaded)
     {
-        ASSERT(texture.Load("assets/textures/grid.png"));
-        ASSERT(texture.Init());
+        ASSERT(texture->Load("assets/textures/grid.png"));
+        ASSERT(texture->Init());
 
-        texture.SetFilters(ETextureFilter::NEAREST, ETextureFilter::NEAREST);
-        texture.SetWrapModes(ETextureWrapMode::REPEAT, ETextureWrapMode::REPEAT);
+        texture->SetFilters(ETextureFilter::NEAREST, ETextureFilter::NEAREST);
+        texture->SetWrapModes(ETextureWrapMode::REPEAT, ETextureWrapMode::REPEAT);
 
         isLoaded = true;
     }
 
-    return texture;
+    return *texture;
 }
 
-FrameBuffer* frameBufferId;
+std::shared_ptr<IFrameBuffer> g_frameBuffer;
 
-GLuint GetDefaultFrameBuffer()
+ITexture& GetDefaultFrameBuffer()
 {
-    static Texture     texture(800, 600, ETextureFormat::RGB);
-    static Texture     depth(800, 600, ETextureFormat::DEPTH_COMPONENT);
-    static FrameBuffer frameBuffer;
-    texture.Bind(0);
+    static std::shared_ptr<ITexture> color = ITexture::Create(800, 600, EPixelDataFormat::RGB);
+    static std::shared_ptr<ITexture> depth = ITexture::Create(800, 600, EPixelDataFormat::DEPTH_COMPONENT);
 
-    frameBuffer.Attach(texture, EFrameBufferAttachment::COLOR);
-    frameBuffer.Attach(depth, EFrameBufferAttachment::DEPTH);
-    frameBufferId = &frameBuffer;
-    return texture.GetId();
+    static bool isInitialized = false;
+
+    if (isInitialized)
+        return *color;
+
+    color->Bind(0);
+
+    g_frameBuffer = IFrameBuffer::Create();
+    g_frameBuffer->Attach(*color, EFrameBufferAttachment::COLOR);
+    g_frameBuffer->Attach(*depth, EFrameBufferAttachment::DEPTH);
+
+    isInitialized = true;
+    return *color;
 
     //static GLuint textureId;
 
@@ -104,7 +112,6 @@ GLuint GetDefaultFrameBuffer()
     //return textureId;
 }
 
-
 std::tuple<int, int> AddInputTranslate(char i)
 {
     return { i, 10 };
@@ -127,7 +134,7 @@ void DrawModel(const Model& p_model)
         const Mesh& mesh = p_model.GetMesh(i);
 
         mesh.Bind();
-        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(mesh.GetIndexCount()), GL_UNSIGNED_INT, nullptr);
+        IRenderAPI::GetCurrent().DrawElements(EPrimitiveType::TRIANGLES, mesh.GetIndexCount());
     }
 }
 
@@ -147,39 +154,35 @@ int main()
     UI::EditorWindow window;
     //GLFWwindow* windowPtr = window.GetWindow();
 
-    ASSERT(gladLoadGL(glfwGetProcAddress), "Failed to initialize glad");
-    glEnable(GL_DEPTH_TEST);
+    IRenderAPI& renderAPI = IRenderAPI::SetCurrent(EGraphicsAPI::OPENGL);
+    renderAPI.Init(true)
+             .SetCapability(ERenderingCapability::DEPTH_TEST, true)
+             .SetCullFace(ECullFace::BACK);
 
-    //App::Window::SetupInputManager(window);
+    //const GLuint textureId = Texture();
+    App::Window::m_textureId = dynamic_cast<OpenGLTexture&>(GetDefaultFrameBuffer()).GetId();
 
     Model model;
 
     ASSERT(model.Load("assets/models/cube.obj"), "Failed to load model");
     ASSERT(model.Init(), "Failed to initialize model");
 
-    const Texture& texture = GetTexture();
+    std::shared_ptr<IShader> unlitShader = IShader::Create();
+    ASSERT(unlitShader->Load(UNLIT_SHADER_PATH), "Failed to load shader at path \"%s\"", UNLIT_SHADER_PATH);
+    ASSERT(unlitShader->Init(), "Failed to initialize shader at path \"%s\"", UNLIT_SHADER_PATH);
 
-    Shader unlitShader;
-    ASSERT(unlitShader.Load(UNLIT_SHADER_PATH), "Failed to load shader at path \"%s\"", UNLIT_SHADER_PATH);
-    ASSERT(unlitShader.Init(), "Failed to initialize shader at path \"%s\"", UNLIT_SHADER_PATH);
+    unlitShader->SetUniformTexture("u_diffuse", &GetTexture());
 
-    unlitShader.Use();
-    unlitShader.SetUniformInt("u_diffuse", 0);
+    std::shared_ptr<IShader> litShader = IShader::Create();
+    ASSERT(litShader->Load(LIT_SHADER_PATH), "Failed to load shader at path \"%s\"", LIT_SHADER_PATH);
+    ASSERT(litShader->Init(), "Failed to initialize shader at path \"%s\"", LIT_SHADER_PATH);
 
-    Shader litShader;
-    ASSERT(litShader.Load(LIT_SHADER_PATH), "Failed to load shader at path \"%s\"", LIT_SHADER_PATH);
-    ASSERT(litShader.Init(), "Failed to initialize shader at path \"%s\"", LIT_SHADER_PATH);
-
-    litShader.Use();
-    litShader.SetUniformInt("u_diffuse", 0);
+    litShader->SetUniformTexture("u_diffuse", &GetTexture());
 
     const Matrix4 projMat = perspectiveProjection(90_deg, 4.f / 3.f, .01f, 14.f);
 
     Vector3   camPos(0.f, 1.8f, 2.f);
     Transform camTransform(camPos, Quaternion::identity(), Vector3::one());
-
-    //const GLuint textureId = Texture();
-    App::Window::m_textureId = GetDefaultFrameBuffer();
 
     const Vector3 testPos      = camPos + Vector3::front();
     const Matrix4 testModelMat = translation(testPos) * scaling(1.5f, .5f, .1f);
@@ -322,9 +325,9 @@ int main()
         { cos(0_deg), cos(30_deg) }).getMatrix());
     lightMatrices.emplace_back(PointLight(Light{ Color::red }, Vector3{ -1, 1, 1 }, Attenuation(16)).getMatrix());
 
-    ShaderStorageBuffer lightsSSBO(EAccessSpecifier::STREAM_DRAW);
-    lightsSSBO.Bind(0);
-    lightsSSBO.SetData(lightMatrices.data(), lightMatrices.size());
+    std::shared_ptr<IShaderStorageBuffer> lightsSSBO = IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, 0);
+    lightsSSBO->Bind();
+    lightsSSBO->SetData(lightMatrices.data(), lightMatrices.size());
 
     while (!window.ShouldClose())
     {
@@ -341,9 +344,8 @@ int main()
         Vector3    newPos = camTransform.getPosition();
         Quaternion newRot = camTransform.getRotation();
 
-        frameBufferId->Bind();
-        texture.Bind(0);
-        glViewport(0, 0, 800, 600);
+        g_frameBuffer->Bind();
+        renderAPI.SetViewport({ 0, 0 }, { 800, 600 });
 
         if (moveInput.magnitudeSquared() > 0.f)
         {
@@ -370,30 +372,30 @@ int main()
         const Frustum camFrustum     = cam.GetFrustum();
         const Matrix4 viewProjection = cam.GetViewProjection();
 
-        unlitShader.Use();
-        unlitShader.SetUniformMat4("u_mvp", viewProjection * modelMat1);
-        unlitShader.SetUniformVec4("u_tint", Color::white);
+        unlitShader->Bind();
+        unlitShader->SetUniformMat4("u_mvp", viewProjection * modelMat1);
+        unlitShader->SetUniformVec4("u_tint", Color::white);
         DrawModel(model);
 
-        unlitShader.SetUniformMat4("u_mvp", viewProjection * modelMat2);
-        unlitShader.SetUniformVec4("u_tint", Color::red);
+        unlitShader->SetUniformMat4("u_mvp", viewProjection * modelMat2);
+        unlitShader->SetUniformVec4("u_tint", Color::red);
         DrawModel(model);
 
         if (camFrustum.Intersects(TransformBoundingBox(model.GetBoundingBox(), testModelMat)))
         {
-            litShader.Use();
-            litShader.SetUniformMat4("u_mvp", viewProjection * testModelMat);
-            litShader.SetUniformMat4("u_modelMat", testModelMat);
-            litShader.SetUniformMat4("u_normalMat", testModelMat.inverse().transposed());
-            litShader.SetUniformVec4("u_tint", Color::white);
-            litShader.SetUniformVec3("u_viewPos", camTransform.getWorldPosition());
-            litShader.SetUniformVec4("u_specularColor", Color(.2f, .2f, .2f));
-            litShader.SetUniformFloat("u_shininess", 32.f);
+            litShader->Bind();
+            litShader->SetUniformMat4("u_mvp", viewProjection * testModelMat);
+            litShader->SetUniformMat4("u_modelMat", testModelMat);
+            litShader->SetUniformMat4("u_normalMat", testModelMat.inverse().transposed());
+            litShader->SetUniformVec4("u_tint", Color::white);
+            litShader->SetUniformVec3("u_viewPos", camTransform.getWorldPosition());
+            litShader->SetUniformVec4("u_specularColor", Color(.2f, .2f, .2f));
+            litShader->SetUniformFloat("u_shininess", 32.f);
             DrawModel(model);
         }
 
-        frameBufferId->Unbind();
-        glViewport(0, 0, 800, 600);
+        g_frameBuffer->Unbind();
+        renderAPI.SetViewport({ 0, 0 }, { 800, 600 });
 
         window.RenderUI();
         window.EndRender();
