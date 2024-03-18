@@ -2,7 +2,7 @@
 #pragma once
 
 #include "SurvivantApp/Windows/Window.h"
-#include "SurvivantUI/UI.h"
+#include "SurvivantUI/Core/EditorUI.h"
 
 #include "SurvivantApp/Inputs/InputManager.h"
 
@@ -10,7 +10,7 @@
 #include "SurvivantCore/Events/Event.h"
 
 
-namespace UI
+namespace SvUI::Core
 {
 	class EditorWindow : public App::Window
 	{
@@ -26,11 +26,11 @@ namespace UI
 		void SetupUI(EditorUI* p_ui);
 
 	private:
+		using KeyMap = std::unordered_map<App::InputManager::KeyboardKeyType, App::InputManager::KeyCallback>;
+
 		//init on creation
 		EditorUI*	m_ui;
 		bool		m_shouldClose = false; 
-
-		//std::unordered_map<KeyboardKeyType, KeyCallback>
-		std::unordered_map<App::InputManager::KeyboardKeyType, App::InputManager::KeyCallback> m_keyInputCallbacks;
+		KeyMap		m_keyInputCallbacks;
 	};
 }

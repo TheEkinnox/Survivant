@@ -1,35 +1,32 @@
-//UI.h
+//EditorUI.h
 #pragma once
 
-#include "Panel.h"
-#include "Menu.h"
 
 #include "SurvivantCore/Events/Event.h"
+#include "SurvivantUI/Interfaces/IUI.h"
 
+#include "SurvivantUI/Panels/Panel.h"
+#include "SurvivantUI/Panels/MainPanel.h"
+#include "SurvivantUI/MenuItems/Menu.h"
+#include "SurvivantUI/MenuItems/MenuBar.h"
 #include <unordered_set>
 #include <memory>
 
 //foward declaration
 struct ImFont;
-namespace App
-{
+
+namespace App {
 	class Window;
 }
 
-namespace UI
+namespace SvUI::Core
 {
-	class MainPanel;
+	using namespace Panels;
+	using namespace MenuItems;
 
-	class IUI
-	{
-		virtual void StartFrameUpdate() = 0;
-		virtual void EndFrameUpdate() = 0;
-	};
-
-	class EditorUI : public IUI
+	class EditorUI : public Interfaces::IUI
 	{
 	public:
-		class DebugEvent : public Core::Event<const char*> {};
 
 		EditorUI();
 		~EditorUI(); 
@@ -49,12 +46,13 @@ namespace UI
 		void CreateSavePanel();
 		void CreateConsolePanel();
 		void CreateContentPanel();
+		void CreateInspectorPanel();
 
 		void Layout1(int p_dockspaceId);
 
 
 	private:
-		typedef void (UI::EditorUI::* EndFrameCallback)();
+		typedef void (EditorUI::* EndFrameCallback)();
 
 		MenuBar CreateMenuBar();
 		void HandlePanelFlags(std::shared_ptr<Panel> p_id, Panel::ERenderFlags p_flags);

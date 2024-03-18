@@ -1,21 +1,16 @@
-//IPanelable.h
+//ITextable.h
 #pragma once
 
-#include <string>
+#include "SurvivantUI/Interfaces/IPanelable.h"
 
-namespace UI
+namespace SvUI::Interfaces
 {
-	class IPanelable
-	{
-	public:
-		virtual ~IPanelable() = default;
-		virtual void DisplayAndUpdatePanel() = 0;
-	};
-
 	class ITextable : public IPanelable
 	{
 	public:
 		virtual ~ITextable() = default;
+
+		virtual void DisplayAndUpdatePanel() override = 0;
 
 		/// <summary>
 		/// Get text as string

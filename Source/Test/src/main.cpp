@@ -12,8 +12,8 @@
 #include "SurvivantApp/Windows/Window.h"
 #include "SurvivantApp/Inputs/KeyboardInputs.h"
 #include "SurvivantApp/Inputs/MouseInputs.h"
-#include "SurvivantUI/UI.h"
-#include "SurvivantUI/EditorWindow.h"
+#include "SurvivantUI/Core/EditorUI.h"
+#include "SurvivantUI/Core/EditorWindow.h"
 #include <SurvivantRendering/Resources/Texture.h>
 #include <SurvivantRendering/Core/Buffers/FrameBuffer.h>
 
@@ -140,7 +140,7 @@ int main()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     //window
-    UI::EditorWindow window;
+    SvUI::Core::EditorWindow window;
     //GLFWwindow* windowPtr = window.GetWindow();
 
     ASSERT(gladLoadGL(glfwGetProcAddress), "Failed to initialize glad");
@@ -214,7 +214,7 @@ int main()
     }
 
     //ui
-    UI::EditorUI ui;
+    SvUI::Core::EditorUI ui;
     window.SetupUI(&ui);
 
     Vector2 moveInput, rotateInput;

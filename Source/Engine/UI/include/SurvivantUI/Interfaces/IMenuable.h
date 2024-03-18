@@ -1,9 +1,7 @@
 //IMenuable.h
 #pragma once
 
-#include "IPanelable.h"
-
-namespace UI
+namespace SvUI::Interfaces
 {
 	class IMenuable
 	{

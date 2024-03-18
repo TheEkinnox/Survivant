@@ -1,14 +1,16 @@
 //Menu.h
 #pragma once
 
-#include "IMenuable.h"
-#include "IPanelable.h"
+#include "SurvivantUI/Interfaces/IMenuable.h"
+#include "SurvivantUI/Interfaces/IPanelable.h"
 
 #include <string>
 #include <vector>
 #include <memory>
 
-namespace UI
+using namespace SvUI::Interfaces;
+
+namespace SvUI::MenuItems
 {
 	class Menu : public IMenuable , public IPanelable
 	{
@@ -38,19 +40,5 @@ namespace UI
 		std::string m_name;
 	};
 
-	class MenuBar : public IPanelable
-	{
-	public:
-		MenuBar() = default;
-		~MenuBar() = default;
-		MenuBar(const MenuBar& p_other) = default;
-		MenuBar(MenuBar&& p_other) noexcept = default;
-		
-		MenuBar& operator=(const MenuBar&) = default;
-		MenuBar& operator=(MenuBar&&) = default;
-
-		void DisplayAndUpdatePanel() override;
-
-		std::vector<Menu> m_menus;
-	};
+	
 }
