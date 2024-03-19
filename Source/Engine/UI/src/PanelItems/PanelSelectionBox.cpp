@@ -54,10 +54,6 @@ namespace SvUI::PanelItems
 
             ImGui::EndChild();
 
-            //if (rightClicked)
-
-
-            //ImGui::GetID();
             if (i + 1 < count && next_button_x2 < window_visible_x2)
                 ImGui::SameLine();
 

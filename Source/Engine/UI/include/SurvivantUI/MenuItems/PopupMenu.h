@@ -14,7 +14,7 @@ namespace SvUI::MenuItems
 	class PopupMenu : public IPanelable
 	{
 	public:
-		PopupMenu() = default;
+		PopupMenu() : m_isOpen(false) {}
 		~PopupMenu() = default;
 		PopupMenu(const PopupMenu& p_other);
 		PopupMenu(PopupMenu&& p_other) noexcept;
@@ -28,6 +28,7 @@ namespace SvUI::MenuItems
 		bool IsEmpty() { return m_items.size() == 0; }
 
 		std::vector<std::unique_ptr<IMenuable>> m_items;
-	private:
+
+		bool m_isOpen;
 	};
 }

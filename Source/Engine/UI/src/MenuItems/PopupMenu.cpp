@@ -47,6 +47,12 @@ namespace SvUI::MenuItems
 			return;
 
 		//ImGui::PushID();
+		if (m_isOpen)
+		{
+			ImGui::OpenPopup(ImGui::GetItemID());
+			m_isOpen = false;
+		}
+
 		if (ImGui::BeginPopupContextItem(NULL, flags))
 		{
 			for (auto& menu : m_items)
