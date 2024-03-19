@@ -26,6 +26,7 @@ namespace SvUI::PanelItems
 	private:
 		LibMath::Vector3 					ToVector3Degree(const LibMath::TVector3<LibMath::Radian>& p_radians);
 		LibMath::TVector3<LibMath::Radian>	ToVector3Radian(const LibMath::Vector3& p_degrees);
+		//void								ResetVector3ValIfNan(LibMath::Vector3& p_value);
 
 		Callback							m_callback;
 		LibMath::Vector3					m_position;
