@@ -112,7 +112,7 @@ namespace SvUI::Panels
         auto& childreen = p_branch.GetChildreen();
 
         //"cast" from PanelTreeBranch to ISelectionBoxable
-        std::vector<std::shared_ptr<PanelSelectionBox::ISelectionBoxable>> gridItems;
+        std::vector<std::shared_ptr<ISelectable>> gridItems;
         gridItems.reserve(childreen.size());
 
         for (auto& pair : childreen)

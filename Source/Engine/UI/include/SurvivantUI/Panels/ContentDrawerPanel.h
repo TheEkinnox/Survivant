@@ -4,6 +4,7 @@
 #include "SurvivantCore/Utility/UnusedIdGenerator.h"
 #include "SurvivantUI/Interfaces/IPanelable.h"
 #include "SurvivantUI/Panels/Panel.h"
+#include "SurvivantUI/PanelItems/PanelSelectionBox.h"
 #include "SurvivantUI/PanelItems/PanelTreeBranch.h"
 
 #include <filesystem>

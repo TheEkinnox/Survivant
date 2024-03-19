@@ -1,7 +1,7 @@
 //ExamplGameObj.cpp
 
 #include "SurvivantUI/Panels/ExamplGameObj.h"
-#include "SurvivantUI/Core/EditorUI.h"
+#include "SurvivantUI/Core/UIManager.h"
 #include "SurvivantUI/PanelItems/PanelTransformInput.h"
 
 
@@ -14,7 +14,7 @@ namespace SvUI::Panels
     void ExamplResource::DisplayAndUpdatePanel()
     {
         //static PanelButton s_open = PanelButton("Open", );
-        static auto font = Core::EditorUI::GetIconFont();
+        static auto font = SV_CURRENT_UI()->GetFontDefault();
 
         auto cursorPos = ImGui::GetCursorPos();
 

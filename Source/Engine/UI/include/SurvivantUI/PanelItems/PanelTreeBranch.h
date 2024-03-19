@@ -2,13 +2,18 @@
 #pragma once
 
 #include "SurvivantUI/Interfaces/IPanelable.h"
-#include "SurvivantUI/PanelItems/PanelSelectionBox.h"
+#include "SurvivantUI/Interfaces/ISelectable.h"
+#include "SurvivantUI/MenuItems/PopupMenu.h"
 
 #include <functional>
+#include <set>
+#include <memory>
 
 namespace SvUI::PanelItems
 {
-	class PanelTreeBranch : public Interfaces::IPanelable, public PanelSelectionBox::ISelectionBoxable
+	using namespace Interfaces;
+
+	class PanelTreeBranch : public IPanelable, public ISelectable
 	{
 	public:
 		using BranchCallback = std::function<bool(PanelTreeBranch&)>;
@@ -16,23 +21,25 @@ namespace SvUI::PanelItems
 
 		PanelTreeBranch(const std::string& p_name, bool p_hideLeafs = true);
 		PanelTreeBranch(const std::string& p_name, const Childreen& p_branches, bool p_hideLeafs = true);
-		~PanelTreeBranch() = default;
+		~PanelTreeBranch();
 
-		//IPanelable
+		// Inherited via IPanelable
 		void DisplayAndUpdatePanel() override;
 
-		//ISelectionBoxable
-		bool				DisplayAndUpdateSelection(float& p_width, float& p_height, bool p_doubleClicked) override;
-		const std::string& GetName() override;
-
-		void DisplayTreePanel();
+		// Inherited via ISelectable
+		const std::string&	GetIcon() override;
+		const std::string&	GetName() override;
+		bool				InvokeDoubleClick() override;
+		void				DisplayAndUpdatePopupMenu() override;
+		bool				GetSelectedState() override;
+		void				SetSelectedState(bool p_isSelected)override;
 
 		bool				IsBranch()const;
-		const Childreen& GetChildreen()const;
+		const Childreen&	GetChildreen()const;
 		std::string			GetPathName()const;
 
-		Childreen& SetBranches(const Childreen& p_branches);
-		Childreen& SetBranches(const std::set<std::shared_ptr<PanelTreeBranch>>& p_branches);
+		Childreen&	SetBranches(const Childreen& p_branches);
+		Childreen&	SetBranches(const std::set<std::shared_ptr<PanelTreeBranch>>& p_branches);
 		void		AddBranch(const std::shared_ptr<PanelTreeBranch>& p_branch);
 		void		RemoveBranch(const std::string& p_name);
 		void		ForceOpenParents(bool p_openSelf = false);
@@ -45,6 +52,9 @@ namespace SvUI::PanelItems
 		void		SetAllLeavesOnClickCallback(const std::shared_ptr<BranchCallback>& p_callback);
 
 	private:
+		std::vector<std::unique_ptr<IMenuable>>		GetPopupMenuItems();
+		void										DisplayTreePanel();
+
 		enum class EForceState
 		{
 			NOTHING,
@@ -54,9 +64,11 @@ namespace SvUI::PanelItems
 
 		bool								m_hideLeafs;
 		std::string							m_name;
-		PanelTreeBranch* m_parent;
+		PanelTreeBranch*					m_parent;
 		Childreen							m_childreen;
 		EForceState							m_forceState;
 		std::shared_ptr<BranchCallback>		m_callback;
+		MenuItems::PopupMenu				m_popup;
+		bool								m_isSelected;
 	};
 }

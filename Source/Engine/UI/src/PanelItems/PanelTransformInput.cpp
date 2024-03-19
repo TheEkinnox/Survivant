@@ -24,11 +24,16 @@ namespace SvUI::PanelItems
     {
         static int flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll;
 
-        if (ImGui::InputFloat3("Position", m_position.getArray(), "%3.f", flags))
+        ImGui::Text("Position");
+        ImGui::SameLine();
+        if (ImGui::InputFloat3("##", m_position.getArray(), "%3.f", flags))
             m_callback(&m_position, nullptr, nullptr);
 
         LibMath::Vector3 asDegree = ToVector3Degree(m_yawPitchRoll);
-        if (ImGui::InputFloat3("Rotation", asDegree.getArray(), "%3.f", flags))
+
+        ImGui::Text("Rotation");
+        ImGui::SameLine();
+        if (ImGui::InputFloat3("##", asDegree.getArray(), "%3.f", flags))
         {
             LibMath::Vector3 diffDegree = asDegree - ToVector3Degree(m_yawPitchRoll); //m_yawPitchRoll hasnt been modified so still prev
 
@@ -40,7 +45,9 @@ namespace SvUI::PanelItems
             m_callback(nullptr, &m_rotation, nullptr);
         }
 
-        if (ImGui::InputFloat3("Scale", m_scale.getArray(), "%3.f", flags))
+        ImGui::Text("Scale   ");
+        ImGui::SameLine();
+        if (ImGui::InputFloat3("##", m_scale.getArray(), "%3.f", flags))
             m_callback(nullptr, nullptr, &m_scale);
     }
 

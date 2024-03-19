@@ -5,6 +5,7 @@
 #include "SurvivantCore/Events/EventManager.h"
 #include "SurvivantApp/Windows/Window.h"
 
+#include "SurvivantUI/Core/UIManager.h"
 #include "SurvivantUI/MenuItems/MenuButton.h"
 #include "SurvivantUI/Panels/ConsolePanel.h"
 #include "SurvivantUI/Panels/ContentDrawerPanel.h"
@@ -14,8 +15,6 @@
 #include "SurvivantUI/Panels/SavePanel.h"
 #include "SurvivantUI/Panels/TestPanel.h"
 #include "SurvivantUI/PanelItems/PanelButton.h"
-
-
 
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
@@ -29,14 +28,15 @@ namespace SvUI::Core
 
     EditorUI::EditorUI() :
         m_main(std::make_shared<MainPanel>()),
-        m_currentPanels()
+        m_currentPanels(),
+        m_selected(nullptr)
     {
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
         ImGuiIO& io = ImGui::GetIO();
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Dockspace
+        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Dockspace
 
         // Setup Dear ImGui style
         ImGui::StyleColorsDark();
@@ -59,18 +59,17 @@ namespace SvUI::Core
             App::Window::WindowCloseRequest::EventDelegate(std::bind(&EditorUI::TryCreateSavePanel, this)));
 
         //fonts
-        if (s_iconFont == nullptr)
-        {
-            //font.FontSize = ICON_FONT_SIZE;
-            ImFontConfig config;
-            config.SizePixels = DEFAULT_FONT_SIZE;
-            config.OversampleH = config.OversampleV = 1;
-            config.PixelSnapH = true;
-            io.Fonts->AddFontDefault(&config);
+        ImFontConfig config;
+        config.SizePixels = DEFAULT_FONT_SIZE;
+        config.OversampleH = config.OversampleV = 1;
+        config.PixelSnapH = true;
+        m_fonts.push_back(io.Fonts->AddFontDefault(&config));
 
-            config.SizePixels = ICON_FONT_SIZE;
-            s_iconFont = io.Fonts->AddFontDefault(&config);
-        }
+        config.SizePixels = ICON_FONT_SIZE;
+        m_fonts.push_back(io.Fonts->AddFontDefault(&config));
+
+        //UIManager
+        SvUI::Core::UIManager::GetInstance().SetCurrentUI(this);
     }
 
     EditorUI::~EditorUI()
@@ -125,6 +124,8 @@ namespace SvUI::Core
             if (flags != Panel::ERenderFlags())
                 pfArray.push_back({ panel, flags });
         }
+
+        //DisplayPopupMenu();
 
         //handle m_flags after
         for (auto& pf : pfArray)
@@ -225,6 +226,31 @@ namespace SvUI::Core
             m_currentPanels.erase(p_panel);
     }
 
+    ISelectable* EditorUI::GetSelected()
+    {
+        return m_selected;
+    }
+
+    void EditorUI::SetSelected(ISelectable* p_selected)
+    {
+        //remose selection
+        if (m_selected != nullptr)
+            m_selected->SetSelectedState(false);
+
+        //set new selection
+        m_selected = p_selected;
+    }
+
+    ImFont* EditorUI::GetFontDefault()
+    {
+        return m_fonts[0];
+    }
+
+    ImFont* EditorUI::GetIconFont()
+    {
+        return m_fonts[1];
+    }
+
     void EditorUI::CreateNewTestPanel()
     {
         static int i = 0;
@@ -296,10 +322,4 @@ namespace SvUI::Core
 
         ImGui::DockBuilderFinish(id);
     }
-
-    ImFont* EditorUI::GetIconFont()
-    {
-        return s_iconFont;
-    }
-
 }

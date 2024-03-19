@@ -9,6 +9,11 @@
 
 namespace SvUI::MenuItems
 {
+    Menu::Menu(const std::string& p_name)
+        : m_name(p_name)
+    {
+    }
+
     Menu::Menu(const Menu& p_other)
     {
         *this = p_other;

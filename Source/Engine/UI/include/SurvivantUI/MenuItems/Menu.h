@@ -8,15 +8,16 @@
 #include <vector>
 #include <memory>
 
-using namespace SvUI::Interfaces;
 
 namespace SvUI::MenuItems
 {
+	using namespace SvUI::Interfaces;
+
 	class Menu : public IMenuable , public IPanelable
 	{
 	public:
 		//unique name
-		Menu(std::string p_name) : m_name(p_name) {};
+		Menu(const std::string& p_name);
 		~Menu() = default;
 		Menu(const Menu& p_other);
 		Menu(Menu&& p_other) noexcept;
@@ -34,6 +35,7 @@ namespace SvUI::MenuItems
 		void SetName(const std::string& p_name);
 
 		std::vector<std::unique_ptr<IMenuable>> m_items;
+
 	private:
 		void DisplayAndUpdate();
 

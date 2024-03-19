@@ -1,7 +1,8 @@
 //PanelTreeBranch.cpp
 
 #include "SurvivantUI/PanelItems/PanelTreeBranch.h"
-#include "SurvivantUI/Core/EditorUI.h"
+#include "SurvivantUI/Core/UIManager.h"
+#include "SurvivantUI/MenuItems/MenuButton.h"
 
 
 #include "backends/imgui_impl_glfw.h"
@@ -9,23 +10,37 @@
 
 namespace SvUI::PanelItems
 {
+    using namespace MenuItems;
+
     PanelTreeBranch::PanelTreeBranch(const std::string& p_name, bool p_hideLeafs) :
         m_name(p_name),
         m_forceState(EForceState::NOTHING),
         m_hideLeafs(p_hideLeafs),
         m_parent(nullptr),
-        m_callback(nullptr)
-    {}
+        m_callback(nullptr),
+        m_isSelected(false)
+    {
+        m_popup.m_items = GetPopupMenuItems();
+    }
 
     PanelTreeBranch::PanelTreeBranch(const std::string& p_name, const Childreen& p_branches, bool p_hideLeafs) :
         m_name(p_name),
         m_forceState(EForceState::NOTHING),
         m_hideLeafs(p_hideLeafs),
         m_parent(nullptr),
-        m_callback(nullptr)
+        m_callback(nullptr),
+        m_isSelected(false)
     {
+        m_popup.m_items = GetPopupMenuItems();
         SetBranches(p_branches);
     }
+
+    PanelTreeBranch::~PanelTreeBranch()
+    {
+        if (m_isSelected)
+            SV_CURRENT_UI()->SetSelected();
+    }
+
 
     PanelTreeBranch::Childreen& PanelTreeBranch::SetBranches(const Childreen& p_branches)
     {
@@ -123,6 +138,56 @@ namespace SvUI::PanelItems
             child.second->SetAllLeavesOnClickCallback(p_callback);
     }
 
+    std::vector<std::unique_ptr<IMenuable>> PanelTreeBranch::GetPopupMenuItems()
+    {
+        std::vector<std::unique_ptr<IMenuable>> menu;
+
+        menu.emplace_back(std::make_unique<MenuButton>("Open All",  [this](char) { ForceOpenAll(); }));
+        menu.emplace_back(std::make_unique<MenuButton>("Close All", [this](char) { ForceCloseChildreen(); }));
+        menu.emplace_back(std::make_unique<MenuButton>("Test3",     [this](char) {} ));
+
+        return menu;
+    }
+
+    const std::string& PanelTreeBranch::GetIcon()
+    {
+        static std::string branch = "Fl";
+        static std::string leaf = "Tx";
+
+        if (IsBranch())
+            return branch;
+        else
+            return leaf;
+    }
+
+    const std::string& PanelTreeBranch::GetName()
+    {
+        return m_name;
+    }
+
+    bool PanelTreeBranch::InvokeDoubleClick()
+    {
+        if (m_callback)
+            return (*m_callback)(*this);
+
+        return false;
+    }
+
+    void PanelTreeBranch::DisplayAndUpdatePopupMenu()
+    {
+        m_popup.DisplayAndUpdatePanel();
+    }
+
+    bool PanelTreeBranch::GetSelectedState()
+    {
+        return m_isSelected;
+    }
+
+    void PanelTreeBranch::SetSelectedState(bool p_isSelected)
+    {
+        m_isSelected = p_isSelected;
+    }
+
     void PanelTreeBranch::DisplayAndUpdatePanel()
     {
         switch (m_forceState)
@@ -144,61 +209,23 @@ namespace SvUI::PanelItems
         m_forceState = EForceState::NOTHING;
     }
 
-    bool PanelTreeBranch::DisplayAndUpdateSelection(float& p_width, float& /*p_height*/, bool p_doubleClicked)
-    {
-        static auto font = Core::EditorUI::GetIconFont();
-        auto cursorPos = ImGui::GetCursorPos();
-        std::string iconTxt;
-
-        if (IsBranch())
-            iconTxt = "Fl";
-        else
-            iconTxt = "Tx";
-
-        ImGui::PushFont(font);
-        ImVec2 sz = ImGui::CalcTextSize(iconTxt.c_str());
-        ImGui::PopFont();
-        //float canvasWidth = ImGui::GetWindowContentRegionWidth();
-        float canvasWidth = p_width - 16;
-        float origScale = font->Scale;
-        font->Scale = canvasWidth / sz.x;
-        ImGui::SetCursorPos({ cursorPos.x + 8, cursorPos.y + 8 });
-
-        ImGui::PushFont(font);
-        ImGui::Text("%s", iconTxt.c_str());
-        ImGui::PopFont();
-        font->Scale = origScale;
-
-        cursorPos = ImGui::GetCursorPos();
-        ImGui::SetCursorPos({ cursorPos.x + 4, cursorPos.y + 4 });
-
-        ImGui::PushTextWrapPos(p_width - 4);
-        ImGui::TextWrapped(m_name.c_str());
-        ImGui::PopTextWrapPos();
-
-
-        if (p_doubleClicked && m_callback != nullptr)
-            return (*m_callback)(*this);
-
-        //can display other items
-        return false;
-    }
-
-    const std::string& PanelTreeBranch::GetName()
-    {
-        return m_name;
-    }
-
     void PanelTreeBranch::DisplayTreePanel()
     {
         ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnDoubleClick;
         flags |= IsBranch() ? ImGuiTreeNodeFlags_OpenOnArrow : ImGuiTreeNodeFlags_Bullet;
+        flags |= m_isSelected ? ImGuiTreeNodeFlags_Selected : ImGuiTreeNodeFlags_None;
 
         bool open = ImGui::TreeNodeEx(m_name.c_str(), flags);
+        DisplayAndUpdatePopupMenu();
 
-        if (ImGui::GetMouseClickedCount(0) == 1 && ImGui::IsItemHovered() &&
-            m_callback != nullptr)
-            (*m_callback)(*this);
+        if (ImGui::GetMouseClickedCount(0) == 1 && ImGui::IsItemHovered() )
+        {
+            SV_CURRENT_UI()->SetSelected(this);
+            m_isSelected = true;
+
+            if (m_callback)
+                (*m_callback)(*this);
+        }
 
         if (open)
         {

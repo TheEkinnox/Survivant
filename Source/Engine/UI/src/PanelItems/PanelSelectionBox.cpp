@@ -2,6 +2,8 @@
 
 #include "SurvivantUI/PanelItems/PanelSelectionBox.h"
 
+#include "SurvivantUI/Core/UIManager.h"
+
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 
@@ -28,7 +30,7 @@ namespace SvUI::PanelItems
         for (size_t i = 0; i < count; i++)
         {
             auto item = m_elements[i].get();
-            bool isSelected = m_currentSelection.contains(item);
+            bool isSelected = item->GetSelectedState();
             auto isBreak = false; auto open = false;
 
             ImGui::BeginChild(std::string("##" + std::to_string(i)).c_str(), ImVec2(m_width + Padding.x, m_height + Padding.y), cFlags);
@@ -40,25 +42,29 @@ namespace SvUI::PanelItems
             auto cursorAfter = ImGui::GetCursorPos();
 
             bool doubleClicked = ImGui::GetMouseClickedCount(0) == 2 && ImGui::IsItemHovered();
+            //bool rightClicked = ImGui::GetMouseClickedCount(1) == 1 && ImGui::IsItemHovered();
             float last_button_x2 = ImGui::GetItemRectMax().x;
             float next_button_x2 = last_button_x2 + style.ItemSpacing.x + m_width; // Expected position if next button was on same line
 
+            //cant be after bcs popup
+            item->DisplayAndUpdatePopupMenu();
+
             ImGui::SetCursorPos(cursorBefore);
-            isBreak = item->DisplayAndUpdateSelection(m_width, m_height, doubleClicked);
+            isBreak = DisplaySelectable(item, doubleClicked);
 
             ImGui::EndChild();
+
+            //if (rightClicked)
+
+
             //ImGui::GetID();
             if (i + 1 < count && next_button_x2 < window_visible_x2)
-            {
                 ImGui::SameLine();
-            }
 
             if (open)
             {
-                if (isSelected)
-                    m_currentSelection.erase(item);
-                else
-                    m_currentSelection.insert(item);
+                SV_CURRENT_UI()->SetSelected(item);
+                item->SetSelectedState(true);
             }
 
             if (isBreak)
@@ -66,7 +72,7 @@ namespace SvUI::PanelItems
         }
     }
 
-    void PanelSelectionBox::SetSelectionBoxable(const std::vector<std::shared_ptr<ISelectionBoxable>>& p_elements)
+    void PanelSelectionBox::SetSelectionBoxable(const std::vector<std::shared_ptr<ISelectable>>& p_elements)
     {
         m_elements = p_elements;
     }
@@ -92,5 +98,38 @@ namespace SvUI::PanelItems
         ImGui::PushTextWrapPos(p_maxWidth - text_indentation);
         ImGui::TextWrapped(p_text.c_str());
         ImGui::PopTextWrapPos();
+    }
+
+    bool PanelSelectionBox::DisplaySelectable(ISelectable* p_item, bool p_doubleClicked)
+    {
+        static auto font = SV_CURRENT_UI()->GetIconFont();
+        auto cursorPos = ImGui::GetCursorPos();
+        std::string iconTxt = p_item->GetIcon();
+
+        ImGui::PushFont(font);
+        ImVec2 sz = ImGui::CalcTextSize(iconTxt.c_str());
+        ImGui::PopFont();
+        //float canvasWidth = ImGui::GetWindowContentRegionWidth();
+        float canvasWidth = m_width - 16;
+        float origScale = font->Scale;
+        font->Scale = canvasWidth / sz.x;
+        ImGui::SetCursorPos({ cursorPos.x + 8, cursorPos.y + 8 });
+
+        ImGui::PushFont(font);
+        ImGui::Text("%s", iconTxt.c_str());
+        ImGui::PopFont();
+        font->Scale = origScale;
+
+        cursorPos = ImGui::GetCursorPos();
+        ImGui::SetCursorPos({ cursorPos.x + 4, cursorPos.y + 4 });
+
+        ImGui::PushTextWrapPos(m_width - 4);
+        ImGui::TextWrapped(p_item->GetName().c_str());
+        ImGui::PopTextWrapPos();
+
+        if (p_doubleClicked)
+            return p_item->InvokeDoubleClick();
+
+        return false;
     }
 }
