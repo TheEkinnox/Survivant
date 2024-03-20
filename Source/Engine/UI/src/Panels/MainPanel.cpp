@@ -24,7 +24,7 @@ namespace SvUI::Panels
     Panel::ERenderFlags MainPanel::Render()
     {
         static ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_None;
-
+        static float boarderSize = 5.0f;
         bool open = true;
         //fullscreen + undockable/cant move
         ImGuiWindowFlags windowFlags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
@@ -33,7 +33,7 @@ namespace SvUI::Panels
         ImGui::SetNextWindowSize(viewport->WorkSize);
         ImGui::SetNextWindowViewport(viewport->ID);
         ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, boarderSize);
         windowFlags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
         windowFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
