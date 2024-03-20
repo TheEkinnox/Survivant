@@ -47,7 +47,7 @@ namespace SvUI::Core
 	{
 		m_ui = p_ui;
 		m_ui->InitEditorUi(this);
-		p_ui->AddImageWindow(static_cast<intptr_t>(m_textureId));
+		p_ui->SetSceneTexture(static_cast<intptr_t>(m_textureId));
 	}
 }
 

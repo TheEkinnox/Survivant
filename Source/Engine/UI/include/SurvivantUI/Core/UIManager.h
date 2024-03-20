@@ -34,7 +34,6 @@ namespace SvUI::Core
 	private:
 		static LibMath::Vector4 size_tToRGBA(size_t p_value);
 
-
 		IUI* m_currentUI;
 	};
 }

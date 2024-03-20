@@ -9,10 +9,11 @@
 #include "SurvivantUI/MenuItems/MenuButton.h"
 #include "SurvivantUI/Panels/ConsolePanel.h"
 #include "SurvivantUI/Panels/ContentDrawerPanel.h"
+#include "SurvivantUI/Panels/HierarchyPanel.h"
 #include "SurvivantUI/Panels/ImagePanel.h"
 #include "SurvivantUI/Panels/InspectorPanel.h"
-//#include "SurvivantUI/Panels/MainPanel.h"
 #include "SurvivantUI/Panels/SavePanel.h"
+#include "SurvivantUI/Panels/ScenePanel.h"
 #include "SurvivantUI/Panels/TestPanel.h"
 #include "SurvivantUI/PanelItems/PanelButton.h"
 
@@ -41,17 +42,9 @@ namespace SvUI::Core
         // Setup Dear ImGui style
         ImGui::StyleColorsDark();
 
-        //default panels here 
-        m_currentPanels.insert(std::make_shared<TestPanel>("Test1"));
-        m_currentPanels.insert(std::make_shared<TestPanel>("Test2"));
-        m_currentPanels.insert(std::make_shared<TestPanel>("Test3"));
-        m_currentPanels.insert(std::make_shared<TestPanel>("Test4"));
-
+        //setup Main panel
         MainPanel::ChangeLayout l = std::bind(&EditorUI::Layout1, this, std::placeholders::_1);
         m_main->ChangePanelLayout(l);
-
-        //auto tmp = CreateMenuBar();
-        //auto tmp2 = tmp;
         m_main->SetMenuBar(CreateMenuBar());
 
         //TODO : add spawn save m_panel on event close request
@@ -85,10 +78,10 @@ namespace SvUI::Core
         ImGui_ImplOpenGL3_Init(App::GLSL_Version);
     }
 
-    void EditorUI::AddImageWindow(intptr_t p_textureId)
+    void EditorUI::SetSceneTexture(intptr_t p_textureId)
     {
-        static int i = 0;
-        m_currentPanels.insert(std::make_shared<ImagePanel>(std::string("texture-") + std::to_string(i++), p_textureId));
+        //setup Scene panel
+        ScenePanel::SetSceneTexture(p_textureId);
     }
 
     void EditorUI::StartFrameUpdate()
@@ -251,14 +244,14 @@ namespace SvUI::Core
         return m_fonts[1];
     }
 
-    void EditorUI::CreateNewTestPanel()
+    std::shared_ptr<Panel> EditorUI::CreateNewTestPanel()
     {
         static int i = 0;
 
-        m_currentPanels.insert(std::make_shared<TestPanel>(std::string("test-") + std::to_string(i++)));
-
         //TODO: remove debug message "Created Test Panel"
         ::Core::EventManager::GetInstance().Invoke<EditorUI::DebugEvent>("Created Test Panel");
+
+        return *m_currentPanels.insert(std::make_shared<TestPanel>(std::string("test-") + std::to_string(i++))).first;
     }
 
     void EditorUI::TryCreateSavePanel()
@@ -273,25 +266,37 @@ namespace SvUI::Core
         }
     }
 
-    void EditorUI::CreateSavePanel()
+    std::shared_ptr<Panel> EditorUI::CreateSavePanel()
     {
         if (SavePanel::GetPanelCount() == 0)
-            m_currentPanels.insert(std::make_shared<SavePanel>());
+            return *m_currentPanels.insert(std::make_shared<SavePanel>()).first;
+
+        return nullptr;
     }
 
-    void EditorUI::CreateConsolePanel()
+    std::shared_ptr<Panel> EditorUI::CreateConsolePanel()
     {
-        m_currentPanels.insert(std::make_shared<ConsolePanel>());
+        return *m_currentPanels.insert(std::make_shared<ConsolePanel>()).first;
     }
 
-    void EditorUI::CreateContentPanel()
+    std::shared_ptr<Panel> EditorUI::CreateContentPanel()
     {
-        m_currentPanels.insert(std::make_shared<ContentDrawerPanel>());
+        return *m_currentPanels.insert(std::make_shared<ContentDrawerPanel>()).first;
     }
 
-    void EditorUI::CreateInspectorPanel()
+    std::shared_ptr<Panel> EditorUI::CreateInspectorPanel()
     {
-        m_currentPanels.insert(std::make_shared<InspectorPanel>());
+        return *m_currentPanels.insert(std::make_shared<InspectorPanel>()).first;
+    }
+
+    std::shared_ptr<Panel> EditorUI::CreateScenePanel()
+    {
+        return *m_currentPanels.insert(std::make_shared<ScenePanel>()).first;
+    }
+
+    std::shared_ptr<Panel> EditorUI::CreateHierarchyPanel()
+    {
+        return *m_currentPanels.insert(std::make_shared<HierarchyPanel>()).first;
     }
 
     void EditorUI::Layout1(int p_dockspaceId)
@@ -301,24 +306,21 @@ namespace SvUI::Core
 
         static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_PassthruCentralNode;
 
-
         ImGui::DockBuilderRemoveNode(id); // clear any previous layout
         ImGui::DockBuilderAddNode(id, dockspace_flags | ImGuiDockNodeFlags_DockSpace);
         ImGui::DockBuilderSetNodeSize(id, viewport->Size);
 
-        auto dock_id_top = ImGui::DockBuilderSplitNode(p_dockspaceId, ImGuiDir_Up, 0.2f, nullptr, &id);
-        auto dock_id_down = ImGui::DockBuilderSplitNode(id, ImGuiDir_Down, 0.25f, nullptr, &id);
-        auto dock_id_left = ImGui::DockBuilderSplitNode(id, ImGuiDir_Left, 0.2f, nullptr, &id);
-        auto dock_id_right = ImGui::DockBuilderSplitNode(id, ImGuiDir_Right, 0.15f, nullptr, &id);
-
+        auto dock_id_down = ImGui::DockBuilderSplitNode(id, ImGuiDir_Down, 0.35f, nullptr, &id);
+        auto dock_id_left = ImGui::DockBuilderSplitNode(id, ImGuiDir_Left, 0.25f, nullptr, &id);
+        auto dock_id_right = ImGui::DockBuilderSplitNode(id, ImGuiDir_Right, 0.25f, nullptr, &id);
+        //auto dock_id_top = ImGui::DockBuilderSplitNode(id, ImGuiDir_Up, 0.2f, nullptr, &id);
 
         // we now dock our windows into the docking node we made above
-        ImGui::DockBuilderDockWindow("texture-0", id);
-        ImGui::DockBuilderDockWindow("Test1", dock_id_right);
-        ImGui::DockBuilderDockWindow("Test2", dock_id_left);
-        ImGui::DockBuilderDockWindow("Test3", dock_id_down);
-        ImGui::DockBuilderDockWindow("Test4", dock_id_top);
-
+        ImGui::DockBuilderDockWindow(CreateScenePanel()->GetName().c_str(), id);
+        ImGui::DockBuilderDockWindow(CreateInspectorPanel()->GetName().c_str(), dock_id_right);
+        ImGui::DockBuilderDockWindow(CreateHierarchyPanel()->GetName().c_str(), dock_id_left);
+        ImGui::DockBuilderDockWindow(CreateContentPanel()->GetName().c_str(), dock_id_down);
+        ImGui::DockBuilderDockWindow(CreateConsolePanel()->GetName().c_str(), dock_id_down);
 
         ImGui::DockBuilderFinish(id);
     }

@@ -1,6 +1,8 @@
 //ExamplGameObj.cpp
 
 #include "SurvivantUI/Panels/ExamplGameObj.h"
+
+#include "SurvivantCore/Events/EventManager.h"
 #include "SurvivantUI/Core/UIManager.h"
 #include "SurvivantUI/PanelItems/PanelTransformInput.h"
 #include "SurvivantUI/MenuItems/PopupMenu.h"
@@ -28,6 +30,37 @@ namespace SvUI::Panels
 
         ImGui::SameLine();
         ImGui::Text((std::string("(") + m_resourceName + ")").c_str());
+    }
+
+    const std::string& ExamplResource::GetIcon()
+    {
+        return m_resourceLogo;
+    }
+
+    const std::string& ExamplResource::GetName()
+    {
+        return m_name;
+    }
+
+    bool ExamplResource::InvokeDoubleClick()
+    {
+        SV_EVENT_MANAGER().Invoke<IUI::DebugEvent>("Clicked Resource");
+        return false;
+    }
+
+    void ExamplResource::DisplayAndUpdatePopupMenu()
+    {
+        SV_EVENT_MANAGER().Invoke<IUI::DebugEvent>("No PopupMenu");
+    }
+
+    bool ExamplResource::GetSelectedState()
+    {
+        return m_isSelected;
+    }
+
+    void ExamplResource::SetSelectedState(bool p_isSelected)
+    {
+        m_isSelected = p_isSelected;
     }
 
     ExamplGameObj::ExamplGameObj() :

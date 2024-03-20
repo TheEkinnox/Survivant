@@ -2,6 +2,7 @@
 #pragma once
 
 #include "SurvivantUI/Interfaces/IPanelable.h"
+#include "SurvivantUI/Interfaces/ISelectable.h"
 #include "SurvivantUI/Panels/Panel.h"
 #include "SurvivantUI/PanelItems/PanelButton.h"
 
@@ -11,22 +12,32 @@
 
 namespace SvUI::Panels
 {
+	using namespace Interfaces;
 	using namespace PanelItems;
 
-	class ExamplResource :public Interfaces::IPanelable
+	class ExamplResource : public IPanelable, public ISelectable
 	{
 	public:
 		ExamplResource() = default;
 		~ExamplResource() = default;
 
+		// Inherited via IPanelable
 		void DisplayAndUpdatePanel() override;
+
+		// Inherited via ISelectable
+		const std::string& GetIcon() override;
+		const std::string& GetName() override;
+		bool InvokeDoubleClick() override;
+		void DisplayAndUpdatePopupMenu() override;
+		bool GetSelectedState() override;
+		void SetSelectedState(bool p_isSelected) override;
 
 	protected:
 		std::string m_name = "None";
-		std::string m_resourceLogo = "Tmp";
-		std::string m_resourceName = "Default";
-		//private:
-		//	static void OpenCallback();
+		std::string m_resourceLogo = "Tp";
+		std::string m_resourceName = "Resource";
+
+		bool m_isSelected;
 	};
 
 	class ExamplGameObj : public ExamplResource

@@ -33,18 +33,21 @@ namespace SvUI::Core
 
 		void InitEditorUi(App::Window* p_window);
 
-		void AddImageWindow(intptr_t p_textureId);
+		void SetSceneTexture(intptr_t p_textureId);
 
 		void StartFrameUpdate() override;
 		void RenderPanels();
 		void EndFrameUpdate() override;
 
-		void CreateNewTestPanel();
+		std::shared_ptr<Panel> CreateNewTestPanel();
+		std::shared_ptr<Panel> CreateSavePanel();
+		std::shared_ptr<Panel> CreateConsolePanel();
+		std::shared_ptr<Panel> CreateContentPanel();
+		std::shared_ptr<Panel> CreateInspectorPanel();
+		std::shared_ptr<Panel> CreateScenePanel();
+		std::shared_ptr<Panel> CreateHierarchyPanel();
+
 		void TryCreateSavePanel();
-		void CreateSavePanel();
-		void CreateConsolePanel();
-		void CreateContentPanel();
-		void CreateInspectorPanel();
 
 		void Layout1(int p_dockspaceId);
 
@@ -55,7 +58,7 @@ namespace SvUI::Core
 		void SetSelected(ISelectable* p_selected) override;
 
 	private:
-		typedef void (EditorUI::* EndFrameCallback)();
+		typedef std::shared_ptr<Panel> (EditorUI::* CreatePanelCallback)();
 
 		MenuBar CreateMenuBar();
 		//void DisplayPopupMenu();
@@ -69,7 +72,7 @@ namespace SvUI::Core
 
 		std::unordered_set<std::shared_ptr<Panel>>		m_currentPanels;
 		std::shared_ptr<MainPanel>						m_main;
-		std::vector<EndFrameCallback>					m_endFrameCallbacks;
+		std::vector<CreatePanelCallback>				m_endFrameCallbacks;
 		ISelectable*									m_selected;
 	};
 }

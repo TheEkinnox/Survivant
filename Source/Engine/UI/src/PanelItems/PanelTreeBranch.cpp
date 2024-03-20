@@ -51,7 +51,7 @@ namespace SvUI::PanelItems
         return m_childreen;
     }
 
-    PanelTreeBranch::Childreen& PanelTreeBranch::SetBranches(const std::set<std::shared_ptr<PanelTreeBranch>>& p_branches)
+    PanelTreeBranch::Childreen& PanelTreeBranch::SetBranches(const std::vector<std::shared_ptr<PanelTreeBranch>>& p_branches)
     {
         m_childreen.clear();
         for (auto& child : p_branches)

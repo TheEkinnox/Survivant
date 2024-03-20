@@ -39,7 +39,7 @@ namespace SvUI::PanelItems
 		std::string			GetPathName()const;
 
 		Childreen&	SetBranches(const Childreen& p_branches);
-		Childreen&	SetBranches(const std::set<std::shared_ptr<PanelTreeBranch>>& p_branches);
+		Childreen&	SetBranches(const std::vector<std::shared_ptr<PanelTreeBranch>>& p_branches);
 		void		AddBranch(const std::shared_ptr<PanelTreeBranch>& p_branch);
 		void		RemoveBranch(const std::string& p_name);
 		void		ForceOpenParents(bool p_openSelf = false);
