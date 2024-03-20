@@ -4,12 +4,18 @@
 
 #include <SurvivantRendering/Core/Camera.h>
 #include <SurvivantRendering/Core/Color.h>
+#include <SurvivantRendering/Core/Light.h>
+#include <SurvivantRendering/Resources/Material.h>
 #include <SurvivantRendering/Resources/Model.h>
-#include <SurvivantRendering/Resources/Shader.h>
+#include <SurvivantRendering/RHI/IFrameBuffer.h>
+#include <SurvivantRendering/RHI/IRenderAPI.h>
+#include <SurvivantRendering/RHI/IShader.h>
+#include <SurvivantRendering/RHI/IShaderStorageBuffer.h>
+#include <SurvivantRendering/RHI/ITexture.h>
+#include <SurvivantRendering/RHI/IUniformBuffer.h>
+#include <SurvivantRendering/RHI/OpenGL/OpenGLTexture.h>
 
-#include "SurvivantCore/Events/EventManager.h"
 #include "SurvivantApp/Inputs/InputManager.h"
-#include "SurvivantApp/Windows/Window.h"
 #include "SurvivantApp/Inputs/KeyboardInputs.h"
 #include "SurvivantApp/Inputs/MouseInputs.h"
 #include "SurvivantUI/Core/EditorUI.h"
@@ -19,34 +25,35 @@
 
 #include <Transform.h>
 
-// TODO: Implement relevant parts in corresponding libs to get rid of glad dependency
-#include <glad/gl.h>
+// TODO: Implement relevant parts in corresponding libs to get rid of glfw dependency
 #include <GLFW/glfw3.h>
 
 using namespace LibMath;
 using namespace SvCore::Utility;
 using namespace SvRendering::Core;
-using namespace SvRendering::Core::Buffers;
 using namespace SvRendering::Enums;
 using namespace SvRendering::Geometry;
 using namespace SvRendering::Resources;
+using namespace SvRendering::RHI;
 
-constexpr const char* UNLIT_SHADER_PATH  = "assets/shaders/Unlit.glsl";
-constexpr float       CAM_MOVE_SPEED     = 3.f;
-constexpr Radian      CAM_ROTATION_SPEED = 90_deg;
+constexpr const char* UNLIT_SHADER_PATH = "assets/shaders/Unlit.glsl";
+constexpr const char* LIT_SHADER_PATH   = "assets/shaders/Lit.glsl";
 
-Texture& GetTexture()
+constexpr float  CAM_MOVE_SPEED     = 3.f;
+constexpr Radian CAM_ROTATION_SPEED = 90_deg;
+
+std::shared_ptr<ITexture> GetTexture()
 {
-    static Texture texture;
-    static bool    isLoaded = false;
+    static std::shared_ptr<ITexture> texture  = ITexture::Create();
+    static bool                      isLoaded = false;
 
     if (!isLoaded)
     {
-        ASSERT(texture.Load("assets/textures/grid.png"));
-        ASSERT(texture.Init());
+        ASSERT(texture->Load("assets/textures/grid.png"));
+        ASSERT(texture->Init());
 
-        texture.SetFilters(ETextureFilter::NEAREST, ETextureFilter::NEAREST);
-        texture.SetWrapModes(ETextureWrapMode::REPEAT, ETextureWrapMode::REPEAT);
+        texture->SetFilters(ETextureFilter::NEAREST, ETextureFilter::NEAREST);
+        texture->SetWrapModes(ETextureWrapMode::REPEAT, ETextureWrapMode::REPEAT);
 
         isLoaded = true;
     }
@@ -54,18 +61,26 @@ Texture& GetTexture()
     return texture;
 }
 
-static FrameBuffer* frameBufferId;
+std::unique_ptr<IFrameBuffer> g_frameBuffer;
 
-GLuint GetDefaultFrameBuffer()
+ITexture& GetDefaultFrameBuffer()
 {
-    static Texture texture(800, 600, ETextureFormat::RGB);
-    static FrameBuffer frameBuffer;
+    static std::shared_ptr<ITexture> color = ITexture::Create(800, 600, EPixelDataFormat::RGB);
+    static std::shared_ptr<ITexture> depth = ITexture::Create(800, 600, EPixelDataFormat::DEPTH_COMPONENT);
 
-    frameBuffer.Attach(texture, EFrameBufferAttachment::COLOR);
+    static bool isInitialized = false;
 
-    texture.Bind(0);
-    frameBufferId = &frameBuffer;
-    return texture.GetId();
+    if (isInitialized)
+        return *color;
+
+    color->Bind(0);
+
+    g_frameBuffer = IFrameBuffer::Create();
+    g_frameBuffer->Attach(*color, EFrameBufferAttachment::COLOR);
+    g_frameBuffer->Attach(*depth, EFrameBufferAttachment::DEPTH);
+
+    isInitialized = true;
+    return *color;
 
     //static GLuint textureId;
 
@@ -99,10 +114,9 @@ GLuint GetDefaultFrameBuffer()
     //return textureId;
 }
 
-
-std::tuple<int, int> AddInputTranslate(char i) 
-{ 
-	return { i, 10 }; 
+std::tuple<int, int> AddInputTranslate(char i)
+{
+    return { i, 10 };
 }
 
 std::tuple<int, int> AddMouseTranslate(float i, float j)
@@ -110,22 +124,70 @@ std::tuple<int, int> AddMouseTranslate(float i, float j)
     return { (int)i, (int)j };
 }
 
-std::tuple<> SpaceTranslate(char c)
+std::tuple<> SpaceTranslate(char /*c*/)
 {
-    c;
     return { };
 }
-void DrawModel(const Model& p_model)
+
+void BindCamUBO(const Matrix4& p_viewProj, const Vector3& p_viewPos)
 {
+    static std::unique_ptr<IUniformBuffer> camBuffer = IUniformBuffer::Create(EAccessMode::DYNAMIC_DRAW, 0);
+
+    struct CameraUBO
+    {
+        Matrix4 m_viewProjection;
+        Vector3 m_viewPos;
+    };
+
+    CameraUBO ubo
+    {
+        p_viewProj.transposed(),
+        p_viewPos
+    };
+
+    camBuffer->SetData(&ubo, 1);
+    camBuffer->Bind();
+}
+
+void BindModelUBO(const Matrix4& p_modelMat)
+{
+    static std::unique_ptr<IUniformBuffer> modelBuffer = IUniformBuffer::Create(EAccessMode::DYNAMIC_DRAW, 1);
+
+    struct ModelUBO
+    {
+        Matrix4 m_modelMat;
+        Matrix4 m_normalMat;
+    };
+
+    ModelUBO ubo
+    {
+        p_modelMat.transposed(),
+        p_modelMat.inverse()
+    };
+
+    modelBuffer->SetData(&ubo, 1);
+    modelBuffer->Bind();
+}
+
+void DrawModel(const Model& p_model, const Frustum& p_viewFrustum, const Matrix4& p_transform, const Material& p_material)
+{
+    if (!p_viewFrustum.Intersects(TransformBoundingBox(p_model.GetBoundingBox(), p_transform)))
+        return;
+
+    BindModelUBO(p_transform);
+
+    p_material.Bind();
+    p_material.GetShader().SetUniformMat4("sv_modelMat", p_transform);
+    p_material.GetShader().SetUniformMat4("sv_normalMat", p_transform.transposed().inverse());
+
     for (size_t i = 0; i < p_model.GetMeshCount(); ++i)
     {
         const Mesh& mesh = p_model.GetMesh(i);
 
         mesh.Bind();
-        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(mesh.GetIndexCount()), GL_UNSIGNED_INT, nullptr);
+        IRenderAPI::GetCurrent().DrawElements(EPrimitiveType::TRIANGLES, mesh.GetIndexCount());
     }
 }
-
 
 int main()
 {
@@ -143,37 +205,44 @@ int main()
     SvUI::Core::EditorWindow window;
     //GLFWwindow* windowPtr = window.GetWindow();
 
-    ASSERT(gladLoadGL(glfwGetProcAddress), "Failed to initialize glad");
+    IRenderAPI& renderAPI = IRenderAPI::SetCurrent(EGraphicsAPI::OPENGL);
+    renderAPI.Init(true)
+             .SetCapability(ERenderingCapability::DEPTH_TEST, true)
+             .SetCullFace(ECullFace::BACK);
 
-    Shader shader;
-    ASSERT(shader.Load(UNLIT_SHADER_PATH), "Failed to load shader at path \"%s\"", UNLIT_SHADER_PATH);
-    ASSERT(shader.Init(), "Failed to initialize shader at path \"%s\"", UNLIT_SHADER_PATH);
-    glEnable(GL_DEPTH_TEST);
-
-    //App::Window::SetupInputManager(window);
+    //const GLuint textureId = Texture();
+    App::Window::m_textureId = dynamic_cast<OpenGLTexture&>(GetDefaultFrameBuffer()).GetId();
 
     Model model;
 
     ASSERT(model.Load("assets/models/cube.obj"), "Failed to load model");
     ASSERT(model.Init(), "Failed to initialize model");
 
-    const Texture& texture = GetTexture();
-    texture.Bind(0);
+    std::shared_ptr<IShader> unlitShader = IShader::Create();
+    ASSERT(unlitShader->Load(UNLIT_SHADER_PATH), "Failed to load shader at path \"%s\"", UNLIT_SHADER_PATH);
+    ASSERT(unlitShader->Init(), "Failed to initialize shader at path \"%s\"", UNLIT_SHADER_PATH);
 
-    Shader unlitShader;
-    ASSERT(unlitShader.Load(UNLIT_SHADER_PATH), "Failed to load shader at path \"%s\"", UNLIT_SHADER_PATH);
-    ASSERT(unlitShader.Init(), "Failed to initialize shader at path \"%s\"", UNLIT_SHADER_PATH);
+    std::shared_ptr<IShader> litShader = IShader::Create();
+    ASSERT(litShader->Load(LIT_SHADER_PATH), "Failed to load shader at path \"%s\"", LIT_SHADER_PATH);
+    ASSERT(litShader->Init(), "Failed to initialize shader at path \"%s\"", LIT_SHADER_PATH);
 
-    unlitShader.Use();
-    unlitShader.SetUniformInt("u_diffuse", 0);
+    Material whiteMaterial(unlitShader);
+    whiteMaterial.GetProperty<std::shared_ptr<ITexture>>("u_diffuse") = GetTexture();
+    whiteMaterial.GetProperty<Vector4>("u_tint")                      = Color::white;
+
+    Material redMaterial(whiteMaterial);
+    redMaterial.GetProperty<Vector4>("u_tint") = Color::red;
+
+    Material litMaterial(litShader);
+    litMaterial.GetProperty<std::shared_ptr<ITexture>>("u_diffuse") = GetTexture();
+    litMaterial.GetProperty<Vector4>("u_tint")                      = Color::white;
+    litMaterial.GetProperty<Vector4>("u_specularColor")             = Color(.2f, .2f, .2f);
+    litMaterial.GetProperty<float>("u_shininess")                   = 32.f;
 
     const Matrix4 projMat = perspectiveProjection(90_deg, 4.f / 3.f, .01f, 14.f);
 
     Vector3   camPos(0.f, 1.8f, 2.f);
     Transform camTransform(camPos, Quaternion::identity(), Vector3::one());
-
-    //const GLuint textureId = Texture();
-    App::Window::m_textureId = GetDefaultFrameBuffer();
 
     const Vector3 testPos      = camPos + Vector3::front();
     const Matrix4 testModelMat = translation(testPos) * scaling(1.5f, .5f, .1f);
@@ -309,6 +378,17 @@ int main()
         glfwSetWindowShouldClose(window.GetWindow(), true);
     });
 
+    std::vector<Matrix4> lightMatrices;
+    lightMatrices.emplace_back(Light(cam.GetClearColor()).getMatrix());
+    lightMatrices.emplace_back(DirectionalLight(Color::magenta, Vector3::back()).getMatrix());
+    lightMatrices.emplace_back(SpotLight(Color(0.f, 1.f, 0.f, 3.f), camPos, Vector3::front(), Attenuation(10),
+        { cos(0_deg), cos(30_deg) }).getMatrix());
+    lightMatrices.emplace_back(PointLight(Light{ Color::red }, Vector3{ -1, 1, 1 }, Attenuation(16)).getMatrix());
+
+    std::unique_ptr<IShaderStorageBuffer> lightsSSBO = IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, 0);
+    lightsSSBO->Bind();
+    lightsSSBO->SetData(lightMatrices.data(), lightMatrices.size());
+
     while (!window.ShouldClose())
     {
         timer.tick();
@@ -324,8 +404,8 @@ int main()
         Vector3    newPos = camTransform.getPosition();
         Quaternion newRot = camTransform.getRotation();
 
-        frameBufferId->Bind();
-        glViewport(0, 0, 800, 600);
+        g_frameBuffer->Bind();
+        renderAPI.SetViewport({ 0, 0 }, { 800, 600 });
 
         if (moveInput.magnitudeSquared() > 0.f)
         {
@@ -349,27 +429,16 @@ int main()
         cam.SetView(camTransform.getWorldMatrix().inverse());
         cam.Clear();
 
-        const Frustum camFrustum     = cam.GetFrustum();
-        const Matrix4 viewProjection = cam.GetViewProjection();
+        BindCamUBO(cam.GetViewProjection(), camTransform.getWorldPosition());
 
-        unlitShader.Use();
-        unlitShader.SetUniformMat4("u_mvp", viewProjection * modelMat1);
-        unlitShader.SetUniformVec4("u_tint", Color::white);
-        DrawModel(model);
+        Frustum camFrustum = cam.GetFrustum();
 
-        unlitShader.SetUniformMat4("u_mvp", viewProjection * modelMat2);
-        unlitShader.SetUniformVec4("u_tint", Color::red);
-        DrawModel(model);
+        DrawModel(model, camFrustum, modelMat1, whiteMaterial);
+        DrawModel(model, camFrustum, modelMat2, redMaterial);
+        DrawModel(model, camFrustum, testModelMat, litMaterial);
 
-        if (camFrustum.Intersects(TransformBoundingBox(model.GetBoundingBox(), testModelMat)))
-        {
-            unlitShader.SetUniformMat4("u_mvp", viewProjection * testModelMat);
-            unlitShader.SetUniformVec4("u_tint", Color::yellow);
-            DrawModel(model);
-        }
-        
-        frameBufferId->Unbind();
-        glViewport(0, 0, 800, 600);
+        g_frameBuffer->Unbind();
+        renderAPI.SetViewport({ 0, 0 }, { 800, 600 });
 
         window.RenderUI();
         window.EndRender();
