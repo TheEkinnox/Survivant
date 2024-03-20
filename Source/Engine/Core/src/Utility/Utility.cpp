@@ -63,4 +63,20 @@ namespace SvCore::Utility
         ToLowerInPlace(p_str);
         return p_str;
     }
+
+    int CompareAlphabeticly(std::string p_str1, std::string p_str2)
+    {
+        size_t len = p_str1.size() < p_str2.size() ? p_str1.size() : p_str2.size();
+
+        for (size_t i = 0; i < len; i++)
+        {
+            auto a = std::tolower(static_cast<unsigned char>(p_str1[i]));
+            auto b = std::tolower(static_cast<unsigned char>(p_str2[i]));
+
+            if (a != b)
+                return a < b ? -1 : 1;
+        }
+
+        return 0;
+    }
 }
