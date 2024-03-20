@@ -10,7 +10,12 @@ namespace SvUI::PanelItems
 	class PanelTextInput : public Interfaces::IPanelable
 	{
 	public:
-		PanelTextInput(std::string p_name, std::function<void(PanelTextInput&)> p_callback);
+		using Callback = std::function<void(PanelTextInput&)>;
+
+		PanelTextInput(
+			std::string p_name, 
+			std::string& p_buffer, 
+			const Callback& p_callback = Callback());
 		~PanelTextInput() = default;
 
 		void DisplayAndUpdatePanel()override;
@@ -22,8 +27,8 @@ namespace SvUI::PanelItems
 	private:
 		//static int TextPanelCallBack(ImGuiInputTextCallbackData* data);
 
-		std::string								m_name;
-		std::string								m_buffer;
-		std::function<void(PanelTextInput&)>	m_callback;
+		std::string		m_name;
+		std::string&	m_buffer;
+		Callback		m_callback;
 	};
 }

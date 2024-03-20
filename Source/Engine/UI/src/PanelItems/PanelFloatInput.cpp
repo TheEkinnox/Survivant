@@ -9,7 +9,7 @@ namespace SvUI::PanelItems
 {
     PanelFloatInput::PanelFloatInput(
         const std::string& p_name,
-        const float& p_value,
+        float& p_value,
         const Callback& p_callback) :
         m_name(p_name),
         m_value(p_value),

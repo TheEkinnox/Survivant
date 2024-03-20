@@ -16,7 +16,7 @@ namespace SvUI::PanelItems
 
 		PanelVec3Input(
 			const std::string& p_name,
-			const LibMath::Vector3& p_value,
+			LibMath::Vector3& p_value,
 			const Callback& p_callback);
 		~PanelVec3Input() = default;
 
@@ -25,7 +25,7 @@ namespace SvUI::PanelItems
 	private:
 		std::string			m_name;
 		Callback			m_callback;
-		LibMath::Vector3	m_value;
+		LibMath::Vector3&	m_value;
 
 	};
 }

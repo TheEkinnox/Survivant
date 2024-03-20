@@ -10,7 +10,7 @@ namespace SvUI::PanelItems
 {
     PanelIntInput::PanelIntInput(
         const std::string& p_name,
-        int p_value,
+        int& p_value,
         const Callback& p_callback) :
         m_name(p_name),
         m_value(p_value),

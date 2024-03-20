@@ -14,8 +14,8 @@ namespace SvUI::PanelItems
 
 		PanelFloatInput(
 			const std::string& p_name,
-			const float& p_value,
-			const Callback& p_callback);
+			float& p_value,
+			const Callback& p_callback = Callback());
 		~PanelFloatInput() = default;
 
 		virtual void DisplayAndUpdatePanel() override;
@@ -23,6 +23,6 @@ namespace SvUI::PanelItems
 	private:
 		std::string		m_name;
 		Callback		m_callback;
-		float			m_value;
+		float&			m_value;
 	};
 }

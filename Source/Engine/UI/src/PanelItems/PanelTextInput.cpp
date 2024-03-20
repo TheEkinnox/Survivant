@@ -59,9 +59,13 @@ bool InputText(const char* label, std::string* str, ImGuiInputTextFlags flags, I
 namespace SvUI::PanelItems
 {
 
-    PanelTextInput::PanelTextInput(std::string p_name, std::function<void(PanelTextInput&)> p_callback) :
+    PanelTextInput::PanelTextInput(
+        std::string p_name,
+        std::string& p_buffer,
+        const Callback& p_callback = Callback()) :
         m_name(p_name),
-        m_callback(p_callback)
+        m_callback(p_callback),
+        m_buffer(p_buffer)
     {
     }
 

@@ -9,7 +9,7 @@ namespace SvUI::PanelItems
 {
     PanelVec3Input::PanelVec3Input(
         const std::string& p_name,
-        const LibMath::Vector3& p_value,
+        LibMath::Vector3& p_value,
         const Callback& p_callback) :
         m_name(p_name),
         m_value(p_value),

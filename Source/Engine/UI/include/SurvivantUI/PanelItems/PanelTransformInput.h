@@ -29,9 +29,9 @@ namespace SvUI::PanelItems
 		//void								ResetVector3ValIfNan(LibMath::Vector3& p_value);
 
 		Callback							m_callback;
-		LibMath::Vector3					m_position;
+		/*LibMath::Vector3					m_position;
 		LibMath::Quaternion					m_rotation;
-		LibMath::Vector3					m_scale;
+		LibMath::Vector3					m_scale;*/
 		LibMath::TVector3<LibMath::Radian>	m_yawPitchRoll;
 	};
 }

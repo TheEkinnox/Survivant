@@ -14,7 +14,7 @@ namespace SvUI::PanelItems
 
 		PanelIntInput(
 			const std::string& p_name,
-			int p_value,
+			int& p_value,
 			const Callback& p_callback);
 		~PanelIntInput() = default;
 
@@ -23,6 +23,6 @@ namespace SvUI::PanelItems
 	private:
 		std::string		m_name;
 		Callback		m_callback;
-		int				m_value;
+		int&			m_value;
 	};
 }
