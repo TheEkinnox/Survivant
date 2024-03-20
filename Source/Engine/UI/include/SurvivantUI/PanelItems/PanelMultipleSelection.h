@@ -30,6 +30,7 @@ namespace SvUI::PanelItems
 
 		std::string					m_name;
 		std::vector<std::string>	m_items;
+		std::string					m_displayString;
 		int							m_count;
 		int							m_curentSelection;
 		Callback					m_callback;

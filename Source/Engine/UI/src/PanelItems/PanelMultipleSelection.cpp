@@ -24,7 +24,7 @@ namespace SvUI::PanelItems
     {
         auto oldSelection = m_curentSelection;
 
-        if (ImGui::BeginCombo(m_name.c_str(), GetDisplayString().c_str()))
+        if (ImGui::BeginCombo(m_name.c_str(), m_displayString.c_str()))
         {
             for (int i = 0; i < m_items.size(); i++)
             {
@@ -44,8 +44,13 @@ namespace SvUI::PanelItems
             ImGui::EndCombo();
         }
 
-        if (oldSelection != m_curentSelection && m_callback != nullptr)
-            m_callback(m_curentSelection);
+        if (oldSelection != m_curentSelection)
+        {
+            m_displayString = GetDisplayString();
+
+            if (m_callback)
+                m_callback(m_curentSelection);
+        }
     }
 
     std::string PanelMultipleSelection::GetDisplayString()
