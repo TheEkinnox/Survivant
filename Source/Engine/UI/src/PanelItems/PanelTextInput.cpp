@@ -62,7 +62,7 @@ namespace SvUI::PanelItems
     PanelTextInput::PanelTextInput(
         std::string p_name,
         std::string& p_buffer,
-        const Callback& p_callback = Callback()) :
+        const Callback& p_callback) :
         m_name(p_name),
         m_callback(p_callback),
         m_buffer(p_buffer)

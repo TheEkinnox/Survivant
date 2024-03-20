@@ -120,6 +120,7 @@ namespace SvUI::Panels
 
     void ExamplGameObj::AddComponentCallback(ExamplGameObj* p_this)
     {
-        p_this->m_aditionalComponents.push_back({ "Transform", std::make_shared<PanelTransformInput>() });
+        static std::shared_ptr<Transform> trans = std::make_shared<Transform>();
+        p_this->m_aditionalComponents.push_back({ "Transform", std::make_shared<PanelTransformInput>(*trans.get()) });
     }
 }

@@ -12,7 +12,7 @@ namespace SvUI::Panels
 {
     ConsolePanel::ConsolePanel() :
         m_filterMenu("Filters"),
-        m_input("Input", std::bind(&ConsolePanel::TextInputCallback, this, std::placeholders::_1))
+        m_input("Input", m_inputBuffer, std::bind(&ConsolePanel::TextInputCallback, this, std::placeholders::_1))
     {
         static size_t NumLogTypes = 5;
         m_name = GetUniqueName(NAME, s_panelCount);

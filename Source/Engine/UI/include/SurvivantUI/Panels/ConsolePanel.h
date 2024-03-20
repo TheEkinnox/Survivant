@@ -76,6 +76,7 @@ namespace SvUI::Panels
 		static constexpr char NAME[] = "DebugLog";
 		static inline int s_panelCount = 0;
 
+		std::string								m_inputBuffer;
 		PanelTextInput							m_input;
 		PanelTextBox							m_textBox;
 		PanelButtonList							m_buttons;

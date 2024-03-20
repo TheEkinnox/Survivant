@@ -8,30 +8,31 @@
 namespace SvUI::PanelItems
 {
     PanelTransformInput::PanelTransformInput(
-        const LibMath::Vector3& p_position,
-        const LibMath::Quaternion& p_rotation,
-        const LibMath::Vector3& p_scale,
+        Transform& p_transform,
         const Callback& p_callback) :
-        m_position(p_position),
-        m_rotation(p_rotation),
-        m_scale(p_scale),
+        m_transform(p_transform),
         m_callback(p_callback)
     {
-        m_rotation = LibMath::Quaternion::identity();
-        m_yawPitchRoll = m_rotation.toYawPitchRoll();
+        m_yawPitchRoll = m_transform.getRotation().toYawPitchRoll();
     }
 
     void PanelTransformInput::DisplayAndUpdatePanel()
     {
         static int flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll;
 
+        auto position = m_transform.getPosition();
+        auto rotation = m_transform.getRotation();
+        auto scale =    m_transform.getScale();
+
         ImGui::Text("Position");
         ImGui::SameLine();
         ImGui::PushID(0);
-        if (ImGui::InputFloat3("##", m_position.getArray(), "%3.f", flags))
+        if (ImGui::InputFloat3("##", position.getArray(), "%3.f", flags))
         {
+            m_transform.setPosition(position);
+
             if (m_callback)
-                m_callback(&m_position, nullptr, nullptr);
+                m_callback(&position, nullptr, nullptr);
         }
         ImGui::PopID();
 
@@ -48,11 +49,13 @@ namespace SvUI::PanelItems
 
             //add diff to current quat
             auto currentRad = ToVector3Radian(currentDeg);
-            m_rotation = LibMath::Quaternion(currentRad);
+            rotation = LibMath::Quaternion(currentRad);
             m_yawPitchRoll = currentRad; // m_yawPitchRoll += ToVector3Radian(diffDegree);
 
+            m_transform.setRotation(rotation);
+
             if (m_callback)
-                m_callback(nullptr, &m_rotation, nullptr);
+                m_callback(nullptr, &rotation, nullptr);
         }
         ImGui::PopID();
 
@@ -60,10 +63,12 @@ namespace SvUI::PanelItems
         ImGui::Text("Scale   ");
         ImGui::SameLine();
         ImGui::PushID(2);
-        if (ImGui::InputFloat3("##", m_scale.getArray(), "%3.f", flags))
+        if (ImGui::InputFloat3("##", scale.getArray(), "%3.f", flags))
         {
+            m_transform.setScale(scale);
+
             if (m_callback)
-                m_callback(nullptr, nullptr, &m_scale);
+                m_callback(nullptr, nullptr, &scale);
         }
         ImGui::PopID();
     }

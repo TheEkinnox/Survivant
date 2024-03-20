@@ -2,6 +2,7 @@
 
 #include "SurvivantUI/Interfaces/IPanelable.h"
 
+#include "Transform.h"
 #include "Vector/Vector3.h"
 #include "Quaternion.h"
 
@@ -9,29 +10,30 @@
 
 namespace SvUI::PanelItems
 {
+	using namespace LibMath;
+
 	class PanelTransformInput : public Interfaces::IPanelable
 	{
 	public:
 		using Callback = std::function<void(const LibMath::Vector3* const, const LibMath::Quaternion* const, const LibMath::Vector3* const)>;
 
 		PanelTransformInput(
-			const LibMath::Vector3& p_position = LibMath::Vector3(),
-			const LibMath::Quaternion& p_rotation = LibMath::Quaternion(),
-			const LibMath::Vector3& p_scale = LibMath::Vector3(),
+			Transform& p_transform,
 			const Callback& p_callback = Callback());
 		~PanelTransformInput() = default;
 
 		virtual void DisplayAndUpdatePanel() override;
 
 	private:
-		LibMath::Vector3 					ToVector3Degree(const LibMath::TVector3<LibMath::Radian>& p_radians);
+		Vector3 							ToVector3Degree(const LibMath::TVector3<LibMath::Radian>& p_radians);
 		LibMath::TVector3<LibMath::Radian>	ToVector3Radian(const LibMath::Vector3& p_degrees);
 		//void								ResetVector3ValIfNan(LibMath::Vector3& p_value);
 
-		Callback							m_callback;
+		Callback					m_callback;
+		Transform&					m_transform;
 		/*LibMath::Vector3					m_position;
 		LibMath::Quaternion					m_rotation;
 		LibMath::Vector3					m_scale;*/
-		LibMath::TVector3<LibMath::Radian>	m_yawPitchRoll;
+		TVector3<LibMath::Radian>	m_yawPitchRoll;
 	};
 }
