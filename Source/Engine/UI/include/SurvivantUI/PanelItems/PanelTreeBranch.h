@@ -6,6 +6,7 @@
 #include "SurvivantUI/MenuItems/PopupMenu.h"
 
 #include <functional>
+#include <map>
 #include <set>
 #include <memory>
 
@@ -17,8 +18,9 @@ namespace SvUI::PanelItems
 	{
 	public:
 		using BranchCallback = std::function<bool(PanelTreeBranch&)>;
-		using Childreen = std::unordered_map<std::string, std::shared_ptr<PanelTreeBranch>>;
-
+		using PriorityFunc = std::function<size_t(const PanelTreeBranch&)>;
+		using Childreen = std::map<ISelectable::SelectablePrioKey, std::shared_ptr<PanelTreeBranch>>;
+		
 		PanelTreeBranch(const std::string& p_name, bool p_hideLeafs = true);
 		PanelTreeBranch(const std::string& p_name, const Childreen& p_branches, bool p_hideLeafs = true);
 		~PanelTreeBranch();
@@ -40,7 +42,7 @@ namespace SvUI::PanelItems
 
 		Childreen&	SetBranches(const Childreen& p_branches);
 		Childreen&	SetBranches(const std::vector<std::shared_ptr<PanelTreeBranch>>& p_branches);
-		void		AddBranch(const std::shared_ptr<PanelTreeBranch>& p_branch);
+		void		AddBranch(const std::shared_ptr<PanelTreeBranch>& p_branch, const PriorityFunc& p_prioFunc = &NoPriority);
 		void		RemoveBranch(const std::string& p_name);
 		void		ForceOpenParents(bool p_openSelf = false);
 		void		ForceCloseChildreen(bool p_closeSelf = false);
@@ -50,6 +52,15 @@ namespace SvUI::PanelItems
 		void		SetAllOnClickCallback(const std::shared_ptr<BranchCallback>& p_callback);
 		void		SetAllBranchesOnClickCallback(const std::shared_ptr<BranchCallback>& p_callback);
 		void		SetAllLeavesOnClickCallback(const std::shared_ptr<BranchCallback>& p_callback);
+
+		void		SetAllPriority(const PriorityFunc& p_prioFunc);
+		void		SetAllBranchesPriority(const PriorityFunc& p_prioFunc);
+		void		SetAllLeavesPriority(const PriorityFunc& p_prioFunc);
+		void		SetAllBranchesPriority(size_t p_prio);
+		void		SetAllLeavesPriority(size_t p_prio);
+
+		static size_t	NoPriority(const PanelTreeBranch& p_branch);
+		static size_t	HasChildreenPriority(const PanelTreeBranch& p_branch);
 
 	private:
 		std::vector<std::unique_ptr<IMenuable>>		GetPopupMenuItems();

@@ -45,6 +45,7 @@ namespace SvUI::PanelItems
     PanelTreeBranch::Childreen& PanelTreeBranch::SetBranches(const Childreen& p_branches)
     {
         m_childreen = p_branches;
+
         for (auto& child : p_branches)
             child.second->m_parent = this;
 
@@ -57,16 +58,18 @@ namespace SvUI::PanelItems
         for (auto& child : p_branches)
         {
             child->m_parent = this;
-            m_childreen.insert({ child.get()->GetName(), child });
+            m_childreen.insert({ { child.get()->GetName(), 0 }, child });
         }
 
         return m_childreen;
     }
 
-    void PanelTreeBranch::AddBranch(const std::shared_ptr<PanelTreeBranch>& p_branch)
+    void PanelTreeBranch::AddBranch(const std::shared_ptr<PanelTreeBranch>& p_branch, const PriorityFunc& p_prio)
     {
-        auto it = m_childreen.insert(m_childreen.end(), { p_branch.get()->GetName(), p_branch });
-        it->second.get()->m_parent = this;
+        auto it = m_childreen.insert( 
+            { { p_branch.get()->GetName(), p_prio(*p_branch) }, p_branch});
+
+        it.first->second->m_parent = this;
     }
 
     void PanelTreeBranch::RemoveBranch(const std::string& p_name)
@@ -136,6 +139,62 @@ namespace SvUI::PanelItems
 
         for (auto& child : m_childreen)
             child.second->SetAllLeavesOnClickCallback(p_callback);
+    }
+
+    void PanelTreeBranch::SetAllPriority(const PriorityFunc& p_prioFunc)
+    {
+        std::vector<Childreen::node_type> extracted;
+
+        for (auto it = m_childreen.begin(); it != m_childreen.end();)
+        {
+            size_t prio = p_prioFunc(*it->second);
+
+            if (it->first.m_priority != prio)
+            {
+                auto out = it++;
+                auto nodeHandler = m_childreen.extract(out);
+                nodeHandler.key().m_priority = prio;
+                extracted.push_back(std::move(nodeHandler));
+                //m_childreen.insert(std::move(nodeHandler));
+            }
+            else
+                ++it;
+        }
+
+        for (auto it = extracted.begin(); it != extracted.end();)
+        {
+            auto out = it++;
+            auto val = m_childreen.insert(std::move(*out));
+        }
+
+        for (auto& child : m_childreen)
+            child.second->SetAllBranchesPriority(p_prioFunc);
+    }
+
+    void PanelTreeBranch::SetAllBranchesPriority(const PriorityFunc& /*p_prioFunc*/)
+    {
+    }
+
+    void PanelTreeBranch::SetAllLeavesPriority(const PriorityFunc& /*p_prioFunc*/)
+    {
+    }
+
+    void PanelTreeBranch::SetAllBranchesPriority(size_t /*p_prio*/)
+    {
+    }
+
+    void PanelTreeBranch::SetAllLeavesPriority(size_t /*p_prio*/)
+    {
+    }
+
+    size_t PanelTreeBranch::NoPriority(const PanelTreeBranch& /*p_branch*/)
+    {
+        return 0;
+    }
+
+    size_t PanelTreeBranch::HasChildreenPriority(const PanelTreeBranch& p_branch)
+    {
+        return p_branch.GetChildreen().empty()? 0 : 1;
     }
 
     std::vector<std::unique_ptr<IMenuable>> PanelTreeBranch::GetPopupMenuItems()

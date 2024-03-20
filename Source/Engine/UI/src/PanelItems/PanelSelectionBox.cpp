@@ -27,9 +27,10 @@ namespace SvUI::PanelItems
 
         size_t count = m_elements.size();
 
-        for (size_t i = 0; i < count; i++)
+        size_t i = 0;
+        for (auto& itemPair : m_elements)
         {
-            auto item = m_elements[i].get();
+            auto item = itemPair.second.get();
             bool isSelected = item->GetSelectedState();
             auto isBreak = false; auto open = false;
 
@@ -65,10 +66,12 @@ namespace SvUI::PanelItems
 
             if (isBreak)
                 break;
+
+            i++;
         }
     }
 
-    void PanelSelectionBox::SetSelectionBoxable(const std::vector<std::shared_ptr<ISelectable>>& p_elements)
+    void PanelSelectionBox::SetSelectionBoxable(const MAP& p_elements)
     {
         m_elements = p_elements;
     }

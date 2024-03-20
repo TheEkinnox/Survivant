@@ -59,7 +59,7 @@ namespace SvUI::Panels
         }
 
         for (auto& branch : m_tree.GetChildreen())
-            branch.second.get()->DisplayAndUpdatePanel();
+            branch.second->DisplayAndUpdatePanel();
 
 
         ImGui::End();

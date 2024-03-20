@@ -16,33 +16,25 @@ namespace SvUI::Panels
         m_tree()
     {
         m_name = GetUniqueName(NAME, s_idGenerator.GetUnusedId());
-        //m_tree = std::make_shared<PanelTreeBranch>("TREE");
-
-      /*  auto& branches = m_tree->SetBranches({ std::make_shared<PanelTreeBranch>("0"), std::make_shared<PanelTreeBranch>("1"), std::make_shared<PanelTreeBranch>("2") });
-        branches["0"]->SetBranches({
-            std::make_shared<PanelTreeBranch>("A-123456789"),
-            std::make_shared<PanelTreeBranch>("B-45678"),
-            std::make_shared<PanelTreeBranch>("B-45678"),
-            std::make_shared<PanelTreeBranch>("B-45678"),
-            std::make_shared<PanelTreeBranch>("B-45678"),
-            std::make_shared<PanelTreeBranch>("B-45678"),
-            std::make_shared<PanelTreeBranch>("B-45678"),
-            std::make_shared<PanelTreeBranch>("B-45678"),
-            std::make_shared<PanelTreeBranch>("B-45678"),
-            std::make_shared<PanelTreeBranch>("C")
-            });
-        branches["1"]->SetBranches({std::make_shared<PanelTreeBranch>("D-123456789"), std::make_shared<PanelTreeBranch>("E-45678"), std::make_shared<PanelTreeBranch>("F")});
-        branches["2"]->SetBranches({std::make_shared<PanelTreeBranch>("G-123456789"), std::make_shared<PanelTreeBranch>("H-45678"), std::make_shared<PanelTreeBranch>("I")});*/
-
+        
         SetupTree();
 
+        // setup folder callbacks
         auto setGridDisplayFunc = std::make_shared<PanelTreeBranch::BranchCallback>(
             std::bind(&ContentDrawerPanel::SetGridDisplay, this, std::placeholders::_1));
         m_tree.get()->SetAllBranchesOnClickCallback(setGridDisplayFunc);
 
+        // setup file callback
         auto tryOpenFileFunc = std::make_shared<PanelTreeBranch::BranchCallback>(
             std::bind(&ContentDrawerPanel::TryOpenFile, this, std::placeholders::_1));
         m_tree.get()->SetAllLeavesOnClickCallback(tryOpenFileFunc);
+
+        // setup priority
+        /*auto prioFunc = std::make_shared<PanelTreeBranch::BranchCallback>(
+            []() {} );*/
+
+        m_tree->SetAllPriority(&PanelTreeBranch::HasChildreenPriority);
+
 
     }
 
@@ -112,11 +104,11 @@ namespace SvUI::Panels
         auto& childreen = p_branch.GetChildreen();
 
         //"cast" from PanelTreeBranch to ISelectionBoxable
-        std::vector<std::shared_ptr<ISelectable>> gridItems;
-        gridItems.reserve(childreen.size());
+        PanelSelectionBox::MAP gridItems;
+        //gridItems.r(childreen.size());
 
         for (auto& pair : childreen)
-            gridItems.emplace_back(pair.second);
+            gridItems.insert(pair);
 
         m_grid.SetSelectionBoxable(gridItems);
 
@@ -126,14 +118,10 @@ namespace SvUI::Panels
 
     void ContentDrawerPanel::SetupTree()
     {
-
         auto root = std::filesystem::current_path();
         m_tree = std::make_shared<PanelTreeBranch>(root.filename().string());
 
-        //auto files = directory_iterator(root);
-
         SetupBranches(m_tree, root);
-
     }
 
     void ContentDrawerPanel::SetupBranches(
@@ -150,7 +138,7 @@ namespace SvUI::Panels
             std::string name = path.filename().string();
 
             auto ptrBranch = std::make_shared<PanelTreeBranch>(path.filename().string());
-            p_parent.get()->AddBranch(ptrBranch);
+            p_parent->AddBranch(ptrBranch);
 
             if (dirEntry.is_directory())
                 directories.push_back({ ptrBranch, path });
