@@ -1,0 +1,39 @@
+@startuml
+
+'https://www.planttext.com
+
+skin rose
+title Load Game
+
+'Architecture inspired by UE5 loading :
+'https://docs.unrealengine.com/4.26/en-US/IneractiveExperiences/Framework/GameFlow/
+
+object EditorEngine
+object Engine
+object GameInstance
+object Scene
+
+GameInstance : Init()
+GameInstance : InitStandalone()
+GameInstance : InitPIE()
+'PIE = PlayInEditor
+
+Engine : Start()
+
+EditorEngine : Init()
+EditorEngine : CreatePIEGameInstance()
+EditorEngine : StartPIEGameInstance()
+
+Scene : BeginPlay()
+'scene instead of world bcs not using streamed levels: https://www.youtube.com/watch?v=4bAcnaSQgk4
+
+
+'Unity single/multi thread in PIE vs Standalone
+'https://forum.unity.com/threads/whats-the-difference-between-playing-in-editor-and-building.922373/
+'Unity also uses the Mono scripting runtime in the editor, which is not as optimized as IL2CPP, but Unity doesn't have to rebuild the whole runtime from scratch when you use it.
+'On the other hand, when you build the game, Unity has to create an executable that contains not just your scripts, 
+'but the entirety of the Unity game engine for whichever platform you're targeting (including all of Unity's C# scripts as well as the CPP game engine).
+'Again, depending on the target platform, Unity has to do a bunch of extra stuff. If it's a platform where IL2CPP is used, Unity takes all of your code, compiles it to IL, 
+'then compiles that IL to CPP source code, then compiles that CPP source code to a runnable binary. It's a lot of work!
+
+@enduml

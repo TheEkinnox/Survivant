@@ -1,0 +1,32 @@
+@startuml
+
+skin rose
+
+object Window
+object UIWindow
+object IUI
+object EditorUI
+object UIManager
+object Panel
+object MainPanel
+object ISelectable
+
+
+Window <|-- UIWindow
+IUI <|-- EditorUI
+IUI *-- UIWindow
+UIManager *-- IUI
+
+EditorUI *-- MainPanel
+EditorUI o-- Panel
+EditorUI o-- ISelectable
+
+
+'yello
+
+UIWindow : is stuff()
+UIWindow : is stuff also
+
+
+
+@enduml
