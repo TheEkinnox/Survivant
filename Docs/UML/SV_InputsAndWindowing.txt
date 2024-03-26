@@ -1,0 +1,65 @@
+@startuml
+
+'https://www.planttext.com
+
+
+skin rose
+
+object App
+object Window
+
+object EditorUI
+object EditorWindow
+object UIManager
+
+object IMenuable
+object IPanelable
+object ITextable
+object ISelectable
+object IUI
+
+object Menu
+object MenuBar
+object Panel
+
+object EventManager
+
+object InputManager
+object InputType
+object KeyboardKeyType
+object MouseKeyType
+
+EditorWindow *-right- EditorUI
+App *-- Window
+Window <|-- EditorWindow
+IUI <|-- EditorUI
+
+UIManager *-- IUI
+UIManager <|.. Panel
+UIManager <|.. IPanelable
+UIManager <|.. IMenuable
+
+
+EditorUI *-- ISelectable
+EditorUI *-- "1..*" Panel
+
+MenuBar  *-- "0..*" Menu
+Menu *-- "0..*" Menu
+Menu *-- "0..*" IMenuable
+
+Panel *-- "0..*" MenuBar
+Panel *-- "0..*" IPanelable
+IPanelable *-- "0..*" ITextable
+IPanelable *-- "0..*" ISelectable
+
+InputManager *-- "0..*" KeyboardKeyType
+InputManager *-- "0..*" MouseKeyType
+InputType <|-- KeyboardKeyType
+InputType <|-- MouseKeyType
+InputType .right. InputManager
+
+InputManager o-right- Window
+EventManager <|.. InputManager
+
+
+@enduml
