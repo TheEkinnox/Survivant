@@ -206,9 +206,7 @@ void App::InputManager::InitWindow(Window* p_window)
 	if (p_window == nullptr)
 		return;
 
-	m_glfwWindow = p_window;
-	m_glfwWindow->SetupInputManagerCallbacks();
-	m_glfwWindow->SetupWindowCallbacks();
+	m_window = p_window;
 }
 
 void App::InputManager::CallInput(const KeyboardKeyType& p_type, char p_scancode)
@@ -254,19 +252,25 @@ void App::InputManager::AddInputBinding(const MouseKeyType& p_type, const MouseC
 
 void App::InputManager::GetMousePos(double& p_x, double& p_y)
 {
-	m_glfwWindow->GetMousePos(p_x, p_y);
+	m_window->GetMousePos(p_x, p_y);
 }
 
 bool App::InputManager::EvaluateInput(const KeyboardKeyType& p_key)
 {
-	//std::apply(std::bind_front(&App::Window::EvaluateInput, m_glfwWindow), p_key.m_inputInfo);
+	if (m_window == nullptr)
+		return false;
+
+	//std::apply(std::bind_front(&App::Window::EvaluateInput, m_window), p_key.m_inputInfo);
 	auto& info = p_key.m_inputInfo;
-	return m_glfwWindow->EvaluateInput(std::get<0>(info), std::get<1>(info), std::get<2>(info));
+	return m_window->EvaluateInput(std::get<0>(info), std::get<1>(info), std::get<2>(info));
 }
 
 bool App::InputManager::EvaluateInput(const MouseKeyType& p_key)
 {
+	if (m_window == nullptr)
+		return false;
+
 	auto& info = p_key.m_inputInfo;
-	return m_glfwWindow->EvaluateInput(std::get<0>(info), std::get<1>(info), std::get<2>(info));
+	return m_window->EvaluateInput(std::get<0>(info), std::get<1>(info), std::get<2>(info));
 }
 

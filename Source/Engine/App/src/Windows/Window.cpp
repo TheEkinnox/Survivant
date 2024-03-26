@@ -70,17 +70,20 @@ Window::Window(std::string p_name)
     glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
     glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
 
-    m_glfwWindow = glfwCreateWindow(mode->width, mode->height, p_name.c_str(), nullptr, nullptr);
+    m_window = glfwCreateWindow(mode->width, mode->height, p_name.c_str(), nullptr, nullptr);
     m_isInFullscreen = false;
 
     int x;
-    glfwGetWindowPos(m_glfwWindow, &x, &m_yWindowedPos);
-    glfwSetWindowPos(m_glfwWindow, 0, m_yWindowedPos);
+    glfwGetWindowPos(m_window, &x, &m_yWindowedPos);
+    glfwSetWindowPos(m_window, 0, m_yWindowedPos);
 
-    glfwMakeContextCurrent(m_glfwWindow);
+    glfwMakeContextCurrent(m_window);
+
+    SetupWindowCallbacks();
+    SetupInputManagerCallbacks();
 }
 
-App::Window::Window(std::string p_name, int p_width, int p_height, int p_x, int p_y)
+App::Window::Window(std::string p_name, int p_width , int p_height, int p_x, int p_y)
 {
     //init
     m_monitor = glfwGetPrimaryMonitor();
@@ -91,59 +94,61 @@ App::Window::Window(std::string p_name, int p_width, int p_height, int p_x, int 
     glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
     glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
 
-    m_glfwWindow = glfwCreateWindow(p_width, p_height, p_name.c_str(), nullptr, nullptr);
+    m_window = glfwCreateWindow(p_width, p_height, p_name.c_str(), nullptr, nullptr);
     m_isInFullscreen = false;
 
-    glfwSetWindowPos(m_glfwWindow, p_x, p_y);
-    glfwMakeContextCurrent(m_glfwWindow);
+    glfwSetWindowPos(m_window, p_x, p_y);
+    glfwMakeContextCurrent(m_window);
 
     m_yWindowedPos = p_y;
+
+    SetupWindowCallbacks();
+    SetupInputManagerCallbacks();
 }
 
 App::Window::~Window()
 {
-    glfwDestroyWindow(m_glfwWindow);
+    glfwDestroyWindow(m_window);
 }
 
 GLFWwindow* App::Window::GetWindow()
 {
-    return m_glfwWindow;
+    return m_window;
 }
 
 void App::Window::SetupWindowCallbacks() const
 {
-    glfwSetWindowCloseCallback(m_glfwWindow, WindowCloseCallback);
-    glfwSetWindowSizeCallback(m_glfwWindow, WindowSizeCallback);
-    glfwSetFramebufferSizeCallback(m_glfwWindow, WindowFramebufferSizeCallback);
-    glfwSetWindowIconifyCallback(m_glfwWindow, WindowMinimizeCallback);
+    glfwSetWindowCloseCallback(m_window, WindowCloseCallback);
+    glfwSetWindowSizeCallback(m_window, WindowSizeCallback);
+    glfwSetFramebufferSizeCallback(m_window, WindowFramebufferSizeCallback);
+    glfwSetWindowIconifyCallback(m_window, WindowMinimizeCallback);
 }
 
 void App::Window::SetupInputManagerCallbacks() const
 {
-    glfwSetKeyCallback(m_glfwWindow, IMKeyCallback);
-    glfwSetMouseButtonCallback(m_glfwWindow, IMMouseCallback);
-
+    glfwSetKeyCallback(m_window, IMKeyCallback);
+    glfwSetMouseButtonCallback(m_window, IMMouseCallback);
 }
 
 void App::Window::GetMousePos(double& p_x, double& p_y) const
 {
-    glfwGetCursorPos(m_glfwWindow, &p_x, &p_y);
+    glfwGetCursorPos(m_window, &p_x, &p_y);
 }
 
 void App::Window::GetWindowSize(int& p_width, int& p_height) const
 {
-    glfwGetWindowSize(m_glfwWindow, &p_width, &p_height);
+    glfwGetWindowSize(m_window, &p_width, &p_height);
 }
 
 bool App::Window::EvaluateInput(EKey p_key, EKeyState p_state, EInputModifier p_modif)
 {
-    return  static_cast<int>(p_state) == glfwGetKey(m_glfwWindow, static_cast<int>(p_key)) &&
+    return  static_cast<int>(p_state) == glfwGetKey(m_window, static_cast<int>(p_key)) &&
             EvaluteModif(p_modif);
 }
 
 bool App::Window::EvaluateInput(EMouseButton p_button, EMouseButtonState p_state, EInputModifier p_modif)
 {
-    return  static_cast<int>(p_state) == glfwGetMouseButton(m_glfwWindow, static_cast<int>(p_button)) &&
+    return  static_cast<int>(p_state) == glfwGetMouseButton(m_window, static_cast<int>(p_button)) &&
             EvaluteModif(p_modif);
 }
 
@@ -158,7 +163,7 @@ bool App::Window::EvaluteModif(EInputModifier p_modif)
     for (size_t i = 0; i < NUM_INPUT_MODIFIERS; i++)
     {
         int modif = 1 << i;
-        int state = glfwGetKey(m_glfwWindow, static_cast<int>(InputManager::GetModifKey(static_cast<EInputModifier>(modif))));
+        int state = glfwGetKey(m_window, static_cast<int>(InputManager::GetModifKey(static_cast<EInputModifier>(modif))));
         if (state == static_cast<int>(EKeyState::PRESSED))
             currentModif += modif;
     }
@@ -170,7 +175,7 @@ void App::Window::ToggleFullScreenMode()
 {
     const GLFWvidmode* mode = glfwGetVideoMode(m_monitor);
     glfwSetWindowMonitor(
-        m_glfwWindow, 
+        m_window, 
         m_isInFullscreen? nullptr: m_monitor,
         0, 
         m_isInFullscreen? m_yWindowedPos: 0, 
@@ -189,32 +194,32 @@ void App::Window::StartRender()
 
 void App::Window::EndRender()
 {
-    glfwSwapBuffers(m_glfwWindow);
+    glfwSwapBuffers(m_window);
 }
 
 bool App::Window::ShouldClose()
 {
-    return glfwWindowShouldClose(m_glfwWindow);
+    return glfwWindowShouldClose(m_window);
 }
 
 void App::Window::SetWindowSizeLimits(int p_minWidth, int p_minHeight, int p_maxWidth, int p_maxHeight)
 {
-    glfwSetWindowSizeLimits(m_glfwWindow, p_minWidth, p_minHeight, p_maxWidth, p_maxHeight);
+    glfwSetWindowSizeLimits(m_window, p_minWidth, p_minHeight, p_maxWidth, p_maxHeight);
 }
 
 void App::Window::SetAspectRatio(int p_width, int p_height)
 {
-    glfwSetWindowAspectRatio(m_glfwWindow, p_width, p_height);
+    glfwSetWindowAspectRatio(m_window, p_width, p_height);
 }
 
 void App::Window::SetWindowIcons(std::vector<GLFWimage> p_images)
 {
-    glfwSetWindowIcon(m_glfwWindow, static_cast<int>(p_images.size()), p_images.data());
+    glfwSetWindowIcon(m_window, static_cast<int>(p_images.size()), p_images.data());
 }
 
 void App::Window::SetFocusWindow()
 {
-    glfwFocusWindow(m_glfwWindow);
+    glfwFocusWindow(m_window);
 }
 
 void App::Window::WindowCloseRequest::BeforeInvoke()

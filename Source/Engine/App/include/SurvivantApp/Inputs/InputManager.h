@@ -70,8 +70,7 @@ namespace App
 		std::unordered_map<KeyboardKeyType, KeyCallback> m_keyCallbacks;
 		std::unordered_map<MouseKeyType, MouseCallback> m_mouseKeyCallbacks;
 
-		App::Window* m_glfwWindow = nullptr;
-
+		App::Window* m_window = nullptr;
 	};
 
 	template<class T, typename ...Args>

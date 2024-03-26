@@ -15,12 +15,13 @@
 #include <SurvivantRendering/RHI/IUniformBuffer.h>
 #include <SurvivantRendering/RHI/OpenGL/OpenGLTexture.h>
 
+#include "SurvivantApp/Core/App.h"
 #include "SurvivantApp/Inputs/InputManager.h"
 #include "SurvivantApp/Inputs/KeyboardInputs.h"
 #include "SurvivantApp/Inputs/MouseInputs.h"
+
 #include "SurvivantEditor/UI/Core/EditorUI.h"
 #include "SurvivantEditor/UI/Core/EditorWindow.h"
-#include "SurvivantApp/Core/App.h"
 
 #include <Transform.h>
 

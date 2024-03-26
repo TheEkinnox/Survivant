@@ -109,7 +109,7 @@ namespace App
 
 		bool EvaluteModif(EInputModifier p_modif);
 
-		GLFWwindow*		m_glfwWindow;
+		GLFWwindow*		m_window;
 		GLFWmonitor*	m_monitor;
 
 		bool	m_isInFullscreen;

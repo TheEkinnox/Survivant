@@ -4,6 +4,7 @@
 
 
 skin rose
+title SURVIVANT: Inputs and Windowing
 
 object App
 object Window
@@ -23,28 +24,27 @@ object MenuBar
 object Panel
 
 object EventManager
+object Event
 
 object InputManager
 object InputType
+object Callback
 object KeyboardKeyType
 object MouseKeyType
 
-EditorWindow *-right- EditorUI
-App *-- Window
+EditorWindow *-left- EditorUI
+App *-left-> Window
 Window <|-- EditorWindow
 IUI <|-- EditorUI
 
-UIManager *-- IUI
-UIManager <|.. Panel
-UIManager <|.. IPanelable
-UIManager <|.. IMenuable
+UIManager *-left- IUI
+'EditorUI ..> IPanelable
+'EditorUI ..> IMenuable
 
-
-EditorUI *-- ISelectable
-EditorUI *-- "1..*" Panel
+EditorUI o-- ISelectable
+EditorUI *--> "1..*" Panel
 
 MenuBar  *-- "0..*" Menu
-Menu *-- "0..*" Menu
 Menu *-- "0..*" IMenuable
 
 Panel *-- "0..*" MenuBar
@@ -52,14 +52,44 @@ Panel *-- "0..*" IPanelable
 IPanelable *-- "0..*" ITextable
 IPanelable *-- "0..*" ISelectable
 
-InputManager *-- "0..*" KeyboardKeyType
-InputManager *-- "0..*" MouseKeyType
+'InputManager *-- "0..*" KeyboardKeyType
+'InputManager *-- "0..*" MouseKeyType
 InputType <|-- KeyboardKeyType
 InputType <|-- MouseKeyType
-InputType .right. InputManager
+InputManager -- InputType
+InputManager -- Callback
 
-InputManager o-right- Window
-EventManager <|.. InputManager
+InputManager o-left- Window
+
+EventManager *--"0..*" Event
+Callback .right. Event
+
+
+InputType -right- Callback
+InputManager : map <InputType, Callback>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 @enduml
