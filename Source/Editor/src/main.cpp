@@ -18,15 +18,11 @@
 #include "SurvivantApp/Inputs/InputManager.h"
 #include "SurvivantApp/Inputs/KeyboardInputs.h"
 #include "SurvivantApp/Inputs/MouseInputs.h"
-//#include "SurvivantEditor/Core/EditorUI.h"
-//#include "SurvivantUI/Core/EditorWindow.h"
-//#include <SurvivantRendering/Resources/Texture.h>
-//#include <SurvivantRendering/Core/Buffers/FrameBuffer.h>
+#include "SurvivantEditor/UI/Core/EditorUI.h"
+#include "SurvivantEditor/UI/Core/EditorWindow.h"
+#include "SurvivantApp/Core/App.h"
 
 #include <Transform.h>
-
-// TODO: Implement relevant parts in corresponding libs to get rid of glfw dependency
-#include <GLFW/glfw3.h>
 
 using namespace LibMath;
 using namespace SvCore::Utility;
@@ -37,14 +33,14 @@ using namespace SvRendering::Resources;
 using namespace SvRendering::RHI;
 
 constexpr const char* UNLIT_SHADER_PATH = "assets/shaders/Unlit.glsl";
-constexpr const char* LIT_SHADER_PATH   = "assets/shaders/Lit.glsl";
+constexpr const char* LIT_SHADER_PATH = "assets/shaders/Lit.glsl";
 
-constexpr float  CAM_MOVE_SPEED     = 3.f;
+constexpr float  CAM_MOVE_SPEED = 3.f;
 constexpr Radian CAM_ROTATION_SPEED = 90_deg;
 
 std::shared_ptr<ITexture> GetTexture()
 {
-    static std::shared_ptr<ITexture> texture  = ITexture::Create();
+    static std::shared_ptr<ITexture> texture = ITexture::Create();
     static bool                      isLoaded = false;
 
     if (!isLoaded)
@@ -196,21 +192,14 @@ int main()
     ASSERT(SetWorkingDirectory(GetApplicationDirectory()), "Failed to update working directory");
     SV_LOG("Current working directory: \"%s\"", GetWorkingDirectory().c_str());
 
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    SvApp::Core::App app;
+    SvEditor::UI::Core::EditorWindow window;
 
-    //window
-    //SvUI::Core::EditorWindow window;
     //GLFWwindow* windowPtr = window.GetWindow();
-
     IRenderAPI& renderAPI = IRenderAPI::SetCurrent(EGraphicsAPI::OPENGL);
     renderAPI.Init(true)
-             .SetCapability(ERenderingCapability::DEPTH_TEST, true)
-             .SetCullFace(ECullFace::BACK);
-
-    App::Window::m_textureId;  = dynamic_cast<OpenGLTexture&>(GetDefaultFrameBuffer()).GetId();
+        .SetCapability(ERenderingCapability::DEPTH_TEST, true)
+        .SetCullFace(ECullFace::BACK);
 
     Model model;
 
@@ -227,23 +216,23 @@ int main()
 
     Material whiteMaterial(unlitShader);
     whiteMaterial.GetProperty<std::shared_ptr<ITexture>>("u_diffuse") = GetTexture();
-    whiteMaterial.GetProperty<Vector4>("u_tint")                      = Color::white;
+    whiteMaterial.GetProperty<Vector4>("u_tint") = Color::white;
 
     Material redMaterial(whiteMaterial);
     redMaterial.GetProperty<Vector4>("u_tint") = Color::red;
 
     Material litMaterial(litShader);
     litMaterial.GetProperty<std::shared_ptr<ITexture>>("u_diffuse") = GetTexture();
-    litMaterial.GetProperty<Vector4>("u_tint")                      = Color::white;
-    litMaterial.GetProperty<Vector4>("u_specularColor")             = Color(.2f, .2f, .2f);
-    litMaterial.GetProperty<float>("u_shininess")                   = 32.f;
+    litMaterial.GetProperty<Vector4>("u_tint") = Color::white;
+    litMaterial.GetProperty<Vector4>("u_specularColor") = Color(.2f, .2f, .2f);
+    litMaterial.GetProperty<float>("u_shininess") = 32.f;
 
     const Matrix4 projMat = perspectiveProjection(90_deg, 4.f / 3.f, .01f, 14.f);
 
     Vector3   camPos(0.f, 1.8f, 2.f);
     Transform camTransform(camPos, Quaternion::identity(), Vector3::one());
 
-    const Vector3 testPos      = camPos + Vector3::front();
+    const Vector3 testPos = camPos + Vector3::front();
     const Matrix4 testModelMat = translation(testPos) * scaling(1.5f, .5f, .1f);
 
     Camera cam(projMat);
@@ -262,7 +251,7 @@ int main()
 
     InputManager& im = InputManager::GetInstance();
     {
-        //InputManager::GetInstance().InitWindow(&window);
+        InputManager::GetInstance().InitWindow(&window);
 
         EventManager& em = EventManager::GetInstance();
 
@@ -281,96 +270,92 @@ int main()
         im.AddInputEventBinding<ToggleEvent>(space, &SpaceTranslate);
     }
 
-    //ui
-    //SvUI::Core::EditorUI ui;
-    //window.SetupUI(&ui);
-
     Vector2 moveInput, rotateInput;
 
     im.AddInputBinding({ EKey::W, EKeyState::PRESSED, EInputModifier() }, [&moveInput](const char)
-    {
-        ++moveInput.m_y;
-    });
+        {
+            ++moveInput.m_y;
+        });
 
     im.AddInputBinding({ EKey::W, EKeyState::RELEASED, EInputModifier() }, [&moveInput](const char)
-    {
-        --moveInput.m_y;
-    });
+        {
+            --moveInput.m_y;
+        });
 
     im.AddInputBinding({ EKey::S, EKeyState::PRESSED, EInputModifier() }, [&moveInput](const char)
-    {
-        --moveInput.m_y;
-    });
+        {
+            --moveInput.m_y;
+        });
 
     im.AddInputBinding({ EKey::S, EKeyState::RELEASED, EInputModifier() }, [&moveInput](const char)
-    {
-        ++moveInput.m_y;
-    });
+        {
+            ++moveInput.m_y;
+        });
 
     im.AddInputBinding({ EKey::A, EKeyState::PRESSED, EInputModifier() }, [&moveInput](const char)
-    {
-        --moveInput.m_x;
-    });
+        {
+            --moveInput.m_x;
+        });
 
     im.AddInputBinding({ EKey::A, EKeyState::RELEASED, EInputModifier() }, [&moveInput](const char)
-    {
-        ++moveInput.m_x;
-    });
+        {
+            ++moveInput.m_x;
+        });
 
     im.AddInputBinding({ EKey::D, EKeyState::PRESSED, EInputModifier() }, [&moveInput](const char)
-    {
-        ++moveInput.m_x;
-    });
+        {
+            ++moveInput.m_x;
+        });
 
     im.AddInputBinding({ EKey::D, EKeyState::RELEASED, EInputModifier() }, [&moveInput](const char)
-    {
-        --moveInput.m_x;
-    });
+        {
+            --moveInput.m_x;
+        });
 
     im.AddInputBinding({ EKey::UP, EKeyState::PRESSED, EInputModifier() }, [&rotateInput](const char)
-    {
-        ++rotateInput.m_y;
-    });
+        {
+            ++rotateInput.m_y;
+        });
 
     im.AddInputBinding({ EKey::UP, EKeyState::RELEASED, EInputModifier() }, [&rotateInput](const char)
-    {
-        --rotateInput.m_y;
-    });
+        {
+            --rotateInput.m_y;
+        });
 
     im.AddInputBinding({ EKey::DOWN, EKeyState::PRESSED, EInputModifier() }, [&rotateInput](const char)
-    {
-        --rotateInput.m_y;
-    });
+        {
+            --rotateInput.m_y;
+        });
 
     im.AddInputBinding({ EKey::DOWN, EKeyState::RELEASED, EInputModifier() }, [&rotateInput](const char)
-    {
-        ++rotateInput.m_y;
-    });
+        {
+            ++rotateInput.m_y;
+        });
 
     im.AddInputBinding({ EKey::LEFT, EKeyState::PRESSED, EInputModifier() }, [&rotateInput](const char)
-    {
-        --rotateInput.m_x;
-    });
+        {
+            --rotateInput.m_x;
+        });
 
     im.AddInputBinding({ EKey::LEFT, EKeyState::RELEASED, EInputModifier() }, [&rotateInput](const char)
-    {
-        ++rotateInput.m_x;
-    });
+        {
+            ++rotateInput.m_x;
+        });
 
     im.AddInputBinding({ EKey::RIGHT, EKeyState::PRESSED, EInputModifier() }, [&rotateInput](const char)
-    {
-        ++rotateInput.m_x;
-    });
+        {
+            ++rotateInput.m_x;
+        });
 
     im.AddInputBinding({ EKey::RIGHT, EKeyState::RELEASED, EInputModifier() }, [&rotateInput](const char)
-    {
-        --rotateInput.m_x;
-    });
+        {
+            --rotateInput.m_x;
+        });
 
     im.AddInputBinding({ EKey::R, EKeyState::RELEASED, {} }, [&camTransform, &camPos](const char)
-    {
-        camTransform.setAll(camPos, Quaternion::identity(), Vector3::one());
-    });
+        {
+            camTransform.setAll(camPos, Quaternion::identity(), Vector3::one());
+        });
 
     //im.AddInputBinding({ EKey::ESCAPE, EKeyState::RELEASED, {} }, [&window](const char)
     //{
@@ -388,65 +373,68 @@ int main()
     lightsSSBO->Bind();
     lightsSSBO->SetData(lightMatrices.data(), lightMatrices.size());
 
-    //while (!window.ShouldClose())
-    //{
-    //    timer.tick();
-    //    //glfwPollEvents();
-    //    window.StartRender();
 
-    //    angle += 20_deg * timer.getDeltaTime();
+    //ui
+    App::Window::m_textureId = dynamic_cast<OpenGLTexture&>(GetDefaultFrameBuffer()).GetId();
+    SvEditor::UI::Core::EditorUI ui;
+    window.SetupUI(&ui);
 
-    //    const Matrix4 modelRot  = rotation(angle, Vector3::up());
-    //    const Matrix4 modelMat1 = translation(-1.f, .5f, 0.f);
-    //    const Matrix4 modelMat2 = translation(1.f, .5f, 0.f) * modelRot;
 
-    //    Vector3    newPos = camTransform.getPosition();
-    //    Quaternion newRot = camTransform.getRotation();
+    while (!window.ShouldClose())
+    {
+        timer.tick();
+        //glfwPollEvents();
+        window.StartRender();
 
-    //    g_frameBuffer->Bind();
-    //    renderAPI.SetViewport({ 0, 0 }, { 800, 600 });
+        angle += 20_deg * timer.getDeltaTime();
 
-    //    if (moveInput.magnitudeSquared() > 0.f)
-    //    {
-    //        const Vector3 moveDir = moveInput.m_x * camTransform.worldRight() + moveInput.m_y * camTransform.worldBack();
-    //        newPos += moveDir.normalized() * (CAM_MOVE_SPEED * timer.getDeltaTime());
-    //    }
+        const Matrix4 modelRot  = rotation(angle, Vector3::up());
+        const Matrix4 modelMat1 = translation(-1.f, .5f, 0.f);
+        const Matrix4 modelMat2 = translation(1.f, .5f, 0.f) * modelRot;
 
-    //    if (rotateInput.magnitudeSquared() > 0.f)
-    //    {
-    //        TVector3<Radian> angles = newRot.toEuler(ERotationOrder::YXZ);
+        Vector3    newPos = camTransform.getPosition();
+        Quaternion newRot = camTransform.getRotation();
 
-    //        angles.m_y -= CAM_ROTATION_SPEED * rotateInput.m_x * timer.getDeltaTime();
-    //        angles.m_x += CAM_ROTATION_SPEED * rotateInput.m_y * timer.getDeltaTime();
-    //        angles.m_x = Degree(clamp(angles.m_x.degree(true), -85.f, 85.f));
+        g_frameBuffer->Bind();
+        renderAPI.SetViewport({ 0, 0 }, { 800, 600 });
 
-    //        newRot = Quaternion::fromEuler(angles, ERotationOrder::YXZ);
-    //    }
+        if (moveInput.magnitudeSquared() > 0.f)
+        {
+            const Vector3 moveDir = moveInput.m_x * camTransform.worldRight() + moveInput.m_y * camTransform.worldBack();
+            newPos += moveDir.normalized() * (CAM_MOVE_SPEED * timer.getDeltaTime());
+        }
 
-    //    camTransform.setAll(newPos, newRot, Vector3::one());
+        if (rotateInput.magnitudeSquared() > 0.f)
+        {
+            TVector3<Radian> angles = newRot.toEuler(ERotationOrder::YXZ);
 
-    //    cam.SetView(camTransform.getWorldMatrix().inverse());
-    //    cam.Clear();
+            angles.m_y -= CAM_ROTATION_SPEED * rotateInput.m_x * timer.getDeltaTime();
+            angles.m_x += CAM_ROTATION_SPEED * rotateInput.m_y * timer.getDeltaTime();
+            angles.m_x = Degree(clamp(angles.m_x.degree(true), -85.f, 85.f));
 
-    //    BindCamUBO(cam.GetViewProjection(), camTransform.getWorldPosition());
+            newRot = Quaternion::fromEuler(angles, ERotationOrder::YXZ);
+        }
 
-    //    Frustum camFrustum = cam.GetFrustum();
+        camTransform.setAll(newPos, newRot, Vector3::one());
 
-    //    DrawModel(model, camFrustum, modelMat1, whiteMaterial);
-    //    DrawModel(model, camFrustum, modelMat2, redMaterial);
-    //    DrawModel(model, camFrustum, testModelMat, litMaterial);
+        cam.SetView(camTransform.getWorldMatrix().inverse());
+        cam.Clear();
 
-    //    g_frameBuffer->Unbind();
-    //    renderAPI.SetViewport({ 0, 0 }, { 800, 600 });
+        BindCamUBO(cam.GetViewProjection(), camTransform.getWorldPosition());
 
-    //    window.RenderUI();
-    //    window.EndRender();
+        Frustum camFrustum = cam.GetFrustum();
 
-    //    //glfwSwapBuffers(window.GetWindow());
-    //}
+        DrawModel(model, camFrustum, modelMat1, whiteMaterial);
+        DrawModel(model, camFrustum, modelMat2, redMaterial);
+        DrawModel(model, camFrustum, testModelMat, litMaterial);
 
-    //glfwDestroyWindow(window);
-    glfwTerminate();
+        g_frameBuffer->Unbind();
+        renderAPI.SetViewport({ 0, 0 }, { 800, 600 });
+
+        window.RenderUI();
+        window.EndRender();
+    }
+
 
     return 0;
 }
