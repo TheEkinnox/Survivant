@@ -15,7 +15,7 @@
 //foward declaration
 struct ImFont;
 
-namespace App {
+namespace SvApp {
 	class Window;
 }
 
@@ -31,7 +31,7 @@ namespace SvEditor::UI::Core
 		EditorUI();
 		~EditorUI(); 
 
-		void InitEditorUi(App::Window* p_window);
+		void InitEditorUi(SvApp::Window* p_window);
 
 		void SetSceneTexture(intptr_t p_textureId);
 

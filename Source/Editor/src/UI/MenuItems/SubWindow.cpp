@@ -22,7 +22,7 @@
 //{
 //    std::string str = "Tree callback works";
 //    //p_branch.ForceCloseChildreen();
-//    Core::EventManager::GetInstance().Invoke<UI::EditorUI::DebugEvent>(str.c_str());
+//    SvCore::Events::EventManager::GetInstance().Invoke<UI::EditorUI::DebugEvent>(str.c_str());
 //}
 //
 //

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace App
+namespace SvApp
 {
 #undef MOD_SHIFT
 #undef MOD_CONTROL

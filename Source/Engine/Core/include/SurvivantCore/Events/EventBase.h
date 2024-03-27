@@ -1,7 +1,7 @@
 //EventBase.h
 #pragma once
 
-namespace Core
+namespace SvCore::Events
 {
 	class EventBase
 	{

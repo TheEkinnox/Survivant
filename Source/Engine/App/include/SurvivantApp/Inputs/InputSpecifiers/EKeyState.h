@@ -1,6 +1,6 @@
 #pragma once
 
-namespace App
+namespace SvApp
 {
     enum class EKeyState
     {

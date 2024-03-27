@@ -11,24 +11,24 @@ namespace SvEditor::UI::MenuItems
 	class MenuButton : public Interfaces::IMenuable
 	{
 	public:
-		using KeyPair = std::pair<App::InputManager::KeyboardKeyType, App::InputManager::KeyCallback>;
+		using KeyPair = std::pair<SvApp::InputManager::KeyboardKeyType, SvApp::InputManager::KeyCallback>;
 
-		MenuButton(const std::string& p_name, const App::InputManager::KeyCallback& p_callback);
+		MenuButton(const std::string& p_name, const SvApp::InputManager::KeyCallback& p_callback);
 		MenuButton(
 			const std::string& p_name,
-			const App::InputManager::KeyCallback& p_callback,
-			const App::InputManager::KeyboardKeyType& p_shortcut);
+			const SvApp::InputManager::KeyCallback& p_callback,
+			const SvApp::InputManager::KeyboardKeyType& p_shortcut);
 		~MenuButton()override = default;
 
 		IMenuable* Clone() const override;
 
 		void DisplayAndUpdateMenu() override;
 
-		void AddShortcut(const App::InputManager::KeyboardKeyType& p_shortcut);
+		void AddShortcut(const SvApp::InputManager::KeyboardKeyType& p_shortcut);
 
 	private:
 		std::string						m_name;
 		std::string						m_shortcut;
-		App::InputManager::KeyCallback	m_callback;
+		SvApp::InputManager::KeyCallback	m_callback;
 	};
 }

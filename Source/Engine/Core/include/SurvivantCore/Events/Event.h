@@ -8,7 +8,7 @@
 #include <vector>
 #include <memory>
 
-namespace Core
+namespace SvCore::Events
 {
 	template <typename ...Args>
 	class Event : public EventBase
@@ -55,7 +55,7 @@ namespace Core
 	}
 
 	template<typename ...Args>
-	inline std::vector<Event<>::ListenerId> Event<Args...>::AddListeners(const std::vector<EventDelegate>& p_delegates)
+	inline std::vector<Events::Event<>::ListenerId> Event<Args...>::AddListeners(const std::vector<EventDelegate>& p_delegates)
 	{
 		std::vector<ListenerId> ids(p_delegates.size());
 

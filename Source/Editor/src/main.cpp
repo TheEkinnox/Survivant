@@ -15,7 +15,7 @@
 #include <SurvivantRendering/RHI/IUniformBuffer.h>
 #include <SurvivantRendering/RHI/OpenGL/OpenGLTexture.h>
 
-#include "SurvivantApp/Core/App.h"
+#include "SurvivantEditor/App/EngineApp.h"
 #include "SurvivantApp/Inputs/InputManager.h"
 #include "SurvivantApp/Inputs/KeyboardInputs.h"
 #include "SurvivantApp/Inputs/MouseInputs.h"
@@ -193,7 +193,7 @@ int main()
     ASSERT(SetWorkingDirectory(GetApplicationDirectory()), "Failed to update working directory");
     SV_LOG("Current working directory: \"%s\"", GetWorkingDirectory().c_str());
 
-    SvApp::Core::App app;
+    SvEditor::App::EngineApp app;
     SvEditor::UI::Core::EditorWindow window;
 
     //GLFWwindow* windowPtr = window.GetWindow();
@@ -245,10 +245,11 @@ int main()
     Timer timer;
 
     //event and inputs
-    using namespace Core;
-    using namespace App;
-    using AddEvent = Event<int, int>;
-    class ToggleEvent : public Core::Event<> {};
+    using namespace SvCore;
+    using namespace SvApp;
+    using namespace Events;
+    using AddEvent = Events::Event<int, int>;
+    class ToggleEvent : public Events::Event<> {};
 
     InputManager& im = InputManager::GetInstance();
     {
@@ -257,7 +258,7 @@ int main()
         EventManager& em = EventManager::GetInstance();
 
         AddEvent::EventDelegate printAdd = [](int i, int j) { std::cout << "Add = " << i + j << std::endl; };
-        //ToggleEvent::EventDelegate toggle = std::bind(&App::Window::ToggleFullScreenMode, &window);
+        //ToggleEvent::EventDelegate toggle = std::bind(&SvApp::Window::ToggleFullScreenMode, &window);
         em.AddListenner<AddEvent>(printAdd);
         //em.AddListenner<ToggleEvent>(toggle);
 
@@ -376,7 +377,7 @@ int main()
 
 
     //ui
-    App::Window::m_textureId = dynamic_cast<OpenGLTexture&>(GetDefaultFrameBuffer()).GetId();
+    SvApp::Window::m_textureId = dynamic_cast<OpenGLTexture&>(GetDefaultFrameBuffer()).GetId();
     SvEditor::UI::Core::EditorUI ui;
     window.SetupUI(&ui);
 

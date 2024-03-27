@@ -6,7 +6,7 @@
 
 #include <GLFW/glfw3.h>
 
-using namespace App;
+using namespace SvApp;
 
 void IMKeyCallback(GLFWwindow* /*p_window*/, int p_key, int p_scancode, int p_action, int p_mods)
 {
@@ -34,29 +34,29 @@ void IMMouseCallback(GLFWwindow* p_window, int p_button, int p_action, int p_mod
 
 void WindowCloseCallback(GLFWwindow* /*window*/)
 {
-    Core::EventManager::GetInstance().Invoke<Window::WindowCloseRequest>();
+    SvCore::Events::EventManager::GetInstance().Invoke<Window::WindowCloseRequest>();
 }
 
 void WindowSizeCallback(GLFWwindow* /*window*/, int p_width, int p_height)
 {
-    Core::EventManager::GetInstance().Invoke<Window::OnWindowSize>(p_width, p_height);
+    SvCore::Events::EventManager::GetInstance().Invoke<Window::OnWindowSize>(p_width, p_height);
 }
 
 
 void WindowFramebufferSizeCallback(GLFWwindow* /*window*/, int p_width, int p_height)
 {
     //glViewport (0, 0, p_width, p_height);
-    Core::EventManager::GetInstance().Invoke<Window::OnFrameBufferSize>(p_width, p_height);
+    SvCore::Events::EventManager::GetInstance().Invoke<Window::OnFrameBufferSize>(p_width, p_height);
 }
 
 void WindowContentScaleCallback(GLFWwindow* /*window*/, float p_xscale, float p_yscale)
 {
-    Core::EventManager::GetInstance().Invoke<Window::OnWindowContentScale>(p_xscale, p_yscale);
+    SvCore::Events::EventManager::GetInstance().Invoke<Window::OnWindowContentScale>(p_xscale, p_yscale);
 }
 
 void WindowMinimizeCallback(GLFWwindow* /*window*/, int p_iconified)
 {
-    Core::EventManager::GetInstance().Invoke<Window::WindowMinimize>(p_iconified != 0);
+    SvCore::Events::EventManager::GetInstance().Invoke<Window::WindowMinimize>(p_iconified != 0);
 }
 
 Window::Window(std::string p_name)
@@ -83,7 +83,7 @@ Window::Window(std::string p_name)
     SetupInputManagerCallbacks();
 }
 
-App::Window::Window(std::string p_name, int p_width , int p_height, int p_x, int p_y)
+SvApp::Window::Window(std::string p_name, int p_width , int p_height, int p_x, int p_y)
 {
     //init
     m_monitor = glfwGetPrimaryMonitor();
@@ -106,17 +106,17 @@ App::Window::Window(std::string p_name, int p_width , int p_height, int p_x, int
     SetupInputManagerCallbacks();
 }
 
-App::Window::~Window()
+SvApp::Window::~Window()
 {
     glfwDestroyWindow(m_window);
 }
 
-GLFWwindow* App::Window::GetWindow()
+GLFWwindow* SvApp::Window::GetWindow()
 {
     return m_window;
 }
 
-void App::Window::SetupWindowCallbacks() const
+void SvApp::Window::SetupWindowCallbacks() const
 {
     glfwSetWindowCloseCallback(m_window, WindowCloseCallback);
     glfwSetWindowSizeCallback(m_window, WindowSizeCallback);
@@ -124,35 +124,35 @@ void App::Window::SetupWindowCallbacks() const
     glfwSetWindowIconifyCallback(m_window, WindowMinimizeCallback);
 }
 
-void App::Window::SetupInputManagerCallbacks() const
+void SvApp::Window::SetupInputManagerCallbacks() const
 {
     glfwSetKeyCallback(m_window, IMKeyCallback);
     glfwSetMouseButtonCallback(m_window, IMMouseCallback);
 }
 
-void App::Window::GetMousePos(double& p_x, double& p_y) const
+void SvApp::Window::GetMousePos(double& p_x, double& p_y) const
 {
     glfwGetCursorPos(m_window, &p_x, &p_y);
 }
 
-void App::Window::GetWindowSize(int& p_width, int& p_height) const
+void SvApp::Window::GetWindowSize(int& p_width, int& p_height) const
 {
     glfwGetWindowSize(m_window, &p_width, &p_height);
 }
 
-bool App::Window::EvaluateInput(EKey p_key, EKeyState p_state, EInputModifier p_modif)
+bool SvApp::Window::EvaluateInput(EKey p_key, EKeyState p_state, EInputModifier p_modif)
 {
     return  static_cast<int>(p_state) == glfwGetKey(m_window, static_cast<int>(p_key)) &&
             EvaluteModif(p_modif);
 }
 
-bool App::Window::EvaluateInput(EMouseButton p_button, EMouseButtonState p_state, EInputModifier p_modif)
+bool SvApp::Window::EvaluateInput(EMouseButton p_button, EMouseButtonState p_state, EInputModifier p_modif)
 {
     return  static_cast<int>(p_state) == glfwGetMouseButton(m_window, static_cast<int>(p_button)) &&
             EvaluteModif(p_modif);
 }
 
-bool App::Window::EvaluteModif(EInputModifier p_modif)
+bool SvApp::Window::EvaluteModif(EInputModifier p_modif)
 {
     int disiredModif = static_cast<int>(p_modif);
     int currentModif = 0;
@@ -171,7 +171,7 @@ bool App::Window::EvaluteModif(EInputModifier p_modif)
     return disiredModif == currentModif;
 }
 
-void App::Window::ToggleFullScreenMode()
+void SvApp::Window::ToggleFullScreenMode()
 {
     const GLFWvidmode* mode = glfwGetVideoMode(m_monitor);
     glfwSetWindowMonitor(
@@ -186,54 +186,54 @@ void App::Window::ToggleFullScreenMode()
     m_isInFullscreen = !m_isInFullscreen;
 }
 
-void App::Window::StartRender()
+void SvApp::Window::StartRender()
 {
     glfwPollEvents();
 }
 
 
-void App::Window::EndRender()
+void SvApp::Window::EndRender()
 {
     glfwSwapBuffers(m_window);
 }
 
-bool App::Window::ShouldClose()
+bool SvApp::Window::ShouldClose()
 {
     return glfwWindowShouldClose(m_window);
 }
 
-void App::Window::SetWindowSizeLimits(int p_minWidth, int p_minHeight, int p_maxWidth, int p_maxHeight)
+void SvApp::Window::SetWindowSizeLimits(int p_minWidth, int p_minHeight, int p_maxWidth, int p_maxHeight)
 {
     glfwSetWindowSizeLimits(m_window, p_minWidth, p_minHeight, p_maxWidth, p_maxHeight);
 }
 
-void App::Window::SetAspectRatio(int p_width, int p_height)
+void SvApp::Window::SetAspectRatio(int p_width, int p_height)
 {
     glfwSetWindowAspectRatio(m_window, p_width, p_height);
 }
 
-void App::Window::SetWindowIcons(std::vector<GLFWimage> p_images)
+void SvApp::Window::SetWindowIcons(std::vector<GLFWimage> p_images)
 {
     glfwSetWindowIcon(m_window, static_cast<int>(p_images.size()), p_images.data());
 }
 
-void App::Window::SetFocusWindow()
+void SvApp::Window::SetFocusWindow()
 {
     glfwFocusWindow(m_window);
 }
 
-void App::Window::WindowCloseRequest::BeforeInvoke()
+void SvApp::Window::WindowCloseRequest::BeforeInvoke()
 {
     m_cancelRequest = false;
 }
 
-void App::Window::WindowCloseRequest::AfterInvoke()
+void SvApp::Window::WindowCloseRequest::AfterInvoke()
 {
     if (!m_cancelRequest)
-        Core::EventManager::GetInstance().Invoke<WindowClosing>();
+        SvCore::Events::EventManager::GetInstance().Invoke<WindowClosing>();
 }
 
-void App::Window::WindowCloseRequest::InterceptCloseRequest()
+void SvApp::Window::WindowCloseRequest::InterceptCloseRequest()
 {
     m_cancelRequest = true;
 }

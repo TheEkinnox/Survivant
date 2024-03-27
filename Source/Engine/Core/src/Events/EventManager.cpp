@@ -2,11 +2,12 @@
 
 #include "SurvivantCore/Events/EventManager.h"
 
-using namespace Core;
-
-EventManager& Core::EventManager::GetInstance()
+namespace SvCore::Events
 {
-    static EventManager s_instance;
+    EventManager& EventManager::GetInstance()
+    {
+        static EventManager s_instance;
 
-    return s_instance;
+        return s_instance;
+    }
 }

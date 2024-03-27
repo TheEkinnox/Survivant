@@ -48,8 +48,8 @@ namespace SvEditor::UI::Core
         m_main->SetMenuBar(CreateMenuBar());
 
         //TODO : add spawn save m_panel on event close request
-        ::Core::EventManager::GetInstance().AddListenner<App::Window::WindowCloseRequest>(
-            App::Window::WindowCloseRequest::EventDelegate(std::bind(&EditorUI::TryCreateSavePanel, this)));
+        SvCore::Events::EventManager::GetInstance().AddListenner<SvApp::Window::WindowCloseRequest>(
+            SvApp::Window::WindowCloseRequest::EventDelegate(std::bind(&EditorUI::TryCreateSavePanel, this)));
 
         //fonts
         ImFontConfig config;
@@ -69,13 +69,13 @@ namespace SvEditor::UI::Core
     {
     }
 
-    void EditorUI::InitEditorUi(App::Window* p_window)
+    void EditorUI::InitEditorUi(SvApp::Window* p_window)
     {
         ImGui_ImplGlfw_InitForOpenGL(p_window->GetWindow(), true);
         //#ifdef __EMSCRIPTEN__
         //    ImGui_ImplGlfw_InstallEmscriptenCanvasResizeCallback("#canvas");
         //#endif
-        ImGui_ImplOpenGL3_Init(App::GLSL_Version);
+        ImGui_ImplOpenGL3_Init(SvApp::GLSL_Version);
     }
 
     void EditorUI::SetSceneTexture(intptr_t p_textureId)
@@ -143,7 +143,7 @@ namespace SvEditor::UI::Core
 
     MenuBar EditorUI::CreateMenuBar()
     {
-        using namespace App;
+        using namespace SvApp;
         MenuBar menuBar;
         auto& menuList = menuBar.m_menus;
 
@@ -156,7 +156,7 @@ namespace SvEditor::UI::Core
         //add buton with a keyboard shortcut
         menu1.m_items.emplace_back(std::make_unique<MenuButton>(
             "Exit",
-            [](char) { ::Core::EventManager::GetInstance().Invoke<App::Window::WindowCloseRequest>(); },
+            [](char) { SvCore::Events::EventManager::GetInstance().Invoke<SvApp::Window::WindowCloseRequest>(); },
             InputManager::KeyboardKeyType(
                 EKey::F11,
                 EKeyState::PRESSED,
@@ -249,7 +249,7 @@ namespace SvEditor::UI::Core
         static int i = 0;
 
         //TODO: remove debug message "Created Test Panel"
-        ::Core::EventManager::GetInstance().Invoke<EditorUI::DebugEvent>("Created Test Panel");
+        SvCore::Events::EventManager::GetInstance().Invoke<EditorUI::DebugEvent>("Created Test Panel");
 
         return *m_currentPanels.insert(std::make_shared<TestPanel>(std::string("test-") + std::to_string(i++))).first;
     }
@@ -262,7 +262,7 @@ namespace SvEditor::UI::Core
         if (val % 20 == 0 || SavePanel::GetPanelCount() != 0)
         {
             CreateSavePanel();
-            App::Window::WindowCloseRequest::InterceptCloseRequest();
+            SvApp::Window::WindowCloseRequest::InterceptCloseRequest();
         }
     }
 

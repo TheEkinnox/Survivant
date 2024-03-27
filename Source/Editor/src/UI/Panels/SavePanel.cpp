@@ -19,9 +19,9 @@ namespace SvEditor::UI::Panels
         s_panelCount++;
 
         m_options.m_buttons.push_back(PanelButton("Save",
-            []() { Core::EventManager::GetInstance().Invoke<App::Window::WindowClosing>(); }));
+            []() { SvCore::Events::EventManager::GetInstance().Invoke<SvApp::Window::WindowClosing>(); }));
         m_options.m_buttons.push_back(PanelButton("Don't Save",
-            []() { Core::EventManager::GetInstance().Invoke<App::Window::WindowClosing>(); }));
+            []() { SvCore::Events::EventManager::GetInstance().Invoke<SvApp::Window::WindowClosing>(); }));
         m_options.m_buttons.push_back(PanelButton("Close",
             [this]() { m_open = false; }));
     }

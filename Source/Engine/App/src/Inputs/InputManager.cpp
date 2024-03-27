@@ -5,16 +5,16 @@
 
 #include <tuple>
 
-using namespace App;
+using namespace SvApp;
 
-InputManager& App::InputManager::GetInstance()
+InputManager& SvApp::InputManager::GetInstance()
 {
 	static InputManager s_instance;
 
 	return s_instance;
 }
 
-std::string App::InputManager::KeyBindingToString(const KeyboardKeyType& p_key)
+std::string SvApp::InputManager::KeyBindingToString(const KeyboardKeyType& p_key)
 {
 	std::string str;
 	auto& infoRef = p_key.m_inputInfo;
@@ -31,7 +31,7 @@ std::string App::InputManager::KeyBindingToString(const KeyboardKeyType& p_key)
 	return str;
 }
 
-std::string App::InputManager::KeyNameToString(const EKey& p_name)
+std::string SvApp::InputManager::KeyNameToString(const EKey& p_name)
 {
 	switch (p_name)
 	{
@@ -161,22 +161,22 @@ std::string App::InputManager::KeyNameToString(const EKey& p_name)
 	}
 }
 
-std::string App::InputManager::KeyModifToString(const EInputModifier& p_modif)
+std::string SvApp::InputManager::KeyModifToString(const EInputModifier& p_modif)
 {
 	switch (p_modif)
 	{
-	case App::EInputModifier::MOD_SHIFT:		return "SHIFT";
-	case App::EInputModifier::MOD_CONTROL:		return "CONTROL";
-	case App::EInputModifier::MOD_ALT:			return "ALT";
-	case App::EInputModifier::MOD_SUPER:		return "SUPER";
-	case App::EInputModifier::MOD_CAPS_LOCK:	return "CAPS_LOCK";
-	case App::EInputModifier::MOD_NUM_LOCK:		return "NUM_LOCK";
+	case SvApp::EInputModifier::MOD_SHIFT:		return "SHIFT";
+	case SvApp::EInputModifier::MOD_CONTROL:		return "CONTROL";
+	case SvApp::EInputModifier::MOD_ALT:			return "ALT";
+	case SvApp::EInputModifier::MOD_SUPER:		return "SUPER";
+	case SvApp::EInputModifier::MOD_CAPS_LOCK:	return "CAPS_LOCK";
+	case SvApp::EInputModifier::MOD_NUM_LOCK:		return "NUM_LOCK";
 
 	default:									return std::string();
 	}
 }
 
-EKey App::InputManager::GetModifKey(const EInputModifier& p_modif)
+EKey SvApp::InputManager::GetModifKey(const EInputModifier& p_modif)
 {
 	//gotat put this if I want to use enum. guess not
 //#undef MOD_SHIFT
@@ -184,24 +184,24 @@ EKey App::InputManager::GetModifKey(const EInputModifier& p_modif)
 //#undef MOD_ALT
 	switch (p_modif)
 	{
-	case App::EInputModifier::MOD_SHIFT:
+	case SvApp::EInputModifier::MOD_SHIFT:
 		return EKey::LEFT_SHIFT;
-	case App::EInputModifier::MOD_CONTROL:
+	case SvApp::EInputModifier::MOD_CONTROL:
 		return EKey::LEFT_CONTROL;
-	case App::EInputModifier::MOD_ALT:
+	case SvApp::EInputModifier::MOD_ALT:
 		return EKey::LEFT_ALT;
-	case App::EInputModifier::MOD_SUPER:
+	case SvApp::EInputModifier::MOD_SUPER:
 		return EKey::LEFT_SUPER;
-	case App::EInputModifier::MOD_CAPS_LOCK:
+	case SvApp::EInputModifier::MOD_CAPS_LOCK:
 		return EKey::CAPS_LOCK;
-	case App::EInputModifier::MOD_NUM_LOCK:
+	case SvApp::EInputModifier::MOD_NUM_LOCK:
 		return EKey::NUM_LOCK;
 	default:
 		return EKey();
 	}
 }
 
-void App::InputManager::InitWindow(Window* p_window)
+void SvApp::InputManager::InitWindow(Window* p_window)
 {
 	if (p_window == nullptr)
 		return;
@@ -209,7 +209,7 @@ void App::InputManager::InitWindow(Window* p_window)
 	m_window = p_window;
 }
 
-void App::InputManager::CallInput(const KeyboardKeyType& p_type, char p_scancode)
+void SvApp::InputManager::CallInput(const KeyboardKeyType& p_type, char p_scancode)
 {
 	auto callback = m_keyCallbacks.find(p_type);
 
@@ -220,14 +220,14 @@ void App::InputManager::CallInput(const KeyboardKeyType& p_type, char p_scancode
 	callback->second(p_scancode);
 }
 
-void App::InputManager::AddInputBinding(
+void SvApp::InputManager::AddInputBinding(
 	const KeyboardKeyType& p_type, 
 	const KeyCallback& p_callback)
 {
 	m_keyCallbacks.emplace(p_type, p_callback);
 }
 
-void App::InputManager::CallInput(const MouseKeyType& p_type, float p_x, float p_y)
+void SvApp::InputManager::CallInput(const MouseKeyType& p_type, float p_x, float p_y)
 {
 	auto callback = m_mouseKeyCallbacks.find(p_type);
 
@@ -238,34 +238,34 @@ void App::InputManager::CallInput(const MouseKeyType& p_type, float p_x, float p
 	callback->second(p_x, p_y);
 }
 
-void App::InputManager::CallInput(const MouseKeyType& p_type)
+void SvApp::InputManager::CallInput(const MouseKeyType& p_type)
 {
 	double i, j;
 	GetMousePos(i, j);
 	CallInput(p_type, static_cast<float>(i), static_cast<float>(j));
 }
 
-void App::InputManager::AddInputBinding(const MouseKeyType& p_type, const MouseCallback& p_callback)
+void SvApp::InputManager::AddInputBinding(const MouseKeyType& p_type, const MouseCallback& p_callback)
 {
 	m_mouseKeyCallbacks.emplace(p_type, p_callback);
 }
 
-void App::InputManager::GetMousePos(double& p_x, double& p_y)
+void SvApp::InputManager::GetMousePos(double& p_x, double& p_y)
 {
 	m_window->GetMousePos(p_x, p_y);
 }
 
-bool App::InputManager::EvaluateInput(const KeyboardKeyType& p_key)
+bool SvApp::InputManager::EvaluateInput(const KeyboardKeyType& p_key)
 {
 	if (m_window == nullptr)
 		return false;
 
-	//std::apply(std::bind_front(&App::Window::EvaluateInput, m_window), p_key.m_inputInfo);
+	//std::apply(std::bind_front(&SvApp::Window::EvaluateInput, m_window), p_key.m_inputInfo);
 	auto& info = p_key.m_inputInfo;
 	return m_window->EvaluateInput(std::get<0>(info), std::get<1>(info), std::get<2>(info));
 }
 
-bool App::InputManager::EvaluateInput(const MouseKeyType& p_key)
+bool SvApp::InputManager::EvaluateInput(const MouseKeyType& p_key)
 {
 	if (m_window == nullptr)
 		return false;

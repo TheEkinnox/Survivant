@@ -9,9 +9,9 @@
 #include <memory>
 #include <type_traits>
 
-#define SV_EVENT_MANAGER() ::Core::EventManager::GetInstance()
+#define SV_EVENT_MANAGER() SvCore::Events::EventManager::GetInstance()
 
-namespace Core
+namespace SvCore::Events
 {
 	class EventManager
 	{
@@ -42,7 +42,7 @@ namespace Core
 		EventId AddListenner(const U& p_callback);
 
 		template <class T>
-		bool RemoveListenner(const Event<>::ListenerId& p_callback);
+		bool RemoveListenner(const Events::Event<>::ListenerId& p_callback);
 
 	private:
 		template <class T>
@@ -75,7 +75,7 @@ namespace Core
 	}
 
 	template <class T, class U>
-	inline Event<>::ListenerId EventManager::AddListenner(const U& p_callback)
+	inline Events::Event<>::ListenerId EventManager::AddListenner(const U& p_callback)
 	{
 		if constexpr (!std::is_same_v<EventBase, T> && !std::is_base_of_v<EventBase, T>)
 			return nullptr;
@@ -89,7 +89,7 @@ namespace Core
 	}
 
 	template<class T>
-	inline bool EventManager::RemoveListenner(const Event<>::ListenerId& p_id)
+	inline bool EventManager::RemoveListenner(const Events::Event<>::ListenerId& p_id)
 	{
 		if constexpr (!std::is_same_v<EventBase, T> && !std::is_base_of_v<EventBase, T>)
 			return false;

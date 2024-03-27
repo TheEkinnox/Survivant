@@ -13,7 +13,7 @@
 #include <string>
 
 
-namespace App
+namespace SvApp
 {
 	//foward declaration
 	class Window;
@@ -22,7 +22,7 @@ namespace App
 	{
 	public:
 		//events
-		using WindowCloseEvent = Core::Event<>;
+		using WindowCloseEvent = SvCore::Events::Event<>;
 
 		using KeyboardKeyType = InputType<EKey, EKeyState, EInputModifier>;
 		using KeyCallbackParam = char;
@@ -70,20 +70,20 @@ namespace App
 		std::unordered_map<KeyboardKeyType, KeyCallback> m_keyCallbacks;
 		std::unordered_map<MouseKeyType, MouseCallback> m_mouseKeyCallbacks;
 
-		App::Window* m_window = nullptr;
+		SvApp::Window* m_window = nullptr;
 	};
 
 	template<class T, typename ...Args>
 	void InputManager::AddInputEventBinding(const KeyboardKeyType& p_type, std::tuple<Args...>(*p_translate)(KeyCallbackParam))
 	{
-		if constexpr (!std::is_base_of_v<Core::Event<Args...>, T> && !std::is_same_v<Core::Event<Args...>, T>)
+		if constexpr (!std::is_base_of_v<SvCore::Events::Event<Args...>, T> && !std::is_same_v<SvCore::Events::Event<Args...>, T>)
 			return;
 
 		//needs to capture a copy of translate ptr
 		KeyCallback callback = 
 			[p_translate](KeyCallbackParam p_1)
 			{ 
-				Core::EventManager::GetInstance().Invoke<T>(p_translate(p_1));
+				SvCore::Events::EventManager::GetInstance().Invoke<T>(p_translate(p_1));
 			};
 
 		m_keyCallbacks.emplace(p_type, callback);
@@ -93,14 +93,14 @@ namespace App
 	template<class T, typename ...Args>
 	inline void InputManager::AddInputEventBinding(const MouseKeyType& p_type, std::tuple<Args...>(*p_translate)(float, float))
 	{
-		if constexpr (!std::is_base_of_v<Core::Event<Args...>, T> && !std::is_same_v<Core::Event<Args...>, T>)
+		if constexpr (!std::is_base_of_v<SvCore::Events::Event<Args...>, T> && !std::is_same_v<SvCore::Events::Event<Args...>, T>)
 			return;
 
 		//needs to capture a copy of translate ptr
 		MouseCallback callback =
 			[p_translate](float p_1, float p_2)
 			{
-				Core::EventManager::GetInstance().Invoke<T>(p_translate(p_1, p_2));
+				SvCore::Events::EventManager::GetInstance().Invoke<T>(p_translate(p_1, p_2));
 			};
 
 		m_mouseKeyCallbacks.emplace(p_type, callback);

@@ -12,17 +12,17 @@
 
 namespace SvEditor::UI::Core
 {
-	EditorWindow::EditorWindow() : App::Window()
+	EditorWindow::EditorWindow() : SvApp::Window()
 	{
 		m_shouldClose = 0;
 		m_ui = nullptr;
 
-		::Core::EventManager::GetInstance().AddListenner<App::Window::WindowClosing>(([this]() { m_shouldClose = true; }));
+		SvCore::Events::EventManager::GetInstance().AddListenner<SvApp::Window::WindowClosing>(([this]() { m_shouldClose = true; }));
 	}
 
 	void EditorWindow::StartRender()
 	{
-		App::Window::StartRender();
+		SvApp::Window::StartRender();
 		m_ui->StartFrameUpdate();
 	}
 
@@ -34,7 +34,7 @@ namespace SvEditor::UI::Core
 	void EditorWindow::EndRender()
 	{
 		m_ui->EndFrameUpdate();
-		App::Window::EndRender();
+		SvApp::Window::EndRender();
 	}
 
 	bool EditorWindow::ShouldClose()

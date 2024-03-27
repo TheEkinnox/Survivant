@@ -11,7 +11,7 @@ struct GLFWwindow;
 struct GLFWmonitor;
 struct GLFWimage;
 
-namespace App
+namespace SvApp
 {
 	constexpr const char* GLSL_Version = "#version 330"; //#version 330 core
 	
@@ -27,7 +27,7 @@ namespace App
 		/// <summary>
 		/// Request to close window
 		/// </summary>	
-		class WindowCloseRequest : public Core::Event<> 
+		class WindowCloseRequest : public SvCore::Events::Event<>
 		{
 		public:
 			void BeforeInvoke() override;
@@ -42,27 +42,27 @@ namespace App
 		/// <summary>
 		/// Request to close window
 		/// </summary>	
-		class WindowClosing : public Core::Event<> {};
+		class WindowClosing : public SvCore::Events::Event<> {};
 
 		/// <summary>
 		/// (width, height)
 		/// </summary>
-		class OnWindowSize : public Core::Event<int, int> {};
+		class OnWindowSize : public SvCore::Events::Event<int, int> {};
 
 		/// <summary>
 		/// (width, height) //TODO: unit/ de mesure
 		/// </summary>	
-		class OnFrameBufferSize : public Core::Event<int, int> {};
+		class OnFrameBufferSize : public SvCore::Events::Event<int, int> {};
 
 		/// <summary>
 		/// Ratio between the current DPI and the platform's default DPI (xscale, yscale)
 		/// </summary>
-		class OnWindowContentScale : public Core::Event<float, float> {};
+		class OnWindowContentScale : public SvCore::Events::Event<float, float> {};
 
 		/// <summary>
 		/// (isMinimized)
 		/// </summary>
-		class WindowMinimize : public Core::Event<bool> {};
+		class WindowMinimize : public SvCore::Events::Event<bool> {};
 
 
 		Window(std::string p_name = "Window");

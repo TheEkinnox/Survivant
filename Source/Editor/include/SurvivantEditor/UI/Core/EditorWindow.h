@@ -12,7 +12,7 @@
 
 namespace SvEditor::UI::Core
 {
-	class EditorWindow : public App::Window
+	class EditorWindow : public SvApp::Window
 	{
 	public:
 		EditorWindow();
@@ -26,7 +26,7 @@ namespace SvEditor::UI::Core
 		void SetupUI(EditorUI* p_ui);
 
 	private:
-		using KeyMap = std::unordered_map<App::InputManager::KeyboardKeyType, App::InputManager::KeyCallback>;
+		using KeyMap = std::unordered_map<SvApp::InputManager::KeyboardKeyType, SvApp::InputManager::KeyCallback>;
 
 		//init on creation
 		EditorUI*	m_ui;

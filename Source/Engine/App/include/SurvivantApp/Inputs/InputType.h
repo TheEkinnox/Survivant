@@ -7,7 +7,7 @@
 #include <functional>
 #include <tuple>
 
-namespace App
+namespace SvApp
 {
 	template<typename ...Args>
 	class InputType : public InputTypeBase
@@ -46,9 +46,9 @@ namespace App
 
 	
 	template<typename ...Args>
-	struct std::hash<App::InputType<Args...>>
+	struct std::hash<SvApp::InputType<Args...>>
 	{
-		std::size_t operator()(const App::InputType<Args...>& p_this) const
+		std::size_t operator()(const SvApp::InputType<Args...>& p_this) const
 		{
 			p_this;
 			SvCore::Utility::hash_tuple hasher;

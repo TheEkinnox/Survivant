@@ -1,6 +1,6 @@
 #pragma once
 
-namespace App
+namespace SvApp
 {
     /**
      * \brief Wrapper for GLFW_KEY_*

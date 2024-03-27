@@ -2,7 +2,7 @@
 
 #pragma once
 
-namespace App
+namespace SvApp
 {
 	class InputTypeBase
 	{
