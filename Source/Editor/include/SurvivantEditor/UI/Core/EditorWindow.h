@@ -15,22 +15,25 @@ namespace SvEditor::UI::Core
 	class EditorWindow : public SvApp::Window
 	{
 	public:
-		EditorWindow();
+		EditorWindow(intptr_t p_sceneTexture);
 		~EditorWindow() = default;
 
-		void StartRender() override;
+		void Update() override;
 		void RenderUI();
 		void EndRender() override;
 		bool ShouldClose() override;
 
-		void SetupUI(EditorUI* p_ui);
+		void SetupUI(intptr_t p_sceneTexture);
+
+		EditorUI& GetUI();
 
 	private:
 		using KeyMap = std::unordered_map<SvApp::InputManager::KeyboardKeyType, SvApp::InputManager::KeyCallback>;
 
 		//init on creation
-		EditorUI*	m_ui;
-		bool		m_shouldClose = false; 
-		KeyMap		m_keyInputCallbacks;
+		std::unique_ptr<EditorUI>	m_ui;
+		bool						m_shouldClose = false; 
+		KeyMap						m_keyInputCallbacks;
+
 	};
 }

@@ -80,13 +80,13 @@ namespace SvEditor::UI::Core
 
     void EditorUI::SetSceneTexture(intptr_t p_textureId)
     {
-        //setup Scene panel
+        //setup Level panel
         ScenePanel::SetSceneTexture(p_textureId);
     }
 
     void EditorUI::StartFrameUpdate()
     {
-        // Start the Dear ImGui frame
+        // Update the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();

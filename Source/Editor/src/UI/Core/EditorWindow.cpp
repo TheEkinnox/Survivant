@@ -12,17 +12,20 @@
 
 namespace SvEditor::UI::Core
 {
-	EditorWindow::EditorWindow() : SvApp::Window()
+	EditorWindow::EditorWindow(intptr_t p_sceneTexture) : SvApp::Window()
 	{
 		m_shouldClose = 0;
-		m_ui = nullptr;
 
 		SvCore::Events::EventManager::GetInstance().AddListenner<SvApp::Window::WindowClosing>(([this]() { m_shouldClose = true; }));
+
+		m_ui = std::make_unique<EditorUI>();
+		m_ui->InitEditorUi(this);
+		m_ui->SetSceneTexture(p_sceneTexture);
 	}
 
-	void EditorWindow::StartRender()
+	void EditorWindow::Update()
 	{
-		SvApp::Window::StartRender();
+		SvApp::Window::Update();
 		m_ui->StartFrameUpdate();
 	}
 
@@ -43,11 +46,14 @@ namespace SvEditor::UI::Core
 		return Window::ShouldClose() && m_shouldClose;
 	}
 
-	void EditorWindow::SetupUI(EditorUI* p_ui)
+	void UI::Core::EditorWindow::SetupUI(intptr_t p_sceneTexture)
 	{
-		m_ui = p_ui;
-		m_ui->InitEditorUi(this);
-		p_ui->SetSceneTexture(static_cast<intptr_t>(m_textureId));
+		m_ui->SetSceneTexture(p_sceneTexture);
+	}
+
+	EditorUI& UI::Core::EditorWindow::GetUI()
+	{
+		return *m_ui;
 	}
 }
 

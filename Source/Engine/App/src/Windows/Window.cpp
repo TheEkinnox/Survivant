@@ -186,7 +186,7 @@ void SvApp::Window::ToggleFullScreenMode()
     m_isInFullscreen = !m_isInFullscreen;
 }
 
-void SvApp::Window::StartRender()
+void SvApp::Window::Update()
 {
     glfwPollEvents();
 }

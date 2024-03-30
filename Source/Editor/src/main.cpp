@@ -78,37 +78,6 @@ ITexture& GetDefaultFrameBuffer()
 
     isInitialized = true;
     return *color;
-
-    //static GLuint textureId;
-
-    //if (textureId == 0)
-    //{
-    //    glGenFramebuffers(1, &frameBufferId);
-    //    glBindFramebuffer(GL_FRAMEBUFFER, frameBufferId);
-
-    //    glGenTextures(1, &textureId);
-    //    glBindTexture(GL_TEXTURE_2D, textureId);
-
-    //    //screen width here
-    //    constexpr GLsizei width = 800;
-    //    constexpr GLsizei height = 600;
-
-    //    //Vector4 c(0.5);
-    //    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-
-    //    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    //    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    //    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureId, 0);
-
-
-    //    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
-    //    {
-    //        int i = 0; i;
-    //    }
-    //}
-
-    //return textureId;
 }
 
 std::tuple<int, int> AddInputTranslate(char i)
@@ -186,22 +155,40 @@ void DrawModel(const Model& p_model, const Frustum& p_viewFrustum, const Matrix4
     }
 }
 
+bool testMain()
+{
+    SvEditor::App::EngineApp app;
+
+    app.Init();
+    app.Run();
+
+
+    return true;
+}
+
 int main()
 {
+    if (testMain())
+        return 0;
+
+    int i = 0; i;
+
     SvCore::Debug::Logger::GetInstance().SetFile("debug.log");
 
     ASSERT(SetWorkingDirectory(GetApplicationDirectory()), "Failed to update working directory");
     SV_LOG("Current working directory: \"%s\"", GetWorkingDirectory().c_str());
 
-    SvEditor::App::EngineApp app;
-    SvEditor::UI::Core::EditorWindow window;
 
+    SvEditor::App::EngineApp app;
+
+    //app.Init();
     //GLFWwindow* windowPtr = window.GetWindow();
     IRenderAPI& renderAPI = IRenderAPI::SetCurrent(EGraphicsAPI::OPENGL);
     renderAPI.Init(true)
         .SetCapability(ERenderingCapability::DEPTH_TEST, true)
         .SetCullFace(ECullFace::BACK);
 
+    SvEditor::UI::Core::EditorWindow window(dynamic_cast<OpenGLTexture&>(GetDefaultFrameBuffer()).GetId());
     Model model;
 
     ASSERT(model.Load("assets/models/cube.obj"), "Failed to load model");
@@ -377,16 +364,16 @@ int main()
 
 
     //ui
-    SvApp::Window::m_textureId = dynamic_cast<OpenGLTexture&>(GetDefaultFrameBuffer()).GetId();
-    SvEditor::UI::Core::EditorUI ui;
-    window.SetupUI(&ui);
+    //SvApp::Window::m_textureId = dynamic_cast<OpenGLTexture&>(GetDefaultFrameBuffer()).GetId();
+    //SvEditor::UI::Core::EditorUI ui;
+    //window.SetupUI(&ui);
 
 
     while (!window.ShouldClose())
     {
         timer.tick();
         //glfwPollEvents();
-        window.StartRender();
+        window.Update();
 
         angle += 20_deg * timer.getDeltaTime();
 

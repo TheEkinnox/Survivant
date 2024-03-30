@@ -72,7 +72,7 @@ namespace SvApp
 		GLFWwindow* GetWindow();
 		void ToggleFullScreenMode();
 
-		virtual void StartRender();
+		virtual void Update();
 		virtual void EndRender();
 		virtual bool ShouldClose();
 
@@ -93,9 +93,6 @@ namespace SvApp
 		void SetWindowIcons(std::vector<GLFWimage> p_images);
 
 		void SetFocusWindow();
-
-		int GetTextureId() { return m_textureId; };
-		static inline int m_textureId = 0;
 
 	protected:
 		void SetupWindowCallbacks()const;

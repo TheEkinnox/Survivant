@@ -30,6 +30,7 @@ namespace SvEditor::UI::Panels
 
 		static inline SvCore::Utility::UnusedIdGenerator	s_idGenerator;
 		static inline intptr_t								s_sceneTexture;
+		static inline intptr_t								s_sceneTexture;
 
 		PanelButtonList		m_buttons;
 		PanelImage			m_image;

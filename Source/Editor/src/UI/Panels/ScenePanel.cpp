@@ -11,12 +11,10 @@
 
 namespace SvEditor::UI::Panels
 {
-	ScenePanel::ScenePanel()
+	ScenePanel::ScenePanel() :
+		m_image(s_sceneTexture)
 	{
-		ASSERT(s_sceneTexture != 0, "Set ScenePanel's scene texture with static function: SetSceneTexture()");
-
 		m_name = GetUniqueName(NAME, s_idGenerator.GetUnusedId());
-		m_image.SetTexture(s_sceneTexture);
 
 		//TODO : Add ScenePanel button callbacks
 		m_buttons.m_buttons.reserve(3);
