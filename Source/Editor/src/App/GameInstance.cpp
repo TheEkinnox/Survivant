@@ -10,10 +10,14 @@ namespace SvEditor::App
     void GameInstance::Init()
     {
         //init here
+        int i = 0; i;
+
     }
 
     void GameInstance::Update()
     {
+        m_worldContext->m_currentLevel->UpdateLevel();
+        m_worldContext->m_currentLevel->RenderLevel();
     }
 
     void GameInstance::InitializeStandalone()
@@ -33,6 +37,6 @@ namespace SvEditor::App
     {
         //an engine will exist before any GameInstances
         ASSERT(Engine::g_engine != nullptr, "Global engine not defined before GameInstance");
-        return Engine::g_engine.get();
+        return Engine::g_engine;
     }
 }

@@ -18,9 +18,9 @@ namespace SvEditor::UI::Panels
 
 		//TODO : Add ScenePanel button callbacks
 		m_buttons.m_buttons.reserve(3);
-		m_buttons.m_buttons.push_back(PanelButton(" Start |> "));
-		m_buttons.m_buttons.push_back(PanelButton(" Pause || "));
-		m_buttons.m_buttons.push_back(PanelButton(" Frame -> "));
+		m_buttons.m_buttons.push_back(PanelButton(" Start |> ", s_playListenners));
+		m_buttons.m_buttons.push_back(PanelButton(" Pause || ", s_pauseListenners));
+		m_buttons.m_buttons.push_back(PanelButton(" Frame -> ", s_frameListenners));
 	}
 
 	ScenePanel::~ScenePanel()
@@ -54,4 +54,35 @@ namespace SvEditor::UI::Panels
 		return flags;
 	}
 
+	size_t ScenePanel::AddPlayListenner(const PanelButton::OnButtonPressEvent::EventDelegate& p_callback)
+	{
+		return s_playListenners.AddListener(p_callback);
+	}
+
+	size_t ScenePanel::AddPauseListenner(const PanelButton::OnButtonPressEvent::EventDelegate& p_callback)
+	{
+		return s_pauseListenners.AddListener(p_callback);
+
+	}
+
+	size_t ScenePanel::AddFrameListenner(const PanelButton::OnButtonPressEvent::EventDelegate& p_callback)
+	{
+		return s_frameListenners.AddListener(p_callback);
+	}
+
+	void ScenePanel::RemovePlayListenner(size_t p_id)
+	{
+		s_playListenners.RemoveListener(p_id);
+
+	}
+
+	void ScenePanel::RemovePauseListenner(size_t p_id)
+	{
+		s_pauseListenners.RemoveListener(p_id);
+	}
+
+	void ScenePanel::RemoveFrameListenner(size_t p_id)
+	{
+		s_frameListenners.RemoveListener(p_id);
+	}
 }

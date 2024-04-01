@@ -78,10 +78,14 @@ namespace SvEditor::UI::Core
         ImGui_ImplOpenGL3_Init(SvApp::GLSL_Version);
     }
 
-    void EditorUI::SetSceneTexture(intptr_t p_textureId)
+    void EditorUI::InitScenePanel(intptr_t p_textureId, const std::function<void()> p_playPauseFrameCallbacks[3])
     {
         //setup Level panel
         ScenePanel::SetSceneTexture(p_textureId);
+
+        ScenePanel::AddPlayListenner(p_playPauseFrameCallbacks[0]);
+        ScenePanel::AddPauseListenner(p_playPauseFrameCallbacks[1]);
+        ScenePanel::AddFrameListenner(p_playPauseFrameCallbacks[2]);
     }
 
     void EditorUI::StartFrameUpdate()

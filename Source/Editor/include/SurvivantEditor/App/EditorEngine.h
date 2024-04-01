@@ -3,7 +3,10 @@
 
 #include "SurvivantEditor/App/IEngine.h"
 #include "SurvivantCore/Events/Event.h"
+#include <SurvivantCore/Utility/Timer.h>
 
+
+#define SV_DELTA_TIME() SvEditor::App::Engine::g_engine->GetDeltaTime()
 
 
 namespace SvEditor::App
@@ -20,8 +23,9 @@ namespace SvEditor::App
 		// Inherited via Engine
 		void Update() override;
 		void Init() override;
-		bool LoadNewLevel(WorldContext& p_worldContext, std::shared_ptr<Level> p_level) override;
+		bool StartLevel(WorldContext& p_worldContext) override;
 		void RedrawViewports() override;
+		float GetDeltaTime() override;
 
 
 		////scene panel, where you mofi
@@ -33,17 +37,22 @@ namespace SvEditor::App
 		std::shared_ptr<Engine::WorldContext> GetPIEWorldContext();
 		
 		//create PIE after press play
-		GameInstance* CreatePIEGameInstance();
+		std::weak_ptr<GameInstance> CreatePIEGameInstance();
 		void DestroyGameInstance();
 		
 	private:
 		bool InitializePlayInEditorGameInstance(GameInstance& p_instance);
 		std::shared_ptr<Engine::WorldContext> CreatePIEWorldByDuplication(WorldContext& p_context, std::shared_ptr<Level> p_inLevel);
+		std::shared_ptr<Engine::WorldContext> CreateEditorDefaultWorld();
+
+		SvCore::Utility::Timer			m_time;
 
 		std::shared_ptr<WorldContext>	m_PIEWorld;
-		std::unique_ptr<GameInstance>	m_gameInstance;
+		std::shared_ptr<GameInstance>	m_gameInstance;
 
 		std::shared_ptr<Level>			m_editorLevel;
 		std::shared_ptr<WorldContext>	m_editorWorld;
+
+
 	};
 }

@@ -162,7 +162,6 @@ bool testMain()
     app.Init();
     app.Run();
 
-
     return true;
 }
 
@@ -188,7 +187,10 @@ int main()
         .SetCapability(ERenderingCapability::DEPTH_TEST, true)
         .SetCullFace(ECullFace::BACK);
 
-    SvEditor::UI::Core::EditorWindow window(dynamic_cast<OpenGLTexture&>(GetDefaultFrameBuffer()).GetId());
+    SvEditor::UI::Core::EditorWindow window;
+    window.SetupUI({ 
+        dynamic_cast<OpenGLTexture&>(GetDefaultFrameBuffer()).GetId(), 
+        { std::function<void()>(), std::function<void()>(), std::function<void()>() } });
     Model model;
 
     ASSERT(model.Load("assets/models/cube.obj"), "Failed to load model");
@@ -384,7 +386,8 @@ int main()
         Vector3    newPos = camTransform.getPosition();
         Quaternion newRot = camTransform.getRotation();
 
-        g_frameBuffer->Bind();
+        //now in uiWindow
+        //g_frameBuffer->Bind();
         renderAPI.SetViewport({ 0, 0 }, { 800, 600 });
 
         if (moveInput.magnitudeSquared() > 0.f)

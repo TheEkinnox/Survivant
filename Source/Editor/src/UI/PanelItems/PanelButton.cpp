@@ -10,6 +10,6 @@ namespace SvEditor::UI::PanelItems
     void PanelButton::DisplayAndUpdatePanel()
     {
         if (ImGui::SmallButton(m_name.c_str()))
-            m_callback();
+            m_callback.Invoke();
     }
 }

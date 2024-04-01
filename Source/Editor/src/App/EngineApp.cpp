@@ -7,7 +7,7 @@
 #include "SurvivantCore/Events/EventManager.h"
 #include <SurvivantCore/Utility/FileSystem.h>
 
-
+#include <memory>
 
 using namespace LibMath;
 using namespace SvCore::Utility;
@@ -28,9 +28,10 @@ using namespace SvRendering::RHI;
 	#include <SurvivantRendering/RHI/ITexture.h>
 	#include <SurvivantRendering/RHI/IUniformBuffer.h>
 	#include <SurvivantRendering/RHI/OpenGL/OpenGLTexture.h>
-
+	
 	constexpr const char* UNLIT_SHADER_PATH = "assets/shaders/Unlit.glsl";
 	constexpr const char* LIT_SHADER_PATH = "assets/shaders/Lit.glsl";
+
 	namespace ToRemove
 	{
 		std::shared_ptr<ITexture> GetTextureEngine()
@@ -73,8 +74,140 @@ using namespace SvRendering::RHI;
 			isInitialized = true;
 			return *color;
 		}
-	}
+
 #pragma endregion
+
+#pragma region TestGame
+
+#include "Transform.h"
+
+		void SetupTestGame()
+		{
+			using namespace SvCore;
+			using namespace SvApp;
+			using namespace Events;
+
+			static bool firstTime = true;
+
+			if (!firstTime)
+				return;
+
+			firstTime = false;
+
+			InputManager& im = InputManager::GetInstance();
+
+			using namespace SvEditor::App;
+
+			im.AddInputBinding({ EKey::W, EKeyState::PRESSED, EInputModifier() }, [](const char)
+				{
+					++SvEditor::App::EngineApp::s_moveInput->m_y;
+				});
+
+			im.AddInputBinding({ EKey::W, EKeyState::RELEASED, EInputModifier() }, [](const char)
+				{
+					--EngineApp::s_moveInput->m_y;
+				});
+
+			im.AddInputBinding({ EKey::S, EKeyState::PRESSED, EInputModifier() }, [](const char)
+				{
+					--EngineApp::s_moveInput->m_y;
+				});
+
+			im.AddInputBinding({ EKey::S, EKeyState::RELEASED, EInputModifier() }, [](const char)
+				{
+					++EngineApp::s_moveInput->m_y;
+				});
+
+			im.AddInputBinding({ EKey::A, EKeyState::PRESSED, EInputModifier() }, [](const char)
+				{
+					--EngineApp::s_moveInput->m_x;
+				});
+
+			im.AddInputBinding({ EKey::A, EKeyState::RELEASED, EInputModifier() }, [](const char)
+				{
+					++EngineApp::s_moveInput->m_x;
+				});
+
+			im.AddInputBinding({ EKey::D, EKeyState::PRESSED, EInputModifier() }, [](const char)
+				{
+					++EngineApp::s_moveInput->m_x;
+				});
+
+			im.AddInputBinding({ EKey::D, EKeyState::RELEASED, EInputModifier() }, [](const char)
+				{
+					--EngineApp::s_moveInput->m_x;
+				});
+
+			im.AddInputBinding({ EKey::UP, EKeyState::PRESSED, EInputModifier() }, [](const char)
+				{
+					++EngineApp::s_rotateInput->m_y;
+				});
+
+			im.AddInputBinding({ EKey::UP, EKeyState::RELEASED, EInputModifier() }, [](const char)
+				{
+					--EngineApp::s_rotateInput->m_y;
+				});
+
+			im.AddInputBinding({ EKey::DOWN, EKeyState::PRESSED, EInputModifier() }, [](const char)
+				{
+					--EngineApp::s_rotateInput->m_y;
+				});
+
+			im.AddInputBinding({ EKey::DOWN, EKeyState::RELEASED, EInputModifier() }, [](const char)
+				{
+					++EngineApp::s_rotateInput->m_y;
+				});
+
+			im.AddInputBinding({ EKey::LEFT, EKeyState::PRESSED, EInputModifier() }, [](const char)
+				{
+					--EngineApp::s_rotateInput->m_x;
+				});
+
+			im.AddInputBinding({ EKey::LEFT, EKeyState::RELEASED, EInputModifier() }, [](const char)
+				{
+					++EngineApp::s_rotateInput->m_x;
+				});
+
+			im.AddInputBinding({ EKey::RIGHT, EKeyState::PRESSED, EInputModifier() }, [](const char)
+				{
+					++EngineApp::s_rotateInput->m_x;
+				});
+
+			im.AddInputBinding({ EKey::RIGHT, EKeyState::RELEASED, EInputModifier() }, [](const char)
+				{
+					--EngineApp::s_rotateInput->m_x;
+				});
+
+			im.AddInputBinding({ EKey::R, EKeyState::RELEASED, {} }, [](const char)
+				{
+					EngineApp::s_camTransform->setAll(*EngineApp::s_camPos, Quaternion::identity(), Vector3::one());
+				});
+
+			//im.AddInputBinding({ EKey::ESCAPE, EKeyState::RELEASED, {} }, [&window](const char)
+			//{
+			//    glfwSetWindowShouldClose(window.GetWindow(), true);
+			//});
+
+			std::vector<Matrix4> lightMatrices;
+			lightMatrices.emplace_back(Light(EngineApp::s_cam->GetClearColor()).getMatrix());
+			lightMatrices.emplace_back(DirectionalLight(Color::magenta, Vector3::back()).getMatrix());
+			lightMatrices.emplace_back(SpotLight(Color(0.f, 1.f, 0.f, 3.f), *EngineApp::s_camPos, Vector3::front(), Attenuation(10),
+				{ cos(0_deg), cos(30_deg) }).getMatrix());
+			lightMatrices.emplace_back(PointLight(Light{ Color::red }, Vector3{ -1, 1, 1 }, Attenuation(16)).getMatrix());
+
+			std::unique_ptr<IShaderStorageBuffer> lightsSSBO = IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, 0);
+			lightsSSBO->Bind();
+			lightsSSBO->SetData(lightMatrices.data(), lightMatrices.size());
+
+			SvEditor::App::EngineApp::s_model = std::make_shared<SvRendering::Resources::Model>();
+			ASSERT(SvEditor::App::EngineApp::s_model->Load("assets/models/cube.obj"), "Failed to load model");
+			ASSERT(SvEditor::App::EngineApp::s_model->Init(), "Failed to initialize model");
+		}
+	}
+
+	
+#pragma endregion
+
 
 using namespace ToRemove;
 
@@ -84,7 +217,7 @@ namespace SvEditor::App
 		m_gameIsPaused(false),
 		m_isRunning(false)
 	{
-		m_gameInstance = nullptr;
+		m_gameInstance = std::weak_ptr<GameInstance>();
 		m_editorEngine.Init();
 	}
 
@@ -95,7 +228,7 @@ namespace SvEditor::App
 
 		SvCore::Debug::Logger::GetInstance().SetFile("debug.log");
 
-		m_window = std::make_unique<UI::Core::EditorWindow>(0);
+		m_window = std::make_unique<UI::Core::EditorWindow>();
 
 		ASSERT(SetWorkingDirectory(GetApplicationDirectory()), "Failed to update working directory");
 		SV_LOG("Current working directory: \"%s\"", GetWorkingDirectory().c_str());
@@ -105,23 +238,37 @@ namespace SvEditor::App
 			.SetCapability(ERenderingCapability::DEPTH_TEST, true)
 			.SetCullFace(ECullFace::BACK);
 
+		renderAPI.SetViewport({ 0, 0 }, { 800, 600 });
+
 
 		LoadAllResources();
 		SetupEditorInputs();
 		
-		m_window->SetupUI(dynamic_cast<OpenGLTexture&>(GetDefaultFrameBuffer()).GetId());
+		m_window->SetupUI(
+			{
+			dynamic_cast<OpenGLTexture&>(GetDefaultFrameBuffer()).GetId(),
+			{
+				[this]() { TogglePlayPIE(); },
+				[this]() { TogglePausePIE(); },
+				[this]() { PressFramePIE(); }
+			}
+			});
 	}
 
 	void EngineApp::Run()
 	{
 		while (!m_window->ShouldClose())
 		{
-			m_time.tick();
+			m_editorEngine.Update();
 			m_window->Update();
 
-			if (m_gameInstance != nullptr && !m_gameIsPaused)
+			if (!m_gameInstance.expired() && !m_gameIsPaused)
 			{
-				m_gameInstance->Update();
+				//do viewport here 
+				//m_gameInstance->m_worldContext->m_viewport;
+				g_frameBuffer->Bind();
+				m_gameInstance.lock()->Update();
+				g_frameBuffer->Unbind();
 			}
 
 			m_window->RenderUI();
@@ -215,27 +362,30 @@ namespace SvEditor::App
 		im.AddInputBinding({ EKey::ESCAPE, EKeyState::PRESSED, EInputModifier() }, [this](char) { m_isRunning = false; });
 	}
 
-	IRenderAPI& EngineApp::SetupRenderAPI()
+	void EngineApp::TogglePlayPIE()
 	{
-		IRenderAPI& renderAPI = IRenderAPI::SetCurrent(EGraphicsAPI::OPENGL);
-		renderAPI.Init(true)
-			.SetCapability(ERenderingCapability::DEPTH_TEST, true)
-			.SetCullFace(ECullFace::BACK);
-
-		return renderAPI;
-	}
-
-	void EngineApp::TogglePIE()
-	{
-		if (m_gameInstance != nullptr) //game is running
+		if (!m_gameInstance.expired()) //game is running
 		{
-			m_onStopInEditor.Invoke(*m_gameInstance);
+			m_onStopInEditor.Invoke(*m_gameInstance.lock());
 			m_editorEngine.DestroyGameInstance();
 		}
 		else //game not running
 		{
 			m_gameInstance = m_editorEngine.CreatePIEGameInstance();
+			m_gameInstance.lock()->m_worldContext->m_currentLevel->BeginPlay();
+			//this is tmp game
+			SetupTestGame();
 		}
+	}
+
+	void EngineApp::TogglePausePIE()
+	{
+		//TODO: toggle pause
+	}
+
+	void EngineApp::PressFramePIE()
+	{
+		//TODO: press frame
 	}
 
 	void EngineApp::PauseGameInstance()

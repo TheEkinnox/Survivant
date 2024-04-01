@@ -24,12 +24,19 @@ namespace SvEditor::App
 
 	struct Level
 	{
-		void InitLevel() { m_bIsInitialized = true; }
+		//goes in constructor
+		void InitLevel(const std::string& /*p_path*/) {}
 
-		//destroy garbage?
-		void DeInitLevel() { m_bIsInitialized = false; }
+		void LoadLevel() { m_bIsLoaded = true; }
+		void UnloadLevel() { m_bIsLoaded = false; }
 		void LoadResources() {}
 		void BeginPlay() {}
+
+		void UpdateLevel();
+		void RenderLevel()
+		{
+
+		}
 
 
 		static std::shared_ptr<Level> CreateLevel() { return std::make_shared<Level>(); }
@@ -39,7 +46,7 @@ namespace SvEditor::App
 		std::shared_ptr<Level>	m_currentScene = nullptr;
 		GameInstance*			m_gameInstance = nullptr;
 
-		bool					m_bIsInitialized = false;
+		bool					m_bIsLoaded = false;
 	};
 
 	class Engine 
@@ -50,13 +57,13 @@ namespace SvEditor::App
 		struct WorldContext
 		{
 			EWorldType	m_worldType = EWorldType::NONE;
-			int			m_viewport;
+			int			m_viewport = 0;
 
-			std::vector<std::shared_ptr<Level>> m_levels;
 			std::shared_ptr<Level>				m_currentLevel = nullptr;
 			GameInstance*						m_owningGameInstance = nullptr;
-			std::shared_ptr<Level>				m_persistentLevel = nullptr;
-			//size_t								m_PIEInstance;
+			//TODO: deal with persistentLevel
+			//std::shared_ptr<Level>				m_persistentLevel = nullptr;
+			//size_t							m_PIEInstance;
 
 			std::shared_ptr<Level>* GetCurrentLevelPtr()
 			{
@@ -69,8 +76,9 @@ namespace SvEditor::App
 
 		virtual void	Init() = 0;
 		virtual void	Update() = 0;
-		virtual bool	LoadNewLevel(WorldContext& p_worldContext, std::shared_ptr<Level> p_level) = 0;
+		virtual bool	StartLevel(WorldContext& p_worldContext) = 0;
 		virtual void	RedrawViewports() = 0;
+		virtual float	GetDeltaTime() = 0;
 
 
 		std::shared_ptr<Engine::WorldContext>	CreateNewWorldContext(EWorldType p_worldType);
@@ -80,16 +88,16 @@ namespace SvEditor::App
 		/// </summary>
 		/// <param name="p_worldContext"></param>
 		/// <returns>-1 if couldnt, 0 if already there, 1 if properly </returns>
-		int			BrowseToDefaultScene(WorldContext& p_worldContext);
+		int			BrowseToDefaultLevel(WorldContext& p_worldContext);
 		/// <returns>-1 if couldnt, 0 if already there, 1 if properly </returns>
-		int			BrowseToScene(WorldContext& p_worldContext, const std::string& p_sceneName);
+		int			BrowseToLevel(WorldContext& p_worldContext, const std::string& p_levelName);
 
 
-		static inline std::shared_ptr<Engine> g_engine = nullptr;
+		static inline Engine* g_engine = nullptr;
 
 	protected:
-		bool PrepareSceneChange(WorldContext& p_context, const std::string& p_sceneName);
-		bool CommitSceneChange(WorldContext& m_context);
+		bool PrepareLevelChange(WorldContext& p_context, const std::shared_ptr<Level>& p_newLevel);
+		bool CommitLevelChange(WorldContext& m_context, const std::shared_ptr<Level>& p_newLevel);
 
 		//acces GameInstace members
 		std::shared_ptr<Engine::WorldContext>& GetWorldContextRef(GameInstance& p_instance);
