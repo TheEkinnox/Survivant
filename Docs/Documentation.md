@@ -276,7 +276,6 @@ STB image offers a fast, easy-to-use solution for incorporating images into grap
 #### Loading process
 
 1. Load a file using `stbi_load` (ex: `stbi_load("texture.png", &width, &height, &channels, 0)` )
-
 2. Once the loaded data is no longer required, free the memory with `stbi_image_free`
 
 #### Source files integration
@@ -290,6 +289,56 @@ Static - Header Only
 #### Sources
 
 - <https://github.com/nothings/stb/blob/master/stb_image.h>
+
+___
+
+### 8. RapidJSON (Json Parser/Generator)
+
+#### Use
+
+RapidJSON is a lightweight, self-contained, open-source JSON parsing and generation library.
+
+#### Justification
+
+By its simplicity, flexibility and completeness, RapidJSON allows us to quickly and easily add json serialization support to the relevant parts of the engine without compromising too much on performance.
+
+#### Loading process
+
+##### Parsing
+
+1. Create a `Document` instance (i.e.: `rapidjson::Document document`)
+2. Parse the json string into the document using the `Parse` function (ex: `document.Parse(myJsonString)`)
+3. Process the parsed document
+    - Check if the given member exists with the `HasMember` function (ex: `document.HasMember("name")`)
+    - Query members with the `[]` operator or the `FindMember` function (ex: `rapidjson::Value name = document["name"]` or `rapidjson::Value::ConstMemberIterator it = document.FindMember("name")`)
+        - Check if the iterator returned by `FindMember` is valid check against `MemberEnd()` (ex: `bool wasFound = it != document.MemberEnd()`)
+        - Get the value of the iterator returned by `FindMember` using the iterator's `value` member (ex: `rapidjson::Value name = it->value`)
+    - Check if the given member is of the given type with one of the `Is{Type}` functions (ex: `bool isValid = document["name"].IsString()`)
+    - Get the value of a member with one of the `Get{Type}` functions (ex: `const char* nameStr = document["name"].GetString()`)
+
+##### Generation
+
+1. Create a `Writer` instance (ex: `rapidjson::Writer<rapidjson::StringBuffer> writer(stringBuffer)`)
+2. Start an object or array using the `StartObject` or `StartArray` function respectively (i.e.: `writer.StartObject()` or `writer.StartArray()`)
+3. Set the member's key using the `Key` function (ex: `writer.Key("name")`)
+4. Set the member's value using one of the `{Type}` functions (ex: `writer.String("Ada")`)
+    - Note: The value can be one of the supported types, an object or an array
+5. End the object or array using the `EndObject` or `EndArray` function respectively (i.e.: `writer.EndObject()` or `writer.EndArray()`)
+
+> Note: `{Type}` functions, `EndObject` and `EndArray` return a boolean indicating whether the operation succeeded or not
+
+#### Source files integration
+
+Added to the project using _FetchContent_
+
+#### Type of library
+
+Static - Header Only
+
+#### Sources
+
+- <http://rapidjson.org/md_doc_tutorial.html>
+- <http://rapidjson.org/md_doc_sax.html>
 
 ___
 
