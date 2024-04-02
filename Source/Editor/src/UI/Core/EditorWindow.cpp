@@ -48,7 +48,7 @@ namespace SvEditor::UI::Core
 
 	void UI::Core::EditorWindow::SetupUI(const SetupSceneInfo& p_sceneInfo)
 	{
-		m_ui->InitScenePanel(p_sceneInfo.m_textureId, p_sceneInfo.m_playPauseFrameCallbacks);
+		m_ui->InitGamePanel(p_sceneInfo.m_textureId, p_sceneInfo.m_playPauseFrameCallbacks);
 	}
 
 	EditorUI& UI::Core::EditorWindow::GetUI()

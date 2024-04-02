@@ -9,6 +9,7 @@
 #include "SurvivantEditor/UI/MenuItems/MenuButton.h"
 #include "SurvivantEditor/UI/Panels/ConsolePanel.h"
 #include "SurvivantEditor/UI/Panels/ContentDrawerPanel.h"
+#include "SurvivantEditor/UI/Panels/GamePanel.h"
 #include "SurvivantEditor/UI/Panels/HierarchyPanel.h"
 #include "SurvivantEditor/UI/Panels/ImagePanel.h"
 #include "SurvivantEditor/UI/Panels/InspectorPanel.h"
@@ -79,14 +80,14 @@ namespace SvEditor::UI::Core
         ImGui_ImplOpenGL3_Init(SvApp::GLSL_Version);
     }
 
-    void EditorUI::InitScenePanel(intptr_t p_textureId, const std::function<void()> p_playPauseFrameCallbacks[3])
+    void EditorUI::InitGamePanel(intptr_t p_textureId, const std::function<void()> p_playPauseFrameCallbacks[3])
     {
         //setup Level panel
-        ScenePanel::SetSceneTexture(p_textureId);
+        GamePanel::SetGameTexture(p_textureId);
 
-        ScenePanel::AddPlayListenner(p_playPauseFrameCallbacks[0]);
-        ScenePanel::AddPauseListenner(p_playPauseFrameCallbacks[1]);
-        ScenePanel::AddFrameListenner(p_playPauseFrameCallbacks[2]);
+        GamePanel::AddPlayListenner(p_playPauseFrameCallbacks[0]);
+        GamePanel::AddPauseListenner(p_playPauseFrameCallbacks[1]);
+        GamePanel::AddFrameListenner(p_playPauseFrameCallbacks[2]);
     }
 
     void EditorUI::StartFrameUpdate()
@@ -296,7 +297,12 @@ namespace SvEditor::UI::Core
         return *m_currentPanels.insert(std::make_shared<InspectorPanel>()).first;
     }
 
-    std::shared_ptr<Panel> EditorUI::CreateScenePanel()
+    std::shared_ptr<Panel> EditorUI::CreateGamePanel()
+    {
+        return *m_currentPanels.insert(std::make_shared<GamePanel>()).first;
+    }
+
+    std::shared_ptr<Panel> Core::EditorUI::CreateScenePanel()
     {
         return *m_currentPanels.insert(std::make_shared<ScenePanel>()).first;
     }
@@ -323,7 +329,7 @@ namespace SvEditor::UI::Core
         //auto dock_id_top = ImGui::DockBuilderSplitNode(id, ImGuiDir_Up, 0.2f, nullptr, &id);
 
         // we now dock our windows into the docking node we made above
-        ImGui::DockBuilderDockWindow(CreateScenePanel()->GetName().c_str(), id);
+        ImGui::DockBuilderDockWindow(CreateGamePanel()->GetName().c_str(), id);
         ImGui::DockBuilderDockWindow(CreateInspectorPanel()->GetName().c_str(), dock_id_right);
         ImGui::DockBuilderDockWindow(CreateHierarchyPanel()->GetName().c_str(), dock_id_left);
         ImGui::DockBuilderDockWindow(CreateContentPanel()->GetName().c_str(), dock_id_down);
