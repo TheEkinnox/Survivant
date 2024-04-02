@@ -24,11 +24,43 @@ namespace SvRendering::Core
         using LayerMask = uint32_t;
 
         /**
+         * \brief Creates a default camera
+         */
+        Camera();
+
+        /**
          * \brief Creates a camera with the given projection and view matrices
          * \param p_projection The camera's projection matrix
          * \param p_view The camera's view matrix
          */
         explicit Camera(LibMath::Matrix4 p_projection, LibMath::Matrix4 p_view = LibMath::Matrix4(1.f));
+
+        /**
+         * \brief Creates a copy of the given camera
+         * \param p_other The camera to copy
+         */
+        Camera(const Camera& p_other) = default;
+
+        /**
+         * \brief Creates a move copy of the given camera
+         * \param p_other The camera to move
+         */
+        Camera(Camera&& p_other) noexcept = default;
+        ~Camera()                         = default;
+
+        /**
+         * \brief Assigns a copy of the given camera to this one
+         * \param p_other The camera to copy
+         * \return A reference to the modified camera
+         */
+        Camera& operator=(const Camera& p_other) = default;
+
+        /**
+         * \brief Moves the given camera into this one
+         * \param p_other The camera to move
+         * \return A reference to the modified camera
+         */
+        Camera& operator=(Camera&& p_other) noexcept = default;
 
         /**
          * \brief Sets the camera's view matrix

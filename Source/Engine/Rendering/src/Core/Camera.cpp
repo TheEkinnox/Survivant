@@ -4,6 +4,11 @@
 
 namespace SvRendering::Core
 {
+    Camera::Camera()
+        : Camera(LibMath::Matrix4(1))
+    {
+    }
+
     Camera::Camera(LibMath::Matrix4 p_projection, LibMath::Matrix4 p_view)
         : m_projectionMatrix(std::move(p_projection)), m_viewMatrix(std::move(p_view)),
         m_viewProjection(m_projectionMatrix * m_viewMatrix), m_frustum(m_viewProjection)
