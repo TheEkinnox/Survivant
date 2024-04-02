@@ -27,6 +27,8 @@ namespace SvEditor::App
 	public:
 		Engine* GetEngine();
 
+		void UpdatePhysics() {}
+
 		std::shared_ptr<Engine::WorldContext> m_worldContext;
 	};
 }

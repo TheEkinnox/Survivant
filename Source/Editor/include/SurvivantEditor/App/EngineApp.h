@@ -54,16 +54,12 @@ namespace SvEditor::App
 
 		void PauseGameInstance();
 
-		
-
 		//class GameLoopEvent : public SvCore::Events::Event<> {};
 
 		std::unique_ptr<UI::Core::EditorWindow>		m_window;
-
-		bool					m_isRunning;
-		bool					m_gameIsPaused;
-
-		std::weak_ptr<GameInstance>		m_gameInstance;
-		EditorEngine					m_editorEngine;
+		bool										m_isRunning;
+		bool										m_gameIsPaused;
+		std::weak_ptr<GameInstance>					m_gameInstance;
+		EditorEngine								m_editorEngine;
 	};
 }

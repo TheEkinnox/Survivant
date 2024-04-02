@@ -16,7 +16,10 @@ namespace SvEditor::App
 
     void GameInstance::Update()
     {
+        UpdatePhysics();
+
         m_worldContext->m_currentLevel->UpdateLevel();
+
         m_worldContext->m_currentLevel->RenderLevel();
     }
 
