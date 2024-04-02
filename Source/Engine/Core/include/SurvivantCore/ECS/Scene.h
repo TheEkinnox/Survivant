@@ -2,6 +2,9 @@
 #include "SurvivantCore/ECS/EntityStorage.h"
 #include "SurvivantCore/Resources/IResource.h"
 
+#include <rapidjson/document.h>
+#include <rapidjson/writer.h>
+
 namespace SvCore::ECS
 {
     template <class T>
@@ -66,6 +69,20 @@ namespace SvCore::ECS
         {
             return true;
         }
+
+        /**
+         * \brief Serializes the scene to json
+         * \param p_writer The output json writer
+         * \return True on success. False otherwise.
+         */
+        bool ToJson(rapidjson::Writer<rapidjson::StringBuffer>& p_writer) const;
+
+        /**
+         * \brief Deserializes the scene from json
+         * \param p_json The input json data
+         * \return True on success. False otherwise.
+         */
+        bool FromJson(const rapidjson::Value& p_json);
 
         /**
          * \brief Creates a new entity
@@ -190,6 +207,13 @@ namespace SvCore::ECS
 
         EntityStorage                                                          m_entities;
         mutable std::unordered_map<TypeId, std::unique_ptr<IComponentStorage>> m_components;
+
+        /**
+         * \brief Deserializes a component storage from json
+         * \param p_json The input json data
+         * \return True on success. False otherwise
+         */
+        bool DeserializeStorage(const rapidjson::Value& p_json);
     };
 }
 
