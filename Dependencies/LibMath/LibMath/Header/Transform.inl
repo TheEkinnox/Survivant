@@ -274,6 +274,9 @@ namespace LibMath
 
     inline bool Transform::setParent(Transform* parent, const bool keepWorld)
     {
+        if (parent == this)
+            parent = nullptr;
+
         if (m_parent == parent)
             return false;
 
