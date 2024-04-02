@@ -2,11 +2,11 @@
 #include "SurvivantRendering/Resources/Material.h"
 #include "SurvivantRendering/Resources/Model.h"
 
-namespace SvCore::ECS
+namespace SvRendering::Components
 {
     struct ModelComponent
     {
-        std::shared_ptr<SvRendering::Resources::Model>    m_model;
-        std::shared_ptr<SvRendering::Resources::Material> m_material;
+        std::shared_ptr<Resources::Model>    m_model;
+        std::shared_ptr<Resources::Material> m_material;
     };
 }
