@@ -9,6 +9,8 @@
 #include <memory>
 #include <type_traits>
 
+#define SV_EVENT_MANAGER() ::Core::EventManager::GetInstance()
+
 namespace Core
 {
 	class EventManager

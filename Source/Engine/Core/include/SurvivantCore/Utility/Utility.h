@@ -73,6 +73,15 @@ namespace SvCore::Utility
      * \return The string converted to lower case
      */
     std::string ToLower(std::string p_str);
+
+    /// <summary>
+    /// Compare string without while ignoring case sensitivity
+    /// </summary>
+    /// <param name="p_str1"> First string </param>
+    /// <param name="p_str2"> secon setring </param>
+    /// <returns>-1 if less, 0 if equals, 1 if greater</returns>
+    int CompareAlphabeticly(std::string p_str1, std::string p_str2);
+
 }
 
 #include "SurvivantCore/Utility/Utility.inl"

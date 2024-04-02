@@ -4,7 +4,6 @@
 #include "SurvivantApp/Windows/Window.h"
 #include "SurvivantCore/Debug/Assertion.h"
 
-#include <glad/gl.h>
 #include <GLFW/glfw3.h>
 
 using namespace App;
@@ -46,19 +45,18 @@ void WindowSizeCallback(GLFWwindow* /*window*/, int p_width, int p_height)
 
 void WindowFramebufferSizeCallback(GLFWwindow* /*window*/, int p_width, int p_height)
 {
-    glViewport(0, 0, p_width, p_height);
+    //glViewport (0, 0, p_width, p_height);
     Core::EventManager::GetInstance().Invoke<Window::OnFrameBufferSize>(p_width, p_height);
 }
-
 
 void WindowContentScaleCallback(GLFWwindow* /*window*/, float p_xscale, float p_yscale)
 {
     Core::EventManager::GetInstance().Invoke<Window::OnWindowContentScale>(p_xscale, p_yscale);
 }
 
-void WindowMinimizeCallback(GLFWwindow* /*window*/, int iconified)
+void WindowMinimizeCallback(GLFWwindow* /*window*/, int p_iconified)
 {
-    Core::EventManager::GetInstance().Invoke<Window::WindowMinimize>(iconified != 0);
+    Core::EventManager::GetInstance().Invoke<Window::WindowMinimize>(p_iconified != 0);
 }
 
 Window::Window(std::string p_name)
