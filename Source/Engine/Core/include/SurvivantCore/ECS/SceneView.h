@@ -70,6 +70,18 @@ namespace SvCore::ECS
         void Refresh();
 
         /**
+         * \brief Gets the view's target scene
+         * \return A reference to the view's target scene
+         */
+        SceneRef GetScene() const;
+
+        /**
+         * \brief Sets the view's target scene
+         * \param p_scene The view's new target scene
+         */
+        void SetScene(SceneRef p_scene);
+
+        /**
          * \brief Gets the components of the given types owned by the given entity
          * \tparam T The component types to fetch
          * \param p_owner The searched components' owner

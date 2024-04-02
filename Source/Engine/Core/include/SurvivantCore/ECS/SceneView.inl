@@ -7,15 +7,28 @@ namespace SvCore::ECS
 {
     template <class... Components>
     SceneView<Components...>::SceneView(SceneRef p_scene)
-        : m_scene(&p_scene)
     {
-        InitializeView<Components...>();
+        SetScene(p_scene);
     }
 
     template <class... Components>
     void SceneView<Components...>::Refresh()
     {
         InitializeView<Components...>();
+    }
+
+    template <class... Components>
+    typename SceneView<Components...>::SceneRef SceneView<Components...>::GetScene() const
+    {
+        ASSERT(m_scene != nullptr);
+        return *m_scene;
+    }
+
+    template <class... Components>
+    void SceneView<Components...>::SetScene(SceneRef p_scene)
+    {
+        m_scene = &p_scene;
+        Refresh();
     }
 
     template <class... Components>
