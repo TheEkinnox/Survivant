@@ -4,6 +4,9 @@
 
 #include <unordered_map>
 
+#include <rapidjson/document.h>
+#include <rapidjson/writer.h>
+
 namespace SvCore::ECS
 {
     class EntityHandle;
@@ -82,6 +85,21 @@ namespace SvCore::ECS
          * \return The current number of entities
          */
         virtual Entity::Id GetCount() const = 0;
+
+        /**
+         * \brief Serializes the component storage to json
+         * \param writer The output json writer
+         * \param entitiesMap The entity index to scene entity map
+         * \return True on success. False otherwise.
+         */
+        virtual bool ToJson(rapidjson::Writer<rapidjson::StringBuffer>& writer, const EntitiesMap& entitiesMap) const = 0;
+
+        /**
+         * \brief Deserializes the component storage from json
+         * \param json The input json data
+         * \return True on success. False otherwise.
+         */
+        virtual bool FromJson(const rapidjson::Value& json) = 0;
 
     protected:
         /**
@@ -253,6 +271,21 @@ namespace SvCore::ECS
          * \return A constant iterator to the end of the components array
          */
         const_iterator end() const;
+
+        /**
+         * \brief Serializes the component storage to json
+         * \param p_writer The output json writer
+         * \param p_entitiesMap The entity index to scene entity map
+         * \return True on success. False otherwise.
+         */
+        bool ToJson(rapidjson::Writer<rapidjson::StringBuffer>& p_writer, const EntitiesMap& p_entitiesMap) const override;
+
+        /**
+         * \brief Deserializes the component storage from json
+         * \param p_json The input json data
+         * \return True on success. False otherwise.
+         */
+        bool FromJson(const rapidjson::Value& p_json) override;
 
     private:
         std::vector<ComponentT>                m_components;
