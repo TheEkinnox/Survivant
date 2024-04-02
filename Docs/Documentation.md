@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The goal of this project is to create a game engine. In a team of 3, we'll research, structure, project and annotate our plan for tackling this task.  Once completed, we'll use our engine to develop a rather simple game demonstrating its core features.
+The goal of this project is to create a game engine. In a team of 3, we'll research, structure, project and annotate our plan for tackling this task. Once completed, we'll use our engine to develop a rather simple game demonstrating its core features.
 
 ___
 
@@ -12,16 +12,13 @@ ___
 
 - Dependencies
 - Resources
-	- Editor
-	    - Fonts
-	    - Models
-	    - Scripts
-	  - Engine
-	    - Fonts
-	    - Materials
-	    - Models
-	    - Scripts
-	    - Shaders
+	- Fonts
+	- Materials
+	- Models
+	- Shaders
+	- SceneTemplates
+	- Scripts
+	- Textures
 - Source
 	- Editor+
 	- Runtime+
@@ -39,10 +36,10 @@ ___
 - Each dependency has it's own subfolder.
 - A "+" at the end of a folder name denotes a C++ project and is not part of its name.
 - The root namespace for C++ projects is `Sv{Project}`
-	- _Exemple: Core’s root namespace is `SvCore`_
+	- _Example: Core's root namespace is `SvCore`_
 - Each immediate subfolder in a project folder denotes a namespace.
 - Subfolders of C++ projects are separated in `{Project}/include/Survivant{Project}/{Subfolder}` and `{Project}/src/{Subfolder}` to make include paths contain the project's name, thus avoiding potential conflicts.
-	- _Exemple:_
+	- _Example:_
 		- Core+
 			- Debug
 	- _expands to_
@@ -102,7 +99,7 @@ Static
 
 #### Sources
 
-- [https://www.glfw.org/docs/3.3/quick.html](https://www.glfw.org/docs/3.3/quick.html)
+- <https://www.glfw.org/docs/3.3/quick.html>
 
 ___
 
@@ -131,8 +128,8 @@ Static
 
 #### Sources
 
-- [https://github.com/Dav1dde/glad/wiki/C#quick-start](https://github.com/Dav1dde/glad/wiki/C#quick-start)
-- [https://gen.glad.sh/](https://gen.glad.sh/)
+- <https://github.com/Dav1dde/glad/wiki/C#quick-start>
+- <https://gen.glad.sh/>
 
 ___
 
@@ -165,8 +162,8 @@ Static
 
 #### Sources
 
-- [https://github.com/ocornut/imgui#dear-imgui](https://github.com/ocornut/imgui#dear-imgui)
-- [https://github.com/ocornut/imgui/wiki/Getting-Started](https://github.com/ocornut/imgui/wiki/Getting-Started)
+- <https://github.com/ocornut/imgui#dear-imgui>
+- <https://github.com/ocornut/imgui/wiki/Getting-Started>
 
 ___
 
@@ -198,8 +195,8 @@ PhysX is a very powerful, albeit complex, low-level library for creating realist
 
 #### Sources
 
-- [https://gameworksdocs.nvidia.com/PhysX/4.0/documentation/PhysXGuide/Manual/Introduction.html#a-brief-overview-of-physx](https://gameworksdocs.nvidia.com/PhysX/4.0/documentation/PhysXGuide/Manual/Introduction.html#a-brief-overview-of-physx)
-- [https://docs.nvidia.com/gameworks/content/gameworkslibrary/physx/apireference/files/group__foundation.html](https://docs.nvidia.com/gameworks/content/gameworkslibrary/physx/apireference/files/group__foundation.html)
+- <https://gameworksdocs.nvidia.com/PhysX/4.0/documentation/PhysXGuide/Manual/Introduction.html#a-brief-overview-of-physx>
+- <https://docs.nvidia.com/gameworks/content/gameworkslibrary/physx/apireference/files/group__foundation.html>
 
 ___
 
@@ -230,7 +227,7 @@ Static
 
 #### Sources
 
-[https://solhsa.com/soloud/index.html](https://solhsa.com/soloud/index.html)
+- <https://solhsa.com/soloud/index.html>
 
 ___
 
@@ -260,9 +257,9 @@ Static
 
 #### Sources
 
-- [https://www.assimp.org/](https://www.assimp.org/)
-- [https://github.com/assimp/assimp](https://github.com/assimp/assimp)
-- [https://assimp-docs.readthedocs.io/en/latest/usage/use_the_lib.html](https://assimp-docs.readthedocs.io/en/latest/usage/use_the_lib.html)
+- <https://www.assimp.org/>
+- <https://github.com/assimp/assimp>
+- <https://assimp-docs.readthedocs.io/en/latest/usage/use_the_lib.html>
 
 ___
 
@@ -288,11 +285,11 @@ Source code versioned with the project
 
 #### Type of library
 
-Static – Header Only
+Static - Header Only
 
 #### Sources
 
-- [https://github.com/nothings/stb/blob/master/stb_image.h](https://github.com/nothings/stb/blob/master/stb_image.h)
+- <https://github.com/nothings/stb/blob/master/stb_image.h>
 
 ___
 
