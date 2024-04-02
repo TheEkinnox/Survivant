@@ -21,9 +21,6 @@
 #include "SurvivantApp/Inputs/KeyboardInputs.h"
 #include "SurvivantApp/Inputs/MouseInputs.h"
 #include "SurvivantApp/Windows/Window.h"
-#include "SurvivantCore/Events/EventManager.h"
-#include "SurvivantUI/EditorWindow.h"
-#include "SurvivantUI/UI.h"
 
 // TODO: Implement relevant parts in corresponding libs to get rid of glfw dependency
 #include <GLFW/glfw3.h>
@@ -106,37 +103,6 @@ ITexture& GetDefaultFrameBuffer()
 
     isInitialized = true;
     return *color;
-
-    //static GLuint textureId;
-
-    //if (textureId == 0)
-    //{
-    //    glGenFramebuffers(1, &frameBufferId);
-    //    glBindFramebuffer(GL_FRAMEBUFFER, frameBufferId);
-
-    //    glGenTextures(1, &textureId);
-    //    glBindTexture(GL_TEXTURE_2D, textureId);
-
-    //    //screen width here
-    //    constexpr GLsizei width = 800;
-    //    constexpr GLsizei height = 600;
-
-    //    //Vector4 c(0.5);
-    //    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-
-    //    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    //    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    //    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureId, 0);
-
-
-    //    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
-    //    {
-    //        int i = 0; i;
-    //    }
-    //}
-
-    //return textureId;
 }
 
 std::tuple<int, int> AddInputTranslate(char i)
@@ -575,15 +541,13 @@ int main()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     //window
-    UI::EditorWindow window;
-    //GLFWwindow* windowPtr = window.GetWindow();
+    App::Window window;
 
     IRenderAPI& renderAPI = IRenderAPI::SetCurrent(EGraphicsAPI::OPENGL);
     renderAPI.Init(true)
              .SetCapability(ERenderingCapability::DEPTH_TEST, true)
              .SetCullFace(ECullFace::BACK);
 
-    //const GLuint textureId = Texture();
     App::Window::m_textureId = dynamic_cast<OpenGLTexture&>(GetDefaultFrameBuffer()).GetId();
 
     Timer timer;
@@ -616,9 +580,6 @@ int main()
     }
 
     //ui
-    UI::EditorUI ui;
-    window.SetupUI(&ui);
-
     Vector2 moveInput, rotateInput;
 
     im.AddInputBinding({ EKey::W, EKeyState::PRESSED, EInputModifier() }, [&moveInput](const char)
@@ -725,30 +686,23 @@ int main()
     while (!window.ShouldClose())
     {
         timer.tick();
-        //glfwPollEvents();
         window.StartRender();
 
         UpdateTemporaries(temporariesView, timer.getDeltaTime());
         UpdateInput(userInputsView, moveInput, rotateInput, timer.getDeltaTime());
         UpdateRotators(rotatorsView, timer.getDeltaTime());
 
-        g_frameBuffer->Bind();
-        renderAPI.SetViewport({ 0, 0 }, { 800, 600 });
+        // g_frameBuffer->Bind();
+        // renderAPI.SetViewport({ 0, 0 }, { 800, 600 });
 
         IRenderAPI::GetCurrent().Clear(true, true, true);
         DrawScene(scene);
 
-        g_frameBuffer->Unbind();
-        renderAPI.SetViewport({ 0, 0 }, { 800, 600 });
+        // g_frameBuffer->Unbind();
+        // renderAPI.SetViewport({ 0, 0 }, { 800, 600 });
 
-        window.RenderUI();
         window.EndRender();
-
-        //glfwSwapBuffers(window.GetWindow());
     }
-
-    //glfwDestroyWindow(window);
-    glfwTerminate();
 
     return 0;
 }

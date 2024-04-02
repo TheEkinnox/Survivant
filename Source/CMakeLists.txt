@@ -22,8 +22,8 @@ if (${PROJECT_PREFIX}_BUILD_RUNTIME)
 endif()
 
 if (${PROJECT_PREFIX}_BUILD_EDITOR)
-	#add_subdirectory(Editor)
-	#set(STARTUP_PROJECT ${EDITOR_NAME})
+	add_subdirectory(Editor)
+	set(STARTUP_PROJECT ${EDITOR_NAME})
 endif()
 
 if (${PROJECT_PREFIX}_BUILD_TESTS)

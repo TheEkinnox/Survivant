@@ -2,7 +2,7 @@
 
 #pragma once
 #include "InputTypeBase.h"
-#include "SurvivantCore/TupleHasher.h"
+#include "SurvivantCore/Utility/TupleHasher.h"
 
 #include <functional>
 #include <tuple>
@@ -51,7 +51,7 @@ namespace App
 		std::size_t operator()(const App::InputType<Args...>& p_this) const
 		{
 			p_this;
-			hash_tuple hasher;
+			SvCore::Utility::hash_tuple hasher;
 			return hasher(p_this.m_inputInfo);
 		}
 	};
