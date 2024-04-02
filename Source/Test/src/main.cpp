@@ -22,6 +22,8 @@
 #include "SurvivantApp/Inputs/MouseInputs.h"
 #include "SurvivantApp/Windows/Window.h"
 
+#include "SurvivantTest/ComponentRegistrations.h"
+
 // TODO: Implement relevant parts in corresponding libs to get rid of glfw dependency
 #include <GLFW/glfw3.h>
 
@@ -40,29 +42,6 @@ constexpr const char* LIT_SHADER_PATH   = "assets/shaders/Lit.glsl";
 
 constexpr float  CAM_MOVE_SPEED     = 3.f;
 constexpr Radian CAM_ROTATION_SPEED = 90_deg;
-
-struct Rotator
-{
-    Quaternion m_speed;
-};
-
-struct UserInput
-{
-    float  m_moveSpeed;
-    Radian m_rotationSpeed;
-};
-
-struct Temporary
-{
-    float m_lifeSpanSec;
-};
-
-template <>
-void ComponentTraits::OnAdd<Rotator>(EntityHandle& p_handle, Rotator&)
-{
-    if (!p_handle.Has<Transform>())
-        p_handle.Make<Transform>();
-}
 
 std::shared_ptr<ITexture> GetTexture()
 {
@@ -413,6 +392,61 @@ void MakeScene(Scene& p_scene)
     p_scene.Create().Make<LightComponent>(spot);
 }
 
+void TestSceneSerialization()
+{
+    Scene scene;
+    scene.Clear();
+
+    EntityHandle entity1 = scene.Create();
+    entity1.Make<TagComponent>("Entity 1");
+    entity1.Make<Transform>(Vector3::zero(), Quaternion::identity(), Vector3::one());
+
+    EntityHandle entity2 = scene.Create();
+    entity2.Make<TagComponent>("Entity 2");
+    entity2.Make<Transform>(Vector3::zero(), Quaternion::identity(), Vector3::one());
+
+    EntityHandle entity3 = scene.Create();
+    entity3.Make<TagComponent>("Entity 3");
+    entity3.Make<Transform>(Vector3(.75f, .5f, 0.f), Quaternion::identity(), Vector3::one());
+
+    EntityHandle entity4 = scene.Create();
+    entity4.Make<TagComponent>("Entity 4 (1st child of Entity 3)");
+    entity4.Make<HierarchyComponent>(entity3.GetEntity());
+    entity4.Make<Transform>(Vector3(0.f, 1.5f, 0.f), Quaternion::identity(), Vector3::one());
+
+    EntityHandle entity5 = scene.Create();
+    entity5.Make<TagComponent>("Entity 5 (1st child of Entity 4)");
+    entity5.Make<HierarchyComponent>(entity4.GetEntity());
+    entity5.Make<Transform>(Vector3(0.f, 1.5f, 0.f), Quaternion::identity(), Vector3::one());
+
+    EntityHandle entity6 = scene.Create();
+    entity6.Make<TagComponent>("Entity 6 (2nd child of Entity 4)");
+    entity6.Make<HierarchyComponent>(entity4.GetEntity());
+    entity6.Make<Transform>(Vector3(1.5f, 1.5f, 0.f), Quaternion::identity(), Vector3::one());
+
+    EntityHandle entity7 = scene.Create();
+    entity7.Make<TagComponent>("Entity 7 (2nd child of Entity 3)");
+    entity7.Make<HierarchyComponent>(entity3.GetEntity());
+    entity7.Make<Transform>(Vector3(-1.5f, 1.5f, 0.f), Quaternion::identity(), Vector3::one());
+
+    EntityHandle entity8 = scene.Create();
+    entity8.Make<TagComponent>("Entity 8");
+    entity8.Make<Transform>(Vector3::front(), Quaternion::identity(), Vector3(1.5f, .5f, .1f));
+
+    rapidjson::StringBuffer buffer;
+    rapidjson::Writer       writer(buffer);
+    CHECK(scene.ToJson(writer), "Scene json serialization failed");
+    CHECK(writer.IsComplete(), "Scene json serialization failed - Produced json is incomplete");
+
+    const std::string validJsonStr(buffer.GetString(), buffer.GetSize());
+    SV_LOG("Scene json:\n%s", validJsonStr.c_str());
+
+    Scene               tmp;
+    rapidjson::Document document;
+    document.Parse(validJsonStr.c_str(), validJsonStr.size());
+    CHECK(tmp.FromJson(document));
+}
+
 std::unique_ptr<IShaderStorageBuffer> SetupLightSSBO(const Scene& p_scene)
 {
     SceneView<const LightComponent> view(p_scene);
@@ -668,6 +702,7 @@ int main()
     });
 
     TestScene();
+    TestSceneSerialization();
 
     Scene                                 scene;
     SceneView<Temporary>                  temporariesView(scene);
