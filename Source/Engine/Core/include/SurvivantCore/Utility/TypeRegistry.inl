@@ -11,7 +11,7 @@ namespace SvCore::Utility
         ASSERT(!m_typeIds.contains(p_name), "Type name \"%s\" has already been registered", p_name.c_str());
 
         TypeId id = typeid(T).hash_code();
-        ASSERT(!m_typeInfos.contains(id), "Type %d (\"%s\") has already been registered", id, typeid(T).name());
+        ASSERT(!m_typeInfos.contains(id), "Type %llu (\"%s\") has already been registered", id, typeid(T).name());
 
         m_typeInfos[id]   = p_info;
         m_typeNames[id]   = p_name;
@@ -49,7 +49,7 @@ namespace SvCore::Utility
     const TypeInfo& TypeRegistry<TypeInfo>::GetTypeInfo(const size_t p_typeId) const
     {
         const auto it = m_typeInfos.find(p_typeId);
-        ASSERT(it != m_typeInfos.end(), "No registered type id \"%d\" found.", p_typeId);
+        ASSERT(it != m_typeInfos.end(), "No registered type id \"%llu\" found.", p_typeId);
         return it->second;
     }
 
@@ -64,7 +64,7 @@ namespace SvCore::Utility
     const std::string& TypeRegistry<TypeInfo>::GetRegisteredTypeName(const size_t p_typeId) const
     {
         const auto it = m_typeNames.find(p_typeId);
-        ASSERT(it != m_typeNames.end(), "Couldn't find registered name of type with id %d", p_typeId);
+        ASSERT(it != m_typeNames.end(), "Couldn't find registered name of type with id %llu", p_typeId);
 
         return it->second;
     }
