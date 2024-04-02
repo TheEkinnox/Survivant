@@ -86,99 +86,101 @@ using namespace SvRendering::RHI;
 			using namespace SvCore;
 			using namespace SvApp;
 			using namespace Events;
+			using namespace SvEditor::App;
 
 			static bool firstTime = true;
-
-			if (!firstTime)
-				return;
-
-			firstTime = false;
+			static std::shared_ptr<InputManager::InputBindings> bindings = std::make_shared<InputManager::InputBindings>();
 
 			InputManager& im = InputManager::GetInstance();
 
-			using namespace SvEditor::App;
+			im.SetInputBindings(bindings);
 
-			im.AddInputBinding({ EKey::W, EKeyState::PRESSED, EInputModifier() }, [](const char)
+			if (!firstTime)
+				return;
+			firstTime = false;
+
+			auto& k = bindings->m_keyCallbacks;
+			k.emplace(InputManager::KeyboardKeyType{ EKey::W, EKeyState::PRESSED, EInputModifier() }, [](const char)
 				{
 					++SvEditor::App::EngineApp::s_moveInput->m_y;
 				});
 
-			im.AddInputBinding({ EKey::W, EKeyState::RELEASED, EInputModifier() }, [](const char)
+			k.emplace(InputManager::KeyboardKeyType{ EKey::W, EKeyState::RELEASED, EInputModifier() }, [](const char)
 				{
 					--EngineApp::s_moveInput->m_y;
 				});
 
-			im.AddInputBinding({ EKey::S, EKeyState::PRESSED, EInputModifier() }, [](const char)
+			k.emplace(InputManager::KeyboardKeyType{ EKey::S, EKeyState::PRESSED, EInputModifier() }, [](const char)
 				{
 					--EngineApp::s_moveInput->m_y;
 				});
 
-			im.AddInputBinding({ EKey::S, EKeyState::RELEASED, EInputModifier() }, [](const char)
+			k.emplace(InputManager::KeyboardKeyType{ EKey::S, EKeyState::RELEASED, EInputModifier() }, [](const char)
 				{
 					++EngineApp::s_moveInput->m_y;
 				});
 
-			im.AddInputBinding({ EKey::A, EKeyState::PRESSED, EInputModifier() }, [](const char)
+			k.emplace(InputManager::KeyboardKeyType{ EKey::A, EKeyState::PRESSED, EInputModifier() }, [](const char)
 				{
 					--EngineApp::s_moveInput->m_x;
 				});
 
-			im.AddInputBinding({ EKey::A, EKeyState::RELEASED, EInputModifier() }, [](const char)
+			k.emplace(InputManager::KeyboardKeyType{ EKey::A, EKeyState::RELEASED, EInputModifier() }, [](const char)
 				{
 					++EngineApp::s_moveInput->m_x;
 				});
 
-			im.AddInputBinding({ EKey::D, EKeyState::PRESSED, EInputModifier() }, [](const char)
+			k.emplace(InputManager::KeyboardKeyType{ EKey::D, EKeyState::PRESSED, EInputModifier() }, [](const char)
 				{
 					++EngineApp::s_moveInput->m_x;
 				});
 
-			im.AddInputBinding({ EKey::D, EKeyState::RELEASED, EInputModifier() }, [](const char)
+			k.emplace(InputManager::KeyboardKeyType{ EKey::D, EKeyState::RELEASED, EInputModifier() }, [](const char)
 				{
 					--EngineApp::s_moveInput->m_x;
 				});
 
-			im.AddInputBinding({ EKey::UP, EKeyState::PRESSED, EInputModifier() }, [](const char)
+			k.emplace(InputManager::KeyboardKeyType{ EKey::UP, EKeyState::PRESSED, EInputModifier() }, [](const char)
 				{
 					++EngineApp::s_rotateInput->m_y;
 				});
 
-			im.AddInputBinding({ EKey::UP, EKeyState::RELEASED, EInputModifier() }, [](const char)
+			k.emplace(InputManager::KeyboardKeyType{ EKey::UP, EKeyState::RELEASED, EInputModifier() }, [](const char)
 				{
 					--EngineApp::s_rotateInput->m_y;
 				});
 
-			im.AddInputBinding({ EKey::DOWN, EKeyState::PRESSED, EInputModifier() }, [](const char)
+			k.emplace(InputManager::KeyboardKeyType{ EKey::DOWN, EKeyState::PRESSED, EInputModifier() }, [](const char)
 				{
 					--EngineApp::s_rotateInput->m_y;
 				});
 
-			im.AddInputBinding({ EKey::DOWN, EKeyState::RELEASED, EInputModifier() }, [](const char)
+			k.emplace(InputManager::KeyboardKeyType{ EKey::DOWN, EKeyState::RELEASED, EInputModifier() }, [](const char)
 				{
 					++EngineApp::s_rotateInput->m_y;
 				});
 
-			im.AddInputBinding({ EKey::LEFT, EKeyState::PRESSED, EInputModifier() }, [](const char)
+			k.emplace(InputManager::KeyboardKeyType{ EKey::LEFT, EKeyState::PRESSED, EInputModifier() }, [](const char)
 				{
 					--EngineApp::s_rotateInput->m_x;
 				});
 
-			im.AddInputBinding({ EKey::LEFT, EKeyState::RELEASED, EInputModifier() }, [](const char)
+			k.emplace(InputManager::KeyboardKeyType{ EKey::LEFT, EKeyState::RELEASED, EInputModifier() }, [](const char)
 				{
 					++EngineApp::s_rotateInput->m_x;
 				});
 
-			im.AddInputBinding({ EKey::RIGHT, EKeyState::PRESSED, EInputModifier() }, [](const char)
+			k.emplace(InputManager::KeyboardKeyType{ EKey::RIGHT, EKeyState::PRESSED, EInputModifier() }, [](const char)
 				{
 					++EngineApp::s_rotateInput->m_x;
 				});
 
-			im.AddInputBinding({ EKey::RIGHT, EKeyState::RELEASED, EInputModifier() }, [](const char)
+			k.emplace(InputManager::KeyboardKeyType{ EKey::RIGHT, EKeyState::RELEASED, EInputModifier() }, [](const char)
 				{
 					--EngineApp::s_rotateInput->m_x;
 				});
 
-			im.AddInputBinding({ EKey::R, EKeyState::RELEASED, {} }, [](const char)
+			k.emplace(InputManager::KeyboardKeyType{ EKey::R, EKeyState::RELEASED, {} }, [](const char)
 				{
 					EngineApp::s_camTransform->setAll(*EngineApp::s_camPos, Quaternion::identity(), Vector3::one());
 				});
@@ -187,21 +189,6 @@ using namespace SvRendering::RHI;
 			//{
 			//    glfwSetWindowShouldClose(window.GetWindow(), true);
 			//});
-
-			std::vector<Matrix4> lightMatrices;
-			lightMatrices.emplace_back(Light(EngineApp::s_cam->GetClearColor()).getMatrix());
-			lightMatrices.emplace_back(DirectionalLight(Color::magenta, Vector3::back()).getMatrix());
-			lightMatrices.emplace_back(SpotLight(Color(0.f, 1.f, 0.f, 3.f), *EngineApp::s_camPos, Vector3::front(), Attenuation(10),
-				{ cos(0_deg), cos(30_deg) }).getMatrix());
-			lightMatrices.emplace_back(PointLight(Light{ Color::red }, Vector3{ -1, 1, 1 }, Attenuation(16)).getMatrix());
-
-			std::unique_ptr<IShaderStorageBuffer> lightsSSBO = IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, 0);
-			lightsSSBO->Bind();
-			lightsSSBO->SetData(lightMatrices.data(), lightMatrices.size());
-
-			SvEditor::App::EngineApp::s_model = std::make_shared<SvRendering::Resources::Model>();
-			ASSERT(SvEditor::App::EngineApp::s_model->Load("assets/models/cube.obj"), "Failed to load model");
-			ASSERT(SvEditor::App::EngineApp::s_model->Init(), "Failed to initialize model");
 		}
 	}
 
@@ -261,6 +248,8 @@ namespace SvEditor::App
 		{
 			m_editorEngine.Update();
 			m_window->Update();
+
+			SvApp::InputManager::GetInstance().Update();
 
 			if (!m_gameInstance.expired() && !m_gameIsPaused)
 			{
@@ -336,11 +325,14 @@ namespace SvEditor::App
 		class ToggleEvent : public Events::Event<> {};
 
 		InputManager& im = InputManager::GetInstance();
-		
 		InputManager::GetInstance().InitWindow(m_window.get());
+		auto input = m_window->GetInputs();
+		im.SetInputBindings(input);
+
+		auto& k = input->m_keyCallbacks;
+		auto& m = input->m_mouseKeyCallbacks;
 
 		EventManager& em = EventManager::GetInstance();
-
 		AddEvent::EventDelegate printAdd = [](int i, int j) { std::cout << "Add = " << i + j << std::endl; };
 		//ToggleEvent::EventDelegate toggle = std::bind(&SvApp::Window::ToggleFullScreenMode, &window);
 		em.AddListenner<AddEvent>(printAdd);
@@ -353,13 +345,14 @@ namespace SvEditor::App
 		InputManager::KeyboardKeyType   space(EKey::SPACE, EKeyState::PRESSED, EInputModifier());
 
 		auto test = [](char p_c) { return std::tuple<int, int>{ p_c, 10 }; };
-		im.AddInputEventBinding<AddEvent>(a, &AddInputTranslate);
-		im.AddInputEventBinding<AddEvent>(b, &AddInputTranslate);
-		im.AddInputEventBinding<AddEvent>(mouse, &AddMouseTranslate);
-		im.AddInputEventBinding<ToggleEvent>(space, &SpaceTranslate);
+		k.emplace(a, im.CreateInputEventBinding<AddEvent>(a, &AddInputTranslate));
+		k.emplace(b, im.CreateInputEventBinding<AddEvent>(a, &AddInputTranslate));
+		k.emplace(space, im.CreateInputEventBinding<AddEvent>(space, &AddInputTranslate));
+		k.emplace(	InputManager::KeyboardKeyType{ EKey::ESCAPE, EKeyState::PRESSED, EInputModifier() },
+					[this](char) { m_isRunning = false; });
 
+		m.emplace(mouse, im.CreateInputEventBinding<AddEvent>(mouse, &AddMouseTranslate));
 		//stop running on escape
-		im.AddInputBinding({ EKey::ESCAPE, EKeyState::PRESSED, EInputModifier() }, [this](char) { m_isRunning = false; });
 	}
 
 	void EngineApp::TogglePlayPIE()

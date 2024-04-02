@@ -139,10 +139,34 @@ namespace ToRemove
     constexpr const char* UNLIT_SHADER_PATH = "assets/shaders/Unlit.glsl";
     constexpr const char* LIT_SHADER_PATH = "assets/shaders/Lit.glsl";
 
-    bool Once()
+    void Once()
     {
         using namespace SvRendering::Core;
         using namespace SvCore::Debug;
+
+        static bool firstTime = true;
+
+        if (!firstTime)
+            return;
+
+        firstTime = false;
+
+
+        std::vector<Matrix4> lightMatrices;
+        SvEditor::App::EngineApp::s_cam->SetClearColor(Color::white);
+        lightMatrices.emplace_back(Light(SvEditor::App::EngineApp::s_cam->GetClearColor()).getMatrix());
+        lightMatrices.emplace_back(DirectionalLight(Color::magenta, Vector3::back()).getMatrix());
+        lightMatrices.emplace_back(SpotLight(Color(0.f, 1.f, 0.f, 3.f), *SvEditor::App::EngineApp::s_camPos, Vector3::front(), Attenuation(10),
+            { cos(0_deg), cos(30_deg) }).getMatrix());
+        lightMatrices.emplace_back(PointLight(Light{ Color::red }, Vector3{ -1, 1, 1 }, Attenuation(16)).getMatrix());
+
+        std::unique_ptr<IShaderStorageBuffer> lightsSSBO = IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, 0);
+        lightsSSBO->Bind();
+        lightsSSBO->SetData(lightMatrices.data(), lightMatrices.size());
+
+        SvEditor::App::EngineApp::s_model = std::make_shared<SvRendering::Resources::Model>();
+        ASSERT(SvEditor::App::EngineApp::s_model->Load("assets/models/cube.obj"), "Failed to load model");
+        ASSERT(SvEditor::App::EngineApp::s_model->Init(), "Failed to initialize model");
 
         std::shared_ptr<IShader> unlitShader = IShader::Create();
         ASSERT(unlitShader->Load(UNLIT_SHADER_PATH), "Failed to load shader at path \"%s\"", UNLIT_SHADER_PATH);
@@ -152,22 +176,25 @@ namespace ToRemove
         ASSERT(litShader->Load(LIT_SHADER_PATH), "Failed to load shader at path \"%s\"", LIT_SHADER_PATH);
         ASSERT(litShader->Init(), "Failed to initialize shader at path \"%s\"", LIT_SHADER_PATH);
 
-
         whiteMaterial.SetShader(unlitShader);
-        redMaterial = whiteMaterial;
-        litMaterial.SetShader(litShader);
 
         whiteMaterial.GetProperty<std::shared_ptr<ITexture>>("u_diffuse") = GetTexture();
         whiteMaterial.GetProperty<Vector4>("u_tint") = Color::white;
 
+        redMaterial = whiteMaterial;
         redMaterial.GetProperty<Vector4>("u_tint") = Color::red;
 
+        litMaterial.SetShader(litShader);
         litMaterial.GetProperty<std::shared_ptr<ITexture>>("u_diffuse") = GetTexture();
         litMaterial.GetProperty<Vector4>("u_tint") = Color::white;
         litMaterial.GetProperty<Vector4>("u_specularColor") = Color(.2f, .2f, .2f);
         litMaterial.GetProperty<float>("u_shininess") = 32.f;
+    }
 
-        return true;
+    void TestLevelBeginPlay()
+    {
+        *SvEditor::App::EngineApp::s_camPos = Vector3(0.f, 1.8f, 2.f);
+        *SvEditor::App::EngineApp::s_camTransform = Transform(*SvEditor::App::EngineApp::s_camPos, Quaternion::identity(), Vector3::one());
     }
 
     void TestLevelUpdate()
@@ -179,8 +206,9 @@ namespace ToRemove
         constexpr float  CAM_MOVE_SPEED = 3.f;
         constexpr Radian CAM_ROTATION_SPEED = 90_deg;
 
-        static bool doThisOnce = Once();
         static Degree angle = 0_deg;
+
+        Once();
 
         angle += 20_deg * SvEditor::App::Engine::g_engine->GetDeltaTime();
 
@@ -329,6 +357,11 @@ namespace SvEditor::App
         }
 
         return wrdPtr;
+    }
+
+    void Level::BeginPlay()
+    {
+        TestLevelBeginPlay();
     }
 
     void Level::UpdateLevel()

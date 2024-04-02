@@ -8,6 +8,7 @@
 #include "SurvivantEditor/UI/Panels/MainPanel.h"
 #include "SurvivantEditor/UI/MenuItems/Menu.h"
 #include "SurvivantEditor/UI/MenuItems/MenuBar.h"
+#include "SurvivantApp/Inputs/InputManager.h"
 
 #include <unordered_set>
 #include <memory>
@@ -28,7 +29,7 @@ namespace SvEditor::UI::Core
 	class EditorUI : public IUI
 	{
 	public:
-		EditorUI();
+		EditorUI(SvApp::InputManager::InputBindings& p_inputs);
 		~EditorUI(); 
 
 		void InitEditorUi(SvApp::Window* p_window);
@@ -70,9 +71,10 @@ namespace SvEditor::UI::Core
 
 		std::vector<ImFont*> m_fonts;
 
-		std::unordered_set<std::shared_ptr<Panel>>		m_currentPanels;
-		std::shared_ptr<MainPanel>						m_main;
-		std::vector<CreatePanelCallback>				m_endFrameCallbacks;
-		ISelectable*									m_selected;
+		std::unordered_set<std::shared_ptr<Panel>>	m_currentPanels;
+		std::shared_ptr<MainPanel>					m_main;
+		std::vector<CreatePanelCallback>			m_endFrameCallbacks;
+		ISelectable*								m_selected;
+		SvApp::InputManager::InputBindings&			m_inputs;
 	};
 }

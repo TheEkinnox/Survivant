@@ -30,6 +30,12 @@ namespace SvApp
 		using MouseKeyType = InputType<EMouseButton, EMouseButtonState, EInputModifier>;
 		using MouseCallback = std::function<void(float, float)>;
 
+		struct InputBindings
+		{
+			std::unordered_map<KeyboardKeyType, KeyCallback>	m_keyCallbacks;
+			std::unordered_map<MouseKeyType, MouseCallback>		m_mouseKeyCallbacks;
+		};
+
 		InputManager() {}
 		InputManager(InputManager const&) = delete;
 		void operator=(InputManager const&) = delete;
@@ -43,21 +49,21 @@ namespace SvApp
 
 		void InitWindow(Window* p_window);
 
-		void CallInput(const KeyboardKeyType& p_type, char p_scancode);
+		void Update();
 
-		void AddInputBinding(const KeyboardKeyType& p_type, const KeyCallback& p_callback);
+		void CallInput(const KeyboardKeyType& p_type, char p_scancode, bool p_callAtUpdate = false);
 
-		template<class Event, typename ...Args>
-		void AddInputEventBinding(const KeyboardKeyType& p_type, std::tuple<Args...> (*p_translate)(KeyCallbackParam));
+		void CallInput(const MouseKeyType& p_type, float p_x, float p_y, bool p_callAtUpdate = false);
 
-		void CallInput(const MouseKeyType& p_type, float p_x, float p_y);
+		void CallInput(const MouseKeyType& p_type, bool p_callAtUpdate = false);
 
-		void CallInput(const MouseKeyType& p_type);
-
-		void AddInputBinding(const MouseKeyType& p_type, const MouseCallback& p_callback);
+		void SetInputBindings(const std::shared_ptr<InputBindings>& p_bindings);
 
 		template<class Event, typename ...Args>
-		void AddInputEventBinding(const MouseKeyType& p_type, std::tuple<Args...>(*p_translate)(float, float));
+		KeyCallback CreateInputEventBinding(const KeyboardKeyType& p_type, std::tuple<Args...> (*p_translate)(KeyCallbackParam));
+
+		template<class Event, typename ...Args>
+		MouseCallback CreateInputEventBinding(const MouseKeyType& p_type, std::tuple<Args...>(*p_translate)(float, float));
 
 		void GetMousePos(double& p_x, double& p_y);
 
@@ -67,14 +73,15 @@ namespace SvApp
 
 	public:
 		//container peripherique
-		std::unordered_map<KeyboardKeyType, KeyCallback> m_keyCallbacks;
-		std::unordered_map<MouseKeyType, MouseCallback> m_mouseKeyCallbacks;
+		std::shared_ptr<InputBindings>		m_bindings;
+
+		std::vector<std::function<void()>>	m_updateCallbacks;
 
 		SvApp::Window* m_window = nullptr;
 	};
 
 	template<class T, typename ...Args>
-	void InputManager::AddInputEventBinding(const KeyboardKeyType& p_type, std::tuple<Args...>(*p_translate)(KeyCallbackParam))
+	InputManager::KeyCallback InputManager::CreateInputEventBinding(const KeyboardKeyType& /*p_type*/, std::tuple<Args...>(*p_translate)(KeyCallbackParam))
 	{
 		if constexpr (!std::is_base_of_v<SvCore::Events::Event<Args...>, T> && !std::is_same_v<SvCore::Events::Event<Args...>, T>)
 			return;
@@ -86,12 +93,11 @@ namespace SvApp
 				SvCore::Events::EventManager::GetInstance().Invoke<T>(p_translate(p_1));
 			};
 
-		m_keyCallbacks.emplace(p_type, callback);
-
+		return callback;
 	}
 
 	template<class T, typename ...Args>
-	inline void InputManager::AddInputEventBinding(const MouseKeyType& p_type, std::tuple<Args...>(*p_translate)(float, float))
+	InputManager::MouseCallback InputManager::CreateInputEventBinding(const MouseKeyType& /*p_type*/, std::tuple<Args...>(*p_translate)(float, float))
 	{
 		if constexpr (!std::is_base_of_v<SvCore::Events::Event<Args...>, T> && !std::is_same_v<SvCore::Events::Event<Args...>, T>)
 			return;
@@ -103,7 +109,7 @@ namespace SvApp
 				SvCore::Events::EventManager::GetInstance().Invoke<T>(p_translate(p_1, p_2));
 			};
 
-		m_mouseKeyCallbacks.emplace(p_type, callback);
+		return callback;
 	}
 
 	//glfwSetKeyCallback(window, key_callback);

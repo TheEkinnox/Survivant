@@ -27,7 +27,8 @@ namespace SvEditor::UI::Core
     using namespace MenuItems;
     using namespace PanelItems;
 
-    EditorUI::EditorUI() :
+    EditorUI::EditorUI(SvApp::InputManager::InputBindings& p_inputs) :
+        m_inputs(p_inputs),
         m_main(std::make_shared<MainPanel>()),
         m_currentPanels(),
         m_selected(nullptr)
@@ -164,7 +165,8 @@ namespace SvEditor::UI::Core
             InputManager::KeyboardKeyType(
                 EKey::F11,
                 EKeyState::PRESSED,
-                EInputModifier::MOD_ALT)
+                EInputModifier::MOD_ALT),
+            m_inputs
         ));
 
         Menu& menu2 = menuList.emplace_back("Edit");
@@ -174,7 +176,8 @@ namespace SvEditor::UI::Core
             InputManager::KeyboardKeyType(
                 EKey::F11,
                 EKeyState::PRESSED,
-                EInputModifier(EInputModifier::MOD_ALT | EInputModifier::MOD_CONTROL))
+                EInputModifier(EInputModifier::MOD_ALT | EInputModifier::MOD_CONTROL)),
+            m_inputs
         ));
         menu2.m_items.emplace_back(std::make_unique<MenuButton>(
             "Cut",

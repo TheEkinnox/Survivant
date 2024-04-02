@@ -32,6 +32,7 @@ namespace SvEditor::UI::Core
 		void SetupUI(const SetupSceneInfo& p_sceneInfo);
 
 		EditorUI& GetUI();
+		std::shared_ptr<SvApp::InputManager::InputBindings> GetInputs();
 
 	private:
 		using KeyMap = std::unordered_map<SvApp::InputManager::KeyboardKeyType, SvApp::InputManager::KeyCallback>;
@@ -40,5 +41,7 @@ namespace SvEditor::UI::Core
 		std::unique_ptr<EditorUI>	m_ui;
 		bool						m_shouldClose = false; 
 		KeyMap						m_keyInputCallbacks;
+
+		std::shared_ptr<SvApp::InputManager::InputBindings>		m_inputs;
 	};
 }

@@ -50,7 +50,7 @@ namespace SvEditor::App
 		std::shared_ptr<WorldContext>	m_PIEWorld;
 		std::shared_ptr<GameInstance>	m_gameInstance;
 
-		std::shared_ptr<Level>			m_editorLevel;
+		std::shared_ptr<Level>			m_editorSelectedLevel;
 		std::shared_ptr<WorldContext>	m_editorWorld;
 
 

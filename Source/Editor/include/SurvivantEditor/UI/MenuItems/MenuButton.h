@@ -17,18 +17,19 @@ namespace SvEditor::UI::MenuItems
 		MenuButton(
 			const std::string& p_name,
 			const SvApp::InputManager::KeyCallback& p_callback,
-			const SvApp::InputManager::KeyboardKeyType& p_shortcut);
+			const SvApp::InputManager::KeyboardKeyType& p_shortcut, 
+			SvApp::InputManager::InputBindings& p_inputs);
 		~MenuButton()override = default;
 
 		IMenuable* Clone() const override;
 
 		void DisplayAndUpdateMenu() override;
 
-		void AddShortcut(const SvApp::InputManager::KeyboardKeyType& p_shortcut);
+		void AddShortcut(SvApp::InputManager::InputBindings& p_inputs, const SvApp::InputManager::KeyboardKeyType& p_shortcut);
 
 	private:
-		std::string						m_name;
-		std::string						m_shortcut;
+		std::string							m_name;
+		std::string							m_shortcut;
 		SvApp::InputManager::KeyCallback	m_callback;
 	};
 }

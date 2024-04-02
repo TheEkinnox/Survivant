@@ -30,13 +30,10 @@ namespace SvEditor::App
 		void LoadLevel() { m_bIsLoaded = true; }
 		void UnloadLevel() { m_bIsLoaded = false; }
 		void LoadResources() {}
-		void BeginPlay() {}
+		void BeginPlay();
 
 		void UpdateLevel();
-		void RenderLevel()
-		{
-
-		}
+		void RenderLevel() {}
 
 
 		static std::shared_ptr<Level> CreateLevel() { return std::make_shared<Level>(); }
@@ -63,7 +60,6 @@ namespace SvEditor::App
 			GameInstance*						m_owningGameInstance = nullptr;
 			//TODO: deal with persistentLevel
 			//std::shared_ptr<Level>				m_persistentLevel = nullptr;
-			//size_t							m_PIEInstance;
 
 			std::shared_ptr<Level>* GetCurrentLevelPtr()
 			{

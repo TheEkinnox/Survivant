@@ -2,6 +2,7 @@
 
 #include "SurvivantApp/Inputs/InputManager.h"
 #include "SurvivantApp/Windows/Window.h"
+#include "SurvivantCore/Debug/Assertion.h"
 
 #include <tuple>
 
@@ -157,12 +158,15 @@ std::string SvApp::InputManager::KeyNameToString(const EKey& p_name)
 	case EKey::RIGHT_SUPER:		return "RIGHT_SUPER";
 	case EKey::MENU:			return "MENU";
 
-	default:						return "";
+	default:					return "";
 	}
 }
 
 std::string SvApp::InputManager::KeyModifToString(const EInputModifier& p_modif)
 {
+#undef MOD_SHIFT
+#undef MOD_CONTROL
+#undef MOD_ALT
 	switch (p_modif)
 	{
 	case SvApp::EInputModifier::MOD_SHIFT:		return "SHIFT";
@@ -178,10 +182,10 @@ std::string SvApp::InputManager::KeyModifToString(const EInputModifier& p_modif)
 
 EKey SvApp::InputManager::GetModifKey(const EInputModifier& p_modif)
 {
-	//gotat put this if I want to use enum. guess not
-//#undef MOD_SHIFT
-//#undef MOD_CONTROL
-//#undef MOD_ALT
+	//gotat put this if I want to use enum. guess not. guess yes
+#undef MOD_SHIFT
+#undef MOD_CONTROL
+#undef MOD_ALT
 	switch (p_modif)
 	{
 	case SvApp::EInputModifier::MOD_SHIFT:
@@ -209,45 +213,62 @@ void SvApp::InputManager::InitWindow(Window* p_window)
 	m_window = p_window;
 }
 
-void SvApp::InputManager::CallInput(const KeyboardKeyType& p_type, char p_scancode)
+void SvApp::InputManager::Update()
 {
-	auto callback = m_keyCallbacks.find(p_type);
+	for (auto& callback : m_updateCallbacks)
+		callback();
 
-	if (callback == m_keyCallbacks.end())
+	m_updateCallbacks.clear();
+}
+
+void SvApp::InputManager::CallInput(const KeyboardKeyType& p_type, char p_scancode, bool p_callAtUpdate)
+{
+	ASSERT(m_bindings.get() != nullptr, "Imput Bindings not set");
+
+	auto callback = m_bindings->m_keyCallbacks.find(p_type);
+
+	if (callback == m_bindings->m_keyCallbacks.end())
 		return;
+
+	if (p_callAtUpdate)
+	{
+		m_updateCallbacks.push_back(std::bind(callback->second, p_scancode));
+		return;
+	}
 
 	//calls keyboard callback with scancode
 	callback->second(p_scancode);
 }
 
-void SvApp::InputManager::AddInputBinding(
-	const KeyboardKeyType& p_type, 
-	const KeyCallback& p_callback)
+void SvApp::InputManager::CallInput(const MouseKeyType& p_type, float p_x, float p_y, bool p_callAtUpdate)
 {
-	m_keyCallbacks.emplace(p_type, p_callback);
-}
+	ASSERT(m_bindings.get() != nullptr, "Imput Bindings not set");
 
-void SvApp::InputManager::CallInput(const MouseKeyType& p_type, float p_x, float p_y)
-{
-	auto callback = m_mouseKeyCallbacks.find(p_type);
+	auto callback = m_bindings->m_mouseKeyCallbacks.find(p_type);
 
-	if (callback == m_mouseKeyCallbacks.end())
+	if (callback == m_bindings->m_mouseKeyCallbacks.end())
 		return;
+
+	if (p_callAtUpdate)
+	{
+		m_updateCallbacks.push_back(std::bind(callback->second, p_x, p_y));
+		return;
+	}
 
 	//calls mouse key callback with mous pos (x,y)
 	callback->second(p_x, p_y);
 }
 
-void SvApp::InputManager::CallInput(const MouseKeyType& p_type)
+void SvApp::InputManager::CallInput(const MouseKeyType& p_type, bool p_callAtUpdate)
 {
 	double i, j;
 	GetMousePos(i, j);
-	CallInput(p_type, static_cast<float>(i), static_cast<float>(j));
+	CallInput(p_type, static_cast<float>(i), static_cast<float>(j), p_callAtUpdate);
 }
 
-void SvApp::InputManager::AddInputBinding(const MouseKeyType& p_type, const MouseCallback& p_callback)
+void SvApp::InputManager::SetInputBindings(const std::shared_ptr<InputBindings>& p_bindings)
 {
-	m_mouseKeyCallbacks.emplace(p_type, p_callback);
+	m_bindings = p_bindings;
 }
 
 void SvApp::InputManager::GetMousePos(double& p_x, double& p_y)

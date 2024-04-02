@@ -29,7 +29,7 @@ namespace SvEditor::App
 		//if dont have PIE world context
 		if (m_PIEWorld == nullptr)
 		{
-			m_PIEWorld = CreatePIEWorldByDuplication(*m_editorWorld, m_editorLevel);
+			m_PIEWorld = CreatePIEWorldByDuplication(*m_editorWorld, m_editorSelectedLevel);
 		}
 		else
 		{
@@ -39,7 +39,7 @@ namespace SvEditor::App
 			//m_PIEWorld->m_persistentLevel = m_editorWorld->m_persistentLevel;
 			//m_PIEWorld->m_viewport = m_editorWorld->m_viewport;
 
-			m_PIEWorld->m_currentLevel = m_editorLevel;
+			m_PIEWorld->m_currentLevel = m_editorSelectedLevel;
 		}
 
 		return std::weak_ptr<GameInstance>(m_gameInstance);
@@ -147,6 +147,7 @@ namespace SvEditor::App
 	{
 		//TODO: redraw viewports here
 	}
+
 	float EditorEngine::GetDeltaTime()
 	{
 		return m_time.getDeltaTime();

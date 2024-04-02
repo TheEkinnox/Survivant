@@ -7,6 +7,7 @@
 #include "SurvivantEditor/App/GameInstance.h"
 #include "SurvivantCore/Events/Event.h"
 #include "SurvivantEditor/App/EditorEngine.h"
+#include "SurvivantApp/Inputs/InputManager.h"
 
 #include <SurvivantRendering/RHI/IRenderAPI.h>
 

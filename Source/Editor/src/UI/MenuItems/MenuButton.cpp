@@ -20,10 +20,11 @@ namespace SvEditor::UI::MenuItems
     MenuButton::MenuButton(
         const std::string& p_name,
         const SvApp::InputManager::KeyCallback& p_callback,
-        const SvApp::InputManager::KeyboardKeyType& p_shortcut) :
+        const SvApp::InputManager::KeyboardKeyType& p_shortcut, 
+        SvApp::InputManager::InputBindings& p_inputs) :
         MenuButton(p_name, p_callback)
     {
-        AddShortcut(p_shortcut);
+        AddShortcut(p_inputs, p_shortcut);
     }
 
     IMenuable* MenuButton::Clone() const
@@ -37,10 +38,10 @@ namespace SvEditor::UI::MenuItems
             m_callback(0);
     }
 
-    void MenuButton::AddShortcut(const SvApp::InputManager::KeyboardKeyType& p_shortcut)
+    void MenuButton::AddShortcut(SvApp::InputManager::InputBindings& p_inputs, const SvApp::InputManager::KeyboardKeyType& p_shortcut)
     {
         auto& im = SvApp::InputManager::GetInstance();
-        im.AddInputBinding(p_shortcut, m_callback);
+        p_inputs.m_keyCallbacks.emplace(p_shortcut, m_callback);
         m_shortcut = im.KeyBindingToString(p_shortcut);
     }
 }

@@ -15,10 +15,11 @@ namespace SvEditor::UI::Core
 	EditorWindow::EditorWindow() : SvApp::Window()
 	{
 		m_shouldClose = 0;
+		m_inputs = std::make_shared<SvApp::InputManager::InputBindings>();
 
 		SvCore::Events::EventManager::GetInstance().AddListenner<SvApp::Window::WindowClosing>(([this]() { m_shouldClose = true; }));
 
-		m_ui = std::make_unique<EditorUI>();
+		m_ui = std::make_unique<EditorUI>(*m_inputs);
 		m_ui->InitEditorUi(this);
 	}
 
@@ -53,6 +54,10 @@ namespace SvEditor::UI::Core
 	EditorUI& UI::Core::EditorWindow::GetUI()
 	{
 		return *m_ui;
+	}
+	std::shared_ptr<SvApp::InputManager::InputBindings> UI::Core::EditorWindow::GetInputs()
+	{
+		return m_inputs;
 	}
 }
 

@@ -15,7 +15,8 @@ void IMKeyCallback(GLFWwindow* /*p_window*/, int p_key, int p_scancode, int p_ac
             static_cast<EKey>(p_key), 
             static_cast<EKeyState>(p_action), 
             static_cast<EInputModifier>(p_mods)), 
-        static_cast<char>(p_scancode));
+        static_cast<char>(p_scancode),
+        true);
 }  
 
 void IMMouseCallback(GLFWwindow* p_window, int p_button, int p_action, int p_mods)
@@ -29,7 +30,8 @@ void IMMouseCallback(GLFWwindow* p_window, int p_button, int p_action, int p_mod
             static_cast<EMouseButtonState>(p_action),
             static_cast<EInputModifier>(p_mods)),
         static_cast<float>(xpos), 
-        static_cast<float>(ypos));
+        static_cast<float>(ypos),
+        true);
 }
 
 void WindowCloseCallback(GLFWwindow* /*window*/)
