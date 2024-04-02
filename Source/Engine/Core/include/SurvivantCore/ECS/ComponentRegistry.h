@@ -9,7 +9,7 @@
 #include <rapidjson/writer.h>
 
 #define REGISTER_COMPONENT_TYPE(Name, Type)                                                                  \
-static uint8_t compReg_##Name = (SvCore::ECS::ComponentRegistry::getInstance().registerType<Type>(#Name), 0);
+static uint8_t compReg_##Name = (SvCore::ECS::ComponentRegistry::GetInstance().RegisterType<Type>(#Name), 0);
 
 namespace SvCore::ECS
 {
