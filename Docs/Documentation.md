@@ -187,11 +187,11 @@ PhysX is a very powerful, albeit complex, low-level library for creating realist
 
 #### Source files integration
 
-***TODO***
+Added to the project using _FetchContent_
 
 #### Type of library
 
-***TODO***
+Static
 
 #### Sources
 
