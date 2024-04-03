@@ -11,6 +11,7 @@
 
 #include <Vector/Vector2.h>
 
+#include <memory>
 #include <string>
 
 namespace SvRendering::RHI
