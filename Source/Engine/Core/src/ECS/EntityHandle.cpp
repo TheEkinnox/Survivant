@@ -136,4 +136,19 @@ namespace SvCore::ECS
 
         m_entity = NULL_ENTITY;
     }
+
+    Entity::Id EntityHandle::GetComponentCount() const
+    {
+        return m_scene ? m_scene->GetComponentCount(m_entity) : 0;
+    }
+
+    std::vector<ComponentRegistry::TypeId> EntityHandle::GetComponentIds() const
+    {
+        return m_scene ? m_scene->GetComponentIds(m_entity) : std::vector<ComponentRegistry::TypeId>();
+    }
+
+    std::vector<std::pair<ComponentRegistry::TypeId, void*>> EntityHandle::GetComponents() const
+    {
+        return m_scene ? m_scene->GetComponents(m_entity) : std::vector<std::pair<ComponentRegistry::TypeId, void*>>();
+    }
 }

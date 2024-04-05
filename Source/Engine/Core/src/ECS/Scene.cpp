@@ -161,6 +161,71 @@ namespace SvCore::ECS
         return m_entities.Has(p_owner);
     }
 
+    IComponentStorage& Scene::GetStorage(const TypeId p_id)
+    {
+        const auto it = m_components.find(p_id);
+
+        if (it != m_components.end())
+            return *it->second;
+
+        return *(m_components[p_id] = ComponentRegistry::GetInstance().GetTypeInfo(p_id).MakeStorage(this));
+    }
+
+    const IComponentStorage& Scene::GetStorage(const TypeId p_id) const
+    {
+        return const_cast<Scene*>(this)->GetStorage(p_id);
+    }
+
+    std::vector<Scene::TypeId> Scene::GetComponentIds() const
+    {
+        const auto view = m_components | std::views::keys;
+        return { view.begin(), view.end() };
+    }
+
+    Entity::Id Scene::GetComponentCount(const Entity p_entity) const
+    {
+        if (!Contains(p_entity))
+            return 0;
+
+        Entity::Id count = 0;
+
+        for (const auto& storage : m_components | std::views::values)
+        {
+            if (storage && storage->Contains(p_entity))
+                ++count;
+        }
+
+        return count;
+    }
+
+    std::vector<Scene::TypeId> Scene::GetComponentIds(const Entity p_owner) const
+    {
+        std::vector<TypeId> ids;
+        ids.reserve(m_components.size());
+
+        for (const auto& [id, storage] : m_components)
+        {
+            if (storage->Contains(p_owner))
+                ids.emplace_back(id);
+        }
+
+        return ids;
+    }
+
+    std::vector<std::pair<Scene::TypeId, void*>> Scene::GetComponents(const Entity p_owner) const
+    {
+        std::vector<std::pair<TypeId, void*>> components;
+        components.reserve(m_components.size());
+
+        for (const auto& [id, storage] : m_components)
+        {
+            if (auto component = storage->FindRaw(p_owner))
+                components.emplace_back(id, component);
+        }
+
+        return components;
+    }
+
     bool Scene::DeserializeStorage(const rapidjson::Value& p_json)
     {
         if (!CHECK(p_json.IsObject(), "Unable to deserialize scene component storage - Json value should be an object"))

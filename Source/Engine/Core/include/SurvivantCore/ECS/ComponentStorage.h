@@ -56,6 +56,20 @@ namespace SvCore::ECS
         virtual bool Contains(Entity p_entity) const = 0;
 
         /**
+         * \brief Finds the component owned by the given entity
+         * \param p_owner The searched component's owner
+         * \return A pointer to the found component on success. Nullptr otherwise
+         */
+        virtual void* FindRaw(Entity p_owner) = 0;
+
+        /**
+         * \brief Finds the component owned by the given entity
+         * \param p_owner The searched component's owner
+         * \return A constant pointer to the found component on success. Nullptr otherwise
+         */
+        virtual const void* FindRaw(Entity p_owner) const = 0;
+
+        /**
          * \brief Assigns a copy of the source entity's component to the target entity
          * \param p_source The entity from which the component should be copied
          * \param p_target The entity to which the component should be assigned
@@ -226,6 +240,20 @@ namespace SvCore::ECS
          * \return True if the entity owns a component of in the storage. False otherwise
          */
         bool Has(Entity p_owner) const;
+
+        /**
+         * \brief Finds the component owned by the given entity
+         * \param p_owner The searched component's owner
+         * \return A pointer to the found component on success. Nullptr otherwise
+         */
+        void* FindRaw(Entity p_owner) override;
+
+        /**
+         * \brief Finds the component owned by the given entity
+         * \param p_owner The searched component's owner
+         * \return A constant pointer to the found component on success. Nullptr otherwise
+         */
+        const void* FindRaw(Entity p_owner) const override;
 
         /**
          * \brief Finds the component owned by the given entity

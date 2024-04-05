@@ -15,11 +15,9 @@ namespace SvCore::ECS
     template <typename T>
     void ComponentRegistry::RegisterType(const std::string& p_name)
     {
-        const size_t typeHash = typeid(T).hash_code();
-
         const ComponentTypeInfo typeInfo
         {
-            .m_typeId = typeHash,
+            .m_typeId = GetTypeId<T>(),
             .MakeStorage = [](Scene* p_scene)
             {
                 std::unique_ptr<IComponentStorage> storage = std::make_unique<ComponentStorage<T>>(p_scene);

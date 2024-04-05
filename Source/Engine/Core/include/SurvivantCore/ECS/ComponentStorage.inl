@@ -155,6 +155,18 @@ namespace SvCore::ECS
     }
 
     template <class T>
+    void* ComponentStorage<T>::FindRaw(const Entity p_owner)
+    {
+        return (void*)Find(p_owner);
+    }
+
+    template <class T>
+    const void* ComponentStorage<T>::FindRaw(const Entity p_owner) const
+    {
+        return (const void*)Find(p_owner);
+    }
+
+    template <class T>
     T* ComponentStorage<T>::Find(const Entity p_owner)
     {
         const auto it = m_entityToComponent.find(p_owner);
