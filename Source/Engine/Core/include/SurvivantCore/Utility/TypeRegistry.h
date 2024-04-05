@@ -90,6 +90,13 @@ namespace SvCore::Utility
          * \tparam T The component type
          * \return The registered type information for the given component type
          */
+        TypeInfo& GetTypeInfo(const std::string& p_type);
+
+        /**
+         * \brief Gets the registered type information for the given component type
+         * \tparam T The component type
+         * \return The registered type information for the given component type
+         */
         const TypeInfo& GetTypeInfo(const std::string& p_type) const;
 
         /**
@@ -97,7 +104,22 @@ namespace SvCore::Utility
          * \param p_typeId The component type's id
          * \return The registered type information for the given component type
          */
-        const TypeInfo& GetTypeInfo(size_t p_typeId) const;
+        TypeInfo& GetTypeInfo(TypeId p_typeId);
+
+        /**
+         * \brief Gets the registered type information for the given type id
+         * \param p_typeId The component type's id
+         * \return The registered type information for the given component type
+         */
+        const TypeInfo& GetTypeInfo(TypeId p_typeId) const;
+
+        /**
+         * \brief Gets the registered type information for the given type id
+         * \tparam T The component type
+         * \return The registered type information for the given component type
+         */
+        template <typename T>
+        TypeInfo& GetTypeInfo();
 
         /**
          * \brief Gets the registered type information for the given type id
@@ -112,7 +134,7 @@ namespace SvCore::Utility
          * \param p_typeId The component type's id
          * \return The registered name for the given component type
          */
-        const std::string& GetRegisteredTypeName(size_t p_typeId) const;
+        const std::string& GetRegisteredTypeName(TypeId p_typeId) const;
 
         /**
          * \brief Gets the registered name for the given component type
@@ -123,9 +145,9 @@ namespace SvCore::Utility
         const std::string& GetRegisteredTypeName() const;
 
     private:
-        using TypeMap = std::unordered_map<size_t, TypeInfo>;
-        using TypeNameMap = std::unordered_map<size_t, std::string>;
-        using TypeIdMap = std::unordered_map<std::string, size_t>;
+        using TypeMap = std::unordered_map<TypeId, TypeInfo>;
+        using TypeNameMap = std::unordered_map<TypeId, std::string>;
+        using TypeIdMap = std::unordered_map<std::string, TypeId>;
 
         TypeMap     m_typeInfos;
         TypeNameMap m_typeNames;
