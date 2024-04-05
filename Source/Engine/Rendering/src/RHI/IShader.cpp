@@ -13,6 +13,23 @@ using namespace SvRendering::Enums;
 using namespace SvRendering::Enums;
 using namespace SvRendering::RHI;
 
+namespace SvCore::Resources
+{
+    template <>
+    IShader* CreateResource<IShader>()
+    {
+        switch (IRenderAPI::GetCurrent().GetBackend())
+        {
+        case EGraphicsAPI::OPENGL:
+            return new OpenGLShader();
+        case EGraphicsAPI::NONE:
+        default:
+            ASSERT(false, "Failed to create shader - Unsupported graphics api");
+            return nullptr;
+        }
+    }
+}
+
 namespace SvRendering::RHI
 {
     std::string IShader::GetTokenFromType(const EShaderType p_shaderType)

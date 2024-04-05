@@ -21,4 +21,19 @@ namespace SvCore::Utility
      * \return True on success. False otherwise
      */
     bool SetWorkingDirectory(const std::string& p_directory);
+
+    /**
+     * \brief Appends the given path to the given root
+     * \param p_root The root search path
+     * \param p_path The path to append to the root
+     * \return The concatenated paths
+     */
+    std::string AppendPath(const std::string& p_root, const std::string& p_path);
+
+    /**
+     * \brief Checks whether the given file path exists
+     * \param p_path The path to check
+     * \return True if the path exists. False otherwise
+     */
+    bool PathExists(const std::string& p_path);
 }

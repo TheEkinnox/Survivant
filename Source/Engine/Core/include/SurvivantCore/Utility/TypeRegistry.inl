@@ -6,6 +6,13 @@ namespace SvCore::Utility
 {
     template <class TypeInfo>
     template <typename T>
+    typename TypeRegistry<TypeInfo>::TypeId TypeRegistry<TypeInfo>::GetTypeId()
+    {
+        return typeid(std::remove_cvref_t<T>).hash_code();
+    }
+
+    template <class TypeInfo>
+    template <typename T>
     void TypeRegistry<TypeInfo>::RegisterType(const std::string& p_name, const TypeInfo& p_info)
     {
         ASSERT(!m_typeIds.contains(p_name), "Type name \"%s\" has already been registered", p_name.c_str());

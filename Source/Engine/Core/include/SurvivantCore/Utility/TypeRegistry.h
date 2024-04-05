@@ -47,6 +47,14 @@ namespace SvCore::Utility
         TypeRegistry& operator=(TypeRegistry&& p_other) noexcept = default;
 
         /**
+         * \brief Gets the given type's id
+         * \tparam T The target type
+         * \return The given type's id
+         */
+        template <typename T>
+        static TypeId GetTypeId();
+
+        /**
          * \brief Registers the given type with the given info and name
          * \tparam T The registered type
          * \param p_name The registered type's name

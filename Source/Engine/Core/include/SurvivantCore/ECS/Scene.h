@@ -14,6 +14,8 @@ namespace SvCore::ECS
 
     class Scene final : public Resources::IResource
     {
+        REGISTERED_RESOURCE_BODY()
+
     public:
         template <typename T>
         using Storage = std::conditional_t<std::is_same_v<Entity, std::remove_const_t<T>>, EntityStorage, ComponentStorage<T>>;

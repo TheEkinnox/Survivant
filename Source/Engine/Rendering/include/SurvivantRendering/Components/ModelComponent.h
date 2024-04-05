@@ -6,7 +6,7 @@ namespace SvRendering::Components
 {
     struct ModelComponent
     {
-        std::shared_ptr<Resources::Model>    m_model;
-        std::shared_ptr<Resources::Material> m_material;
+        SvCore::Resources::ResourceRef<Resources::Model>    m_model;
+        SvCore::Resources::ResourceRef<Resources::Material> m_material;
     };
 }

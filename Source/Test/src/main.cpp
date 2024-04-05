@@ -30,6 +30,7 @@
 using namespace LibMath;
 using namespace SvCore::ECS;
 using namespace SvCore::Utility;
+using namespace SvCore::Resources;
 using namespace SvRendering::Core;
 using namespace SvRendering::Components;
 using namespace SvRendering::Enums;
@@ -37,22 +38,21 @@ using namespace SvRendering::Geometry;
 using namespace SvRendering::Resources;
 using namespace SvRendering::RHI;
 
-constexpr const char* UNLIT_SHADER_PATH = "assets/shaders/Unlit.glsl";
-constexpr const char* LIT_SHADER_PATH   = "assets/shaders/Lit.glsl";
+constexpr const char* UNLIT_SHADER_PATH = "shaders/Unlit.glsl";
+constexpr const char* LIT_SHADER_PATH   = "shaders/Lit.glsl";
 
 constexpr float  CAM_MOVE_SPEED     = 3.f;
 constexpr Radian CAM_ROTATION_SPEED = 90_deg;
 
-std::shared_ptr<ITexture> GetTexture()
+ResourceRef<ITexture> GetTexture()
 {
-    static std::shared_ptr<ITexture> texture  = ITexture::Create();
-    static bool                      isLoaded = false;
+    static ResourceRef<ITexture> texture("textures/grid.png");
+    static bool                  isLoaded = false;
 
     if (isLoaded)
         return texture;
 
-    ASSERT(texture->Load("assets/textures/grid.png"));
-    ASSERT(texture->Init());
+    ASSERT(texture);
 
     texture->SetFilters(ETextureFilter::NEAREST, ETextureFilter::NEAREST);
     texture->SetWrapModes(ETextureWrapMode::REPEAT, ETextureWrapMode::REPEAT);
@@ -312,43 +312,39 @@ void MakeScene(Scene& p_scene)
 
     camEntity.Make<UserInput>(CAM_MOVE_SPEED, CAM_ROTATION_SPEED);
 
-    std::shared_ptr<Model> cube = std::make_shared<Model>();
+    ResourceRef<Model> cube("models/cube.obj");
+    ASSERT(cube, "Failed to load model at path \"%s\"", "models/cube.obj");
 
-    ASSERT(cube->Load("assets/models/cube.obj"), "Failed to load model");
-    ASSERT(cube->Init(), "Failed to initialize model");
+    ResourceRef<IShader> unlitShader(UNLIT_SHADER_PATH);
+    ASSERT(unlitShader, "Failed to load shader at path \"%s\"", UNLIT_SHADER_PATH);
 
-    std::shared_ptr<IShader> unlitShader = IShader::Create();
-    ASSERT(unlitShader->Load(UNLIT_SHADER_PATH), "Failed to load shader at path \"%s\"", UNLIT_SHADER_PATH);
-    ASSERT(unlitShader->Init(), "Failed to initialize shader at path \"%s\"", UNLIT_SHADER_PATH);
+    ResourceRef<IShader> litShader(LIT_SHADER_PATH);
+    ASSERT(litShader, "Failed to load shader at path \"%s\"", LIT_SHADER_PATH);
 
-    std::shared_ptr<IShader> litShader = IShader::Create();
-    ASSERT(litShader->Load(LIT_SHADER_PATH), "Failed to load shader at path \"%s\"", LIT_SHADER_PATH);
-    ASSERT(litShader->Init(), "Failed to initialize shader at path \"%s\"", LIT_SHADER_PATH);
+    ResourceRef whiteMaterial("", new Material(unlitShader));
+    whiteMaterial->GetProperty<ResourceRef<ITexture>>("u_diffuse") = GetTexture();
+    whiteMaterial->GetProperty<Vector4>("u_tint")                  = Color::white;
 
-    std::shared_ptr<Material> whiteMaterial                            = std::make_shared<Material>(unlitShader);
-    whiteMaterial->GetProperty<std::shared_ptr<ITexture>>("u_diffuse") = GetTexture();
-    whiteMaterial->GetProperty<Vector4>("u_tint")                      = Color::white;
-
-    std::shared_ptr<Material> redMaterial       = std::make_shared<Material>(*whiteMaterial);
+    ResourceRef redMaterial("", new Material(*whiteMaterial));
     redMaterial->GetProperty<Vector4>("u_tint") = Color::red;
 
-    std::shared_ptr<Material> greenMaterial       = std::make_shared<Material>(*whiteMaterial);
+    ResourceRef greenMaterial("", new Material(*whiteMaterial));
     greenMaterial->GetProperty<Vector4>("u_tint") = Color::green;
 
-    std::shared_ptr<Material> blueMaterial       = std::make_shared<Material>(*whiteMaterial);
+    ResourceRef blueMaterial("", new Material(*whiteMaterial));
     blueMaterial->GetProperty<Vector4>("u_tint") = Color::blue;
 
-    std::shared_ptr<Material> yellowMaterial       = std::make_shared<Material>(*whiteMaterial);
+    ResourceRef yellowMaterial("", new Material(*whiteMaterial));
     yellowMaterial->GetProperty<Vector4>("u_tint") = Color::yellow;
 
-    std::shared_ptr<Material> magentaMaterial       = std::make_shared<Material>(*whiteMaterial);
+    ResourceRef magentaMaterial("", new Material(*whiteMaterial));
     magentaMaterial->GetProperty<Vector4>("u_tint") = Color::magenta;
 
-    std::shared_ptr<Material> litMaterial                            = std::make_shared<Material>(litShader);
-    litMaterial->GetProperty<std::shared_ptr<ITexture>>("u_diffuse") = GetTexture();
-    litMaterial->GetProperty<Vector4>("u_tint")                      = Color::white;
-    litMaterial->GetProperty<Vector4>("u_specularColor")             = Color(.2f, .2f, .2f);
-    litMaterial->GetProperty<float>("u_shininess")                   = 32.f;
+    ResourceRef litMaterial("", new Material(litShader));
+    litMaterial->GetProperty<ResourceRef<ITexture>>("u_diffuse") = GetTexture();
+    litMaterial->GetProperty<Vector4>("u_tint")                  = Color::white;
+    litMaterial->GetProperty<Vector4>("u_specularColor")         = Color(.2f, .2f, .2f);
+    litMaterial->GetProperty<float>("u_shininess")               = 32.f;
 
     EntityHandle whiteCube = p_scene.Create();
     whiteCube.Make<ModelComponent>(cube, whiteMaterial);
@@ -400,6 +396,7 @@ void TestSceneSerialization()
     EntityHandle entity1 = scene.Create();
     entity1.Make<TagComponent>("Entity 1");
     entity1.Make<Transform>(Vector3::zero(), Quaternion::identity(), Vector3::one());
+    entity1.Make<ModelComponent>(ResourceRef<Model>("models/cube.obj"), ResourceRef<Material>());
 
     EntityHandle entity2 = scene.Create();
     entity2.Make<TagComponent>("Entity 2");
@@ -565,6 +562,7 @@ void UpdateRotators(SceneView<const Rotator, Transform>& p_view, const float p_d
 int main()
 {
     SvCore::Debug::Logger::GetInstance().SetFile("debug.log");
+    ResourceManager::GetInstance().AddSearchPath("assets");
 
     ASSERT(SetWorkingDirectory(GetApplicationDirectory()), "Failed to update working directory");
     SV_LOG("Current working directory: \"%s\"", GetWorkingDirectory().c_str());

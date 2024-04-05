@@ -11,6 +11,8 @@ namespace SvRendering::Resources
 {
     class Model final : public SvCore::Resources::IResource
     {
+        REGISTERED_RESOURCE_BODY()
+
     public:
         /**
          * \brief Creates an empty model
