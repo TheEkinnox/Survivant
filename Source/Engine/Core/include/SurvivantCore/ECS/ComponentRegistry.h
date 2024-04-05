@@ -1,5 +1,6 @@
 #pragma once
 #include "SurvivantCore/ECS/Entity.h"
+#include "SurvivantCore/Utility/DynamicTypeInfo.h"
 #include "SurvivantCore/Utility/TypeRegistry.h"
 
 #include <cstdint>
@@ -25,7 +26,7 @@ namespace SvCore::ECS
         std::unique_ptr<IComponentStorage> (*MakeStorage)(Scene*);
     };
 
-    class ComponentRegistry final : public Utility::TypeRegistry<ComponentTypeInfo>
+    class ComponentRegistry final : public Utility::TypeRegistry<Utility::DynamicTypeInfo<ComponentTypeInfo>>
     {
     public:
         using EntitiesMap = std::unordered_map<Entity::Id, Entity>;
