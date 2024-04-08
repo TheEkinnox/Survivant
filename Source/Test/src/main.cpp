@@ -1,3 +1,5 @@
+// TODO: Remove SV_EDITOR define - Added it here temporarily to test dynamic type info
+#define SV_EDITOR
 #include <SurvivantCore/Debug/Assertion.h>
 #include <SurvivantCore/ECS/EntityHandle.h>
 #include <SurvivantCore/ECS/Scene.h>
@@ -442,6 +444,54 @@ void TestSceneSerialization()
     rapidjson::Document document;
     document.Parse(validJsonStr.c_str(), validJsonStr.size());
     CHECK(tmp.FromJson(document));
+
+    const auto printTag = [](const void* p_payload)
+    {
+        ASSERT(p_payload);
+
+        const TagComponent& tag = *static_cast<const TagComponent*>(p_payload);
+        SV_LOG("Called injected func for tag \"%s\"", tag.m_tag.c_str());
+
+        return true;
+    };
+
+    CHECK(ComponentRegistry::GetInstance().GetTypeInfo<TagComponent>().Add("Print", printTag));
+
+    const auto printTransform = [](const void* p_payload)
+    {
+        ASSERT(p_payload);
+
+        const Transform& transform = *static_cast<const Transform*>(p_payload);
+        SV_LOG("Called injected func for transform {%s, %s, %s}",
+            transform.getPosition().string().c_str(), transform.getRotation().string().c_str(),
+            transform.getScale().string().c_str());
+
+        return true;
+    };
+
+    CHECK(ComponentRegistry::GetInstance().GetTypeInfo<Transform>().Add("Print", printTransform));
+
+    const auto printHierarchy = [](const void* p_payload)
+    {
+        ASSERT(p_payload);
+
+        const HierarchyComponent& hierarchy = *static_cast<const HierarchyComponent*>(p_payload);
+        SV_LOG("Called injected func for child of {%u:%u}",
+            hierarchy.GetParent().GetIndex(), hierarchy.GetParent().GetVersion());
+
+        return true;
+    };
+
+    CHECK(ComponentRegistry::GetInstance().GetTypeInfo<HierarchyComponent>().Add("Print", printHierarchy));
+
+    auto components = scene.GetComponents(entity7);
+    for (auto [typeId, component] : components)
+    {
+        const auto& typeInfo = ComponentRegistry::GetInstance().GetTypeInfo(typeId);
+
+        if (typeInfo.Has("Print"))
+            CHECK(typeInfo.Call<bool>("Print", component).value_or(false));
+    }
 }
 
 std::unique_ptr<IShaderStorageBuffer> SetupLightSSBO(const Scene& p_scene)
