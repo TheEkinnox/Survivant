@@ -26,6 +26,7 @@
 
 using namespace LibMath;
 using namespace SvCore::Utility;
+using namespace SvCore::Resources;
 using namespace SvRendering::Core;
 using namespace SvRendering::Enums;
 using namespace SvRendering::Geometry;
@@ -38,16 +39,13 @@ constexpr const char* LIT_SHADER_PATH = "assets/shaders/Lit.glsl";
 constexpr float  CAM_MOVE_SPEED = 3.f;
 constexpr Radian CAM_ROTATION_SPEED = 90_deg;
 
-std::shared_ptr<ITexture> GetTexture()
+ResourceRef<ITexture> GetTexture()
 {
-    static std::shared_ptr<ITexture> texture = ITexture::Create();
-    static bool                      isLoaded = false;
+    static ResourceRef<ITexture> texture("assets/textures/grid.png");
 
-    if (!isLoaded)
+    if (static bool isLoaded = false; !isLoaded)
     {
-        ASSERT(texture->Load("assets/textures/grid.png"));
-        ASSERT(texture->Init());
-
+        ASSERT(texture);
         texture->SetFilters(ETextureFilter::NEAREST, ETextureFilter::NEAREST);
         texture->SetWrapModes(ETextureWrapMode::REPEAT, ETextureWrapMode::REPEAT);
 
@@ -206,23 +204,21 @@ int main()
     ASSERT(model.Load("assets/models/cube.obj"), "Failed to load model");
     ASSERT(model.Init(), "Failed to initialize model");
 
-    std::shared_ptr<IShader> unlitShader = IShader::Create();
-    ASSERT(unlitShader->Load(UNLIT_SHADER_PATH), "Failed to load shader at path \"%s\"", UNLIT_SHADER_PATH);
-    ASSERT(unlitShader->Init(), "Failed to initialize shader at path \"%s\"", UNLIT_SHADER_PATH);
+    ResourceRef<IShader> unlitShader(UNLIT_SHADER_PATH);
+    ASSERT(unlitShader, "Failed to load shader at path \"%s\"", UNLIT_SHADER_PATH);
 
-    std::shared_ptr<IShader> litShader = IShader::Create();
-    ASSERT(litShader->Load(LIT_SHADER_PATH), "Failed to load shader at path \"%s\"", LIT_SHADER_PATH);
-    ASSERT(litShader->Init(), "Failed to initialize shader at path \"%s\"", LIT_SHADER_PATH);
+    ResourceRef<IShader> litShader(LIT_SHADER_PATH);
+    ASSERT(litShader, "Failed to load shader at path \"%s\"", LIT_SHADER_PATH);
 
     Material whiteMaterial(unlitShader);
-    whiteMaterial.GetProperty<std::shared_ptr<ITexture>>("u_diffuse") = GetTexture();
+    whiteMaterial.GetProperty<ResourceRef<ITexture>>("u_diffuse") = GetTexture();
     whiteMaterial.GetProperty<Vector4>("u_tint") = Color::white;
 
     Material redMaterial(whiteMaterial);
     redMaterial.GetProperty<Vector4>("u_tint") = Color::red;
 
     Material litMaterial(litShader);
-    litMaterial.GetProperty<std::shared_ptr<ITexture>>("u_diffuse") = GetTexture();
+    litMaterial.GetProperty<ResourceRef<ITexture>>("u_diffuse") = GetTexture();
     litMaterial.GetProperty<Vector4>("u_tint") = Color::white;
     litMaterial.GetProperty<Vector4>("u_specularColor") = Color(.2f, .2f, .2f);
     litMaterial.GetProperty<float>("u_shininess") = 32.f;
