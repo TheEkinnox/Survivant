@@ -26,7 +26,11 @@ namespace SvCore::ECS
         std::unique_ptr<IComponentStorage> (*MakeStorage)(Scene*);
     };
 
+#ifdef SV_EDITOR
     class ComponentRegistry final : public Utility::TypeRegistry<Utility::DynamicTypeInfo<ComponentTypeInfo>>
+#else
+    class ComponentRegistry final : public Utility::TypeRegistry<ComponentTypeInfo>
+#endif
     {
     public:
         using EntitiesMap = std::unordered_map<Entity::Id, Entity>;

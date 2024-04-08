@@ -1,4 +1,5 @@
 #pragma once
+#include "SurvivantCore/Utility/DynamicTypeInfo.h"
 #include "SurvivantCore/Utility/TypeRegistry.h"
 
 #include <cstdint>
@@ -22,7 +23,11 @@ namespace SvCore::Resources
         decltype(&GetDefaultResource<IResource>) GetDefault;
     };
 
+#ifdef SV_EDITOR
+    class ResourceRegistry final : public Utility::TypeRegistry<Utility::DynamicTypeInfo<ResourceTypeInfo>>
+#else
     class ResourceRegistry final : public Utility::TypeRegistry<ResourceTypeInfo>
+#endif
     {
     public:
         /**
