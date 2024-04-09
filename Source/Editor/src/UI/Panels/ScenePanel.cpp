@@ -36,7 +36,7 @@ namespace SvEditor::UI::Panels
 	Panel::ERenderFlags ScenePanel::Render()
 	{
 		static intptr_t tmp = 1;
-		static ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse;
+		static ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoNavInputs;
 		static bool oldWindowSizeValue = false;
 		bool showWindow = true;
 

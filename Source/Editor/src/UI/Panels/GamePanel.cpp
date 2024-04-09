@@ -35,8 +35,12 @@ namespace SvEditor::UI::Panels
 	Panel::ERenderFlags GamePanel::Render()
 	{
 		static intptr_t tmp = 1;
-		static ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse;
+		static ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoNavInputs;
 		bool showWindow = true;
+
+		//ImGuiFocusedFlags_;
+
+		//if (ImGui::IsWindowFocused())
 
 		if (ImGui::Begin(m_name.c_str(), &showWindow, window_flags))
 		{
