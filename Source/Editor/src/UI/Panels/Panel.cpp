@@ -14,6 +14,27 @@ namespace SvEditor::UI::Panels
         m_name(p_name)
     {}
 
+    bool Panel::IsWindowDifferentSize(LibMath::Vector2& p_oldSize, bool& p_lastVal)
+    {
+        //one frame behind resize
+        ImVec2 view = ImGui::GetContentRegionAvail();
+
+        if (view.x != 0 && view.y != 0 &&
+            view.x != p_oldSize.m_x || view.y != p_oldSize.m_y)
+        {
+            p_oldSize = { view.x, view.y };
+
+            p_lastVal = true;
+            return false;
+        }
+
+        if (p_lastVal == false)
+            return false;
+
+        p_lastVal = false;
+        return true;
+    }
+
     const std::string& Panel::GetName()
     {
         return m_name;

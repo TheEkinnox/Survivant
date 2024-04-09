@@ -2,9 +2,9 @@
 
 #include "SurvivantEditor/UI/Core/EditorUI.h"
 
-#include "SurvivantCore/Events/EventManager.h"
 #include "SurvivantApp/Windows/Window.h"
-
+#include "SurvivantCore/Events/EventManager.h"
+#include "SurvivantCore/Utility/Utility.h"
 #include "SurvivantEditor/UI/Core/UIManager.h"
 #include "SurvivantEditor/UI/MenuItems/MenuButton.h"
 #include "SurvivantEditor/UI/Panels/ConsolePanel.h"
@@ -18,9 +18,10 @@
 #include "SurvivantEditor/UI/Panels/TestPanel.h"
 #include "SurvivantEditor/UI/PanelItems/PanelButton.h"
 
+#include "Vector/Vector2.h"
+
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
-
 #include "imgui_internal.h"
 
 namespace SvEditor::UI::Core
@@ -92,6 +93,13 @@ namespace SvEditor::UI::Core
     {
         ScenePanel::SetSceneTexture(p_sceneTextureId);
         ScenePanel::SetIdTexture(p_idTextureId);
+        ScenePanel::AddClickSceneListenner(
+            [](const LibMath::Vector2& p_uv) 
+            { SV_EVENT_MANAGER().Invoke<EditorUI::DebugEvent>(SvCore::Utility::FormatString("UV = %f, %f", p_uv.m_x, p_uv.m_y).c_str()); });
+        ScenePanel::AddResizeListenner(
+            [](const LibMath::Vector2& p_size)
+            { SV_EVENT_MANAGER().Invoke<EditorUI::DebugEvent>(SvCore::Utility::FormatString("Size = %f, %f", p_size.m_x, p_size.m_y).c_str()); });
+
     }
 
     void EditorUI::StartFrameUpdate()

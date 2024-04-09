@@ -17,5 +17,7 @@ namespace SvEditor::UI::PanelItems
 		void DisplayAndUpdatePanel()override;
 
 		std::vector<PanelButton> m_buttons;
+
+		bool m_gotClicked;
 	};
 }
