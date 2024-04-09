@@ -219,30 +219,30 @@ namespace ToRemove
         return Vector2((float)((p_value) >> 32), (float)((p_value) & 0xffffffff00000000));
     }
 
-    void inline DrawModelEditorScene(const Model& p_model, const Frustum& p_viewFrustum, 
-        const Matrix4& p_transform, const Material& p_material, const Entity::Id& p_id)
+    void inline DrawModelEditorScene(const Model& /*p_model*/, const Frustum& /*p_viewFrustum*/, 
+        const Matrix4& /*p_transform*/, const Material& /*p_material*/, const Entity::Id& /*p_id*/)
     {
-        static auto editorSceneShader = CreateEditorSceneShader();
+        //static auto editorSceneShader = CreateEditorSceneShader();
 
-        if (!p_viewFrustum.Intersects(TransformBoundingBox(p_model.GetBoundingBox(), p_transform)))
-            return;
+        //if (!p_viewFrustum.Intersects(TransformBoundingBox(p_model.GetBoundingBox(), p_transform)))
+        //    return;
 
-        BindModelUBO(p_transform);
+        //BindModelUBO(p_transform);
 
-        p_material.BindOverride(editorSceneShader);
-        editorSceneShader->SetUniformMat4("sv_modelMat", p_transform);
-        editorSceneShader->SetUniformMat4("sv_normalMat", p_transform.transposed().inverse());
-        editorSceneShader->SetUniformVec2("u_entityID", IdToVec2(p_id));
-        //id uniform
+        //p_material.BindOverride(editorSceneShader);
+        //editorSceneShader->SetUniformMat4("sv_modelMat", p_transform);
         //editorSceneShader->SetUniformMat4("sv_normalMat", p_transform.transposed().inverse());
+        //editorSceneShader->SetUniformVec2("u_entityID", IdToVec2(p_id));
+        ////id uniform
+        ////editorSceneShader->SetUniformMat4("sv_normalMat", p_transform.transposed().inverse());
 
-        for (size_t i = 0; i < p_model.GetMeshCount(); ++i)
-        {
-            const Mesh& mesh = p_model.GetMesh(i);
+        //for (size_t i = 0; i < p_model.GetMeshCount(); ++i)
+        //{
+        //    const Mesh& mesh = p_model.GetMesh(i);
 
-            mesh.Bind();
-            IRenderAPI::GetCurrent().DrawElements(EPrimitiveType::TRIANGLES, mesh.GetIndexCount());
-        }
+        //    mesh.Bind();
+        //    IRenderAPI::GetCurrent().DrawElements(EPrimitiveType::TRIANGLES, mesh.GetIndexCount());
+        //}
     }
 
     void inline TestScene()
@@ -512,7 +512,7 @@ namespace ToRemove
         return lightsSSBO;
     }
 
-    void inline DrawScene(Scene& p_scene)
+    void inline DrawScene(Scene& p_scene, bool isIdTexture = false)
     {
         SceneView<Camera>                                cameras(p_scene);
         SceneView<const ModelComponent, const Transform> renderables(p_scene);
@@ -538,8 +538,11 @@ namespace ToRemove
             {
                 const auto [model, transform] = renderables.Get(modelEntity);
                 ASSERT(model->m_model && model->m_material);
-                //DrawModelEditorScene(*model->m_model, camFrustum, transform->getWorldMatrix(), *model->m_material, modelEntity);
-                DrawModel(*model->m_model, camFrustum, transform->getWorldMatrix(), *model->m_material);
+
+                if (isIdTexture)
+                    DrawModelEditorScene(*model->m_model, camFrustum, transform->getWorldMatrix(), *model->m_material, modelEntity);
+                else
+                    DrawModel(*model->m_model, camFrustum, transform->getWorldMatrix(), *model->m_material);
             }
         }
     }

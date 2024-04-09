@@ -79,15 +79,6 @@ namespace SvRendering::Resources
             BindProperty(name, property);
     }
 
-    void Material::BindOverride(const std::shared_ptr<RHI::IShader>& p_shader) const
-    {
-        ASSERT(p_shader, "Failed to bind material - Missing shader");
-        p_shader->Bind();
-
-        for (const auto& [name, property] : m_properties)
-            BindPropertyOverride(name, property, p_shader);
-    }
-
     std::any Material::GetDefaultValue(const EShaderDataType p_dataType)
     {
         switch (p_dataType)
@@ -155,51 +146,6 @@ namespace SvRendering::Resources
         case EShaderDataType::TEXTURE:
         {
             m_shader->SetUniformTexture(p_name, std::any_cast<const std::shared_ptr<ITexture>&>(p_property.m_value).get());
-            break;
-        }
-        case EShaderDataType::UNKNOWN:
-        default:
-            ASSERT(false, "Unknown uniform type");
-            return;
-        }
-    }
-
-    void Material::BindPropertyOverride(const std::string& p_name, const Property& p_property, const std::shared_ptr<RHI::IShader>& p_shader) const
-    {
-        ASSERT(p_shader, "Unable to bind material property - No shader");
-
-        switch (p_property.m_type)
-        {
-        case EShaderDataType::BOOL:
-            p_shader->SetUniformInt(p_name, std::any_cast<bool>(p_property.m_value));
-            break;
-        case EShaderDataType::INT:
-            p_shader->SetUniformInt(p_name, std::any_cast<int>(p_property.m_value));
-            break;
-        case EShaderDataType::UNSIGNED_INT:
-            p_shader->SetUniformUInt(p_name, std::any_cast<uint32_t>(p_property.m_value));
-            break;
-        case EShaderDataType::FLOAT:
-            p_shader->SetUniformFloat(p_name, std::any_cast<float>(p_property.m_value));
-            break;
-        case EShaderDataType::VEC2:
-            m_shader->SetUniformVec2(p_name, std::any_cast<const Vector2&>(p_property.m_value));
-            break;
-        case EShaderDataType::VEC3:
-            p_shader->SetUniformVec3(p_name, std::any_cast<const Vector3&>(p_property.m_value));
-            break;
-        case EShaderDataType::VEC4:
-            p_shader->SetUniformVec4(p_name, std::any_cast<const Vector4&>(p_property.m_value));
-            break;
-        case EShaderDataType::MAT3:
-            p_shader->SetUniformMat3(p_name, std::any_cast<const Matrix3&>(p_property.m_value));
-            break;
-        case EShaderDataType::MAT4:
-            p_shader->SetUniformMat4(p_name, std::any_cast<const Matrix4&>(p_property.m_value));
-            break;
-        case EShaderDataType::TEXTURE:
-        {
-            p_shader->SetUniformTexture(p_name, std::any_cast<const std::shared_ptr<ITexture>&>(p_property.m_value).get());
             break;
         }
         case EShaderDataType::UNKNOWN:

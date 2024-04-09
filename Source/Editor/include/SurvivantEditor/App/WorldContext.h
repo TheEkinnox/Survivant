@@ -43,11 +43,17 @@ namespace SvEditor::App
 		GameInstance* m_owningGameInstance = nullptr;
 		std::unique_ptr<SvRendering::RHI::IShaderStorageBuffer> m_lightsSSBO = nullptr;
 		SvRendering::RHI::IFrameBuffer*							m_frameBuffer = nullptr;
+
+		/*std::unique_ptr<SvRendering::RHI::IFrameBuffer>			m_frameBuffer = nullptr;
+		LibMath::Vector2										m_viewport;*/
+
+
 		//TODO: deal with persistentLevel
 		//std::shared_ptr<Scene>				m_persistentLevel = nullptr;
 
 	private:
 		std::shared_ptr<SvCore::ECS::Scene>		m_currentScene = nullptr;
+
 	};
 
 	

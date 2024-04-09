@@ -129,8 +129,6 @@ namespace SvRendering::Resources
          */
         void Bind() const;
 
-        void BindOverride(const std::shared_ptr<RHI::IShader>& p_shader) const;
-
     private:
         static constexpr const char* ENGINE_UNIFORM_PREFIX = "sv_";
 
@@ -150,9 +148,6 @@ namespace SvRendering::Resources
          * \param p_property The target property
          */
         void BindProperty(const std::string& p_name, const Property& p_property) const;
-
-
-        void BindPropertyOverride(const std::string& p_name, const Property& p_property, const std::shared_ptr<RHI::IShader>& p_shader) const;
     };
 
     template <typename T>
