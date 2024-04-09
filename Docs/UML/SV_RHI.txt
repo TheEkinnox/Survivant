@@ -1,0 +1,220 @@
+@startuml
+
+package SvRendering::RHI <<Frame>>
+{
+  enum EGraphicsAPI
+  {
+    NONE
+    OPENGL
+  }
+  
+  enum EShaderDataType
+  {
+      UNKNOWN,
+      BOOL,
+      INT,
+      UNSIGNED_INT,
+      FLOAT,
+      VEC2,
+      VEC3,
+      VEC4,
+      MAT3,
+      MAT4,
+      TEXTURE
+  }
+  
+  interface IRenderAPI
+  {
+    + Init(enableDebug : bool) : IRenderAPI&
+    
+    + Clear(color : bool, depth : bool, stencil : stencil) : IRenderAPI&
+    + ReadPixels(position : Vector2I, size : Vector2I, format : EPixelDataFormat, type : EPixelDataType, out : void*) : IRenderAPI&
+    
+    + DrawElements(primitiveType : EPrimitiveType, count : uint32_t) : IRenderAPI&
+    + DrawElementsInstanced(primitiveType : EPrimitiveType, count : uint32_t, instances : uint32_t) : IRenderAPI&
+    
+    + DrawArrays(primitiveType : EPrimitiveType, count : uint32_t) : IRenderAPI&
+    + DrawArraysInstanced(primitiveType : EPrimitiveType, count : uint32_t, instances : uint32_t) : IRenderAPI&
+    
+    + SetCapability(capability : ERenderingCapability, enable : bool) : IRenderAPI&
+    + HasCapability(capability : ERenderingCapability) : bool
+    
+    + SetDepthAlogithm(algorithm : ECompareAlgorithm) : IRenderAPI&
+    + SetStencilAlgorithm(algorithm : ECompareAlgorithm, reference : uint32_t, mask : uint32_t) : IRenderAPI&
+    
+    + SetClearColor(color : Color) : IRenderAPI&
+    + GetClearColor() : Color
+    
+    + SetCullFace(cullFace : ECullFace) : IRenderAPI&
+    + SetBlendFunc(sourceFactor : EBlendFactor, destinationFactor : EBlendFactor) : IRenderAPI&
+    
+    + SetDepthWriting(enable : bool) : IRenderAPI&
+    + SetColorWriting(red : bool, green : bool, blue : bool, alpha : bool) : IRenderAPI&
+    
+    + SetViewport(position : Vector2I, size : Vector2I) : IRenderAPI&
+    
+    + GetBackend() : EGraphicsAPI
+    + GetVendor() : string
+    + GetHardware() : string
+    + GetVersion() : string
+    + GetShadingLanguageVersion() : string
+  
+    + static GetCurrent() : IRenderAPI&
+    + static SetCurrent(backend : EGraphicsAPI) : IRenderAPI&
+    
+    - s_instance : unique_ptr<IRenderAPI>
+  }
+  
+  interface IIndexBuffer
+  {
+    + Bind()
+    + Unbind()
+    
+    + static Create(indices : uint32_t*, count : uint32_t) : unique_ptr<IIndexBuffer>
+  }
+  
+  interface IVertexBuffer
+  {
+    + Bind()
+    + Unbind()
+    
+    + static Create(vertices : Vertex*, count : uint32_t) : unique_ptr<IVertexBuffer>
+  }
+  
+  interface IVertexArray
+  {
+    + Bind()
+    + Unbind()
+    
+    + static Create(vbo : const IVertexBuffer&, ebo : const IIndexBuffer&) : unique_ptr<IVertexArray>
+  }
+  
+  struct UniformInfo
+  {
+    + m_type : EShaderDataType
+    + m_location : int
+  }
+  
+  interface IShader
+  {
+    + Bind()
+    + Unbind()
+    
+    + GetUniformInfo(name : string) : const UniformInfo&
+    + GetUniforms() : const unordered_map<string, UniformInfo>&
+  
+    + SetUniform{Type}(name : string, value : Type)
+    + GetUniform{Type}(name : string) : Type
+    
+    + static Create() : shared_ptr<IShader>
+    + static GetTypeFromToken(shaderType : string)
+    + static GetTokenFromType(shaderType : EShaderDataType)
+  
+    # m_uniforms : unordered_map<string, UniformInfo>
+  }
+  
+  interface IUniformBuffer
+  {
+    + Bind()
+    + Bind(index : uint32_t)
+    + Unbind()
+    
+    + SetBindIndex(index : uint32_t)
+
+    + SetRawData(data : const void*, size : size_t)
+    + SetRawSubData(data : const void*, size : size_t, offset : ptrdiff_t)
+
+    + SetData<T>(data : const T*, count : size_t)
+    + SetSubData<T>(data : const T*, count : size_t, offset : ptrdiff_t)
+    
+    + static Create(accessMode : EAccessMode, bindIndex : uint32_t) : unique_ptr<IUniformBuffer>
+    
+    # m_bindIndex : uint32_t
+    # m_accessMode : EAccessMode
+  }
+  
+  interface IShaderStorageBuffer
+  {
+    + Bind()
+    + Bind(index : uint32_t)
+    + Unbind()
+    
+    + SetBindIndex(index : uint32_t)
+
+    + SetRawData(data : const void*, size : size_t)
+    + SetRawSubData(data : const void*, size : size_t, offset : ptrdiff_t)
+
+    + SetData(data : const T*, size : size_t)
+    + SetSubData(data : const T*, size : size_t, offset : ptrdiff_t)
+    
+    + static Create(accessMode : EAccessMode, bindIndex : uint32_t) : unique_ptr<IShaderStorageBuffer>
+    
+    # m_bindIndex : uint32_t
+    # m_accessMode : EAccessMode
+  }
+  
+  interface ITexture
+  {
+    + Bind(slot : uint8_t)
+    + Unbind(slot : uint8_t)
+  
+    + GenerateMipMap()
+    
+    + GetSize() : Vector2I
+    + GetChannelCount() : uint8_t
+    
+    + SetFilters(minFilter : ETextureFilter, magFilter : ETextureFilter)
+    + SetWrapModes(wrapModeU : ETextureWrapMode, wrapModeV : ETextureWrapMode)
+    
+    + static ToChannelCount(format : EPixelDataFormat) : uint8_t
+  
+    + static Create() : shared_ptr<ITexture>
+    + static Create(width : int, height : int, format : EPixelDataFormat) : shared_ptr<ITexture>
+    
+    # m_data : unsigned char*
+    # m_width : int
+    # m_height : int
+    # m_channels : uint8_t
+    # m_minFilter : ETextureFilter
+    # m_magFilter : ETextureFilter
+    # m_wrapModeU : ETextureWrapMode
+    # m_wrapModeV : ETextureWrapMode
+  }
+  
+  interface IFrameBuffer
+  {
+    + Bind()
+    + Unbind()
+    
+    + Attach(texture : ITexture, attachment : EFrameBufferAttachment)
+    + Detach(attachment : EFrameBufferAttachment)
+    
+    + static Create() : unique_ptr<IFrameBuffer>
+  }
+}
+
+EGraphicsAPI <.[Hidden]. IRenderAPI : Uses
+IRenderAPI .> EGraphicsAPI : Uses
+
+IShader "1" *- "*" UniformInfo
+IShader ..> IRenderAPI : Uses
+UniformInfo *- EShaderDataType
+
+ITexture .> IRenderAPI : Uses
+IFrameBuffer .> IRenderAPI : Uses
+IFrameBuffer ..> ITexture : Uses
+
+IRenderAPI <.. IIndexBuffer : Uses
+IRenderAPI <.. IVertexBuffer : Uses
+IRenderAPI <.. IVertexArray : Uses
+IIndexBuffer <.. IVertexArray : Uses
+IVertexBuffer <.. IVertexArray : Uses
+
+IRenderAPI <. IShaderStorageBuffer : Uses
+IRenderAPI <. IUniformBuffer : Uses
+
+IUniformBuffer -[Hidden]- IShaderStorageBuffer
+EGraphicsAPI -[Hidden]- IUniformBuffer
+EGraphicsAPI -[Hidden]- IUniformBuffer
+
+@enduml

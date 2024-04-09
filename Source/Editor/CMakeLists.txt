@@ -52,6 +52,8 @@ target_link_libraries(${TARGET_NAME}
 	${ENGINE_TARGETS}
 )
 
+target_compile_definitions(${TARGET_NAME} PUBLIC SV_EDITOR)
+
 if(MSVC)
 	target_compile_options(${TARGET_NAME} PRIVATE /W4 /WX)
 else()

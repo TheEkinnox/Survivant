@@ -11,7 +11,7 @@ using namespace SvRendering::RHI;
 
 namespace SvRendering::Resources
 {
-    Material::Material(const std::shared_ptr<IShader>& p_shader)
+    Material::Material(const ResourceRef<IShader>& p_shader)
     {
         SetShader(p_shader);
     }
@@ -28,7 +28,7 @@ namespace SvRendering::Resources
         return *m_shader;
     }
 
-    void Material::SetShader(const std::shared_ptr<IShader>& p_shader)
+    void Material::SetShader(const ResourceRef<IShader>& p_shader)
     {
         m_shader = p_shader;
         m_properties.clear();
@@ -102,7 +102,7 @@ namespace SvRendering::Resources
         case EShaderDataType::MAT4:
             return Matrix4();
         case EShaderDataType::TEXTURE:
-            return std::shared_ptr<ITexture>();
+            return ResourceRef<ITexture>();
         case EShaderDataType::UNKNOWN:
         default:
             ASSERT(false, "Failed to get default value - Unkown data type");
@@ -145,7 +145,7 @@ namespace SvRendering::Resources
             break;
         case EShaderDataType::TEXTURE:
         {
-            m_shader->SetUniformTexture(p_name, std::any_cast<const std::shared_ptr<ITexture>&>(p_property.m_value).get());
+            m_shader->SetUniformTexture(p_name, std::any_cast<const ResourceRef<ITexture>&>(p_property.m_value).GetOrDefault());
             break;
         }
         case EShaderDataType::UNKNOWN:

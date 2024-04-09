@@ -13,6 +13,8 @@ namespace SvRendering::RHI
 {
     class ITexture : public SvCore::Resources::IResource
     {
+        REGISTERED_RESOURCE_BODY()
+
     public:
         /**
          * \brief Creates a copy of the given texture
@@ -144,4 +146,10 @@ namespace SvRendering::RHI
          */
         ITexture(int p_width, int p_height, Enums::EPixelDataFormat p_format);
     };
+}
+
+namespace SvCore::Resources
+{
+    template <>
+    SvRendering::RHI::ITexture* CreateResource<SvRendering::RHI::ITexture>();
 }

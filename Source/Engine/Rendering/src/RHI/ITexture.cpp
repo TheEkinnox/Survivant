@@ -14,6 +14,23 @@ using namespace SvCore::Utility;
 using namespace SvRendering::Enums;
 using namespace SvRendering::RHI;
 
+namespace SvCore::Resources
+{
+    template <>
+    ITexture* CreateResource<ITexture>()
+    {
+        switch (IRenderAPI::GetCurrent().GetBackend())
+        {
+        case EGraphicsAPI::OPENGL:
+            return new OpenGLTexture();
+        case EGraphicsAPI::NONE:
+        default:
+            ASSERT(false, "Failed to create texture - Unsupported graphics api");
+            return nullptr;
+        }
+    }
+}
+
 namespace SvRendering::RHI
 {
     ITexture::ITexture(const int p_width, const int p_height, const EPixelDataFormat p_format)

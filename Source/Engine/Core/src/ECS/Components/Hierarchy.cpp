@@ -204,4 +204,104 @@ namespace SvCore::ECS
     {
         LinkTransforms(p_entity);
     }
+
+    template <>
+    bool ComponentRegistry::ToJson<HierarchyComponent>(
+        const HierarchyComponent& p_hierarchy, rapidjson::Writer<rapidjson::StringBuffer>& p_writer,
+        const EntitiesMap&        p_toSerialized)
+    {
+        Entity parent = p_hierarchy.GetParent();
+
+        if (parent != NULL_ENTITY)
+        {
+            const auto it = p_toSerialized.find(parent);
+
+            if (!CHECK(it != p_toSerialized.end(), "Unable to serialize hierarchy component - Parent is not serialized"))
+                return false;
+
+            parent = it->second;
+        }
+
+        p_writer.StartObject();
+
+        p_writer.Key("parent");
+        p_writer.Uint64(parent);
+
+        return p_writer.EndObject();
+    }
+
+    template <>
+    bool ComponentRegistry::FromJson<HierarchyComponent>(HierarchyComponent& p_out, const rapidjson::Value& p_json)
+    {
+        if (!CHECK(p_json.IsObject(), "Unable to deserialize hierarchy - Json value should be an object"))
+            return false;
+
+        const auto it = p_json.FindMember("parent");
+        if (!CHECK(it != p_json.MemberEnd() && it->value.Is<Entity::Id>(), "Unable to deserialize hierarchy - Invalid parent"))
+            return false;
+
+        p_out.SetParent(Entity(it->value.Get<Entity::Id>()));
+        return true;
+    }
+
+    template <>
+    bool ComponentRegistry::ToJson<Transform>(
+        const Transform& p_transform, rapidjson::Writer<rapidjson::StringBuffer>& p_writer, const EntitiesMap&)
+    {
+        p_writer.StartObject();
+
+        p_writer.Key("position");
+        std::string str = p_transform.getPosition().string();
+        p_writer.String(str.c_str(), static_cast<rapidjson::SizeType>(str.size()));
+
+        p_writer.Key("rotation");
+        str = p_transform.getRotation().string();
+        p_writer.String(str.c_str(), static_cast<rapidjson::SizeType>(str.size()));
+
+        p_writer.Key("scale");
+        str = p_transform.getScale().string();
+        p_writer.String(str.c_str(), static_cast<rapidjson::SizeType>(str.size()));
+
+        return p_writer.EndObject();
+    }
+
+    template <>
+    bool ComponentRegistry::FromJson<Transform>(Transform& p_out, const rapidjson::Value& p_json)
+    {
+        if (!CHECK(p_json.IsObject(), "Unable to deserialize transform - Invalid json object"))
+            return false;
+
+        Vector3    position, scale;
+        Quaternion rotation;
+
+        auto it = p_json.FindMember("position");
+        if (!CHECK(it != p_json.MemberEnd() && it->value.IsString(), "Unable to deserialize transform position"))
+            return false;
+
+        {
+            std::istringstream iss(std::string(it->value.GetString(), it->value.GetStringLength()));
+            iss >> position;
+        }
+
+        it = p_json.FindMember("rotation");
+        if (!CHECK(it != p_json.MemberEnd() && it->value.IsString(), "Unable to deserialize transform rotation"))
+            return false;
+
+        {
+            std::istringstream iss(std::string(it->value.GetString(), it->value.GetStringLength()));
+            iss >> rotation;
+        }
+
+        it = p_json.FindMember("scale");
+        if (!CHECK(it != p_json.MemberEnd() && it->value.IsString(), "Unable to deserialize transform scale"))
+            return false;
+
+        {
+            std::istringstream iss(std::string(it->value.GetString(), it->value.GetStringLength()));
+            iss >> scale;
+        }
+
+        p_out.setAll(position, rotation, scale);
+        return true;
+    }
 }
