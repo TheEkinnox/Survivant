@@ -98,10 +98,10 @@ namespace SvCore::ECS
         using iterator = typename std::vector<ComponentT>::iterator;
         using const_iterator = typename std::vector<ComponentT>::const_iterator;
 
-        Core::Event<EntityHandle, T&> m_onAdd;
-        Core::Event<EntityHandle, T&> m_onRemove;
-        Core::Event<EntityHandle, T&> m_onBeforeChange;
-        Core::Event<EntityHandle, T&> m_onChange;
+        SvCore::Events::Event<EntityHandle, T&> m_onAdd;
+        SvCore::Events::Event<EntityHandle, T&> m_onRemove;
+        SvCore::Events::Event<EntityHandle, T&> m_onBeforeChange;
+        SvCore::Events::Event<EntityHandle, T&> m_onChange;
 
         /**
          * \brief Creates an empty component storage

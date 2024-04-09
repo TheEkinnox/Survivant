@@ -82,7 +82,7 @@ namespace SvEditor::UI::Core
 
     void EditorUI::InitGamePanel(intptr_t p_textureId, const std::function<void()> p_playPauseFrameCallbacks[3])
     {
-        //setup Level panel
+        //setup Scene panel
         GamePanel::SetGameTexture(p_textureId);
 
         GamePanel::AddPlayListenner(p_playPauseFrameCallbacks[0]);

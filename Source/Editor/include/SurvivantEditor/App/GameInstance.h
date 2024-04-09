@@ -15,20 +15,22 @@ namespace SvEditor::App
 
 		class InitEvent : public SvCore::Events::Event<> {};
 
-		GameInstance() = default;
+		GameInstance(std::shared_ptr<WorldContext> p_worldContext) : m_worldContext(p_worldContext){};
 		~GameInstance() = default;
 
 		void Init();
+		void Start();
 		void Update();
 
 		//TODO: move to editor Engine
 		void InitializeStandalone();
 
-	public:
+	
+	private:
 		Engine* GetEngine();
 
 		void UpdatePhysics() {}
 
-		std::shared_ptr<Engine::WorldContext> m_worldContext;
+		std::shared_ptr<WorldContext> m_worldContext;
 	};
 }

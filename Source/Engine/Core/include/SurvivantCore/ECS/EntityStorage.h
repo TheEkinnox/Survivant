@@ -13,8 +13,8 @@ namespace SvCore::ECS
         using iterator = std::vector<Entity>::iterator;
         using const_iterator = std::vector<Entity>::const_iterator;
 
-        Core::Event<EntityHandle> m_onAdd;
-        Core::Event<EntityHandle> m_onRemove;
+        SvCore::Events::Event<EntityHandle> m_onAdd;
+        SvCore::Events::Event<EntityHandle> m_onRemove;
 
         /**
          * \brief Creates an empty entity storage
