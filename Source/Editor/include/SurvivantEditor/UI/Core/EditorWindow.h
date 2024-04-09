@@ -15,10 +15,16 @@ namespace SvEditor::UI::Core
 	class EditorWindow : public SvApp::Window
 	{
 	public:
-		struct SetupSceneInfo
+		struct SetupGameInfo
 		{
 			intptr_t m_textureId;
 			std::function<void()> m_playPauseFrameCallbacks[3];
+		};
+
+		struct SetupSceneInfo
+		{
+			intptr_t m_sceneTextureId;
+			intptr_t m_idTextureId;
 		};
 
 		EditorWindow();
@@ -29,7 +35,7 @@ namespace SvEditor::UI::Core
 		void EndRender() override;
 		bool ShouldClose() override;
 
-		void SetupUI(const SetupSceneInfo& p_sceneInfo);
+		void SetupUI(const SetupGameInfo& p_gameInfo, const SetupSceneInfo& p_sceneInfo);
 
 		EditorUI& GetUI();
 		std::shared_ptr<SvApp::InputManager::InputBindings> GetInputs();

@@ -82,12 +82,16 @@ namespace SvEditor::UI::Core
 
     void EditorUI::InitGamePanel(intptr_t p_textureId, const std::function<void()> p_playPauseFrameCallbacks[3])
     {
-        //setup Scene panel
         GamePanel::SetGameTexture(p_textureId);
-
         GamePanel::AddPlayListenner(p_playPauseFrameCallbacks[0]);
         GamePanel::AddPauseListenner(p_playPauseFrameCallbacks[1]);
         GamePanel::AddFrameListenner(p_playPauseFrameCallbacks[2]);
+    }
+
+    void EditorUI::InitScenePanel(intptr_t p_sceneTextureId, intptr_t p_idTextureId)
+    {
+        ScenePanel::SetSceneTexture(p_sceneTextureId);
+        ScenePanel::SetIdTexture(p_idTextureId);
     }
 
     void EditorUI::StartFrameUpdate()
@@ -330,10 +334,11 @@ namespace SvEditor::UI::Core
 
         // we now dock our windows into the docking node we made above
         ImGui::DockBuilderDockWindow(CreateGamePanel()->GetName().c_str(), id);
+        ImGui::DockBuilderDockWindow(CreateScenePanel()->GetName().c_str(), id);
         ImGui::DockBuilderDockWindow(CreateInspectorPanel()->GetName().c_str(), dock_id_right);
         ImGui::DockBuilderDockWindow(CreateHierarchyPanel()->GetName().c_str(), dock_id_left);
-        ImGui::DockBuilderDockWindow(CreateContentPanel()->GetName().c_str(), dock_id_down);
         ImGui::DockBuilderDockWindow(CreateConsolePanel()->GetName().c_str(), dock_id_down);
+        ImGui::DockBuilderDockWindow(CreateContentPanel()->GetName().c_str(), dock_id_down);
 
         ImGui::DockBuilderFinish(id);
     }

@@ -46,14 +46,20 @@ namespace SvEditor::App
 		LoadAllResources();
 		SetupEditorInputs();
 		
+		auto defaultTexture = dynamic_cast<OpenGLTexture&>(ToRemove::GetDefaultFrameBuffer()).GetId();
+
 		m_window->SetupUI(
 			{
-			dynamic_cast<OpenGLTexture&>(ToRemove::GetDefaultFrameBuffer()).GetId(),
+				defaultTexture,
+				{
+					[this]() { TogglePlayPIE(); },
+					[this]() { TogglePausePIE(); },
+					[this]() { PressFramePIE(); }
+				}
+			},
 			{
-				[this]() { TogglePlayPIE(); },
-				[this]() { TogglePausePIE(); },
-				[this]() { PressFramePIE(); }
-			}
+				defaultTexture,
+				dynamic_cast<OpenGLTexture&>(*ToRemove::g_idTexture).GetId(),
 			});
 
 	}

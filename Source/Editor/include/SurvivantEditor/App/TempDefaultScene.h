@@ -54,6 +54,7 @@ namespace ToRemove
 {
     constexpr const char* UNLIT_SHADER_PATH = "assets/shaders/Unlit.glsl";
     constexpr const char* LIT_SHADER_PATH = "assets/shaders/Lit.glsl";
+    constexpr const char* EDITORSCENE_SHADER_PATH = "assets/shaders/EditorScene.glsl";
 
     constexpr float  CAM_MOVE_SPEED = 3.f;
     constexpr Radian CAM_ROTATION_SPEED = 90_deg;
@@ -104,6 +105,7 @@ namespace ToRemove
     }
 
     static inline std::unique_ptr<IFrameBuffer> g_frameBuffer;
+    static std::shared_ptr<ITexture> g_idTexture;
 
     inline ITexture& GetDefaultFrameBuffer()
     {
@@ -117,7 +119,10 @@ namespace ToRemove
 
         color->Bind(0);
 
+        g_idTexture = ITexture::Create(800, 600, EPixelDataFormat::RGB);
+
         g_frameBuffer = IFrameBuffer::Create();
+        g_frameBuffer->Attach(*g_idTexture, EFrameBufferAttachment::COLOR);
         g_frameBuffer->Attach(*color, EFrameBufferAttachment::COLOR);
         g_frameBuffer->Attach(*depth, EFrameBufferAttachment::DEPTH);
 
@@ -190,6 +195,46 @@ namespace ToRemove
         p_material.Bind();
         p_material.GetShader().SetUniformMat4("sv_modelMat", p_transform);
         p_material.GetShader().SetUniformMat4("sv_normalMat", p_transform.transposed().inverse());
+
+        for (size_t i = 0; i < p_model.GetMeshCount(); ++i)
+        {
+            const Mesh& mesh = p_model.GetMesh(i);
+
+            mesh.Bind();
+            IRenderAPI::GetCurrent().DrawElements(EPrimitiveType::TRIANGLES, mesh.GetIndexCount());
+        }
+    }
+
+    std::shared_ptr<IShader> inline CreateEditorSceneShader()
+    {
+        std::shared_ptr<IShader> shader = IShader::Create();
+        ASSERT(shader->Load(EDITORSCENE_SHADER_PATH), "Failed to load shader at path \"%s\"", EDITORSCENE_SHADER_PATH);
+        ASSERT(shader->Init(), "Failed to initialize shader at path \"%s\"", EDITORSCENE_SHADER_PATH);
+
+        return shader;
+    }
+
+    Vector2 inline IdToVec2(const Entity::Id& p_value)
+    {
+        return Vector2((float)((p_value) >> 32), (float)((p_value) & 0xffffffff00000000));
+    }
+
+    void inline DrawModelEditorScene(const Model& p_model, const Frustum& p_viewFrustum, 
+        const Matrix4& p_transform, const Material& p_material, const Entity::Id& p_id)
+    {
+        static auto editorSceneShader = CreateEditorSceneShader();
+
+        if (!p_viewFrustum.Intersects(TransformBoundingBox(p_model.GetBoundingBox(), p_transform)))
+            return;
+
+        BindModelUBO(p_transform);
+
+        p_material.BindOverride(editorSceneShader);
+        editorSceneShader->SetUniformMat4("sv_modelMat", p_transform);
+        editorSceneShader->SetUniformMat4("sv_normalMat", p_transform.transposed().inverse());
+        editorSceneShader->SetUniformVec2("u_entityID", IdToVec2(p_id));
+        //id uniform
+        //editorSceneShader->SetUniformMat4("sv_normalMat", p_transform.transposed().inverse());
 
         for (size_t i = 0; i < p_model.GetMeshCount(); ++i)
         {
@@ -493,6 +538,7 @@ namespace ToRemove
             {
                 const auto [model, transform] = renderables.Get(modelEntity);
                 ASSERT(model->m_model && model->m_material);
+                //DrawModelEditorScene(*model->m_model, camFrustum, transform->getWorldMatrix(), *model->m_material, modelEntity);
                 DrawModel(*model->m_model, camFrustum, transform->getWorldMatrix(), *model->m_material);
             }
         }

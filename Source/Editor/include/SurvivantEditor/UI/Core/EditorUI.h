@@ -35,6 +35,7 @@ namespace SvEditor::UI::Core
 		void InitEditorUi(SvApp::Window* p_window);
 
 		void InitGamePanel(intptr_t p_textureId, const std::function<void()> p_playPauseFrameCallbacks[3]);
+		void InitScenePanel(intptr_t p_sceneTextureId, intptr_t p_idTextureId);
 
 		void StartFrameUpdate() override;
 		void RenderPanels();

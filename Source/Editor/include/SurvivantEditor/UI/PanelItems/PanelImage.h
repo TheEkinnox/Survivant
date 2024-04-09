@@ -24,7 +24,8 @@ namespace SvEditor::UI::PanelItems
 		void SetTexture(intptr_t& p_textureId);
 
 	private:
-		intptr_t&			m_textureId;
+		//change to world current scene ptr
+		intptr_t*			m_textureId;
 		LibMath::Vector2	m_size;
 	};
 }

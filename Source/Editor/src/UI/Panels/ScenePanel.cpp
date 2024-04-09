@@ -15,6 +15,8 @@ namespace SvEditor::UI::Panels
 		m_image(s_sceneTexture)
 	{
 		m_name = GetUniqueName(NAME, s_idGenerator.GetUnusedId());
+
+		m_buttons.m_buttons.push_back(PanelButton("Toogle Texture", [this]() { ToggleTexture(); }));
 	}
 
 	ScenePanel::~ScenePanel()
@@ -26,6 +28,11 @@ namespace SvEditor::UI::Panels
 		s_sceneTexture = p_texture;
 	}
 
+	void ScenePanel::SetIdTexture(intptr_t p_texture)
+	{
+		s_idTexture = p_texture;
+	}
+
 	Panel::ERenderFlags ScenePanel::Render()
 	{
 		static intptr_t tmp = 1;
@@ -34,6 +41,7 @@ namespace SvEditor::UI::Panels
 
 		if (ImGui::Begin(m_name.c_str(), &showWindow, window_flags))
 		{
+			m_buttons.DisplayAndUpdatePanel();
 			m_image.DisplayAndUpdatePanel();
 		}
 
@@ -45,5 +53,12 @@ namespace SvEditor::UI::Panels
 			flags = ERenderFlags(flags | ERenderFlags::CLOSE);
 
 		return flags;
+	}
+	void ScenePanel::ToggleTexture()
+	{
+		static bool isScene = true;
+
+		m_image.SetTexture(isScene? s_idTexture: s_sceneTexture);
+		isScene = !isScene;
 	}
 }
