@@ -10,7 +10,7 @@ namespace SvEditor::App
     void GameInstance::Init()
     {
         //init here
-        int i = 0; i;
+        int i = 0; i; 
 
     }
 
@@ -19,7 +19,9 @@ namespace SvEditor::App
         UpdatePhysics();
 
         m_worldContext->Update();
-        m_worldContext->Render();
+        WorldContext::DefaultRender(*m_worldContext);
+
+        //m_worldContext->Render();
     }
 
     void GameInstance::InitializeStandalone()

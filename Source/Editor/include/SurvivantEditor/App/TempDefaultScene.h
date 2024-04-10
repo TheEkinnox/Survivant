@@ -106,7 +106,6 @@ namespace ToRemove
     }
 
     static inline std::unique_ptr<IFrameBuffer> g_frameBuffer;
-    static std::shared_ptr<ITexture> g_idTexture;
 
     inline ITexture& GetDefaultFrameBuffer()
     {
@@ -120,15 +119,35 @@ namespace ToRemove
 
         color->Bind(0);
 
-        g_idTexture = ITexture::Create(800, 600, EPixelDataFormat::RGB);
-
         g_frameBuffer = IFrameBuffer::Create();
-        g_frameBuffer->Attach(*g_idTexture, EFrameBufferAttachment::COLOR);
         g_frameBuffer->Attach(*color, EFrameBufferAttachment::COLOR);
         g_frameBuffer->Attach(*depth, EFrameBufferAttachment::DEPTH);
 
         isInitialized = true;
         return *color;
+    }
+
+    static inline std::unique_ptr<IFrameBuffer> g_idFrameBuffer;
+
+    inline ITexture& GetIdFrameBuffer()
+    {
+        static std::shared_ptr<ITexture> id = ITexture::Create(800, 600, EPixelDataFormat::RED_32I, EPixelDataFormat::RED_INT, EPixelDataType::UNSIGNED_INT);
+        static std::shared_ptr<ITexture> depth = ITexture::Create(800, 600, EPixelDataFormat::DEPTH_COMPONENT);
+
+        static bool isInitialized = false;
+
+        if (isInitialized)
+            return *id;
+
+        id->SetFilters(ETextureFilter::NEAREST, ETextureFilter::NEAREST);
+        id->Bind(0);
+
+        g_idFrameBuffer = IFrameBuffer::Create();
+        g_idFrameBuffer->Attach(*id, EFrameBufferAttachment::COLOR);
+        g_idFrameBuffer->Attach(*depth, EFrameBufferAttachment::DEPTH);
+
+        isInitialized = true;
+        return *id;
     }
 
     std::tuple<int, int> inline AddInputTranslate(char i)
@@ -220,30 +239,40 @@ namespace ToRemove
         return Vector2((float)((p_value) >> 32), (float)((p_value) & 0xffffffff00000000));
     }
 
-    void inline DrawModelEditorScene(const Model& /*p_model*/, const Frustum& /*p_viewFrustum*/, 
-        const Matrix4& /*p_transform*/, const Material& /*p_material*/, const Entity::Id& /*p_id*/)
+    int inline TempCast(const Entity::Id& p_value)
     {
-        //static auto editorSceneShader = CreateEditorSceneShader();
+        return *(int*)(& p_value);
+    }
 
-        //if (!p_viewFrustum.Intersects(TransformBoundingBox(p_model.GetBoundingBox(), p_transform)))
-        //    return;
+    void inline DrawModelEditorScene(const Model& p_model, const Frustum& p_viewFrustum, 
+        const Matrix4& p_transform, const Material& p_material, const Entity::Id& p_id)
+    {
+        static auto editorSceneShader = CreateEditorSceneShader();
 
-        //BindModelUBO(p_transform);
+        if (!p_viewFrustum.Intersects(TransformBoundingBox(p_model.GetBoundingBox(), p_transform)))
+            return;
 
-        //p_material.BindOverride(editorSceneShader);
-        //editorSceneShader->SetUniformMat4("sv_modelMat", p_transform);
+        BindModelUBO(p_transform);
+
+        p_material.GetShader();
+
+        editorSceneShader->Bind();
+        editorSceneShader->SetUniformMat4("sv_modelMat", p_transform);
+        editorSceneShader->SetUniformMat4("sv_normalMat", p_transform.transposed().inverse());
+        editorSceneShader->SetUniformInt("u_entityID", TempCast(p_id));
+        
+        //id uniform
         //editorSceneShader->SetUniformMat4("sv_normalMat", p_transform.transposed().inverse());
-        //editorSceneShader->SetUniformVec2("u_entityID", IdToVec2(p_id));
-        ////id uniform
-        ////editorSceneShader->SetUniformMat4("sv_normalMat", p_transform.transposed().inverse());
 
-        //for (size_t i = 0; i < p_model.GetMeshCount(); ++i)
-        //{
-        //    const Mesh& mesh = p_model.GetMesh(i);
+        for (size_t i = 0; i < p_model.GetMeshCount(); ++i)
+        {
+            const Mesh& mesh = p_model.GetMesh(i);
 
-        //    mesh.Bind();
-        //    IRenderAPI::GetCurrent().DrawElements(EPrimitiveType::TRIANGLES, mesh.GetIndexCount());
-        //}
+            mesh.Bind();
+            IRenderAPI::GetCurrent().DrawElements(EPrimitiveType::TRIANGLES, mesh.GetIndexCount());
+        }
+
+        editorSceneShader->Unbind();
     }
 
     void inline TestScene()

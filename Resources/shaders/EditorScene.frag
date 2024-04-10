@@ -1,12 +1,10 @@
 #version 330 core
 
-in vec2 TexCoords;
+layout(location = 0) out int FragId;
 
-out vec4 FragColor;
-
-uniform vec2		u_entityID;
+uniform int u_entityID;
 
 void main()
 {
-	FragColor = vec4(u_entityID, 1, 1);
+	FragId = u_entityID;
 }

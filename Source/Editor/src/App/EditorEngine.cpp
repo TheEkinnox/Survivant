@@ -13,10 +13,10 @@ namespace SvEditor::App
 	{
 		m_time.tick();
 
-		//if (m_gameInstance != nullptr)
-		//{
-		//	m_gameInstance->Update();
-		//}
+		if (m_gameInstance.get() != nullptr)
+		{
+			WorldContext::IdRender(*GetWorldContextRef(*m_gameInstance));		
+		}
 	}
 
 	std::weak_ptr<GameInstance> EditorEngine::CreatePIEGameInstance()

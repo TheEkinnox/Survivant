@@ -27,15 +27,33 @@ namespace SvEditor::App
         UpdateRotators(rotatorsView, SV_DELTA_TIME());
     }
 
-    void WorldContext::Render()
+    void WorldContext::DefaultRender(const WorldContext& p_world)
     {
         using namespace ToRemove;
+
+        if (!p_world.m_isDisplayed)
+            return;
+
+        //m_frameBuffer->Bind();
+
+        IRenderAPI::GetCurrent().Clear(true, true, true);
+        DrawScene(*p_world.m_currentScene);
+
+        //m_frameBuffer->Unbind();
+    }
+
+    void WorldContext::IdRender(const WorldContext& p_world)
+    {
+        using namespace ToRemove;
+
+        if (!p_world.m_isDisplayed)
+            return;
 
 
         //m_frameBuffer->Bind();
 
         IRenderAPI::GetCurrent().Clear(true, true, true);
-        DrawScene(*m_currentScene);
+        DrawScene(*p_world.m_currentScene, true);
 
         //m_frameBuffer->Unbind();
     }

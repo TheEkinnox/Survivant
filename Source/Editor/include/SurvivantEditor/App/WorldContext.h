@@ -29,13 +29,13 @@ namespace SvEditor::App
 
 		void BeginPlay();
 		void Update();
-		void Render();
 
 		std::shared_ptr<SvCore::ECS::Scene>* GetCurrentLevelPtr()
 		{
 			return &m_currentScene;
 		}
 
+		bool		m_isDisplayed = true;
 		EWorldType	m_worldType = EWorldType::NONE;
 		int			m_viewport = 0;
 		int			m_camera = 0;
@@ -50,6 +50,10 @@ namespace SvEditor::App
 
 		//TODO: deal with persistentLevel
 		//std::shared_ptr<Scene>				m_persistentLevel = nullptr;
+
+		//move to framebuffer
+		static void DefaultRender(const WorldContext& p_world);
+		static void IdRender(const WorldContext& p_world);
 
 	private:
 		std::shared_ptr<SvCore::ECS::Scene>		m_currentScene = nullptr;
