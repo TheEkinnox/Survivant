@@ -18,6 +18,8 @@
 #include <SurvivantRendering/RHI/ITexture.h>
 #include <SurvivantRendering/RHI/IUniformBuffer.h>
 
+#include <SurvivantScripting/LuaContext.h>
+
 #include <Transform.h>
 
 using namespace LibMath;
@@ -35,12 +37,16 @@ using namespace SvRendering::Geometry;
 using namespace SvRendering::Resources;
 using namespace SvRendering::Components;
 
+using namespace SvScripting;
+
 constexpr const char* UNLIT_SHADER_PATH = "shaders/Unlit.glsl";
 constexpr const char* LIT_SHADER_PATH   = "shaders/Lit.glsl";
 constexpr const char* TEXTURE_PATH      = "textures/grid.png";
 
 constexpr float  CAM_MOVE_SPEED     = 3.f;
 constexpr Radian CAM_ROTATION_SPEED = 90_deg;
+
+constexpr size_t TEST_SCRIPTS_COUNT = 250;
 
 namespace SvTest
 {
@@ -74,6 +80,10 @@ namespace SvTest
     {
         RunSceneTests();
 
+        LuaContext& luaContext = LuaContext::GetInstance();
+        luaContext.Init();
+        luaContext.Start();
+
         MakeScene();
 
         while (!m_window->ShouldClose())
@@ -85,11 +95,17 @@ namespace SvTest
             UpdateInput();
             UpdateRotators();
 
+            luaContext.Update(m_timer.getDeltaTime());
+
             IRenderAPI::GetCurrent().Clear(true, true, true);
             DrawScene();
 
             m_window->EndRender();
         }
+
+        luaContext.Stop();
+        m_scene.Clear();
+        luaContext.Reset();
     }
 
     void TestApp::SetupInput()
@@ -188,7 +204,9 @@ namespace SvTest
 
     void TestApp::MakeScene()
     {
+        LuaContext::GetInstance().Stop();
         m_scene.Clear();
+
         EntityHandle camEntity = m_scene.Create();
 
         Camera& cam = camEntity.Make<Camera>(perspectiveProjection(90_deg, 4.f / 3.f, .01f, 14.f));
@@ -278,6 +296,11 @@ namespace SvTest
         m_scene.Create().Make<LightComponent>(spot);
 
         UpdateLightSSBO();
+
+        for (size_t i = 0; i < TEST_SCRIPTS_COUNT; ++i)
+            m_scene.Create().Make<LuaScriptComponent>(ResourceRef<LuaScript>("scripts/test.lua"));
+
+        LuaContext::GetInstance().Start();
     }
 
     void TestApp::UpdateLightSSBO() const
