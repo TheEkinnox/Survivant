@@ -74,6 +74,22 @@ namespace SvCore::Utility
      */
     std::string ToLower(std::string p_str);
 
+    /**
+     * \brief Replaces the given substring by another one in the given string
+     * \param p_str The source string
+     * \param p_from The substring to replace
+     * \param p_to The substring to replace by
+     */
+    void ReplaceInPlace(std::string& p_str, const std::string& p_from, const std::string& p_to);
+
+    /**
+     * \brief Replaces the given substring by another one in the given string
+     * \param p_str The source string
+     * \param p_from The substring to replace
+     * \param p_to The substring to replace by
+     */
+    std::string Replace(std::string p_str, const std::string& p_from, const std::string& p_to);
+
     /// <summary>
     /// Compare string without while ignoring case sensitivity
     /// </summary>
@@ -81,7 +97,6 @@ namespace SvCore::Utility
     /// <param name="p_str2"> secon setring </param>
     /// <returns>-1 if less, 0 if equals, 1 if greater</returns>
     int CompareAlphabeticly(std::string p_str1, std::string p_str2);
-
 }
 
 #include "SurvivantCore/Utility/Utility.inl"
