@@ -1,0 +1,19 @@
+# Download Sol
+FetchContent_Declare(
+	sol
+	GIT_REPOSITORY https://github.com/ThePhD/sol2.git
+	GIT_TAG v3.3.1
+	GIT_SHALLOW ON
+)
+
+set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
+
+set(BUILD_SHARED_LIBS OFF)
+set(SOL2_BUILD_LUA FALSE CACHE INTERNAL "")
+set(SOL2_LUA_VERSION ${PANTHEON_LUA_VERSION} CACHE INTERNAL "")
+
+FetchContent_MakeAvailable(sol)
+
+list(APPEND CMAKE_MODULE_PATH ${sol_SOURCE_DIR}/cmake/Packages)
+
+set(SOL_INCLUDE_DIR ${sol_SOURCE_DIR}/include PARENT_SCOPE)
