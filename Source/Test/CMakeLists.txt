@@ -7,6 +7,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin/${TARGET_NAME})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib/${TARGET_NAME})
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 
+# Setup options
+option(SURVIVANT_BUILD_TEST_AS_EDITOR "Enable to add SV_EDITOR to the test project's compile definitions" ON)
+
 
 ###############################
 #                             #
@@ -53,6 +56,10 @@ target_link_libraries(${TARGET_NAME}
 	${ENGINE_TARGETS}
 	${GLFW_NAME}
 )
+
+if (SURVIVANT_BUILD_TEST_AS_EDITOR)
+	target_compile_definitions(${TARGET_NAME} PRIVATE SV_EDITOR)
+endif()
 
 if(MSVC)
 	target_compile_options(${TARGET_NAME} PRIVATE /W4 /WX)
