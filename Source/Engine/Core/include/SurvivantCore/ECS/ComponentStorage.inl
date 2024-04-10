@@ -1,7 +1,9 @@
 #pragma once
 #include "SurvivantCore/ECS/ComponentStorage.h"
 
+#include "SurvivantCore/ECS/ComponentRegistry.h"
 #include "SurvivantCore/ECS/ComponentTraits.h"
+#include "SurvivantCore/ECS/EntityHandle.h"
 
 namespace SvCore::ECS
 {
@@ -153,6 +155,18 @@ namespace SvCore::ECS
     }
 
     template <class T>
+    void* ComponentStorage<T>::FindRaw(const Entity p_owner)
+    {
+        return (void*)Find(p_owner);
+    }
+
+    template <class T>
+    const void* ComponentStorage<T>::FindRaw(const Entity p_owner) const
+    {
+        return (const void*)Find(p_owner);
+    }
+
+    template <class T>
     T* ComponentStorage<T>::Find(const Entity p_owner)
     {
         const auto it = m_entityToComponent.find(p_owner);
@@ -205,5 +219,66 @@ namespace SvCore::ECS
     typename ComponentStorage<T>::const_iterator ComponentStorage<T>::end() const
     {
         return m_components.end();
+    }
+
+    template <class T>
+    bool ComponentStorage<T>::ToJson(rapidjson::Writer<rapidjson::StringBuffer>& p_writer, const EntitiesMap& p_entitiesMap) const
+    {
+        p_writer.StartArray();
+
+        for (const auto [index, entity] : m_componentToEntity)
+        {
+            const auto it = p_entitiesMap.find(entity);
+
+            if (!CHECK(it != p_entitiesMap.end(), "Failed to serialize component storage - Entity %d not found", entity.GetIndex()))
+                return false;
+
+            p_writer.StartObject();
+
+            p_writer.Key("owner");
+            if (!CHECK(p_writer.Uint64(it->second), "Failed to write component owner"))
+                return false;
+
+            p_writer.Key("data");
+            if (!ComponentRegistry::ToJson(m_components[index], p_writer, p_entitiesMap))
+                return false;
+
+            p_writer.EndObject();
+        }
+
+        return p_writer.EndArray();
+    }
+
+    template <class T>
+    bool ComponentStorage<T>::FromJson(const rapidjson::Value& p_json)
+    {
+        if (!CHECK(p_json.IsArray(), "Failed to deserialize component storage - Json value should be an array"))
+            return false;
+
+        for (const auto& jsonComponent : p_json.GetArray())
+        {
+            if (!CHECK(jsonComponent.IsObject(), "Failed to deserialize storage component - Json value should be an object"))
+                return false;
+
+            auto it = jsonComponent.FindMember("owner");
+
+            if (!CHECK(it != jsonComponent.MemberEnd() && it->value.Is<Entity::Id>(), "Failed to read component owner"))
+                return false;
+
+            Entity owner(it->value.Get<Entity::Id>());
+
+            it = jsonComponent.FindMember("data");
+
+            if (!CHECK(it != jsonComponent.MemberEnd(), "Failed to read component"))
+                return false;
+
+            ComponentT component;
+            if (!ComponentRegistry::FromJson(component, it->value))
+                return false;
+
+            Set(owner, component);
+        }
+
+        return true;
     }
 }

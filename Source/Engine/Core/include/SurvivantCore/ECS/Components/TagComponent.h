@@ -1,4 +1,6 @@
 #pragma once
+#include "SurvivantCore/ECS/ComponentRegistry.h"
+
 #include <string>
 
 namespace SvCore::ECS
@@ -7,4 +9,10 @@ namespace SvCore::ECS
     {
         std::string m_tag;
     };
+
+    template <>
+    bool ComponentRegistry::ToJson(const TagComponent&, rapidjson::Writer<rapidjson::StringBuffer>&, const EntitiesMap&);
+
+    template <>
+    bool ComponentRegistry::FromJson<TagComponent>(TagComponent&, const rapidjson::Value&);
 }

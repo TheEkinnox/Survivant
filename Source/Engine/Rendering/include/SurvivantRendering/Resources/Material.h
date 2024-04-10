@@ -2,6 +2,7 @@
 #include "SurvivantRendering/RHI/IShader.h"
 
 #include <SurvivantCore/Resources/IResource.h>
+#include <SurvivantCore/Resources/ResourceRef.h>
 
 #include <any>
 
@@ -9,6 +10,8 @@ namespace SvRendering::Resources
 {
     class Material final : public SvCore::Resources::IResource
     {
+        REGISTERED_RESOURCE_BODY()
+
     public:
         struct Property
         {
@@ -25,7 +28,7 @@ namespace SvRendering::Resources
          * \brief Creates a material with the given shader
          * \param p_shader The material's shader
          */
-        explicit Material(const std::shared_ptr<RHI::IShader>& p_shader);
+        explicit Material(const SvCore::Resources::ResourceRef<RHI::IShader>& p_shader);
 
         /**
          * \brief Creates a copy of the given material
@@ -80,7 +83,7 @@ namespace SvRendering::Resources
          * \brief Sets the material's shader to the given value
          * \param p_shader The material's new shader's resource reference
          */
-        void SetShader(const std::shared_ptr<RHI::IShader>& p_shader);
+        void SetShader(const SvCore::Resources::ResourceRef<RHI::IShader>& p_shader);
 
         /**
          * \brief Gets read-only access to the property with the given name
@@ -132,8 +135,8 @@ namespace SvRendering::Resources
     private:
         static constexpr const char* ENGINE_UNIFORM_PREFIX = "sv_";
 
-        std::shared_ptr<RHI::IShader>             m_shader;
-        std::unordered_map<std::string, Property> m_properties;
+        SvCore::Resources::ResourceRef<RHI::IShader> m_shader;
+        std::unordered_map<std::string, Property>    m_properties;
 
         /**
          * \brief Gets the default value for the given data type

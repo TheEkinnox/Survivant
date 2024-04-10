@@ -1,6 +1,15 @@
 #pragma once
+#include "SurvivantCore/Resources/ResourceRegistry.h"
 
 #include <string>
+
+#define REGISTERED_RESOURCE_BODY()                                                                      \
+public:                                                                                                 \
+inline const std::string& GetTypeName() const                                                           \
+{                                                                                                       \
+    return SvCore::Resources::ResourceRegistry::GetInstance().GetRegisteredTypeName<decltype(*this)>(); \
+}                                                                                                       \
+private:
 
 namespace SvCore::Resources
 {
@@ -11,6 +20,12 @@ namespace SvCore::Resources
          * \brief Destroys the resource
          */
         virtual ~IResource() = default;
+
+        /**
+         * \brief Gets the resource's registered type name
+         * \return The resource's registered type name
+         */
+        virtual const std::string& GetTypeName() const = 0;
 
         /**
          * \brief Loads the resource from the given file

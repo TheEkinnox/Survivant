@@ -46,3 +46,15 @@
 
 #endif // _DEBUG || SV_VERBOSE_LOG
 #endif // !CHECK
+
+#ifndef ASSUME
+#if defined(_DEBUG) || defined(PTH_VERBOSE_LOG)
+
+#define ASSUME(condition, ...) CHECK(condition __VA_OPT__(,) __VA_ARGS__)
+
+#else
+
+#define ASSUME(condition, ...) true
+
+#endif // _DEBUG || PTH_VERBOSE_LOG
+#endif // !ASSUME
