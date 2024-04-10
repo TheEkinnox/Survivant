@@ -109,7 +109,7 @@ namespace SvCore::ECS
         EntityHandle handle(m_scene, p_owner);
 
         ComponentTraits::OnRemove<ComponentT>(handle, component);
-        m_onRemove.Invoke({ m_scene, p_owner }, component);
+        m_onRemove.Invoke(handle, component);
 
         const size_t lastIndex = m_components.size() - 1;
 
@@ -131,6 +131,15 @@ namespace SvCore::ECS
     template <class T>
     void ComponentStorage<T>::Clear()
     {
+        for (auto [index, entity] : m_componentToEntity)
+        {
+            EntityHandle handle(m_scene, entity);
+            ComponentT&  component = m_components[index];
+
+            ComponentTraits::OnRemove<ComponentT>(handle, component);
+            m_onRemove.Invoke(handle, component);
+        }
+
         m_components.clear();
         m_componentToEntity.clear();
         m_entityToComponent.clear();
