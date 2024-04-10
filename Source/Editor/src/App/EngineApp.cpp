@@ -27,6 +27,7 @@ namespace SvEditor::App
 		m_gameIsPaused = false;
 
 		SvCore::Debug::Logger::GetInstance().SetFile("debug.log");
+		ResourceManager::GetInstance().AddSearchPath("assets");
 
 		m_window = std::make_unique<UI::Core::EditorWindow>();
 
