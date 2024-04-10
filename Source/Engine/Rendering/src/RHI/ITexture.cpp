@@ -215,4 +215,29 @@ namespace SvRendering::RHI
             return {};
         }
     }
+
+    std::shared_ptr<ITexture> ITexture::Create(int p_width, int p_height, Enums::EPixelDataFormat p_format, Enums::EPixelDataType p_dataType)
+    {
+        switch (IRenderAPI::GetCurrent().GetBackend())
+        {
+        case EGraphicsAPI::OPENGL:
+            return std::make_shared<OpenGLTexture>(p_width, p_height, p_format, p_dataType);
+        case EGraphicsAPI::NONE:
+        default:
+            ASSERT(false, "Failed to create texture - Unsupported graphics api");
+            return {};
+        }
+    }
+    std::shared_ptr<ITexture> ITexture::Create(int p_width, int p_height, Enums::EPixelDataFormat p_internalFormat, Enums::EPixelDataFormat p_format, Enums::EPixelDataType p_dataType)
+    {
+        switch (IRenderAPI::GetCurrent().GetBackend())
+        {
+        case EGraphicsAPI::OPENGL:
+            return std::make_shared<OpenGLTexture>(p_width, p_height, p_internalFormat, p_format, p_dataType);
+        case EGraphicsAPI::NONE:
+        default:
+            ASSERT(false, "Failed to create texture - Unsupported graphics api");
+            return {};
+        }
+    }
 }

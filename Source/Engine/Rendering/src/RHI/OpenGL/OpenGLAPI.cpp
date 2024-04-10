@@ -133,6 +133,10 @@ namespace SvRendering::RHI
             return GL_DEPTH_STENCIL;
         case EPixelDataFormat::RED:
             return GL_RED;
+        case EPixelDataFormat::RED_INT:
+            return GL_RED_INTEGER;
+        case EPixelDataFormat::RED_32I:
+            return GL_R32I;
         case EPixelDataFormat::GREEN:
             return GL_GREEN;
         case EPixelDataFormat::BLUE:

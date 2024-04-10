@@ -2,6 +2,7 @@
 #include "SurvivantRendering/Enums/EPixelDataFormat.h"
 #include "SurvivantRendering/Enums/ETextureFilter.h"
 #include "SurvivantRendering/Enums/ETextureWrapMode.h"
+#include "SurvivantRendering/Enums/EPixelDataType.h"
 
 #include <SurvivantCore/Resources/IResource.h>
 
@@ -122,6 +123,18 @@ namespace SvRendering::RHI
          * \param p_format The texture's pixel format
          */
         static std::shared_ptr<ITexture> Create(int p_width, int p_height, Enums::EPixelDataFormat p_format);
+
+        /**
+         * \brief Creates a texture with the given width, height, pixel format and data type
+         * \param p_width The texture's width
+         * \param p_height The texture's height
+         * \param p_format The texture's pixel format
+         * \param p_dataType The texture's data type
+         */
+        static std::shared_ptr<ITexture> Create(int p_width, int p_height, Enums::EPixelDataFormat p_format, Enums::EPixelDataType p_dataType);
+
+
+        static std::shared_ptr<ITexture> Create(int p_width, int p_height, Enums::EPixelDataFormat p_internalFormat, Enums::EPixelDataFormat p_format, Enums::EPixelDataType p_dataType);
 
     protected:
         unsigned char*          m_data      = nullptr;

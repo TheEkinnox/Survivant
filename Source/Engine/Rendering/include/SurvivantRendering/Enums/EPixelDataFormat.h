@@ -12,6 +12,8 @@ namespace SvRendering::Enums
         DEPTH_COMPONENT,
         DEPTH_STENCIL,
         RED,
+        RED_INT,
+        RED_32I,
         GREEN,
         BLUE,
         ALPHA,
