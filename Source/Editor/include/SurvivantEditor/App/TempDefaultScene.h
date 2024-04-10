@@ -6,6 +6,7 @@
 #include <SurvivantCore/ECS/Scene.h>
 #include <SurvivantCore/ECS/SceneView.h>
 #include <SurvivantCore/ECS/Components/Hierarchy.h>
+#include "SurvivantCore/Resources/ResourceRef.h"
 #include <SurvivantCore/Utility/FileSystem.h>
 #include <SurvivantCore/Utility/Timer.h>
 
@@ -36,6 +37,7 @@ using namespace SvRendering::Enums;
 using namespace SvRendering::Geometry;
 using namespace SvRendering::Resources;
 using namespace SvRendering::RHI;
+using namespace SvCore::Resources;
 
 
 struct Rotator
@@ -85,16 +87,15 @@ namespace ToRemove
         float m_lifeSpanSec;
     };
 
-    inline std::shared_ptr<ITexture> GetTexture()
+    inline ResourceRef<ITexture> GetTexture()
     {
-        static std::shared_ptr<ITexture> texture = ITexture::Create();
-        static bool                      isLoaded = false;
-
+        static ResourceRef<ITexture> texture("textures/grid.png");
+        static bool                  isLoaded = false;
+         
         if (isLoaded)
             return texture;
 
-        ASSERT(texture->Load("assets/textures/grid.png"));
-        ASSERT(texture->Init());
+        ASSERT(texture);
 
         texture->SetFilters(ETextureFilter::NEAREST, ETextureFilter::NEAREST);
         texture->SetWrapModes(ETextureWrapMode::REPEAT, ETextureWrapMode::REPEAT);
@@ -389,7 +390,6 @@ namespace ToRemove
     {
         p_scene.Clear();
         EntityHandle camEntity = p_scene.Create();
-        GameInfo::gameCamera = camEntity;
 
         Camera& cam = camEntity.Make<Camera>(perspectiveProjection(90_deg, 4.f / 3.f, .01f, 14.f));
         cam.SetClearColor(Color::gray);
@@ -399,40 +399,36 @@ namespace ToRemove
 
         camEntity.Make<UserInput>(CAM_MOVE_SPEED, CAM_ROTATION_SPEED);
 
-        std::shared_ptr<Model> cube = std::make_shared<Model>();
+        ResourceRef<Model> cube("models/cube.obj");
+        ASSERT(cube, "Failed to load model at path \"%s\"", "models/cube.obj");
 
-        ASSERT(cube->Load("assets/models/cube.obj"), "Failed to load model");
-        ASSERT(cube->Init(), "Failed to initialize model");
+        ResourceRef<IShader> unlitShader(UNLIT_SHADER_PATH);
+        ASSERT(unlitShader, "Failed to load shader at path \"%s\"", UNLIT_SHADER_PATH);
 
-        std::shared_ptr<IShader> unlitShader = IShader::Create();
-        ASSERT(unlitShader->Load(UNLIT_SHADER_PATH), "Failed to load shader at path \"%s\"", UNLIT_SHADER_PATH);
-        ASSERT(unlitShader->Init(), "Failed to initialize shader at path \"%s\"", UNLIT_SHADER_PATH);
+        ResourceRef<IShader> litShader(LIT_SHADER_PATH);
+        ASSERT(litShader, "Failed to load shader at path \"%s\"", LIT_SHADER_PATH);
 
-        std::shared_ptr<IShader> litShader = IShader::Create();
-        ASSERT(litShader->Load(LIT_SHADER_PATH), "Failed to load shader at path \"%s\"", LIT_SHADER_PATH);
-        ASSERT(litShader->Init(), "Failed to initialize shader at path \"%s\"", LIT_SHADER_PATH);
-
-        std::shared_ptr<Material> whiteMaterial = std::make_shared<Material>(unlitShader);
-        whiteMaterial->GetProperty<std::shared_ptr<ITexture>>("u_diffuse") = GetTexture();
+        ResourceRef whiteMaterial("", new Material(unlitShader));
+        whiteMaterial->GetProperty<ResourceRef<ITexture>>("u_diffuse") = GetTexture();
         whiteMaterial->GetProperty<Vector4>("u_tint") = Color::white;
 
-        std::shared_ptr<Material> redMaterial = std::make_shared<Material>(*whiteMaterial);
+        ResourceRef redMaterial("", new Material(*whiteMaterial));
         redMaterial->GetProperty<Vector4>("u_tint") = Color::red;
 
-        std::shared_ptr<Material> greenMaterial = std::make_shared<Material>(*whiteMaterial);
+        ResourceRef greenMaterial("", new Material(*whiteMaterial));
         greenMaterial->GetProperty<Vector4>("u_tint") = Color::green;
 
-        std::shared_ptr<Material> blueMaterial = std::make_shared<Material>(*whiteMaterial);
+        ResourceRef blueMaterial("", new Material(*whiteMaterial));
         blueMaterial->GetProperty<Vector4>("u_tint") = Color::blue;
 
-        std::shared_ptr<Material> yellowMaterial = std::make_shared<Material>(*whiteMaterial);
+        ResourceRef yellowMaterial("", new Material(*whiteMaterial));
         yellowMaterial->GetProperty<Vector4>("u_tint") = Color::yellow;
 
-        std::shared_ptr<Material> magentaMaterial = std::make_shared<Material>(*whiteMaterial);
+        ResourceRef magentaMaterial("", new Material(*whiteMaterial));
         magentaMaterial->GetProperty<Vector4>("u_tint") = Color::magenta;
 
-        std::shared_ptr<Material> litMaterial = std::make_shared<Material>(litShader);
-        litMaterial->GetProperty<std::shared_ptr<ITexture>>("u_diffuse") = GetTexture();
+        ResourceRef litMaterial("", new Material(litShader));
+        litMaterial->GetProperty<ResourceRef<ITexture>>("u_diffuse") = GetTexture();
         litMaterial->GetProperty<Vector4>("u_tint") = Color::white;
         litMaterial->GetProperty<Vector4>("u_specularColor") = Color(.2f, .2f, .2f);
         litMaterial->GetProperty<float>("u_shininess") = 32.f;

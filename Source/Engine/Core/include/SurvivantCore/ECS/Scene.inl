@@ -8,7 +8,7 @@ namespace SvCore::ECS
     template <typename T>
     bool Scene::Has(Entity p_owner) const
     {
-        const auto it = m_components.find(typeid(T).hash_code());
+        const auto it = m_components.find(ComponentRegistry::GetTypeId<T>());
 
         if (it == m_components.end())
             return false;
@@ -19,7 +19,7 @@ namespace SvCore::ECS
     template <typename T>
     T* Scene::Get(Entity p_owner)
     {
-        const auto it = m_components.find(typeid(T).hash_code());
+        const auto it = m_components.find(ComponentRegistry::GetTypeId<T>());
 
         if (it == m_components.end())
             return nullptr;
@@ -30,7 +30,7 @@ namespace SvCore::ECS
     template <typename T>
     const T* Scene::Get(Entity p_owner) const
     {
-        const auto it = m_components.find(typeid(T).hash_code());
+        const auto it = m_components.find(ComponentRegistry::GetTypeId<T>());
 
         if (it == m_components.end())
             return nullptr;
@@ -71,13 +71,13 @@ namespace SvCore::ECS
         }
         else
         {
-            const TypeId typeHash = typeid(T).hash_code();
-            const auto   it       = m_components.find(typeHash);
+            const TypeId typeId = ComponentRegistry::GetTypeId<T>();
+            const auto   it     = m_components.find(typeId);
 
             if (it != m_components.end())
                 return reinterpret_cast<ComponentStorage<T>&>(*it->second);
 
-            auto& storage = *(m_components[typeHash] = std::make_unique<ComponentStorage<T>>(this));
+            auto& storage = *(m_components[typeId] = std::make_unique<ComponentStorage<T>>(this));
             return reinterpret_cast<ComponentStorage<T>&>(storage);
         }
     }
@@ -91,13 +91,13 @@ namespace SvCore::ECS
         }
         else
         {
-            const TypeId typeHash = typeid(T).hash_code();
-            const auto   it       = m_components.find(typeHash);
+            const TypeId typeId = ComponentRegistry::GetTypeId<T>();
+            const auto   it     = m_components.find(typeId);
 
             if (it != m_components.end())
                 return reinterpret_cast<const ComponentStorage<T>&>(*it->second);
 
-            const auto& storage = *(m_components[typeHash] = std::make_unique<ComponentStorage<T>>(const_cast<Scene*>(this)));
+            const auto& storage = *(m_components[typeId] = std::make_unique<ComponentStorage<T>>(const_cast<Scene*>(this)));
             return reinterpret_cast<const ComponentStorage<T>&>(storage);
         }
     }

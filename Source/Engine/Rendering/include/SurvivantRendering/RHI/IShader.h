@@ -16,6 +16,8 @@ namespace SvRendering::RHI
 
     class IShader : public SvCore::Resources::IResource
     {
+        REGISTERED_RESOURCE_BODY()
+
     public:
         struct UniformInfo
         {
@@ -217,4 +219,10 @@ namespace SvRendering::RHI
          */
         IShader() = default;
     };
+}
+
+namespace SvCore::Resources
+{
+    template <>
+    SvRendering::RHI::IShader* CreateResource<SvRendering::RHI::IShader>();
 }
