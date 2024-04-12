@@ -14,7 +14,7 @@ struct GLFWimage;
 namespace SvApp
 {
 	constexpr const char* GLSL_Version = "#version 330"; //#version 330 core
-	
+
 	class Window
 	{
 	public:
@@ -26,7 +26,7 @@ namespace SvApp
 
 		/// <summary>
 		/// Request to close window
-		/// </summary>	
+		/// </summary>
 		class WindowCloseRequest : public SvCore::Events::Event<>
 		{
 		public:
@@ -41,7 +41,7 @@ namespace SvApp
 
 		/// <summary>
 		/// Request to close window
-		/// </summary>	
+		/// </summary>
 		class WindowClosing : public SvCore::Events::Event<> {};
 
 		/// <summary>
@@ -51,7 +51,7 @@ namespace SvApp
 
 		/// <summary>
 		/// (width, height) //TODO: unit/ de mesure
-		/// </summary>	
+		/// </summary>
 		class OnFrameBufferSize : public SvCore::Events::Event<int, int> {};
 
 		/// <summary>
