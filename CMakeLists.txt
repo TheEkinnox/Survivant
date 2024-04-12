@@ -17,8 +17,8 @@ set(CMAKE_FOLDER deps)
 add_subdirectory(Dependencies)
 
 set(CMAKE_FOLDER ${PROJECT_NAME})
-add_subdirectory(Source)
 add_subdirectory(Resources)
+add_subdirectory(Source)
 
 if (MSVC AND DEFINED STARTUP_PROJECT)
 	set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${STARTUP_PROJECT})
