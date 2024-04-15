@@ -5,31 +5,33 @@
 #include "SurvivantCore/Debug/Assertion.h"
 #include "SurvivantCore/Events/EventManager.h"
 #include "SurvivantEditor/UI/Core/EditorUI.h"
+#include "SurvivantEditor/App/WorldContext.h"
 
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 
 namespace SvEditor::UI::Panels
 {
-	GamePanel::GamePanel() :
-		m_image(s_gameTexture)
+	GamePanel::GamePanel()
 	{
-		m_name = GetUniqueName(NAME, s_idGenerator.GetUnusedId());
+		m_name = NAME;
 
-		//TODO : Add GamePanel button callbacks
 		m_buttons.m_buttons.reserve(3);
 		m_buttons.m_buttons.push_back(PanelButton(" Start |> ", s_playListenners));
 		m_buttons.m_buttons.push_back(PanelButton(" Pause || ", s_pauseListenners));
 		m_buttons.m_buttons.push_back(PanelButton(" Frame -> ", s_frameListenners));
+
+		m_world = s_worldCreator({ 0,0 });
+		m_image.SetTexture(m_world->GetDefaultTextureId());
 	}
 
 	GamePanel::~GamePanel()
 	{
 	}
 
-	void GamePanel::SetGameTexture(intptr_t p_texture)
+	void GamePanel::SetGameWorldCreator(const App::WorldContext::WorldCreator& p_worldCreator)
 	{
-		s_gameTexture = p_texture;
+		s_worldCreator = p_worldCreator;
 	}
 
 	Panel::ERenderFlags GamePanel::Render()
@@ -44,6 +46,8 @@ namespace SvEditor::UI::Panels
 
 		if (ImGui::Begin(m_name.c_str(), &showWindow, window_flags))
 		{
+			m_world->Render();
+
 			m_buttons.DisplayAndUpdatePanel();
 			m_image.DisplayAndUpdatePanel();
 		}
@@ -73,20 +77,4 @@ namespace SvEditor::UI::Panels
 	{
 		return s_frameListenners.AddListener(p_callback);
 	}
-
-	//void GamePanel::RemovePlayListenner(size_t p_id)
-	//{
-	//	s_playListenners.RemoveListener(p_id);
-
-	//}
-
-	//void GamePanel::RemovePauseListenner(size_t p_id)
-	//{
-	//	s_pauseListenners.RemoveListener(p_id);
-	//}
-
-	//void GamePanel::RemoveFrameListenner(size_t p_id)
-	//{
-	//	s_frameListenners.RemoveListener(p_id);
-	//}
 }

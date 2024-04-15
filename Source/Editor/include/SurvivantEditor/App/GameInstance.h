@@ -15,7 +15,7 @@ namespace SvEditor::App
 
 		class InitEvent : public SvCore::Events::Event<> {};
 
-		GameInstance(std::shared_ptr<WorldContext> p_worldContext) : m_worldContext(p_worldContext){};
+		GameInstance(std::weak_ptr<WorldContext> p_worldContext);
 		~GameInstance() = default;
 
 		void Init();
@@ -31,6 +31,6 @@ namespace SvEditor::App
 
 		void UpdatePhysics() {}
 
-		std::shared_ptr<WorldContext> m_worldContext;
+		std::weak_ptr<WorldContext> m_worldContext;
 	};
 }

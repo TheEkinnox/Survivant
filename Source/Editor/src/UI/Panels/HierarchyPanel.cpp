@@ -39,7 +39,7 @@ namespace SvEditor::UI::Panels
     HierarchyPanel::HierarchyPanel() :
         m_tree("All", false)
     {
-        m_name = GetUniqueName(NAME, s_idGenerator.GetUnusedId());
+        m_name = NAME;
 
         SetupTree();
     }

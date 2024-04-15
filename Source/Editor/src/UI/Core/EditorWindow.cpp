@@ -46,10 +46,13 @@ namespace SvEditor::UI::Core
 		return Window::ShouldClose() && m_shouldClose;
 	}
 
-	void UI::Core::EditorWindow::SetupUI(const SetupGameInfo& p_gameInfo, const SetupSceneInfo& p_sceneInfo)
+	void UI::Core::EditorWindow::SetupUI(
+		const std::weak_ptr<App::WorldContext>& p_sceneWorld,
+		const App::WorldContext::WorldCreator& p_gameWorld,
+		const std::array<std::function<void()>, 3>	p_playPauseFrameCallbacks)
 	{
-		m_ui->InitGamePanel(p_gameInfo.m_textureId, p_gameInfo.m_playPauseFrameCallbacks);
-		m_ui->InitScenePanel(p_sceneInfo.m_sceneTextureId, p_sceneInfo.m_idTextureId);
+		m_ui->InitScenePanel(p_sceneWorld);
+		m_ui->InitGamePanel(p_gameWorld, p_playPauseFrameCallbacks);
 	}
 
 	EditorUI& UI::Core::EditorWindow::GetUI()

@@ -12,6 +12,10 @@
 #include <functional>
 #include <cstdint>
 
+namespace SvEditor::App
+{
+	struct WorldContext;
+}
 
 namespace SvEditor::UI::Panels
 {
@@ -26,8 +30,7 @@ namespace SvEditor::UI::Panels
 		ScenePanel();
 		~ScenePanel();
 
-		static void SetSceneTexture(intptr_t p_texture);
-		static void SetIdTexture(intptr_t p_texture);
+		static void SetSceneWorld(std::weak_ptr<App::WorldContext> p_world);
 
 		ERenderFlags Render()override;
 
@@ -43,17 +46,15 @@ namespace SvEditor::UI::Panels
 		/// <param name="p_callback">callback that takes new size as param</param>
 		static void AddResizeListenner(const ResizeEvent::EventDelegate& p_callback);
 
+		static constexpr char NAME[] = "Scene";
+
 	private:
 		void ToggleTexture();
 		LibMath::Vector2 CalculateUVCords(const LibMath::Vector2& p_cursorPos);
 
-		static constexpr char NAME[] = "Scene";
-
-		static inline SvCore::Utility::UnusedIdGenerator	s_idGenerator;
 		static inline ClickEvent							s_onClickSceneEvent;
 		static inline ResizeEvent							s_onResizeEvent;
-		static inline intptr_t								s_sceneTexture;
-		static inline intptr_t								s_idTexture;
+		static inline std::weak_ptr<App::WorldContext>		s_world;
 
 		PanelButtonList		m_buttons;
 		PanelImage			m_image;

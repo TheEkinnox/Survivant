@@ -6,16 +6,18 @@
 #include "SurvivantCore/Events/EventManager.h"
 #include "SurvivantEditor/UI/Core/EditorUI.h"
 
+#include "SurvivantEditor/App/WorldContext.h"
+
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 
 namespace SvEditor::UI::Panels
 {
-	ScenePanel::ScenePanel() :
-		m_image(s_sceneTexture)
+	ScenePanel::ScenePanel()
 	{
-		m_name = GetUniqueName(NAME, s_idGenerator.GetUnusedId());
+		m_name = NAME;
 
+		m_image.SetTexture(s_world.lock()->GetDefaultTextureId());
 		m_buttons.m_buttons.push_back(PanelButton("Toogle Texture", [this]() { ToggleTexture(); }));
 	}
 
@@ -23,14 +25,9 @@ namespace SvEditor::UI::Panels
 	{
 	}
 
-	void ScenePanel::SetSceneTexture(intptr_t p_texture)
+	void ScenePanel::SetSceneWorld(std::weak_ptr<App::WorldContext> p_world)
 	{
-		s_sceneTexture = p_texture;
-	}
-
-	void ScenePanel::SetIdTexture(intptr_t p_texture)
-	{
-		s_idTexture = p_texture;
+		s_world = p_world;
 	}
 
 	Panel::ERenderFlags ScenePanel::Render()
@@ -42,6 +39,8 @@ namespace SvEditor::UI::Panels
 
 		if (ImGui::Begin(m_name.c_str(), &showWindow, window_flags))
 		{
+			s_world.lock()->Render();
+
 			m_buttons.DisplayAndUpdatePanel();
 
 			if (IsWindowDifferentSize(m_imageSize, oldWindowSizeValue))
@@ -86,10 +85,7 @@ namespace SvEditor::UI::Panels
 
 	void ScenePanel::ToggleTexture()
 	{
-		static bool isScene = true;
 
-		m_image.SetTexture(isScene? s_idTexture: s_sceneTexture);
-		isScene = !isScene;
 	}
 
 	LibMath::Vector2 ScenePanel::CalculateUVCords(const LibMath::Vector2& p_cursorPos)

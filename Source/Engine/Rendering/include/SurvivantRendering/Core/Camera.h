@@ -140,8 +140,8 @@ namespace SvRendering::Core
 
     private:
         LibMath::Matrix4  m_projectionMatrix;
-        LibMath::Matrix4  m_viewMatrix;
         LibMath::Matrix4  m_viewProjection;
+        LibMath::Matrix4  m_viewMatrix;
         Geometry::Frustum m_frustum;
 
         Color     m_clearColor  = Color::black;

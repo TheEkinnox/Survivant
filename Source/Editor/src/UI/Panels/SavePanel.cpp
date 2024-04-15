@@ -15,8 +15,7 @@ namespace SvEditor::UI::Panels
 {
     SavePanel::SavePanel()
     {
-        m_name = GetUniqueName(NAME, s_panelCount);
-        s_panelCount++;
+        m_name = NAME;
 
         m_options.m_buttons.push_back(PanelButton("Save",
             []() { SvCore::Events::EventManager::GetInstance().Invoke<SvApp::Window::WindowClosing>(); }));
@@ -28,7 +27,6 @@ namespace SvEditor::UI::Panels
 
     SavePanel::~SavePanel()
     {
-        s_panelCount--;
     }
 
     Panel::ERenderFlags SavePanel::Render()

@@ -4,9 +4,14 @@
 //#include "SurvivantEditor/App/GameInstance.h"
 
 #include "SurvivantCore/ECS/Scene.h"
+#include "SurvivantCore/ECS/EntityHandle.h"
 
 #include "SurvivantRendering/RHI/IShaderStorageBuffer.h"
 #include "SurvivantRendering/RHI/IFrameBuffer.h"
+#include "SurvivantRendering/Core/Camera.h"	
+
+#include "Vector/Vector2.h"
+#include "Transform.h"
 
 #include <string>
 #include <memory>
@@ -19,6 +24,11 @@ namespace SvEditor::App
 
 	struct WorldContext
 	{
+		using FrameBufferArray = std::vector<std::unique_ptr<SvRendering::RHI::IFrameBuffer>>;
+		using DefaultTextureArray = std::vector<std::shared_ptr<SvRendering::RHI::ITexture>>;
+
+		using WorldCreator = std::function<std::shared_ptr<WorldContext>(const LibMath::Vector2I&)>;
+
 		enum class EWorldType
 		{
 			NONE,
@@ -27,38 +37,50 @@ namespace SvEditor::App
 			GAME
 		};
 
+		enum class ERenderType
+		{
+			DEFAULT,
+			ID
+		};
+
 		void BeginPlay();
 		void Update();
+		void Render();
 
-		std::shared_ptr<SvCore::ECS::Scene>* GetCurrentLevelPtr()
-		{
-			return &m_currentScene;
-		}
+		EWorldType				m_worldType = EWorldType::NONE;
+		GameInstance*			m_owningGameInstance = nullptr;
+		LibMath::TVector2<int>	m_viewport = LibMath::Vector2(800, 600);
 
-		bool		m_isDisplayed = true;
-		EWorldType	m_worldType = EWorldType::NONE;
-		int			m_viewport = 0;
-		int			m_camera = 0;
+		std::unique_ptr<SvRendering::RHI::IShaderStorageBuffer>		m_lightsSSBO = nullptr;
+		std::shared_ptr<SvCore::ECS::Scene>							m_currentScene = nullptr;
 
-		GameInstance* m_owningGameInstance = nullptr;
-		std::unique_ptr<SvRendering::RHI::IShaderStorageBuffer> m_lightsSSBO = nullptr;
-		SvRendering::RHI::IFrameBuffer*							m_frameBuffer = nullptr;
+		intptr_t GetDefaultTextureId();
 
-		/*std::unique_ptr<SvRendering::RHI::IFrameBuffer>			m_frameBuffer = nullptr;
-		LibMath::Vector2										m_viewport;*/
+		void SetupMainCamera();
+		void SetupMainCamera(const SvCore::ECS::EntityHandle& p_entity);
 
+		/// <summary>
+		/// Adds coresponding framebuffer, render type and attached texture(s)
+		/// </summary>
+		/// <param name="p_renderType">Type of render pass</param>
+		void AddRenderPass(ERenderType p_renderType);
 
 		//TODO: deal with persistentLevel
 		//std::shared_ptr<Scene>				m_persistentLevel = nullptr;
 
-		//move to framebuffer
-		static void DefaultRender(const WorldContext& p_world);
-		static void IdRender(const WorldContext& p_world);
-
 	private:
-		std::shared_ptr<SvCore::ECS::Scene>		m_currentScene = nullptr;
+		void DefaultRender();
+		void IdPassRender();
 
+		void AddDefaultRenderPass();
+		void AddIdRenderPass();
+
+		SvCore::ECS::EntityHandle	m_cameraHandle;
+		SvRendering::Core::Camera	m_cameraCam;
+		LibMath::Transform			m_cameraTrans;
+
+		FrameBufferArray			m_frameBuffers;
+		std::vector<ERenderType>	m_renderTypes;
+		DefaultTextureArray			m_frameTextures;
 	};
-
-	
 }

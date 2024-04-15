@@ -25,13 +25,18 @@ namespace SvEditor::UI::Panels
 		void SetMenuBar(MenuBar&& p_menuBar);
 		void ChangePanelLayout(const ChangeLayout& p_layout);
 
-	private:
-		void SetupLayout(int p_dockspaceId);
+		void ForceFocus(const std::string& p_name);
 
 		static constexpr char NAME[] = "Main";
 
-		ChangeLayout		m_layout;
+	private:
+		void SetupLayout(int p_dockspaceId);
+		void SetForceFocust();
+
 		MenuBar				m_menuBar;
 		Panel::ERenderFlags m_panelFlags;
+
+		std::string			m_forceFocus;
+		ChangeLayout		m_layout;
 	};
 }

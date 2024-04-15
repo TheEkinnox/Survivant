@@ -19,12 +19,8 @@ namespace SvEditor::UI::Panels
 
 		ERenderFlags Render() override;
 
-		static int GetPanelCount() { return s_panelCount; };
-
-	private:
 		static constexpr char NAME[] = "Save";
-
-		static inline int s_panelCount = 0;
+	private:
 
 		PanelButtonList m_options;
 		bool			m_open = true;

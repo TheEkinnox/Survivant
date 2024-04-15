@@ -25,9 +25,8 @@ namespace SvEditor::UI::Panels
 
 		virtual ERenderFlags Render()override;
 
-	private:
 		static constexpr char NAME[] = "Inspector";
-		static inline SvCore::Utility::UnusedIdGenerator s_idGenerator;
+	private:
 
 		std::shared_ptr<IPanelable> m_info;
 	};

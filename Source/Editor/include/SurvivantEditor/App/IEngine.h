@@ -38,11 +38,11 @@ namespace SvEditor::App
 		static inline Engine* g_engine = nullptr;
 
 	protected:
-		bool PrepareLevelChange(WorldContext& p_context, const std::shared_ptr<Scene>& p_newLevel);
-		bool CommitLevelChange(WorldContext& m_context, const std::shared_ptr<Scene>& p_newLevel);
+		bool PrepareSceneChange(WorldContext& p_context, const std::shared_ptr<Scene>& p_newLevel);
+		bool CommitSceneChange(WorldContext& m_context, const std::shared_ptr<Scene>& p_newLevel);
 
 		//acces GameInstace members
-		std::shared_ptr<WorldContext>& GetWorldContextRef(GameInstance& p_instance);
+		std::weak_ptr<WorldContext>& GetWorldContextRef(GameInstance& p_instance);
 
 		std::shared_ptr<Scene>				m_currentScene;
 		LevelMap							m_allLevels;

@@ -19,13 +19,9 @@ namespace SvEditor::UI::Panels
 		// Inherited via Panel
 		ERenderFlags Render() override;
 
-
+		static constexpr char NAME[] = "Hierarchy";
 	private:
 		void SetupTree();
-
-		static constexpr char NAME[] = "Hierarchy";
-
-		static inline SvCore::Utility::UnusedIdGenerator s_idGenerator;
 		
 		PanelTreeBranch m_tree;
 	};

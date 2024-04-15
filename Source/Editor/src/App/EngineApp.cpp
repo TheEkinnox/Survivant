@@ -43,52 +43,38 @@ namespace SvEditor::App
 
 		renderAPI.SetViewport({ 0, 0 }, { 800, 600 });
 
-		ToRemove::GetDefaultFrameBuffer();
 		m_editorEngine.Init();
 
 		LoadAllResources();
 		SetupEditorInputs();
-		
-		auto defaultTexture = dynamic_cast<OpenGLTexture&>(ToRemove::GetDefaultFrameBuffer()).GetId();
-		auto idTexture = dynamic_cast<OpenGLTexture&>(ToRemove::GetIdFrameBuffer()).GetId();
 
-		m_window->SetupUI(
-			{
-				defaultTexture,
-				{
-					[this]() { TogglePlayPIE(); },
-					[this]() { TogglePausePIE(); },
-					[this]() { PressFramePIE(); }
-				}
-			},
-			{
-				defaultTexture,
-				idTexture,
+		m_editorEngine.SetupUI(m_window.get(), {
+			[this]() { TogglePlayPIE(); },
+			[this]() { TogglePausePIE(); },
+			[this]() { PressFramePIE(); }
 			});
 
-		using namespace SvEditor::UI;
-		Panels::ScenePanel::AddClickSceneListenner(
-			[](const LibMath::Vector2& p_uv)
-			{
-				ToRemove::g_idFrameBuffer->Bind();
-				uint32_t val;
-				IRenderAPI::GetCurrent().ReadPixels(
-					p_uv * LibMath::Vector2(800, 600), DimensionsT(1, 1), EPixelDataFormat::RED_INT, EPixelDataType::INT, &val);
-				ToRemove::g_idFrameBuffer->Unbind();
+		//using namespace SvEditor::UI;
+		//Panels::ScenePanel::AddClickSceneListenner(
+		//	[](const LibMath::Vector2& p_uv)
+		//	{
+		//		ToRemove::g_idFrameBuffer->Bind();
+		//		uint32_t val;
+		//		IRenderAPI::GetCurrent().ReadPixels(
+		//			p_uv * LibMath::Vector2(800, 600), DimensionsT(1, 1), EPixelDataFormat::RED_INT, EPixelDataType::INT, &val);
+		//		ToRemove::g_idFrameBuffer->Unbind();
 
-				SV_EVENT_MANAGER().Invoke<Core::EditorUI::DebugEvent>(SvCore::Utility::FormatString("Val = %u", val).c_str());
-				//SV_EVENT_MANAGER().Invoke<Core::EditorUI::DebugEvent>(SvCore::Utility::FormatString("UV = %f, %f", p_uv.m_x, p_uv.m_y).c_str());
-			}
-		);
+		//		SV_EVENT_MANAGER().Invoke<Core::EditorUI::DebugEvent>(SvCore::Utility::FormatString("Val = %u", val).c_str());
+		//		//SV_EVENT_MANAGER().Invoke<Core::EditorUI::DebugEvent>(SvCore::Utility::FormatString("UV = %f, %f", p_uv.m_x, p_uv.m_y).c_str());
+		//	}
+		//);
 	}
 
 	void EngineApp::Run()
 	{
 		while (!m_window->ShouldClose())
 		{
-			ToRemove::g_idFrameBuffer->Bind();
 			m_editorEngine.Update();
-			ToRemove::g_idFrameBuffer->Unbind();
 
 			m_window->Update();
 
@@ -96,11 +82,7 @@ namespace SvEditor::App
 
 			if (!m_gameInstance.expired() && !m_gameIsPaused)
 			{
-				//do viewport here 
-				//m_gameInstance->m_worldContext->m_viewport;
-				ToRemove::g_frameBuffer->Bind();
 				m_gameInstance.lock()->Update();
-				ToRemove::g_frameBuffer->Unbind();
 			}
 
 			m_window->RenderUI();

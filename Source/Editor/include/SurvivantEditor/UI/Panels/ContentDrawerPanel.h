@@ -27,17 +27,15 @@ namespace SvEditor::UI::Panels
 		bool SetGridDisplay(PanelTreeBranch& p_branch);
 		bool TryOpenFile(PanelTreeBranch& p_branch);
 
-		static size_t GetPanelCount() { return s_idGenerator.GetNumUsedIds(); };
+		static constexpr char NAME[] = "ContentDrawer";
 
 	private:
 		void SetupTree();
 		void SetupBranches(std::shared_ptr<PanelTreeBranch> p_parent, const std::filesystem::path& p_filePath);
 
-		static constexpr char NAME[] = "ContentDrawer";
 		static constexpr char DIRECTORY_PATH[] = "Source";
 		static constexpr char BACKSLASH[] = "/";
 
-		static inline SvCore::Utility::UnusedIdGenerator s_idGenerator;
 
 		std::shared_ptr<PanelTreeBranch>					m_tree;
 		PanelSelectionBox									m_grid;

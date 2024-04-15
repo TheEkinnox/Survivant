@@ -158,17 +158,17 @@ namespace SvEditor::App
         return *m_currentScene;
     }
 
-    bool Engine::PrepareLevelChange(WorldContext& /*p_context*/, const std::shared_ptr<Scene>& p_newLevel)
+    bool Engine::PrepareSceneChange(WorldContext& /*p_context*/, const std::shared_ptr<Scene>& p_newLevel)
     {
         //init destination scene
         return p_newLevel->Init();
     }
 
-    bool Engine::CommitLevelChange(WorldContext& p_context, const std::shared_ptr<Scene>& p_newLevel)
+    bool Engine::CommitSceneChange(WorldContext& p_context, const std::shared_ptr<Scene>& p_newLevel)
     {
         //switch and the unload old scene
-        std::shared_ptr<Scene> m_levelToUnload = *p_context.GetCurrentLevelPtr();
-        *p_context.GetCurrentLevelPtr() = p_newLevel;
+        std::shared_ptr<Scene> m_levelToUnload = p_context.m_currentScene;
+        p_context.m_currentScene = p_newLevel;
 
         if (m_levelToUnload != nullptr)
         {
@@ -178,29 +178,30 @@ namespace SvEditor::App
         return true;
     }
 
-    std::shared_ptr<WorldContext>& Engine::GetWorldContextRef(GameInstance& p_instance)
+    std::weak_ptr<WorldContext>& Engine::GetWorldContextRef(GameInstance& p_instance)
     {
         return p_instance.m_worldContext;
     }
 
     std::shared_ptr<WorldContext> Engine::CreateNewWorldContext(WorldContext::EWorldType p_worldType)
     {
-        //TODO: CreateNewWorldContext
         std::shared_ptr<WorldContext> wrdPtr = std::make_unique<WorldContext>();
         WorldContext& world = *wrdPtr;
+        world.m_worldType = p_worldType;
 
         switch (p_worldType)
         {
         case WorldContext::EWorldType::NONE:
             break;
         case WorldContext::EWorldType::PIE:
-            world.m_worldType = WorldContext::EWorldType::PIE;
+            world.AddRenderPass(WorldContext::ERenderType::DEFAULT);
             break;
         case WorldContext::EWorldType::EDITOR:
-            world.m_worldType = WorldContext::EWorldType::EDITOR;
+            world.AddRenderPass(WorldContext::ERenderType::DEFAULT);
+            world.AddRenderPass(WorldContext::ERenderType::ID);
             break;
         case WorldContext::EWorldType::GAME:
-            world.m_worldType = WorldContext::EWorldType::GAME;
+            world.AddRenderPass(WorldContext::ERenderType::DEFAULT);
             break;
         default:
             break;

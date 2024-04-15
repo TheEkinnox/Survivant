@@ -12,7 +12,7 @@ namespace SvEditor::UI::Panels
 {
     InspectorPanel::InspectorPanel()
     {
-        m_name = GetUniqueName(NAME, s_idGenerator.GetUnusedId());
+        m_name = NAME;
 
         m_info = std::make_shared<ExamplGameObj>();
     }

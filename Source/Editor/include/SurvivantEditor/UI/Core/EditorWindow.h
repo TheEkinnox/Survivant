@@ -1,13 +1,14 @@
 //EditorWindow.h
 #pragma once
 
+#include "SurvivantApp/Inputs/InputManager.h"
 #include "SurvivantApp/Windows/Window.h"
+#include "SurvivantCore/Events/Event.h"
+#include "SurvivantEditor/App/WorldContext.h"
 #include "SurvivantEditor/UI/Core/EditorUI.h"
 
-#include "SurvivantApp/Inputs/InputManager.h"
-
 #include <unordered_map>
-#include "SurvivantCore/Events/Event.h"
+#include <array>
 
 
 namespace SvEditor::UI::Core
@@ -15,18 +16,6 @@ namespace SvEditor::UI::Core
 	class EditorWindow : public SvApp::Window
 	{
 	public:
-		struct SetupGameInfo
-		{
-			intptr_t m_textureId;
-			std::function<void()> m_playPauseFrameCallbacks[3];
-		};
-
-		struct SetupSceneInfo
-		{
-			intptr_t m_sceneTextureId;
-			intptr_t m_idTextureId;
-		};
-
 		EditorWindow();
 		~EditorWindow() = default;
 
@@ -35,7 +24,10 @@ namespace SvEditor::UI::Core
 		void EndRender() override;
 		bool ShouldClose() override;
 
-		void SetupUI(const SetupGameInfo& p_gameInfo, const SetupSceneInfo& p_sceneInfo);
+		void SetupUI(
+			const std::weak_ptr<App::WorldContext>&		p_sceneWorld,
+			const App::WorldContext::WorldCreator&		p_gameWorld,
+			const std::array<std::function<void()>, 3>	p_playPauseFrameCallbacks);
 
 		EditorUI& GetUI();
 		std::shared_ptr<SvApp::InputManager::InputBindings> GetInputs();

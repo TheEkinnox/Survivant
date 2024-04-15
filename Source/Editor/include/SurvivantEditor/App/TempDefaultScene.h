@@ -572,6 +572,30 @@ namespace ToRemove
         }
     }
 
+    void inline DrawMainCameraScene(Scene& p_scene, Camera& p_camera, const Transform& p_trans, bool isIdTexture = false)
+    {
+        SceneView<const ModelComponent, const Transform> renderables(p_scene);
+        SceneView<Camera>                                cameras(p_scene);
+
+        Camera& cam = p_camera;
+        cam.SetView(p_trans.getWorldMatrix().inverse());
+        BindCamUBO(cam.GetViewProjection(), p_trans.getWorldPosition());
+
+        cam.Clear();
+        const Frustum camFrustum = cam.GetFrustum();
+
+        for (const auto modelEntity : renderables)
+        {
+            const auto [model, transform] = renderables.Get(modelEntity);
+            ASSERT(model->m_model && model->m_material);
+
+            if (isIdTexture)
+                DrawModelEditorScene(*model->m_model, camFrustum, transform->getWorldMatrix(), *model->m_material, modelEntity);
+            else
+                DrawModel(*model->m_model, camFrustum, transform->getWorldMatrix(), *model->m_material);
+        }
+    }
+
     void inline UpdateTemporaries(SceneView<Temporary>& p_view, const float p_deltaTime)
     {
         for (const auto entity : p_view)

@@ -5,9 +5,14 @@
 #include "SurvivantCore/Events/Event.h"
 #include <SurvivantCore/Utility/Timer.h>
 
+#include <array>
 
 #define SV_DELTA_TIME() SvEditor::App::Engine::g_engine->GetDeltaTime()
 
+namespace SvEditor::UI::Core
+{
+	class EditorWindow;
+}
 
 namespace SvEditor::App
 {
@@ -20,6 +25,9 @@ namespace SvEditor::App
 		// Inherited via Engine
 		void Update() override;
 		void Init() override;
+
+		void SetupUI(UI::Core::EditorWindow* p_window, const std::array<std::function<void()>, 3> p_playPauseFrameCallbacks);
+
 		//bool StartScene(WorldContext& p_worldContext) override;
 		bool ChangeScene(const std::string& p_sceneName) override;
 		void RedrawViewports() override;
@@ -51,15 +59,18 @@ namespace SvEditor::App
 		int			BrowseToDefaultScene(WorldContext& p_worldContext);
 
 		bool InitializePlayInEditorGameInstance(GameInstance& p_instance);
-		std::shared_ptr<WorldContext> CreatePIEWorldByDuplication(WorldContext& p_context, std::shared_ptr<Scene> p_inLevel);
+		std::shared_ptr<WorldContext> CreatePIEWorldByDuplication(WorldContext& p_context, std::shared_ptr<Scene> p_inScene);
 		std::shared_ptr<WorldContext> CreateEditorDefaultWorld();
 
 		SvCore::Utility::Timer			m_time;
 
-		std::shared_ptr<WorldContext>	m_PIEWorld;
-		std::shared_ptr<GameInstance>	m_gameInstance;
-
-		std::shared_ptr<Scene>			m_editorSelectedScene;
+		//always exists
 		std::shared_ptr<WorldContext>	m_editorWorld;
+		std::shared_ptr<Scene>			m_editorSelectedScene;
+
+		//temporary
+		std::shared_ptr<GameInstance>				m_gameInstance;
+		std::weak_ptr<WorldContext>					m_PIEWorld;
+		std::vector<std::weak_ptr<WorldContext>>	m_duplicatedWorlds;
 	};
 }

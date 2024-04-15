@@ -5,6 +5,8 @@
 #include "SurvivantEditor/App/EditorEngine.h"
 #include "SurvivantEditor/App/GameInstance.h"
 
+#include "SurvivantEditor/UI/Core/EditorWindow.h"
+
 #include "SurvivantEditor/App/TempDefaultScene.h"
 
 namespace SvEditor::App
@@ -13,17 +15,18 @@ namespace SvEditor::App
 	{
 		m_time.tick();
 
-		if (m_gameInstance.get() != nullptr)
-		{
-			WorldContext::IdRender(*GetWorldContextRef(*m_gameInstance));		
-		}
+		if (m_editorWorld)
+			m_editorWorld->Render();
+		//if (m_PIEWorld)
+		//	m_PIEWorld->Render();
 	}
 
 	std::weak_ptr<GameInstance> EditorEngine::CreatePIEGameInstance()
 	{
 		//if dont have PIE world context
-		if (m_PIEWorld == nullptr)
+		if (m_PIEWorld.expired())
 		{
+			ASSERT(false, "No PIE world on game instance creation");
 			m_PIEWorld = CreatePIEWorldByDuplication(*m_editorWorld, m_editorSelectedScene);
 		}
 
@@ -31,9 +34,6 @@ namespace SvEditor::App
 
 		if (!InitializePlayInEditorGameInstance(*m_gameInstance))
 			return std::weak_ptr<GameInstance>();
-		
-		//m_PIEWorld->m_owningGameInstance = m_gameInstance.get();
-		//m_PIEWorld->m_lightsSSBO = ToRemove::SetupLightSSBO(**m_PIEWorld->GetCurrentLevelPtr());
 
 		return std::weak_ptr<GameInstance>(m_gameInstance);
 	}
@@ -69,12 +69,12 @@ namespace SvEditor::App
 			return 0;
 		
 		//update current scene
-		if (!(	PrepareLevelChange(p_worldContext, p_scene) &&
-				CommitLevelChange(p_worldContext, p_scene)))
+		if (!(	PrepareSceneChange(p_worldContext, p_scene) &&
+				CommitSceneChange(p_worldContext, p_scene)))
 			return -1;
 
 		//update selected scene, dont keep ref to current scene
-		m_editorSelectedScene = *p_worldContext.GetCurrentLevelPtr();
+		m_editorSelectedScene = p_worldContext.m_currentScene;
 
 		return 1;
 	}
@@ -84,16 +84,16 @@ namespace SvEditor::App
 		return &m_currentScene;
 	}
 
-	std::shared_ptr<WorldContext> EditorEngine::CreatePIEWorldByDuplication(WorldContext& p_context, std::shared_ptr<Scene> p_inLevel)
+	std::shared_ptr<WorldContext> EditorEngine::CreatePIEWorldByDuplication(WorldContext& p_context, std::shared_ptr<Scene> p_inScene)
 	{
 		auto pieWorld = Engine::CreateNewWorldContext(WorldContext::EWorldType::PIE);
-		*pieWorld->GetCurrentLevelPtr() = p_inLevel;
 
-		pieWorld->m_lightsSSBO = ToRemove::SetupLightSSBO(**pieWorld->GetCurrentLevelPtr());
+		pieWorld->m_lightsSSBO = ToRemove::SetupLightSSBO(*p_inScene);
 
 		pieWorld->m_owningGameInstance = p_context.m_owningGameInstance;
 		pieWorld->m_viewport = p_context.m_viewport; //TODO : setup viewport when dupliucating world
-		*pieWorld->GetCurrentLevelPtr() = *p_context.GetCurrentLevelPtr();
+		pieWorld->m_currentScene = p_inScene;
+		pieWorld->SetupMainCamera();
 		//pieWorld->m_persistentLevel = p_context.m_persistentLevel;
 
 		return pieWorld;
@@ -103,11 +103,14 @@ namespace SvEditor::App
 	{
 		//TODO: better default loadded world
 
-		auto world = std::make_shared<WorldContext>();
-		world->m_worldType = WorldContext::EWorldType::EDITOR;
+		auto world = CreateNewWorldContext(WorldContext::EWorldType::EDITOR);
 
 		world->m_owningGameInstance = nullptr;
-		world->m_viewport = 0;
+		world->m_viewport = Vector2::zero();
+
+		world->AddRenderPass(WorldContext::ERenderType::DEFAULT);
+		world->AddRenderPass(WorldContext::ERenderType::ID);
+
 		//world->m_persistentLevel = nullptr;
 
 		return world;
@@ -119,10 +122,10 @@ namespace SvEditor::App
 
 		// Look for an existing pie world context, may have been created before
 		auto& worldContext = EditorEngine->GetWorldContextRef(p_instance);
-		ASSERT(worldContext.get() != nullptr, "GameInstance has no world");
+		ASSERT(!worldContext.expired(), "GameInstance has no world");
 
-		worldContext->m_owningGameInstance = &p_instance;
-		worldContext->m_lightsSSBO = ToRemove::SetupLightSSBO(**worldContext->GetCurrentLevelPtr());
+		worldContext.lock()->m_owningGameInstance = &p_instance;
+		worldContext.lock()->m_lightsSSBO = ToRemove::SetupLightSSBO(*worldContext.lock()->m_currentScene);
 
 		//init
 		p_instance.Init();
@@ -144,15 +147,31 @@ namespace SvEditor::App
 
 		//TODO: load all ressources here
 
-		//create world
+		//create editor world world
 		m_editorWorld = CreateEditorDefaultWorld();
 
 		//create levels
 		m_allLevels.emplace("Defaut_Scene", ToRemove::TestCreateDefaultScene());
-		//m_allLevels["test_level"]->Load("ADD_DEFAULT_PATH_HERE");
 
 		//load default level
 		BrowseToDefaultScene(*m_editorWorld);
+		m_editorWorld->SetupMainCamera();
+	}
+
+	void EditorEngine::SetupUI(UI::Core::EditorWindow* p_window, const std::array<std::function<void()>, 3>p_playPauseFrameCallbacks)
+	{
+		p_window->SetupUI(
+			m_editorWorld,
+			[this](const LibMath::Vector2I&)
+			{
+				ASSERT(m_PIEWorld.expired(), "Tried to create PIE world when already exists");
+
+				auto PIEWorld =	CreatePIEWorldByDuplication(*m_editorWorld, m_editorSelectedScene);
+				m_PIEWorld = std::weak_ptr<WorldContext>(PIEWorld);
+
+				return PIEWorld;
+			},
+			p_playPauseFrameCallbacks);
 	}
 
 	//bool EditorEngine::StartScene(WorldContext& p_worldContext)
@@ -173,12 +192,12 @@ namespace SvEditor::App
 		if (destination == m_allLevels.end())
 			return false;
 
-		if (PrepareLevelChange(*m_PIEWorld, destination->second) &&
-			CommitLevelChange(*m_PIEWorld, destination->second))
+		if (PrepareSceneChange(*m_PIEWorld.lock(), destination->second) &&
+			CommitSceneChange(*m_PIEWorld.lock(), destination->second))
 			return false;
 
 		//update editorWorld level
-		*m_editorWorld->GetCurrentLevelPtr() = destination->second;
+		m_editorWorld->m_currentScene = destination->second;
 		//dont update selected editor scene
 
 		return true;

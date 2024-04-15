@@ -50,6 +50,9 @@ namespace SvEditor::UI::Panels
         if (m_layout)
             SetupLayout(static_cast<int>(dockspaceId));
 
+        if (!m_forceFocus.empty())
+            SetForceFocust();
+
         m_panelFlags = ERenderFlags();
         m_menuBar.DisplayAndUpdatePanel();
         ImGui::End();
@@ -67,9 +70,20 @@ namespace SvEditor::UI::Panels
         m_layout = p_layout;
     }
 
+    void MainPanel::ForceFocus(const std::string& p_name)
+    {
+        m_forceFocus = p_name;
+    }
+
     void MainPanel::SetupLayout(int p_dockspaceId)
     {
         m_layout(p_dockspaceId);
         m_layout = nullptr;
+    }
+
+    void MainPanel::SetForceFocust()
+    {
+        ImGui::SetWindowFocus(m_forceFocus.c_str());
+        m_forceFocus.clear();
     }
 }

@@ -15,8 +15,8 @@ namespace SvEditor::UI::Panels
     ContentDrawerPanel::ContentDrawerPanel() :
         m_tree()
     {
-        m_name = GetUniqueName(NAME, s_idGenerator.GetUnusedId());
-        
+        m_name = NAME;
+
         SetupTree();
 
         // setup folder callbacks
@@ -40,7 +40,6 @@ namespace SvEditor::UI::Panels
 
     ContentDrawerPanel::~ContentDrawerPanel()
     {
-        s_idGenerator.RemoveId(GetUniqueIdInName());
     }
 
     Panel::ERenderFlags ContentDrawerPanel::Render()

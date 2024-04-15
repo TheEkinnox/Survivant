@@ -44,6 +44,8 @@ namespace SvEditor::UI::Panels
 
 		void AddConsoleLog(const LogInfo& p_log);
 
+		static constexpr char NAME[] = "DebugLog";
+
 	private:
 		class LogText : public Interfaces::ITextable
 		{
@@ -73,7 +75,6 @@ namespace SvEditor::UI::Panels
 
 		void TextInputCallback(PanelTextInput& p_textInput);
 
-		static constexpr char NAME[] = "DebugLog";
 		static inline int s_panelCount = 0;
 
 		std::string								m_inputBuffer;
@@ -83,6 +84,6 @@ namespace SvEditor::UI::Panels
 		Menu									m_filterMenu;
 		//cant use vector<bool> bcs not container
 		std::vector<unsigned char>				m_currentFilters;
-		IUI::DebugEvent::ListenerId			m_eventHandle;
+		IUI::DebugEvent::ListenerId				m_eventHandle;
 	};
 }

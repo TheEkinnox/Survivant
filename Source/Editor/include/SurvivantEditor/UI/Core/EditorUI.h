@@ -8,16 +8,24 @@
 #include "SurvivantEditor/UI/Panels/MainPanel.h"
 #include "SurvivantEditor/UI/MenuItems/Menu.h"
 #include "SurvivantEditor/UI/MenuItems/MenuBar.h"
+#include "SurvivantEditor/App/WorldContext.h"
 #include "SurvivantApp/Inputs/InputManager.h"
+
 
 #include <unordered_set>
 #include <memory>
+#include <array>
 
 //foward declaration
 struct ImFont;
 
 namespace SvApp {
 	class Window;
+}
+
+namespace SvEditor::App
+{
+	struct WorldContext;
 }
 
 namespace SvEditor::UI::Core
@@ -29,13 +37,15 @@ namespace SvEditor::UI::Core
 	class EditorUI : public IUI
 	{
 	public:
+		using Panels = std::unordered_map<std::string, std::shared_ptr<Panel>>;
+
 		EditorUI(SvApp::InputManager::InputBindings& p_inputs);
 		~EditorUI(); 
 
 		void InitEditorUi(SvApp::Window* p_window);
 
-		void InitGamePanel(intptr_t p_textureId, const std::function<void()> p_playPauseFrameCallbacks[3]);
-		void InitScenePanel(intptr_t p_sceneTextureId, intptr_t p_idTextureId);
+		void InitGamePanel(const App::WorldContext::WorldCreator& p_worldCreator, const std::array<std::function<void()>, 3> p_playPauseFrameCallbacks);
+		void InitScenePanel(std::weak_ptr<App::WorldContext> p_world);
 
 		void StartFrameUpdate() override;
 		void RenderPanels();
@@ -65,7 +75,7 @@ namespace SvEditor::UI::Core
 
 		MenuBar CreateMenuBar();
 		//void DisplayPopupMenu();
-		void HandlePanelFlags(std::shared_ptr<Panel> p_id, Panel::ERenderFlags p_flags);
+		void HandlePanelFlags(const std::string& p_name, Panel::ERenderFlags p_flags);
 
 		//TODO : add ratio vfont sizes
 		static constexpr int DEFAULT_FONT_SIZE = 16;
@@ -73,10 +83,10 @@ namespace SvEditor::UI::Core
 
 		std::vector<ImFont*> m_fonts;
 
-		std::unordered_set<std::shared_ptr<Panel>>	m_currentPanels;
-		std::shared_ptr<MainPanel>					m_main;
-		std::vector<CreatePanelCallback>			m_endFrameCallbacks;
-		ISelectable*								m_selected;
-		SvApp::InputManager::InputBindings&			m_inputs;
+		Panels									m_currentPanels;
+		std::shared_ptr<MainPanel>				m_main;
+		std::vector<CreatePanelCallback>		m_endFrameCallbacks;
+		ISelectable*							m_selected;
+		SvApp::InputManager::InputBindings&		m_inputs;
 	};
 }

@@ -7,6 +7,10 @@
 
 namespace SvEditor::App
 {
+    GameInstance::GameInstance(std::weak_ptr<WorldContext> p_worldContext) : 
+        m_worldContext(p_worldContext) 
+    {}
+
     void GameInstance::Init()
     {
         //init here
@@ -18,28 +22,25 @@ namespace SvEditor::App
     {
         UpdatePhysics();
 
-        m_worldContext->Update();
-        WorldContext::DefaultRender(*m_worldContext);
-
-        //m_worldContext->Render();
+        m_worldContext.lock()->Update();
     }
 
     void GameInstance::InitializeStandalone()
     {
         // Creates the world context. This should be the only WorldContext that ever gets created for this GameInstance.
-        m_worldContext = GetEngine()->CreateNewWorldContext(WorldContext::EWorldType::GAME);
-        m_worldContext->m_owningGameInstance = this;
+        //m_worldContext = GetEngine()->CreateNewWorldContext(WorldContext::EWorldType::GAME);
+        //m_worldContext.lock()->m_owningGameInstance = this;
 
-        // In standalone create a dummy world from the beginning to avoid issues of not having a world until LoadMap gets us our real world
-        std::shared_ptr<Scene> dummyLevel = std::make_shared<Scene>();
-        //dummyLevel->m_gameInstance = this;
+        //// In standalone create a dummy world from the beginning to avoid issues of not having a world until LoadMap gets us our real world
+        //std::shared_ptr<Scene> dummyLevel = std::make_shared<Scene>();
+        ////dummyLevel->m_gameInstance = this;
 
-        *m_worldContext->GetCurrentLevelPtr() = dummyLevel;
+        //m_worldContext.lock()->m_currentScene = dummyLevel;
     }
 
     void GameInstance::Start()
     {
-        m_worldContext->BeginPlay();
+        m_worldContext.lock()->BeginPlay();
     }
 
     Engine* GameInstance::GetEngine()
