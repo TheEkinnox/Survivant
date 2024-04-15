@@ -56,8 +56,10 @@ namespace SvEditor::App
 
 		intptr_t GetDefaultTextureId();
 
-		void SetupMainCamera();
-		void SetupMainCamera(const SvCore::ECS::EntityHandle& p_entity);
+		void SetSceneCamera(const SvCore::ECS::EntityHandle& p_entity);
+		void SetSceneCamera();
+
+		void InitCamera();
 
 		/// <summary>
 		/// Adds coresponding framebuffer, render type and attached texture(s)

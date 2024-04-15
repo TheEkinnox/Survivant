@@ -51,18 +51,26 @@ namespace SvEditor::App
         return static_cast<intptr_t>(dynamic_cast<OpenGLTexture&>(*m_frameTextures[0]).GetId());
     }
 
-    void WorldContext::SetupMainCamera()
+    void WorldContext::SetSceneCamera()
     {
-        SceneView<Camera> cameras(*m_currentScene);
+        SceneView<ProjectionCamera> cameras(*m_currentScene);
 
         ASSERT(cameras.begin() != cameras.end(), "No Cameras In World");
-        SetupMainCamera(EntityHandle(m_currentScene.get(), *cameras.begin()));
+        SetSceneCamera(EntityHandle(m_currentScene.get(), *cameras.begin()));
     }
 
-    void WorldContext::SetupMainCamera(const EntityHandle& p_entity)
+    void WorldContext::InitCamera()
+    {
+        static const Vector3 camPos(0.f, 1.8f, 2.f);
+
+        m_cameraCam.SetClearColor(Color::gray);
+        m_cameraTrans.setAll(camPos, Quaternion::identity(), Vector3::one());
+    }
+
+    void WorldContext::SetSceneCamera(const EntityHandle& p_entity)
     {
         m_cameraHandle = p_entity;
-        m_cameraCam = *m_currentScene->Get<Camera>(p_entity);
+        m_cameraCam.SetProjection(m_currentScene->Get<ProjectionCamera>(p_entity)->m_projectionMatrix);
         m_cameraTrans = *m_currentScene->Get<Transform>(p_entity);
     }
 
@@ -74,7 +82,7 @@ namespace SvEditor::App
 
         if (m_cameraHandle)
         {
-            m_cameraCam = *m_currentScene->Get<Camera>(m_cameraHandle);
+            m_cameraCam.SetProjection(m_currentScene->Get<ProjectionCamera>(m_cameraHandle)->m_projectionMatrix);
             m_cameraTrans = *m_currentScene->Get<Transform>(m_cameraHandle);
         }
 

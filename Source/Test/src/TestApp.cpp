@@ -191,8 +191,8 @@ namespace SvTest
         m_scene.Clear();
         EntityHandle camEntity = m_scene.Create();
 
-        Camera& cam = camEntity.Make<Camera>(perspectiveProjection(90_deg, 4.f / 3.f, .01f, 14.f));
-        cam.SetClearColor(Color::gray);
+        ProjectionCamera& cam = camEntity.Make<ProjectionCamera>(perspectiveProjection(90_deg, 4.f / 3.f, .01f, 14.f));
+        //cam.SetClearColor(Color::gray);
 
         const Vector3 camPos(0.f, 1.8f, 2.f);
         camEntity.Make<Transform>(camPos, Quaternion::identity(), Vector3::one());
@@ -270,7 +270,7 @@ namespace SvTest
         litCube.Make<ModelComponent>(cube, litMaterial);
         litCube.Make<Transform>(camPos + Vector3::front(), Quaternion::identity(), Vector3(1.5f, .5f, .1f));
 
-        m_scene.Create().Make<LightComponent>(Light(cam.GetClearColor()));
+        m_scene.Create().Make<LightComponent>(Light(Color::lime));
         m_scene.Create().Make<LightComponent>(DirectionalLight{ Color::magenta, Vector3::back() });
         m_scene.Create().Set<LightComponent>(PointLight{ Color::red, Vector3{ -1, 1, 1 }, Attenuation(16) });
 

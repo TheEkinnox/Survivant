@@ -93,7 +93,8 @@ namespace SvEditor::App
 		pieWorld->m_owningGameInstance = p_context.m_owningGameInstance;
 		pieWorld->m_viewport = p_context.m_viewport; //TODO : setup viewport when dupliucating world
 		pieWorld->m_currentScene = p_inScene;
-		pieWorld->SetupMainCamera();
+		pieWorld->InitCamera();
+		pieWorld->SetSceneCamera();
 		//pieWorld->m_persistentLevel = p_context.m_persistentLevel;
 
 		return pieWorld;
@@ -110,6 +111,7 @@ namespace SvEditor::App
 
 		world->AddRenderPass(WorldContext::ERenderType::DEFAULT);
 		world->AddRenderPass(WorldContext::ERenderType::ID);
+		world->InitCamera();
 
 		//world->m_persistentLevel = nullptr;
 
@@ -155,7 +157,6 @@ namespace SvEditor::App
 
 		//load default level
 		BrowseToDefaultScene(*m_editorWorld);
-		m_editorWorld->SetupMainCamera();
 	}
 
 	void EditorEngine::SetupUI(UI::Core::EditorWindow* p_window, const std::array<std::function<void()>, 3>p_playPauseFrameCallbacks)

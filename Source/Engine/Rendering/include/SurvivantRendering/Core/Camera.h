@@ -150,4 +150,10 @@ namespace SvRendering::Core
 
         void OnChange();
     };
+
+
+    struct ProjectionCamera
+    {
+        LibMath::Matrix4  m_projectionMatrix;
+    };
 }
