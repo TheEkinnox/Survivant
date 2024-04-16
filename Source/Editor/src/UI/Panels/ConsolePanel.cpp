@@ -36,7 +36,7 @@ namespace SvEditor::UI::Panels
         //debug event
         //m_eventHandle = 
 
-        m_eventHandle = SvCore::Events::EventManager::GetInstance().AddListenner<IUI::DebugEvent>(
+        m_eventHandle = SvCore::Events::EventManager::GetInstance().AddListenner<Core::IUI::DebugEvent>(
             [this](const char* m_message)
             {
                 if (this == nullptr)
@@ -51,7 +51,7 @@ namespace SvEditor::UI::Panels
     ConsolePanel::~ConsolePanel()
     {
         s_panelCount--;
-        SvCore::Events::EventManager::GetInstance().RemoveListenner<IUI::DebugEvent>(m_eventHandle);
+        SvCore::Events::EventManager::GetInstance().RemoveListenner<Core::IUI::DebugEvent>(m_eventHandle);
     }
 
     Panel::ERenderFlags ConsolePanel::Render()

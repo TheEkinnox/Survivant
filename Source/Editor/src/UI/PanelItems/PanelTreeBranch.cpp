@@ -1,7 +1,7 @@
 //PanelTreeBranch.cpp
 
 #include "SurvivantEditor/UI/PanelItems/PanelTreeBranch.h"
-#include "SurvivantEditor/UI/Core/UIManager.h"
+#include "SurvivantEditor/UI/Core/IUI.h"
 #include "SurvivantEditor/UI/MenuItems/MenuButton.h"
 
 

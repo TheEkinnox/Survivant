@@ -39,6 +39,7 @@ namespace SvEditor::UI::Panels
 		std::shared_ptr<App::WorldContext> m_world;
 		PanelButtonList		m_buttons;
 		PanelImage			m_image;
+		bool				m_prevFocus;
 	};
 
 }

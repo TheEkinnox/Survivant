@@ -3,7 +3,7 @@
 #include "SurvivantEditor/UI/Panels/ExamplGameObj.h"
 
 #include "SurvivantCore/Events/EventManager.h"
-#include "SurvivantEditor/UI/Core/UIManager.h"
+#include "SurvivantEditor/UI/Core/IUI.h"
 #include "SurvivantEditor/UI/PanelItems/PanelTransformInput.h"
 #include "SurvivantEditor/UI/MenuItems/PopupMenu.h"
 #include "SurvivantEditor/UI/MenuItems/MenuButton.h"
@@ -44,13 +44,13 @@ namespace SvEditor::UI::Panels
 
     bool ExamplResource::InvokeDoubleClick()
     {
-        SV_EVENT_MANAGER().Invoke<IUI::DebugEvent>("Clicked Resource");
+        SV_EVENT_MANAGER().Invoke<Core::IUI::DebugEvent>("Clicked Resource");
         return false;
     }
 
     void ExamplResource::DisplayAndUpdatePopupMenu()
     {
-        SV_EVENT_MANAGER().Invoke<IUI::DebugEvent>("No PopupMenu");
+        SV_EVENT_MANAGER().Invoke<Core::IUI::DebugEvent>("No PopupMenu");
     }
 
     bool ExamplResource::GetSelectedState()

@@ -2,7 +2,7 @@
 #pragma once
 
 #include "SurvivantEditor/UI/Interfaces/ITextable.h"
-#include "SurvivantEditor/UI/Interfaces/IUI.h"
+#include "SurvivantEditor/UI/Core/IUI.h"
 #include "SurvivantEditor/UI/MenuItems/Menu.h"
 #include "SurvivantEditor/UI/PanelItems/PanelTextInput.h"
 #include "SurvivantEditor/UI/PanelItems/PanelTextBox.h"
@@ -84,6 +84,6 @@ namespace SvEditor::UI::Panels
 		Menu									m_filterMenu;
 		//cant use vector<bool> bcs not container
 		std::vector<unsigned char>				m_currentFilters;
-		IUI::DebugEvent::ListenerId				m_eventHandle;
+		Core::IUI::DebugEvent::ListenerId		m_eventHandle;
 	};
 }

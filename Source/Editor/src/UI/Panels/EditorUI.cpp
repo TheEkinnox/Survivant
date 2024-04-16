@@ -6,7 +6,7 @@
 #include "SurvivantCore/Events/EventManager.h"
 #include "SurvivantCore/Utility/Utility.h"
 #include "SurvivantEditor/App/WorldContext.h"
-#include "SurvivantEditor/UI/Core/UIManager.h"
+#include "SurvivantEditor/UI/Core/IUI.h"
 #include "SurvivantEditor/UI/MenuItems/MenuButton.h"
 #include "SurvivantEditor/UI/Panels/ConsolePanel.h"
 #include "SurvivantEditor/UI/Panels/ContentDrawerPanel.h"
@@ -66,7 +66,7 @@ namespace SvEditor::UI::Core
         m_fonts.push_back(io.Fonts->AddFontDefault(&config));
 
         //UIManager
-        SvEditor::UI::Core::UIManager::GetInstance().SetCurrentUI(this);
+        SvEditor::UI::Core::IUI::m_currentUI = this;
     }
 
     EditorUI::~EditorUI()
@@ -138,11 +138,11 @@ namespace SvEditor::UI::Core
                 pfArray.push_back({ panel->GetName(), flags});
         }
 
-        //DisplayPopupMenu();
-
         //handle m_flags after
         for (auto& pf : pfArray)
             HandlePanelFlags(pf.m_name, pf.m_flags);
+
+        m_hasChangedInputs = false;
     }
 
     void EditorUI::EndFrameUpdate()
@@ -241,6 +241,11 @@ namespace SvEditor::UI::Core
     {
         if (p_flags & Panel::CLOSE)
             m_currentPanels.erase(p_name);
+
+        if (p_flags & Panel::DefaultInputs && m_hasChangedInputs)
+        {
+            //m_inputs = default;
+        }
     }
 
     ISelectable* EditorUI::GetSelected()

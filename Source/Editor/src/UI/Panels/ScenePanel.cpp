@@ -39,8 +39,17 @@ namespace SvEditor::UI::Panels
 
 		if (ImGui::Begin(m_name.c_str(), &showWindow, window_flags))
 		{
+			//focus
+			auto val = IsGainedFocus(m_prevFocus);
+			if (val == 1)
+				s_world.lock()->m_onGainFocus.Invoke();
+			else if (val == -1)
+				s_world.lock()->m_onLoseFocus.Invoke();
+
+			//render
 			s_world.lock()->Render();
 
+			//panelables
 			m_buttons.DisplayAndUpdatePanel();
 
 			if (IsWindowDifferentSize(m_imageSize, oldWindowSizeValue))
@@ -55,16 +64,15 @@ namespace SvEditor::UI::Panels
 			if (ImGui::IsMouseClicked(0) && ImGui::IsItemHovered())
 			{
 				auto mousePos = ImGui::GetMousePos();
-				auto val = CalculateUVCords({ mousePos.x, mousePos.y });
+				auto uv = CalculateUVCords({ mousePos.x, mousePos.y });
 				
-				if (0 <= val.m_x && val.m_x <= 1 &&
-					0 <= val.m_y && val.m_y <= 1)
+				if (0 <= uv.m_x && uv.m_x <= 1 &&
+					0 <= uv.m_y && uv.m_y <= 1)
 					s_onClickSceneEvent.Invoke(CalculateUVCords({ mousePos.x, mousePos.y }));
 			}
 		}
 
 		ImGui::End();
-
 
 		ERenderFlags flags = ERenderFlags();
 		if (!showWindow)

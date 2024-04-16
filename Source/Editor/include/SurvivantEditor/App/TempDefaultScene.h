@@ -687,6 +687,7 @@ namespace ToRemove
 
         if (!firstTime)
             return;
+
         firstTime = false;
 
         auto& k = bindings->m_keyCallbacks;

@@ -40,12 +40,15 @@ namespace SvEditor::UI::Panels
 		static ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoNavInputs;
 		bool showWindow = true;
 
-		//ImGuiFocusedFlags_;
-
-		//if (ImGui::IsWindowFocused())
-
 		if (ImGui::Begin(m_name.c_str(), &showWindow, window_flags))
 		{
+			//focus
+			auto val = IsGainedFocus(m_prevFocus);
+			if (val == 1)
+				m_world->m_onGainFocus.Invoke();
+			else if (val == -1)
+				m_world->m_onLoseFocus.Invoke();
+
 			m_world->Render();
 
 			m_buttons.DisplayAndUpdatePanel();

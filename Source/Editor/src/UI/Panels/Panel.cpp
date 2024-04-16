@@ -35,6 +35,15 @@ namespace SvEditor::UI::Panels
         return true;
     }
 
+    int Panel::IsGainedFocus(bool& p_currentFocus)
+    {
+        bool newFocus = ImGui::IsWindowFocused();
+        bool prevFocus = p_currentFocus;
+        p_currentFocus = newFocus;
+
+        return prevFocus == newFocus ? 0 : newFocus? 1 : -1;
+    }
+
     const std::string& Panel::GetName()
     {
         return m_name;

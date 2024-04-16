@@ -61,5 +61,6 @@ namespace SvEditor::UI::Panels
 
 		LibMath::Vector2	m_imagePos;
 		LibMath::Vector2	m_imageSize;
+		bool				m_prevFocus;
 	};
 }

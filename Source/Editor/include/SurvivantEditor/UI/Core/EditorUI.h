@@ -2,7 +2,7 @@
 #pragma once
 
 #include "SurvivantCore/Events/Event.h"
-#include "SurvivantEditor/UI/Interfaces/IUI.h"
+#include "SurvivantEditor/UI/Core/IUI.h"
 #include "SurvivantEditor/UI/Interfaces/ISelectable.h"
 #include "SurvivantEditor/UI/Panels/Panel.h"
 #include "SurvivantEditor/UI/Panels/MainPanel.h"
@@ -88,5 +88,6 @@ namespace SvEditor::UI::Core
 		std::vector<CreatePanelCallback>		m_endFrameCallbacks;
 		ISelectable*							m_selected;
 		SvApp::InputManager::InputBindings&		m_inputs;
+		bool									m_hasChangedInputs;
 	};
 }

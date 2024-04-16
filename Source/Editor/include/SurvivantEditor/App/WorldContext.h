@@ -47,13 +47,6 @@ namespace SvEditor::App
 		void Update();
 		void Render();
 
-		EWorldType				m_worldType = EWorldType::NONE;
-		GameInstance*			m_owningGameInstance = nullptr;
-		LibMath::TVector2<int>	m_viewport = LibMath::Vector2(800, 600);
-
-		std::unique_ptr<SvRendering::RHI::IShaderStorageBuffer>		m_lightsSSBO = nullptr;
-		std::shared_ptr<SvCore::ECS::Scene>							m_currentScene = nullptr;
-
 		intptr_t GetDefaultTextureId();
 
 		void SetSceneCamera(const SvCore::ECS::EntityHandle& p_entity);
@@ -69,6 +62,17 @@ namespace SvEditor::App
 
 		//TODO: deal with persistentLevel
 		//std::shared_ptr<Scene>				m_persistentLevel = nullptr;
+
+
+		EWorldType				m_worldType = EWorldType::NONE;
+		GameInstance*			m_owningGameInstance = nullptr;
+		LibMath::TVector2<int>	m_viewport = LibMath::Vector2(800, 600);
+
+		std::unique_ptr<SvRendering::RHI::IShaderStorageBuffer>		m_lightsSSBO = nullptr;
+		std::shared_ptr<SvCore::ECS::Scene>							m_currentScene = nullptr;
+
+		SvCore::Events::Event<>		m_onGainFocus;
+		SvCore::Events::Event<>		m_onLoseFocus;
 
 	private:
 		void DefaultRender();

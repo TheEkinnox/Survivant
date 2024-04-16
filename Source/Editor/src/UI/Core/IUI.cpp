@@ -1,20 +1,14 @@
 //UIManager.cpp
 
-#include "SurvivantEditor/UI/Core/UIManager.h"
+#include "SurvivantEditor/UI/Core/IUI.h"
 
 #include "Arithmetic.h"
 #include "SurvivantCore\Debug\Assertion.h"
 
 namespace SvEditor::UI::Core
 {
-	UIManager& UIManager::GetInstance()
-	{
-		static UIManager s_manager;
 
-		return s_manager;
-	}
-
-	IUI * const SvEditor::UI::Core::UIManager::GetCurrentUI()
+	IUI* SvEditor::UI::Core::IUI::GetCurrentUI()
 	{
 		//if not null, has UI
 		ASSERT(m_currentUI != nullptr, "There is no current UI");
@@ -22,7 +16,7 @@ namespace SvEditor::UI::Core
 		return m_currentUI;
 	}
 
-	LibMath::Vector4 UIManager::GetColorFromString(const std::string& p_string)
+	LibMath::Vector4 IUI::GetColorFromString(const std::string& p_string)
 	{
 		static std::hash<std::string> s_hash;
 
@@ -31,7 +25,7 @@ namespace SvEditor::UI::Core
 		return size_tToRGBA(val);
 	}
 
-	LibMath::Vector4 UIManager::size_tToRGBA(size_t p_value)
+	LibMath::Vector4 IUI::size_tToRGBA(size_t p_value)
 	{
 		//modified from
 		//credit to https://stackoverflow.com/a/2262117/2737978 for the idea of how to implement
@@ -44,21 +38,9 @@ namespace SvEditor::UI::Core
 
 		//the color is /2 so its never too dark
 		return LibMath::Vector4(
-			1.0f - (static_cast<float>(red) / 256.0f / 2.0f), 
+			1.0f - (static_cast<float>(red) / 256.0f / 2.0f),
 			1.0f - (static_cast<float>(green) / 256.0f / 2.0f),
 			1.0f - (static_cast<float>(blue) / 256.0f / 2.0f),
 			1);
 	}
-
-	UIManager::UIManager() : m_currentUI() 
-	{}
-
-	void SvEditor::UI::Core::UIManager::SetCurrentUI(IUI* p_ui)
-	{
-		//if null, has no ui
-		ASSERT(m_currentUI == nullptr, "There is already a current UI");
-
-		m_currentUI = p_ui;
-	}
-
 }

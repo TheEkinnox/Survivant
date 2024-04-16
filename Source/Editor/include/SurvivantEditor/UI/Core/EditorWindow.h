@@ -33,12 +33,9 @@ namespace SvEditor::UI::Core
 		std::shared_ptr<SvApp::InputManager::InputBindings> GetInputs();
 
 	private:
-		using KeyMap = std::unordered_map<SvApp::InputManager::KeyboardKeyType, SvApp::InputManager::KeyCallback>;
-
 		//init on creation
 		std::unique_ptr<EditorUI>	m_ui;
 		bool						m_shouldClose = false; 
-		KeyMap						m_keyInputCallbacks;
 
 		std::shared_ptr<SvApp::InputManager::InputBindings>		m_inputs;
 	};

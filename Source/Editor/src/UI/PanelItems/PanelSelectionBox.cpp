@@ -2,7 +2,7 @@
 
 #include "SurvivantEditor/UI/PanelItems/PanelSelectionBox.h"
 
-#include "SurvivantEditor/UI/Core/UIManager.h"
+#include "SurvivantEditor/UI/Core/IUI.h"
 
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
