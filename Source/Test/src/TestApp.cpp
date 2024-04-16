@@ -191,7 +191,7 @@ namespace SvTest
         m_scene.Clear();
         EntityHandle camEntity = m_scene.Create();
 
-        ProjectionCamera& cam = camEntity.Make<ProjectionCamera>(perspectiveProjection(90_deg, 4.f / 3.f, .01f, 14.f));
+        /*ProjectionCamera& cam = */camEntity.Make<ProjectionCamera>(perspectiveProjection(90_deg, 4.f / 3.f, .01f, 14.f));
         //cam.SetClearColor(Color::gray);
 
         const Vector3 camPos(0.f, 1.8f, 2.f);
