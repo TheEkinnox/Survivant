@@ -118,12 +118,14 @@ namespace SvApp::Core
 
     RenderingContext::MainCamera::MainCamera(
         const SvRendering::Core::Camera& p_cam, const LibMath::Transform& p_trans) :
-        m_union(p_cam, p_trans)
+        m_union(p_cam, p_trans),
+        m_hasEntity(false)
     {
     }
 
     RenderingContext::MainCamera::MainCamera(SvCore::ECS::EntityHandle p_entity) :
-        m_union(p_entity)
+        m_union(p_entity),
+        m_hasEntity(false)
     {
     }
 
@@ -143,10 +145,12 @@ namespace SvApp::Core
     void RenderingContext::MainCamera::SetEntity(SvCore::ECS::EntityHandle p_entity)
     {
         m_union.m_entity = p_entity;
+        m_hasEntity = true;
     }
 
     void RenderingContext::MainCamera::SetCamera(const SvRendering::Core::Camera& p_cam, const LibMath::Transform& p_trans)
     {
         m_union.m_camInfo = { p_cam, p_trans };
+        m_hasEntity = false;
     }
 }
