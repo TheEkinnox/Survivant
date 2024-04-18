@@ -45,7 +45,7 @@ namespace SvEditor::Panels
 		{
 			//focus
 			auto val = IsGainedFocus(m_prevFocus);
-			if (val == 1)
+			if (val == 1 && m_world->m_owningGameInstance)
 				m_world->SetInputs();
 			else if (val == -1)
 				flags = ERenderFlags(flags | DefaultInputs);

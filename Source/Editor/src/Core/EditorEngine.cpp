@@ -50,6 +50,8 @@ namespace SvEditor::Core
 		//while playing, loaded new scene, so go back to selected
 		if (m_currentScene != m_editorSelectedScene)
 			BrowseToScene(*m_editorWorld, m_editorSelectedScene);
+
+		m_editorWorld->SetInputs();
 	}
 
 	std::shared_ptr<WorldContext> EditorEngine::CreatePIEWorldByDuplication(const WorldContext& p_context, std::shared_ptr<Scene> p_inScene)
@@ -270,6 +272,8 @@ namespace SvEditor::Core
 
 		worldContext.lock()->m_owningGameInstance = &p_instance;
 		worldContext.lock()->m_lightsSSBO = ToRemove::SetupLightSSBO(*worldContext.lock()->m_currentScene);
+
+		worldContext.lock()->SetInputs();
 
 		//init
 		p_instance.Init();
