@@ -36,10 +36,41 @@ namespace SvApp::Core
         }
     }
 
-    intptr_t RenderingContext::GetDefaultTextureId()
+    intptr_t RenderingContext::GetTextureId(ERenderType p_renderType)
     {
         ASSERT(!m_frameTextures.empty(), "World has no textures");
+
+        for (size_t i = 0; i < m_textureTypeBuffer.size(); i++)
+        {
+            if (m_textureTypeBuffer[i] == p_renderType)
+                return static_cast<intptr_t>(dynamic_cast<OpenGLTexture&>(*m_frameTextures[i]).GetId());
+        }
+
+        ASSERT(false, "Rendering context does not contain render type");
         return static_cast<intptr_t>(dynamic_cast<OpenGLTexture&>(*m_frameTextures[0]).GetId());
+    }
+
+    SvCore::ECS::Entity RenderingContext::GetIdTextureValue(const Vec2& p_uv)
+    {
+        ASSERT(!m_frameTextures.empty(), "World has no textures");
+
+        SvRendering::RHI::ITexture* idText = nullptr;
+        for (size_t i = 0; i < m_textureTypeBuffer.size(); i++)
+        {
+            if (m_textureTypeBuffer[i] == ERenderType::ID)
+                idText = m_frameTextures[i].get();
+        }
+
+        ASSERT(idText != nullptr, "Rendering context does not contain render type");
+
+        idText->Bind(0);
+        uint32_t val;
+        IRenderAPI::GetCurrent().ReadPixels(
+            p_uv * LibMath::Vector2(800, 600), DimensionsT(1, 1), EPixelDataFormat::RED_INT, EPixelDataType::INT, &val);
+
+        idText->Unbind(0);
+
+        return SvCore::ECS::Entity(val);
     }
 
     void RenderingContext::DefaultRender(Scene& p_scene)
@@ -111,6 +142,9 @@ namespace SvApp::Core
         std::shared_ptr<ITexture> depth = m_frameTextures.emplace_back(
             ITexture::Create(m_viewport.m_x, m_viewport.m_y, EPixelDataFormat::DEPTH_COMPONENT));
 
+        m_textureTypeBuffer.push_back(ERenderType::DEFAULT);
+        m_textureTypeBuffer.push_back(ERenderType(-1));
+
         color->Bind(0);
 
         auto frameBuffer = m_frameBuffers.emplace_back(IFrameBuffer::Create()).get();
@@ -124,6 +158,9 @@ namespace SvApp::Core
             ITexture::Create(m_viewport.m_x, m_viewport.m_y, EPixelDataFormat::RED_32I, EPixelDataFormat::RED_INT, EPixelDataType::UNSIGNED_INT));
         std::shared_ptr<ITexture> depth = m_frameTextures.emplace_back(
             ITexture::Create(m_viewport.m_x, m_viewport.m_y, EPixelDataFormat::DEPTH_COMPONENT));
+
+        m_textureTypeBuffer.push_back(ERenderType::ID);
+        m_textureTypeBuffer.push_back(ERenderType(-1));
 
         id->SetFilters(ETextureFilter::NEAREST, ETextureFilter::NEAREST);
         id->Bind(0);

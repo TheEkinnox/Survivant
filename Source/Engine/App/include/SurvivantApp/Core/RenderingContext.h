@@ -2,6 +2,7 @@
 #pragma once
 
 #include "SurvivantApp/Core/MainCamera.h"
+#include "SurvivantCore/ECS/Entity.h"
 #include "SurvivantCore/ECS/Scene.h"
 #include "SurvivantRendering/RHI/IShaderStorageBuffer.h"
 #include "SurvivantRendering/RHI/IFrameBuffer.h"
@@ -42,7 +43,8 @@ namespace SvApp::Core
 		~RenderingContext() = default;
 
 		void Render(Scene& p_scene);
-		intptr_t GetDefaultTextureId();
+		intptr_t GetTextureId(ERenderType p_renderType = ERenderType::DEFAULT);
+		SvCore::ECS::Entity GetIdTextureValue(const Vec2& p_uv);
 
 		/// <summary>
 		/// Adds coresponding framebuffer, render type and attached texture(s)
@@ -68,6 +70,8 @@ namespace SvApp::Core
 		MainCamera					m_mainCamera;
 		FrameBufferArray			m_frameBuffers;
 		std::vector<ERenderType>	m_renderTypes;
+
 		DefaultTextureArray			m_frameTextures;
+		std::vector<ERenderType>	m_textureTypeBuffer;
 	};
 }

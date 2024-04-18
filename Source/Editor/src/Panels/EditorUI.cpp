@@ -2,8 +2,8 @@
 
 #include "SurvivantEditor/Core/EditorUI.h"
 
-#include "SurvivantApp/Windows/Window.h"
 #include "SurvivantApp/Inputs/InputManager.h"
+#include "SurvivantApp/Windows/Window.h"
 #include "SurvivantCore/Events/EventManager.h"
 #include "SurvivantCore/Utility/Utility.h"
 #include "SurvivantCore/Debug/Assertion.h"
@@ -19,6 +19,7 @@
 #include "SurvivantEditor/Panels/ScenePanel.h"
 #include "SurvivantEditor/Panels/TestPanel.h"
 #include "SurvivantEditor/PanelItems/PanelButton.h"
+
 
 #include "Vector/Vector2.h"
 
@@ -91,12 +92,24 @@ namespace SvEditor::Core
 
     void EditorUI::InitScenePanel(std::weak_ptr<WorldContext> p_world)
     {
+        using namespace SvApp::Core;
+        using namespace SvRendering::RHI;
+        using namespace SvRendering::Enums;
+
         ScenePanel::SetSceneWorld(p_world);
 
-        /*ScenePanel::AddClickSceneListenner(
-            [](const LibMath::Vector2& p_uv)
-            { SV_EVENT_MANAGER().Invoke<EditorUI::DebugEvent>(SvCore::Utility::FormatString("UV = %f, %f", p_uv.m_x, p_uv.m_y).c_str());});
-        */
+        //                p_world.lock()->m_renderingContext->GetTexture(RenderingContext::ERenderType::ID);
+
+
+        ScenePanel::AddClickSceneListenner(
+            [p_world](const LibMath::Vector2& p_uv)
+            { 
+                auto id = p_world.lock()->
+                    m_renderingContext->GetIdTextureValue(p_uv);
+
+
+            });
+        
         ScenePanel::AddResizeListenner(
             [](const LibMath::Vector2& p_size)
             { SV_EVENT_MANAGER().Invoke<EditorUI::DebugEvent>(SvCore::Utility::FormatString("Size = %f, %f", p_size.m_x, p_size.m_y).c_str()); });
