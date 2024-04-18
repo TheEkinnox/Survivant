@@ -290,7 +290,7 @@ namespace SvEditor::PanelItems
         {
             for (auto& node : m_childreen)
             {
-                if (m_hideLeafs && node.second.get()->IsBranch())
+                if (!(m_hideLeafs && !node.second.get()->IsBranch()))
                     node.second->DisplayAndUpdatePanel();
             }
 

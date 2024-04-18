@@ -58,6 +58,7 @@ namespace SvEditor::Panels
             return Panel::ERenderFlags();
         }
 
+        //m_tree.DisplayAndUpdatePanel();
         for (auto& branch : m_tree.GetChildreen())
             branch.second->DisplayAndUpdatePanel();
 
