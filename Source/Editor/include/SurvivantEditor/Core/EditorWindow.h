@@ -27,12 +27,11 @@ namespace SvEditor::Core
 		bool ShouldClose() override;
 
 		void SetupUI(
-			const std::weak_ptr<WorldContext>&		p_sceneWorld,
-			const WorldContext::WorldCreator&		p_gameWorld,
+			const std::weak_ptr<WorldContext>&			p_sceneWorld,
+			const WorldContext::WorldCreator&			p_gameWorld,
 			const std::array<std::function<void()>, 3>	p_playPauseFrameCallbacks);
 
 		EditorUI& GetUI();
-		std::shared_ptr<SvApp::InputManager::InputBindings> GetInputs();
 
 	private:
 		//init on creation

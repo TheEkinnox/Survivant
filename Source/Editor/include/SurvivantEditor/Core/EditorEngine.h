@@ -2,20 +2,24 @@
 #pragma once
 
 #include "SurvivantApp/Core/IEngine.h"
+#include "SurvivantApp/Inputs/InputManager.h"
 #include "SurvivantApp/Core/GameInstance.h"
 #include "SurvivantCore/Events/Event.h"
 #include <SurvivantCore/Utility/Timer.h>
 
+#include "Transform.h"
+
 #include <array>
 
-namespace SvEditor::Core{
-	class EditorWindow;
-}
+
 
 using namespace SvApp::Core;
+using namespace LibMath;
 
 namespace SvEditor::Core
 {
+	class EditorWindow;
+
 	class EditorEngine : public SvApp::Core::Engine
 	{
 	public:
@@ -26,6 +30,10 @@ namespace SvEditor::Core
 		// Inherited via Engine
 		void Update() override;
 		void Init() override;
+
+		void RenderWorlds();
+
+		bool IsRunning();
 
 		void SetupUI(Core::EditorWindow* p_window, const std::array<std::function<void()>, 3> p_playPauseFrameCallbacks);
 
@@ -48,6 +56,8 @@ namespace SvEditor::Core
 		void DestroyGameInstance();
 		
 	private:
+		using Inputs = SvApp::InputManager::InputBindings;
+
 		/// <summary>
 		/// Changes current level and editorSelectedLevel with levelName, 
 		/// make sure that p_scene is in m_allWorlds before browsing to it
@@ -61,17 +71,19 @@ namespace SvEditor::Core
 
 		bool InitializePlayInEditorGameInstance(GameInstance& p_instance);
 
-		std::shared_ptr<WorldContext> CreateEditorDefaultWorld();
-		std::shared_ptr<WorldContext> CreatePIEWorldByDuplication(const WorldContext& p_context, std::shared_ptr<Scene> p_inScene);
+		std::shared_ptr<WorldContext>	CreateEditorDefaultWorld(std::shared_ptr<Scene> p_inScene);
+		std::shared_ptr<WorldContext>	CreatePIEWorldByDuplication(const WorldContext& p_context, std::shared_ptr<Scene> p_inScene);
+		std::shared_ptr<Inputs>			CreateEditorInputs();
 
 		SvCore::Utility::Timer			m_time;
+		bool							m_isRunning = true;
 
 		//always exists
 		std::shared_ptr<WorldContext>			m_editorWorld;
 		std::shared_ptr<SvApp::Core::Scene>		m_editorSelectedScene;
 
 		//temporary
-		std::shared_ptr<GameInstance>			m_gameInstance;
+		std::shared_ptr<GameInstance>				m_gameInstance;
 		std::weak_ptr<WorldContext>					m_PIEWorld;
 		std::vector<std::weak_ptr<WorldContext>>	m_duplicatedWorlds;
 	};

@@ -34,7 +34,7 @@ namespace SvEditor::Core
 		using Panels = std::unordered_map<std::string, std::shared_ptr<Panel>>;
 		using WorldContext = SvApp::Core::WorldContext;
 
-		EditorUI(SvApp::InputManager::InputBindings& p_inputs);
+		EditorUI();
 		~EditorUI(); 
 
 		void InitEditorUi(SvApp::Window* p_window);
@@ -67,6 +67,7 @@ namespace SvEditor::Core
 
 	private:
 		typedef std::shared_ptr<Panel> (EditorUI::* CreatePanelCallback)();
+		using Inputs = std::shared_ptr<SvApp::InputManager::InputBindings>;
 
 		MenuBar CreateMenuBar();
 		//void DisplayPopupMenu();
@@ -78,11 +79,10 @@ namespace SvEditor::Core
 
 		std::vector<ImFont*> m_fonts;
 
-		Panels									m_currentPanels;
-		std::shared_ptr<MainPanel>				m_main;
-		std::vector<CreatePanelCallback>		m_endFrameCallbacks;
-		ISelectable*							m_selected;
-		SvApp::InputManager::InputBindings&		m_inputs;
-		bool									m_hasChangedInputs;
+		Panels								m_currentPanels;
+		std::shared_ptr<MainPanel>			m_main;
+		std::vector<CreatePanelCallback>	m_endFrameCallbacks;
+		ISelectable*						m_selected;
+		Inputs								m_inputs;
 	};
 }

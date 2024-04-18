@@ -16,15 +16,13 @@
 namespace SvEditor::Core
 {
 	EngineApp::EngineApp() :
-		m_gameIsPaused(false),
-		m_isRunning(false)
+		m_gameIsPaused(false)
 	{
 		m_gameInstance = std::weak_ptr<GameInstance>();
 	}
 
 	void EngineApp::Init()
 	{
-		m_isRunning = true;
 		m_gameIsPaused = false;
 
 		SvCore::Debug::Logger::GetInstance().SetFile("debug.log");
@@ -45,7 +43,7 @@ namespace SvEditor::Core
 		m_editorEngine.Init();
 
 		LoadAllResources();
-		SetupEditorInputs();
+		SvApp::InputManager::GetInstance().InitWindow(m_window.get());
 
 		m_editorEngine.SetupUI(m_window.get(), {
 			[this]() { TogglePlayPIE(); },
@@ -71,10 +69,9 @@ namespace SvEditor::Core
 
 	void EngineApp::Run()
 	{
-		while (!m_window->ShouldClose())
+		while (!m_window->ShouldClose() && m_editorEngine.IsRunning())
 		{
 			m_editorEngine.Update();
-
 			m_window->Update();
 
 			SvApp::InputManager::GetInstance().Update();
@@ -84,6 +81,8 @@ namespace SvEditor::Core
 				m_gameInstance.lock()->Update();
 			}
 
+			m_editorEngine.RenderWorlds();
+
 			m_window->RenderUI();
 			m_window->EndRender();
 		}
@@ -92,60 +91,6 @@ namespace SvEditor::Core
 	void EngineApp::LoadAllResources()
 	{
 		//TODO : make/use resource manager init
-	}
-
-	std::tuple<int, int> AddInputTranslate(char i)
-	{
-		return { i, 10 };
-	}
-
-	std::tuple<int, int> AddMouseTranslate(float i, float j)
-	{
-		return { (int)i, (int)j };
-	}
-
-	std::tuple<> SpaceTranslate(char /*c*/)
-	{
-		return { };
-	}
-
-	void EngineApp::SetupEditorInputs()
-	{
-		using namespace SvCore;
-		using namespace SvApp;
-		using namespace Events;
-		using AddEvent = Events::Event<int, int>;
-		class ToggleEvent : public Events::Event<> {};
-
-		InputManager& im = InputManager::GetInstance();
-		InputManager::GetInstance().InitWindow(m_window.get());
-		auto input = m_window->GetInputs();
-		im.SetInputBindings(input);
-
-		auto& k = input->m_keyCallbacks;
-		auto& m = input->m_mouseKeyCallbacks;
-
-		EventManager& em = EventManager::GetInstance();
-		AddEvent::EventDelegate printAdd = [](int i, int j) { std::cout << "Add = " << i + j << std::endl; };
-		//ToggleEvent::EventDelegate toggle = std::bind(&SvApp::Window::ToggleFullScreenMode, &window);
-		em.AddListenner<AddEvent>(printAdd);
-		//em.AddListenner<ToggleEvent>(toggle);
-
-		//cant put MODS bsc of imgui
-		InputManager::KeyboardKeyType   a(EKey::A, EKeyState::RELEASED, EInputModifier());
-		InputManager::KeyboardKeyType   b(EKey::B, EKeyState::PRESSED, EInputModifier());
-		InputManager::MouseKeyType      mouse(EMouseButton::MOUSE_1, EMouseButtonState::PRESSED, EInputModifier());
-		InputManager::KeyboardKeyType   space(EKey::SPACE, EKeyState::PRESSED, EInputModifier());
-
-		auto test = [](char p_c) { return std::tuple<int, int>{ p_c, 10 }; };
-		k.emplace(a, im.CreateInputEventBinding<AddEvent>(a, &AddInputTranslate));
-		k.emplace(b, im.CreateInputEventBinding<AddEvent>(a, &AddInputTranslate));
-		k.emplace(space, im.CreateInputEventBinding<AddEvent>(space, &AddInputTranslate));
-		k.emplace(	InputManager::KeyboardKeyType{ EKey::ESCAPE, EKeyState::PRESSED, EInputModifier() },
-					[this](char) { m_isRunning = false; });
-
-		m.emplace(mouse, im.CreateInputEventBinding<AddEvent>(mouse, &AddMouseTranslate));
-		//stop running on escape
 	}
 
 	void EngineApp::TogglePlayPIE()
@@ -160,7 +105,6 @@ namespace SvEditor::Core
 			m_gameInstance = m_editorEngine.CreatePIEGameInstance();
 			m_gameInstance.lock()->Start();
 			//this is tmp game
-			ToRemove::SetupGameInputs();
 		}
 	}
 
@@ -178,5 +122,6 @@ namespace SvEditor::Core
 	{
 
 	}
+
 }
 

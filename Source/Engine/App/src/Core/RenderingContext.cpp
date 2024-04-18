@@ -20,9 +20,6 @@ namespace SvApp::Core
 
     void RenderingContext::Render(Scene& p_scene)
     {
-        if (!m_isDisplayed)
-            return;
-
         for (size_t i = 0; i < m_frameBuffers.size(); i++)
         {
             m_frameBuffers[i]->Bind();
@@ -70,9 +67,29 @@ namespace SvApp::Core
         m_renderTypes.push_back(p_type);
     }
 
-    void RenderingContext::SetIsDisplayed(bool p_isDisplayed)
+    void RenderingContext::SetIsDisplayed(bool /*p_isDisplayed*/)
     {
-        m_isDisplayed = p_isDisplayed;
+        //m_isDisplayed = p_isDisplayed;
+    }
+
+    RenderingContext::CamInfo RenderingContext::GetCameraInfo()
+    {
+        return m_mainCamera.GetCamInfo();
+    }
+
+    RenderingContext::Vec2& RenderingContext::CameraMoveInput()
+    {
+        return *m_mainCamera.MoveInput();
+    }
+
+    RenderingContext::Vec2& RenderingContext::CameraRotateInput()
+    {
+        return *m_mainCamera.RotateInput();
+    }
+
+    void RenderingContext::UpdateCameraInput()
+    {
+        m_mainCamera.UpdateInput();
     }
 
     void RenderingContext::IdPassRender(Scene& p_scene)
@@ -114,43 +131,5 @@ namespace SvApp::Core
         auto frameBuffer = m_frameBuffers.emplace_back(IFrameBuffer::Create()).get();
         frameBuffer->Attach(*id, EFrameBufferAttachment::COLOR);
         frameBuffer->Attach(*depth, EFrameBufferAttachment::DEPTH);
-    }
-
-    RenderingContext::MainCamera::MainCamera(
-        const SvRendering::Core::Camera& p_cam, const LibMath::Transform& p_trans) :
-        m_union(p_cam, p_trans),
-        m_hasEntity(false)
-    {
-    }
-
-    RenderingContext::MainCamera::MainCamera(SvCore::ECS::EntityHandle p_entity) :
-        m_union(p_entity),
-        m_hasEntity(false)
-    {
-    }
-
-    RenderingContext::MainCamera::CamInfo RenderingContext::MainCamera::GetCamInfo()
-    {
-        if (m_hasEntity)
-        {
-            if (m_union.m_entity)
-                return { nullptr, nullptr };
-
-            return { m_union.m_entity.Get<Camera>(), m_union.m_entity.Get<Transform>() };
-        }
-
-        return { &m_union.m_camInfo.m_cam, &m_union.m_camInfo.m_trans };
-    }
-
-    void RenderingContext::MainCamera::SetEntity(SvCore::ECS::EntityHandle p_entity)
-    {
-        m_union.m_entity = p_entity;
-        m_hasEntity = true;
-    }
-
-    void RenderingContext::MainCamera::SetCamera(const SvRendering::Core::Camera& p_cam, const LibMath::Transform& p_trans)
-    {
-        m_union.m_camInfo = { p_cam, p_trans };
-        m_hasEntity = false;
     }
 }

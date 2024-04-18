@@ -3,8 +3,10 @@
 #include "SurvivantEditor/Core/EditorUI.h"
 
 #include "SurvivantApp/Windows/Window.h"
+#include "SurvivantApp/Inputs/InputManager.h"
 #include "SurvivantCore/Events/EventManager.h"
 #include "SurvivantCore/Utility/Utility.h"
+#include "SurvivantCore/Debug/Assertion.h"
 #include "SurvivantEditor/Core/IUI.h"
 #include "SurvivantEditor/MenuItems/MenuButton.h"
 #include "SurvivantEditor/Panels/ConsolePanel.h"
@@ -29,8 +31,7 @@ namespace SvEditor::Core
     using namespace MenuItems;
     using namespace PanelItems;
 
-    EditorUI::EditorUI(SvApp::InputManager::InputBindings& p_inputs) :
-        m_inputs(p_inputs),
+    EditorUI::EditorUI() :
         m_main(std::make_shared<MainPanel>()),
         m_currentPanels(),
         m_selected(nullptr)
@@ -48,7 +49,6 @@ namespace SvEditor::Core
         //setup Main panel
         MainPanel::ChangeLayout l = std::bind(&EditorUI::Layout1, this, std::placeholders::_1);
         m_main->ChangePanelLayout(l);
-        m_main->SetMenuBar(CreateMenuBar());
 
         //TODO : add spawn save m_panel on event close request
         SvCore::Events::EventManager::GetInstance().AddListenner<SvApp::Window::WindowCloseRequest>(
@@ -101,6 +101,8 @@ namespace SvEditor::Core
             [](const LibMath::Vector2& p_size)
             { SV_EVENT_MANAGER().Invoke<EditorUI::DebugEvent>(SvCore::Utility::FormatString("Size = %f, %f", p_size.m_x, p_size.m_y).c_str()); });
 
+        m_inputs = p_world.lock()->m_inputs;
+        m_main->SetMenuBar(CreateMenuBar());
     }
 
     void EditorUI::StartFrameUpdate()
@@ -140,8 +142,6 @@ namespace SvEditor::Core
         //handle m_flags after
         for (auto& pf : pfArray)
             HandlePanelFlags(pf.m_name, pf.m_flags);
-
-        m_hasChangedInputs = false;
     }
 
     void EditorUI::EndFrameUpdate()
@@ -165,6 +165,7 @@ namespace SvEditor::Core
 #undef MOD_CONTROL
 
         using namespace SvApp;
+
         MenuBar menuBar;
         auto& menuList = menuBar.m_menus;
 
@@ -182,7 +183,7 @@ namespace SvEditor::Core
                 EKey::F11,
                 EKeyState::PRESSED,
                 EInputModifier::MOD_ALT),
-            m_inputs
+            *m_inputs
         ));
 
         Menu& menu2 = menuList.emplace_back("Edit");
@@ -193,7 +194,7 @@ namespace SvEditor::Core
                 EKey::F11,
                 EKeyState::PRESSED,
                 EInputModifier(EInputModifier::MOD_ALT | EInputModifier::MOD_CONTROL)),
-            m_inputs
+            *m_inputs
         ));
         menu2.m_items.emplace_back(std::make_unique<MenuButton>(
             "Cut",
@@ -241,10 +242,8 @@ namespace SvEditor::Core
         if (p_flags & Panel::CLOSE)
             m_currentPanels.erase(p_name);
 
-        if (p_flags & Panel::DefaultInputs && m_hasChangedInputs)
-        {
-            //m_inputs = default;
-        }
+        if (p_flags & Panel::DefaultInputs)
+            SvApp::InputManager::GetInstance().SetInputBindings(m_inputs);
     }
 
     ISelectable* EditorUI::GetSelected()

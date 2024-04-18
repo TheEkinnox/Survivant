@@ -47,7 +47,6 @@ namespace SvEditor::Core
 
 	private:
 		void LoadAllResources();
-		void SetupEditorInputs();
 
 		void TogglePlayPIE();
 		void TogglePausePIE();
@@ -55,10 +54,11 @@ namespace SvEditor::Core
 
 		void PauseGameInstance();
 
+		void RenderWorlds();
+
 		//class GameLoopEvent : public SvCore::Events::Event<> {};
 
-		std::unique_ptr<Core::EditorWindow>		m_window;
-		bool										m_isRunning;
+		std::unique_ptr<Core::EditorWindow>			m_window;
 		bool										m_gameIsPaused;
 		std::weak_ptr<GameInstance>					m_gameInstance;
 		EditorEngine								m_editorEngine;

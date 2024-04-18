@@ -3,6 +3,8 @@
 
 #include "SurvivantCore/ECS/Scene.h"
 #include "SurvivantCore/ECS/EntityHandle.h"
+#include "SurvivantApp/Core/RenderingContext.h"
+#include "SurvivantApp/Inputs/InputManager.h"
 
 #include "SurvivantRendering/RHI/IShaderStorageBuffer.h"
 #include "SurvivantRendering/RHI/IFrameBuffer.h"
@@ -45,22 +47,14 @@ namespace SvApp::Core
 		void Update();
 		void Render();
 
-		intptr_t GetDefaultTextureId();
-
+		void SetOwningCamera(const SvRendering::Core::Camera& p_cam, const LibMath::Transform& p_trans);
 		void SetSceneCamera(const SvCore::ECS::EntityHandle& p_entity);
-		void SetSceneCamera();
 
-		void InitCamera();
+		SvCore::ECS::EntityHandle GetDefaultSceneCamera();
 
-		/// <summary>
-		/// Adds coresponding framebuffer, render type and attached texture(s)
-		/// </summary>
-		/// <param name="p_renderType">Type of render pass</param>
-		void AddRenderPass(ERenderType p_renderType);
 
 		//TODO: deal with persistentLevel
 		//std::shared_ptr<Scene>				m_persistentLevel = nullptr;
-
 
 		EWorldType				m_worldType = EWorldType::NONE;
 		GameInstance*			m_owningGameInstance = nullptr;
@@ -68,23 +62,10 @@ namespace SvApp::Core
 
 		std::unique_ptr<SvRendering::RHI::IShaderStorageBuffer>		m_lightsSSBO = nullptr;
 		std::shared_ptr<SvCore::ECS::Scene>							m_currentScene = nullptr;
+		std::shared_ptr<InputManager::InputBindings>				m_inputs;
+		std::shared_ptr<RenderingContext>							m_renderingContext;
+		bool														m_isVisalbe;
 
-		SvCore::Events::Event<>		m_onGainFocus;
-		SvCore::Events::Event<>		m_onLoseFocus;
-
-	private:
-		void DefaultRender();
-		void IdPassRender();
-
-		void AddDefaultRenderPass();
-		void AddIdRenderPass();
-
-		SvCore::ECS::EntityHandle	m_cameraHandle;
-		SvRendering::Core::Camera	m_cameraCam;
-		LibMath::Transform			m_cameraTrans;
-
-		FrameBufferArray			m_frameBuffers;
-		std::vector<ERenderType>	m_renderTypes;
-		DefaultTextureArray			m_frameTextures;
+		void SetInputs();
 	};
 }

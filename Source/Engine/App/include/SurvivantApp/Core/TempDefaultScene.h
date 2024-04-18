@@ -420,7 +420,8 @@ namespace ToRemove
         p_scene.Clear();
         EntityHandle camEntity = p_scene.Create();
 
-        camEntity.Make<ProjectionCamera>(perspectiveProjection(90_deg, 4.f / 3.f, .01f, 14.f));
+        auto& cam = camEntity.Make<Camera>(perspectiveProjection(90_deg, 4.f / 3.f, .01f, 14.f));
+        cam.SetClearColor(Color::gray);
 
         const Vector3 camPos(0.f, 1.8f, 2.f);
         camEntity.Make<Transform>(camPos, Quaternion::identity(), Vector3::one());
@@ -671,24 +672,14 @@ namespace ToRemove
         //GameInfo::gameCamera.Get<Transform>()->setAll(INITIAL_CAM_POS, Quaternion::identity(), Vector3::one());
     }
 
-    void inline SetupGameInputs()
+    std::shared_ptr<SvApp::InputManager::InputBindings> inline SetupGameInputs()
     {
         using namespace SvCore;
         using namespace SvApp;
         using namespace Events;
         //using namespace SvEditor::Core;
 
-        static bool firstTime = true;
-        static std::shared_ptr<InputManager::InputBindings> bindings = std::make_shared<InputManager::InputBindings>();
-
-        InputManager& im = InputManager::GetInstance();
-
-        im.SetInputBindings(bindings);
-
-        if (!firstTime)
-            return;
-
-        firstTime = false;
+        std::shared_ptr<SvApp::InputManager::InputBindings> bindings = std::make_shared<SvApp::InputManager::InputBindings>();
 
         auto& k = bindings->m_keyCallbacks;
         k.emplace(InputManager::KeyboardKeyType{ EKey::W, EKeyState::PRESSED, EInputModifier() }, [](const char)
@@ -775,5 +766,7 @@ namespace ToRemove
             {
                 GameInfo::gameCamera.Get<Transform>()->setAll(INITIAL_CAM_POS, Quaternion::identity(), Vector3::one());
             });
+
+        return bindings;
     }
 }

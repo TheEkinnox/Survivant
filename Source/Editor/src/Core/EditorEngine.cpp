@@ -16,10 +16,13 @@ namespace SvEditor::Core
 	{
 		m_time.tick();
 
-		if (m_editorWorld)
-			m_editorWorld->Render();
-		//if (m_PIEWorld)
-		//	m_PIEWorld->Render();
+		m_editorWorld->m_renderingContext->UpdateCameraInput();
+
+		//if (m_editorWorld)
+		//	m_editorWorld->Render();
+
+		//if (!m_PIEWorld.expired())
+		//	m_PIEWorld.lock()->Render();
 	}
 
 	std::weak_ptr<GameInstance> EditorEngine::CreatePIEGameInstance()
@@ -53,16 +56,153 @@ namespace SvEditor::Core
 	{
 		auto pieWorld = Engine::CreateNewWorldContext(WorldContext::EWorldType::PIE);
 
-		pieWorld->m_lightsSSBO = ToRemove::SetupLightSSBO(*p_inScene);
 
 		pieWorld->m_owningGameInstance = p_context.m_owningGameInstance;
 		pieWorld->m_viewport = p_context.m_viewport; //TODO : setup viewport when dupliucating world
 		pieWorld->m_currentScene = p_inScene;
-		pieWorld->InitCamera();
-		pieWorld->SetSceneCamera();
+		pieWorld->SetSceneCamera(pieWorld->GetDefaultSceneCamera());
+		pieWorld->m_inputs = ToRemove::SetupGameInputs();
+		pieWorld->m_lightsSSBO = ToRemove::SetupLightSSBO(*p_inScene);
+
+		pieWorld->Render();
 		//pieWorld->m_persistentLevel = p_context.m_persistentLevel;
 
 		return pieWorld;
+	}
+
+	std::tuple<int, int> AddInputTranslate(char i)
+	{
+		return { i, 10 };
+	}
+
+	std::tuple<int, int> AddMouseTranslate(float i, float j)
+	{
+		return { (int)i, (int)j };
+	}
+
+	std::tuple<> SpaceTranslate(char /*c*/)
+	{
+		return { };
+	}
+
+	std::shared_ptr<EditorEngine::Inputs> EditorEngine::CreateEditorInputs()
+	{
+		using namespace SvCore;
+		using namespace SvApp;
+		using namespace Events;
+		using AddEvent = Events::Event<int, int>;
+		class ToggleEvent : public Events::Event<> {};
+
+		InputManager& im = InputManager::GetInstance();
+		std::shared_ptr<EditorEngine::Inputs> input = std::make_shared<EditorEngine::Inputs>();
+
+		auto& k = input->m_keyCallbacks;
+		auto& m = input->m_mouseKeyCallbacks;
+
+		EventManager& em = EventManager::GetInstance();
+		AddEvent::EventDelegate printAdd = [](int i, int j) { std::cout << "Add = " << i + j << std::endl; };
+		//ToggleEvent::EventDelegate toggle = std::bind(&SvApp::Window::ToggleFullScreenMode, &window);
+		em.AddListenner<AddEvent>(printAdd);
+		//em.AddListenner<ToggleEvent>(toggle);
+
+		//cant put MODS bsc of imgui
+		InputManager::KeyboardKeyType   a(EKey::A, EKeyState::RELEASED, EInputModifier());
+		InputManager::KeyboardKeyType   b(EKey::B, EKeyState::PRESSED, EInputModifier());
+		InputManager::MouseKeyType      mouse(EMouseButton::MOUSE_1, EMouseButtonState::PRESSED, EInputModifier());
+		InputManager::KeyboardKeyType   space(EKey::SPACE, EKeyState::PRESSED, EInputModifier());
+
+		auto test = [](char p_c) { return std::tuple<int, int>{ p_c, 10 }; };
+		//k.emplace(a, im.CreateInputEventBinding<AddEvent>(a, &AddInputTranslate));
+		//k.emplace(b, im.CreateInputEventBinding<AddEvent>(a, &AddInputTranslate));
+		k.emplace(space, im.CreateInputEventBinding<AddEvent>(space, &AddInputTranslate));
+		k.emplace(InputManager::KeyboardKeyType{ EKey::ESCAPE, EKeyState::PRESSED, EInputModifier() },
+			[this](char) { m_isRunning = false; });
+
+		m.emplace(mouse, im.CreateInputEventBinding<AddEvent>(mouse, &AddMouseTranslate));
+
+		//move camera in scene
+		k.emplace(InputManager::KeyboardKeyType{ EKey::W, EKeyState::PRESSED, EInputModifier() }, [this](const char)
+			{
+				m_editorWorld->m_renderingContext->CameraMoveInput().m_y += 1;
+			});
+
+		k.emplace(InputManager::KeyboardKeyType{ EKey::W, EKeyState::RELEASED, EInputModifier() }, [this](const char)
+			{
+				m_editorWorld->m_renderingContext->CameraMoveInput().m_y -= 1;
+			});
+
+		k.emplace(InputManager::KeyboardKeyType{ EKey::S, EKeyState::PRESSED, EInputModifier() }, [this](const char)
+			{
+				--m_editorWorld->m_renderingContext->CameraMoveInput().m_y;
+			});
+
+		k.emplace(InputManager::KeyboardKeyType{ EKey::S, EKeyState::RELEASED, EInputModifier() }, [this](const char)
+			{
+				++m_editorWorld->m_renderingContext->CameraMoveInput().m_y;
+			});
+
+		k.emplace(InputManager::KeyboardKeyType{ EKey::A, EKeyState::PRESSED, EInputModifier() }, [this](const char)
+			{
+				--m_editorWorld->m_renderingContext->CameraMoveInput().m_x;
+			});
+
+		k.emplace(InputManager::KeyboardKeyType{ EKey::A, EKeyState::RELEASED, EInputModifier() }, [this](const char)
+			{
+				++m_editorWorld->m_renderingContext->CameraMoveInput().m_x;
+			});
+
+		k.emplace(InputManager::KeyboardKeyType{ EKey::D, EKeyState::PRESSED, EInputModifier() }, [this](const char)
+			{
+				++m_editorWorld->m_renderingContext->CameraMoveInput().m_x;
+			});
+
+		k.emplace(InputManager::KeyboardKeyType{ EKey::D, EKeyState::RELEASED, EInputModifier() }, [this](const char)
+			{
+				--m_editorWorld->m_renderingContext->CameraMoveInput().m_x;
+			});
+
+		k.emplace(InputManager::KeyboardKeyType{ EKey::UP, EKeyState::PRESSED, EInputModifier() }, [this](const char)
+			{
+				++m_editorWorld->m_renderingContext->CameraRotateInput().m_y;
+			});
+
+		k.emplace(InputManager::KeyboardKeyType{ EKey::UP, EKeyState::RELEASED, EInputModifier() }, [this](const char)
+			{
+				--m_editorWorld->m_renderingContext->CameraRotateInput().m_y;
+			});
+
+		k.emplace(InputManager::KeyboardKeyType{ EKey::DOWN, EKeyState::PRESSED, EInputModifier() }, [this](const char)
+			{
+				--m_editorWorld->m_renderingContext->CameraRotateInput().m_y;
+			});
+
+		k.emplace(InputManager::KeyboardKeyType{ EKey::DOWN, EKeyState::RELEASED, EInputModifier() }, [this](const char)
+			{
+				++m_editorWorld->m_renderingContext->CameraRotateInput().m_y;
+			});
+
+		k.emplace(InputManager::KeyboardKeyType{ EKey::LEFT, EKeyState::PRESSED, EInputModifier() }, [this](const char)
+			{
+				--m_editorWorld->m_renderingContext->CameraRotateInput().m_x;
+			});
+
+		k.emplace(InputManager::KeyboardKeyType{ EKey::LEFT, EKeyState::RELEASED, EInputModifier() }, [this](const char)
+			{
+				++m_editorWorld->m_renderingContext->CameraRotateInput().m_x;
+			});
+
+		k.emplace(InputManager::KeyboardKeyType{ EKey::RIGHT, EKeyState::PRESSED, EInputModifier() }, [this](const char)
+			{
+				++m_editorWorld->m_renderingContext->CameraRotateInput().m_x;
+			});
+
+		k.emplace(InputManager::KeyboardKeyType{ EKey::RIGHT, EKeyState::RELEASED, EInputModifier() }, [this](const char)
+			{
+				--m_editorWorld->m_renderingContext->CameraRotateInput().m_x;
+			});
+
+
+		return input;
 	}
 
 	int EditorEngine::BrowseToDefaultScene(WorldContext& p_worldContext)
@@ -101,19 +241,20 @@ namespace SvEditor::Core
 		return &m_currentScene;
 	}
 
-	std::shared_ptr<WorldContext> EditorEngine::CreateEditorDefaultWorld()
+	std::shared_ptr<WorldContext> EditorEngine::CreateEditorDefaultWorld(std::shared_ptr<Scene> p_inScene)
 	{
-		//TODO: better default loadded world
-
 		auto world = CreateNewWorldContext(WorldContext::EWorldType::EDITOR);
-
 		world->m_owningGameInstance = nullptr;
-		world->m_viewport = Vector2::zero();
 
-		world->AddRenderPass(WorldContext::ERenderType::DEFAULT);
-		world->AddRenderPass(WorldContext::ERenderType::ID);
-		world->InitCamera();
+		world->m_lightsSSBO = ToRemove::SetupLightSSBO(*p_inScene);
+		world->m_viewport = { 800, 600 };
+		world->m_currentScene = p_inScene;
+		auto cam = Camera(perspectiveProjection(120_deg, 4.f / 3.f, .01f, 14.f));
+		cam.SetClearColor(Color::black);
+		world->SetOwningCamera(cam, Transform({ 0.f, 1.8f, 2.f }, Quaternion::identity(), Vector3::one()));
+		world->m_inputs = CreateEditorInputs();
 
+		world->Render();
 		//world->m_persistentLevel = nullptr;
 
 		return world;
@@ -150,14 +291,27 @@ namespace SvEditor::Core
 
 		//TODO: load all ressources here
 
+		//create scenes
+		auto defaultScene = m_allLevels.emplace("Defaut_Scene", ToRemove::TestCreateDefaultScene());
+		m_editorSelectedScene = defaultScene.first->second;
+
 		//create editor world world
-		m_editorWorld = CreateEditorDefaultWorld();
+		m_editorWorld = CreateEditorDefaultWorld(defaultScene.first->second);
+		m_editorWorld->SetInputs();
+	}
 
-		//create levels
-		m_allLevels.emplace("Defaut_Scene", ToRemove::TestCreateDefaultScene());
+	void EditorEngine::RenderWorlds()
+	{
+		if (m_editorWorld->m_isVisalbe)
+			m_editorWorld->Render();
 
-		//load default level
-		BrowseToDefaultScene(*m_editorWorld);
+		if (m_gameInstance && !m_PIEWorld.expired() && m_PIEWorld.lock()->m_isVisalbe)
+			m_PIEWorld.lock()->Render();
+	}
+
+	bool EditorEngine::IsRunning()
+	{
+		return m_isRunning;
 	}
 
 	void EditorEngine::SetupUI(Core::EditorWindow* p_window, const std::array<std::function<void()>, 3>p_playPauseFrameCallbacks)

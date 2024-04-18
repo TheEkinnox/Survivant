@@ -4,6 +4,10 @@
 
 #include "SurvivantApp/Core/GameInstance.h"
 #include "SurvivantApp/Core/IEngine.h"
+#include "SurvivantCore/ECS/EntityHandle.h"
+
+
+#include "Transform.h"
 
 
 
@@ -185,6 +189,9 @@ namespace SvApp::Core
 
     std::shared_ptr<WorldContext> Engine::CreateNewWorldContext(WorldContext::EWorldType p_worldType)
     {
+        using namespace LibMath;
+        using namespace SvCore::ECS;
+
         std::shared_ptr<WorldContext> wrdPtr = std::make_unique<WorldContext>();
         WorldContext& world = *wrdPtr;
         world.m_worldType = p_worldType;
@@ -194,14 +201,17 @@ namespace SvApp::Core
         case WorldContext::EWorldType::NONE:
             break;
         case WorldContext::EWorldType::PIE:
-            world.AddRenderPass(WorldContext::ERenderType::DEFAULT);
+            world.m_renderingContext = std::make_shared<RenderingContext>(EntityHandle());
+            world.m_renderingContext->AddRenderPass(RenderingContext::ERenderType::DEFAULT);
             break;
         case WorldContext::EWorldType::EDITOR:
-            world.AddRenderPass(WorldContext::ERenderType::DEFAULT);
-            world.AddRenderPass(WorldContext::ERenderType::ID);
+            world.m_renderingContext = std::make_shared<RenderingContext>(Camera(), Transform());
+            world.m_renderingContext->AddRenderPass(RenderingContext::ERenderType::DEFAULT);
+            world.m_renderingContext->AddRenderPass(RenderingContext::ERenderType::ID);
             break;
         case WorldContext::EWorldType::GAME:
-            world.AddRenderPass(WorldContext::ERenderType::DEFAULT);
+            world.m_renderingContext = std::make_shared<RenderingContext>(EntityHandle());
+            world.m_renderingContext->AddRenderPass(RenderingContext::ERenderType::DEFAULT);
             break;
         default:
             break;

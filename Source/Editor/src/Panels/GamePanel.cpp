@@ -21,8 +21,8 @@ namespace SvEditor::Panels
 		m_buttons.m_buttons.push_back(PanelButton(" Pause || ", s_pauseListenners));
 		m_buttons.m_buttons.push_back(PanelButton(" Frame -> ", s_frameListenners));
 
-		m_world = s_worldCreator({ 0,0 });
-		m_image.SetTexture(m_world->GetDefaultTextureId());
+		m_world = s_worldCreator({ 0, 0 });
+		m_image.SetTexture(m_world->m_renderingContext->GetDefaultTextureId());
 	}
 
 	GamePanel::~GamePanel()
@@ -39,26 +39,24 @@ namespace SvEditor::Panels
 		static intptr_t tmp = 1;
 		static ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoNavInputs;
 		bool showWindow = true;
+		ERenderFlags flags = ERenderFlags();
 
-		if (ImGui::Begin(m_name.c_str(), &showWindow, window_flags))
+		if (m_world->m_isVisalbe = ImGui::Begin(m_name.c_str(), &showWindow, window_flags))
 		{
 			//focus
 			auto val = IsGainedFocus(m_prevFocus);
 			if (val == 1)
-				m_world->m_onGainFocus.Invoke();
+				m_world->SetInputs();
 			else if (val == -1)
-				m_world->m_onLoseFocus.Invoke();
+				flags = ERenderFlags(flags | DefaultInputs);
 
-			m_world->Render();
+			//m_world->Render();
 
 			m_buttons.DisplayAndUpdatePanel();
 			m_image.DisplayAndUpdatePanel();
 		}
-
 		ImGui::End();
 
-
-		ERenderFlags flags = ERenderFlags();
 		if (!showWindow)
 			flags = ERenderFlags(flags | ERenderFlags::CLOSE);
 

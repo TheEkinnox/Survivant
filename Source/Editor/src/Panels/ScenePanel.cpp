@@ -17,7 +17,7 @@ namespace SvEditor::Panels
 	{
 		m_name = NAME;
 
-		m_image.SetTexture(s_world.lock()->GetDefaultTextureId());
+		m_image.SetTexture(s_world.lock()->m_renderingContext->GetDefaultTextureId());
 		m_buttons.m_buttons.push_back(PanelButton("Toogle Texture", [this]() { ToggleTexture(); }));
 	}
 
@@ -37,17 +37,17 @@ namespace SvEditor::Panels
 		static bool oldWindowSizeValue = false;
 		bool showWindow = true;
 
-		if (ImGui::Begin(m_name.c_str(), &showWindow, window_flags))
+		if (s_world.lock()->m_isVisalbe = ImGui::Begin(m_name.c_str(), &showWindow, window_flags))
 		{
 			//focus
-			auto val = IsGainedFocus(m_prevFocus);
-			if (val == 1)
-				s_world.lock()->m_onGainFocus.Invoke();
-			else if (val == -1)
-				s_world.lock()->m_onLoseFocus.Invoke();
+			//auto val = IsGainedFocus(m_prevFocus);
+			//if (val == 1)
+			//	s_world.lock()->m_onGainFocus.Invoke();
+			//else if (val == -1)
+			//	s_world.lock()->m_onLoseFocus.Invoke();
 
 			//render
-			s_world.lock()->Render();
+			//s_world.lock()->Render();
 
 			//panelables
 			m_buttons.DisplayAndUpdatePanel();
