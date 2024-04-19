@@ -7,7 +7,7 @@ namespace SvCore::Utility
      * \brief Gets the calling application's directory
      * \return The calling application's directory
      */
-    std::string GetApplicationDirectory();
+    const char* GetApplicationDirectory();
 
     /**
      * \brief Gets the current working directory
@@ -29,6 +29,13 @@ namespace SvCore::Utility
      * \return The concatenated paths
      */
     std::string AppendPath(const std::string& p_root, const std::string& p_path);
+
+    /**
+     * \brief Converts the given path to an absolute path
+     * \param p_path The path to convert to an absolute path
+     * \return The absolute path
+     */
+    std::string GetAbsolutePath(const std::string& p_path);
 
     /**
      * \brief Checks whether the given file path exists
