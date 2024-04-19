@@ -23,7 +23,7 @@ namespace SvCore::ECS
 
         TypeId m_typeId;
 
-        std::unique_ptr<IComponentStorage> (*MakeStorage)(Scene*);
+        std::shared_ptr<IComponentStorage> (*MakeStorage)(Scene*);
     };
 
 #ifdef SV_EDITOR

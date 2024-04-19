@@ -20,7 +20,7 @@ namespace SvCore::ECS
             .m_typeId = GetTypeId<T>(),
             .MakeStorage = [](Scene* p_scene)
             {
-                std::unique_ptr<IComponentStorage> storage = std::make_unique<ComponentStorage<T>>(p_scene);
+                std::shared_ptr<IComponentStorage> storage = std::make_shared<ComponentStorage<T>>(p_scene);
                 return storage;
             }
         };

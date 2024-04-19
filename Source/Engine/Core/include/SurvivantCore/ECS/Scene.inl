@@ -77,7 +77,7 @@ namespace SvCore::ECS
             if (it != m_components.end())
                 return reinterpret_cast<ComponentStorage<T>&>(*it->second);
 
-            auto& storage = *(m_components[typeId] = std::make_unique<ComponentStorage<T>>(this));
+            auto& storage = *(m_components[typeId] = std::make_shared<ComponentStorage<T>>(this));
             return reinterpret_cast<ComponentStorage<T>&>(storage);
         }
     }
@@ -97,7 +97,7 @@ namespace SvCore::ECS
             if (it != m_components.end())
                 return reinterpret_cast<const ComponentStorage<T>&>(*it->second);
 
-            const auto& storage = *(m_components[typeId] = std::make_unique<ComponentStorage<T>>(const_cast<Scene*>(this)));
+            const auto& storage = *(m_components[typeId] = std::make_shared<ComponentStorage<T>>(const_cast<Scene*>(this)));
             return reinterpret_cast<const ComponentStorage<T>&>(storage);
         }
     }

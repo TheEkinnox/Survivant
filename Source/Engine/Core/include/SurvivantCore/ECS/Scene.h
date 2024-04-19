@@ -248,7 +248,7 @@ namespace SvCore::ECS
 
     private:
         EntityStorage                                                          m_entities;
-        mutable std::unordered_map<TypeId, std::unique_ptr<IComponentStorage>> m_components;
+        mutable std::unordered_map<TypeId, std::shared_ptr<IComponentStorage>> m_components;
 
         /**
          * \brief Deserializes a component storage from json
