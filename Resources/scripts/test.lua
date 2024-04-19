@@ -1,46 +1,228 @@
 local Test = {
-    m_maxTick = 0
+    max_tick = 0,
+    test_bool = false
 }
 
-local testRequires = {
-    [1] = require("testRequired"),
-    [2] = require("scripts.testRequired"),
-    [3] = require("scripts/testRequired"),
-    [4] = require("assets.scripts.testRequired"),
-    [5] = require("assets.scripts/testRequired"),
-    [6] = require("assets/scripts.testRequired"),
-    [7] = require("assets/scripts/testRequired")
+local req = {
+    [1] = require("scripts.testRequired"),
+    [2] = require("scripts/testRequired"),
+    [3] = require("assets.scripts.testRequired"),
+    [4] = require("assets.scripts/testRequired"),
+    [5] = require("assets/scripts.testRequired"),
+    [6] = require("assets/scripts/testRequired")
 }
 
-local tickCount = 0
+local tick_count = 0
 local time = 0
 
-local function Round(p_value)
-    return p_value >= 0 and math.floor(p_value + 0.5) or math.ceil(p_value - 0.5)
+local function TestScene(scene)
+    local typeName = Scene.__type.name
+
+    assert(scene)
+    assert(type(scene) == "userdata", "Expected \"userdata\" - Received \"" .. type(scene) .. "\"")
+    assert(scene.__type.name == typeName, "Expected \"" .. typeName .. "\" - Received \"" .. scene.__type.name .. "\"")
+
+    local entity = scene:Create()
+
+    typeName = Entity.__type.name
+
+    assert(type(entity) == "userdata", "Expected \"userdata\" - Received \"" .. type(entity) .. "\"")
+    assert(entity.__type.name == typeName, "Expected \"" .. typeName .. "\" - Received \"" .. entity.__type.name .. "\"")
+    assert(scene:IsValid(entity))
+    assert(scene:Contains(entity))
+
+    local found = false
+
+    for _, sceneEntity in ipairs(scene.entities) do
+        found = found or sceneEntity == entity
+    end
+
+    assert(found)
+
+    local tag = entity:GetOrCreate("Tag")
+    tag.value = "Entity " .. entity
+
+    local copy = scene:Create(entity)
+
+    assert(copy)
+    assert(type(copy) == "userdata", "Expected \"userdata\" - Received \"" .. type(copy) .. "\"")
+    assert(copy.__type.name == typeName, "Expected \"" .. typeName .. "\" - Received \"" .. copy.__type.name .. "\"")
+    assert(copy.isValid)
+    assert(copy ~= entity)
+
+    assert(copy:Get("Tag").value == tag.value)
+
+    scene:Destroy(copy)
+
+    assert(copy)
+    assert(not copy.isValid)
+
+    scene:Destroy(entity)
+end
+
+local function TestComponents(entity)
+    assert(entity.componentCount == 1)
+
+    local componentType = "Transform"
+
+    assert(not entity:Has(componentType))
+    assert(not entity:Get(componentType).isValid)
+
+    local transform = entity:GetOrCreate(componentType)
+
+    assert(transform.isValid)
+    assert(transform.__type.name == Transform.__type.name)
+    assert(entity:Has(componentType))
+    assert(entity.componentCount == 2)
+
+    local get = entity:Get(componentType)
+    assert(get.isValid)
+    assert(get == transform)
+
+    local startPos = transform.position
+    local newPos = startPos + Vector3.new(1, 2, 3)
+
+    transform.position = newPos
+
+    assert(transform.position ~= startPos)
+    assert(transform.position == newPos)
+    assert(get.position == transform.position)
+end
+
+function Test.Ping()
+    return "pong"
+end
+
+local function TestScripts(entity)
+    assert(not entity:HasScript("scripts.test"))
+    assert(not entity:GetScript("scripts.test").isValid)
+
+    local script = entity:AddScript("scripts.test")
+
+    assert(script.isValid)
+    assert(script.owner == entity)
+    assert(entity:HasScript("scripts.test"))
+    assert(script.Ping() == "pong")
+
+    local invalid = entity:AddScript("scripts.test")
+    assert(not invalid.isValid)
+
+    local getTest = entity:GetScript("scripts.test")
+
+    assert(getTest.isValid)
+    assert(getTest == script)
+
+    assert(not script.test_bool)
+    assert(not getTest.test_bool)
+
+    getTest.test_bool = true
+
+    assert(getTest.test_bool)
+    assert(script.test_bool)
+
+    entity:RemoveScript("scripts.test")
+    assert(not script.isValid)
+end
+
+local function TestHierarchy(entity)
+    assert(not entity.parent.isValid)
+    assert(entity.root == entity)
+    assert(not entity.nextSibling.isValid)
+    assert(not entity.previousSibling.isValid)
+    assert(entity.childCount == 0)
+    assert(not entity:GetChild(5).isValid)
+    assert(#entity.children == 0)
+
+    local child1 = entity:Copy()
+    local child2 = entity:Copy()
+
+    child1.parent = entity
+
+    assert(child1.parent.isValid)
+    assert(child1.parent == entity)
+    assert(child1.root == entity)
+    assert(entity.childCount == 1)
+    assert(#entity.children == 1)
+    assert(entity:GetChild(0).isValid)
+    assert(entity:GetChild(0) == child1)
+
+    child2.parent = entity
+
+    assert(child1.previousSibling.isValid)
+    assert(child1.previousSibling == child2)
+    assert(not child1.nextSibling.isValid)
+
+    assert(child2.nextSibling.isValid)
+    assert(child2.nextSibling == child1)
+    assert(not child2.previousSibling.isValid)
+end
+
+local function TestECS(entity)
+    local typeName = Entity.__type.name
+
+    assert(type(entity) == "userdata", "Expected \"userdata\" - Received \"" .. type(entity) .. "\"")
+    assert(entity.__type.name == typeName, "Expected \"" .. typeName .. "\" - Received \"" .. entity.__type.name .. "\"")
+    assert(entity.isValid)
+
+    TestScene(entity.scene)
+
+    local copy = entity:Copy()
+
+    assert(copy)
+    assert(type(copy) == "userdata", "Expected \"userdata\" - Received \"" .. type(copy) .. "\"")
+    assert(copy.__type.name == typeName, "Expected \"" .. typeName .. "\" - Received \"" .. copy.__type.name .. "\"")
+    assert(copy.isValid)
+    assert(copy ~= entity)
+
+    TestComponents(copy)
+
+    TestScripts(copy)
+
+    TestHierarchy(copy)
+
+    copy:Destroy()
+
+    assert(copy)
+    assert(not copy.isValid)
 end
 
 function Test:OnInit()
-    tickCount = 0
-    self.m_maxTick = math.random(1, 100)
-    print("Entity " .. self.owner .. " now has " .. self.m_maxTick .. " frames to live. Enjoy!")
+    tick_count = 0
+
+    if not testCalled then
+        testCalled = true
+        TestECS(self.owner)
+        self.owner:AddScript("scripts.mathTest")
+    end
+
+    if self.max_tick ~= 0 then
+        print("Entity " .. self.owner .. " already has a lifespan of " .. self.max_tick .. " frames...")
+    else
+        self.max_tick = math.random(1, 100)
+        print("Entity " .. self.owner .. " now has " .. self.max_tick .. " frames to live. Enjoy!")
+    end
 end
 
 function Test:OnStart()
     print("Entity " .. self.owner .. ", reporting for duty!")
 end
 
-function Test:OnUpdate(p_deltaTime)
-    tickCount = tickCount + 1
-    time = time + p_deltaTime
+function Test:OnUpdate(deltaTime)
+    tick_count = tick_count + 1
+    time = time + deltaTime
 
-    if tickCount == self.m_maxTick then
-        local avgFrameTime = time / tickCount
-        print("It's entity " .. self.owner .. "'s last tick!!!" ..
-                "Average frame time: " .. avgFrameTime .. "s (" .. Round(1 / avgFrameTime) .. "fps)")
+    if tick_count == self.max_tick then
+        local avgFrameTime = time / tick_count
+        print("It's entity " .. self.owner .. "'s last tick!!! " ..
+                "Average frame time: " .. avgFrameTime .. "s (" .. math.round(1 / avgFrameTime) .. "fps)")
 
-        for i = 1, #testRequires do
-            print(testRequires[i]:SomeFunc() .. " | Passed instance count: " .. testRequires[i].m_instances)
+        for i = 1, #req do
+            print("[require " .. i .. "] " .. req[i]:SomeFunc() .. " | Passed instance count: " .. req[i].instances)
         end
+
+        self.owner:Destroy()
+    elseif tick_count == self.max_tick + 1 then
+        assert(false, "Not sur I want to give the user access to that...")
     end
 end
 
@@ -49,9 +231,9 @@ function Test:OnStop()
 end
 
 function Test:OnDestroy()
-    local avgFrameTime = time / tickCount
-    print("Destroyed test script of entity " .. self.owner .. " after " .. tickCount .. " ticks (" .. time .. "s) | " ..
-            "Average frame time: " .. avgFrameTime .. "s (" .. Round(1 / avgFrameTime) .. "fps)")
+    local avgFrameTime = time / tick_count
+    print("Destroyed test script of entity " .. self.owner .. " after " .. tick_count .. " ticks (" .. time .. "s) | " ..
+            "Average frame time: " .. avgFrameTime .. "s (" .. math.round(1 / avgFrameTime) .. "fps)")
 end
 
 return Test

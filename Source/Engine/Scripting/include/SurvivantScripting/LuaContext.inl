@@ -4,25 +4,25 @@
 namespace SvScripting
 {
     template <typename... Args>
-    bool LuaContext::TryCall(LuaScriptComponent& p_component, const std::string& p_name, Args&&... p_args)
+    ELuaCallResult LuaContext::TryCall(sol::table& p_table, const std::string& p_name, Args&&... p_args)
     {
-        if (!m_isValid || !p_component.m_table.valid())
-            return false;
+        if (!m_isValid || !p_table.valid())
+            return ELuaCallResult::INVALID_STATE;
 
-        sol::protected_function func = p_component.m_table[p_name];
+        sol::protected_function func = p_table[p_name];
 
         if (!func.valid())
-            return false;
+            return ELuaCallResult::NOT_FOUND;
 
-        const auto result = func.call(p_component.m_table, std::forward<Args>(p_args)...);
+        const auto result = func.call(p_table, std::forward<Args>(p_args)...);
 
         if (!result.valid())
         {
             [[maybe_unused]] const sol::error err = result;
-            return CHECK(false, "Call to function %s of script %s failed - %s",
-                    p_name.c_str(), p_component.m_script.GetPath().c_str(), err.what());
+            CHECK(false, "Call to lua script function %s failed - %s", p_name.c_str(), err.what());
+            return ELuaCallResult::FAILURE;
         }
 
-        return true;
+        return ELuaCallResult::SUCCESS;
     }
 }

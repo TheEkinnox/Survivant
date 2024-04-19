@@ -1,15 +1,53 @@
 #pragma once
-#include "SurvivantScripting/LuaScriptComponent.h"
+#include "SurvivantScripting/LuaScript.h"
 
 #include <SurvivantCore/ECS/EntityHandle.h>
+#include <SurvivantCore/Resources/ResourceRef.h>
+
+#include <cstdint>
 
 #include <sol/sol.hpp>
 
 namespace SvScripting
 {
+    enum class ELuaCallResult : uint8_t
+    {
+        INVALID_STATE,
+        NOT_FOUND,
+        SUCCESS,
+        FAILURE
+    };
+
     class LuaContext
     {
     public:
+        struct ScriptHandle
+        {
+            std::string                               m_name;
+            SvCore::Resources::ResourceRef<LuaScript> m_script;
+            SvCore::ECS::EntityHandle                 m_owner;
+            sol::table                                m_table = sol::nil;
+
+            /**
+             * \brief Checks whether this script handle should be ordered before the given one or not
+             * \param p_other The script handle to compare against
+             * \return True if this script handle should be ordered before the given one. False otherwise
+             */
+            bool operator<(const ScriptHandle& p_other) const;
+
+            /**
+             * \brief Checks whether the given script handle references the same script as this one or not
+             * \param p_other The script handle to compare against
+             * \return True if the given script handle references the same script as this one. False otherwise
+             */
+            bool operator==(const ScriptHandle& p_other) const;
+
+            /**
+             * \brief Checks whether the script handle is valid or not
+             */
+            operator bool() const;
+        };
+
         /**
          * \brief Creates a lua context
          */
@@ -44,8 +82,8 @@ namespace SvScripting
         LuaContext& operator=(LuaContext&& p_other) noexcept = default;
 
         /**
-         * \brief Gets the lua context instance
-         * \return The lua context instance
+         * \brief Gets the current lua context instance
+         * \return The current lua context instance
          */
         static LuaContext& GetInstance();
 
@@ -67,36 +105,45 @@ namespace SvScripting
 
         /**
          * \brief Registers the given script to the lua context
-         * \param p_entity The registered script's owner
-         * \param p_script The script to register to the context
+         * \param p_handle The script to register to the context
          * \return True on success. False otherwise
          */
-        bool RegisterScript(const SvCore::ECS::EntityHandle& p_entity, LuaScriptComponent& p_script);
+        bool RegisterScript(ScriptHandle& p_handle);
 
         /**
          * \brief Adds the given script to the lua context
-         * \param p_entity The added script's owner
          * \param p_script The script to add to the context
-         * \return True on success. False otherwise
+         * \param p_owner The added script's owner
+         * \param p_hint The added script's base table
+         * \return A handle to the added script on success. An empty handle otherwise
          */
-        bool AddScript(const SvCore::ECS::EntityHandle& p_entity, LuaScriptComponent& p_script);
+        ScriptHandle AddScript(const std::string& p_script, const SvCore::ECS::EntityHandle& p_owner, const sol::table& p_hint);
 
         /**
-         * \brief Adds the given script to the lua context
-         * \param p_entity The removed script's owner
+         * \brief Gets a handle to the given script owned by the given entity
+         * \param p_script The script to get a handle for
+         * \param p_owner The script's owner
+         * \return A handle to the found script. An empty handle if the script wasn't found
          */
-        void RemoveScript(SvCore::ECS::EntityHandle& p_entity);
+        ScriptHandle GetScript(const std::string& p_script, const SvCore::ECS::EntityHandle& p_owner) const;
 
         /**
-         * \brief Calls the function with the given name and parameters on the given script
+         * \brief Removes the given script from the lua context
+         * \param p_script The script to remove
+         * \param p_owner The removed script's owner
+         */
+        void RemoveScript(const std::string& p_script, SvCore::ECS::EntityHandle& p_owner);
+
+        /**
+         * \brief Calls the function with the given name and parameters on the given lua object
          * \tparam Args The function parameter types
-         * \param p_component The script on which the function should be called
+         * \param p_table The lua object on which the function should be called
          * \param p_name The function's name
          * \param p_args The function's parameters
-         * \return True if the function could be called. False otherwise
+         * \return The lua call result
          */
         template <typename... Args>
-        bool TryCall(LuaScriptComponent& p_component, const std::string& p_name, Args&&... p_args);
+        ELuaCallResult TryCall(sol::table& p_table, const std::string& p_name, Args&&... p_args);
 
         /**
          * \brief Initializes and starts all the registered scripts
@@ -114,8 +161,31 @@ namespace SvScripting
          */
         void Stop();
 
+        /**
+         * \brief Gets the current native lua state
+         * \return The current native lua state
+         */
+        lua_State* GetLuaState() const;
+
+        /**
+         * \brief Gets the given module's name
+         * \param p_module The target module
+         * \return The module's name
+         */
+        static const std::string& GetModuleName(std::string p_module);
+
+        /**
+         * \brief Gets the given module's path
+         * \param p_module The target module
+         * \return The module's path
+         */
+        static const std::string& GetModulePath(std::string p_module);
+
     private:
-        using ScriptHandle = std::pair<LuaScript::OrderT, SvCore::ECS::EntityHandle>;
+        static constexpr const char* EXTENSIONS[] = { ".lua", ".lc" };
+
+        inline static std::unordered_map<std::string, std::string> s_moduleNames;
+        inline static std::unordered_map<std::string, std::string> s_modulePaths;
 
         std::unique_ptr<sol::state> m_state;
         std::vector<ScriptHandle>   m_scripts;
@@ -124,10 +194,16 @@ namespace SvScripting
 
         /**
          * \brief Loads a module from the given lua state
-         * \param p_state The calling lua state
+         * \param p_luaState The calling lua state
          * \return The number of elements left in the stack
          */
-        static int LoadModule(lua_State* p_state);
+        static int LoadModule(lua_State* p_luaState);
+
+        /**
+         * \brief Binds the necessary custom types
+         * \param p_luaState The lua state to bind to
+         */
+        static void BindUserTypes(sol::state& p_luaState);
     };
 }
 

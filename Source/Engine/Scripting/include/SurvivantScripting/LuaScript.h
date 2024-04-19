@@ -3,7 +3,7 @@
 
 namespace SvScripting
 {
-    class LuaScript : public SvCore::Resources::IResource
+    class LuaScript final : public SvCore::Resources::IResource
     {
         REGISTERED_RESOURCE_BODY()
 

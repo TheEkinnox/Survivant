@@ -1,7 +1,10 @@
 #pragma once
 #include "SurvivantCore/ECS/Entity.h"
-#include "SurvivantCore/Utility/DynamicTypeInfo.h"
 #include "SurvivantCore/Utility/TypeRegistry.h"
+
+#ifdef SV_EDITOR
+#include "SurvivantCore/Utility/DynamicTypeInfo.h"
+#endif
 
 #include <cstdint>
 #include <memory>

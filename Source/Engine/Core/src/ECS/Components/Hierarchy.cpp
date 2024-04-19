@@ -92,26 +92,26 @@ namespace SvCore::ECS
     }
 
     template <>
-    void ComponentTraits::OnAdd<HierarchyComponent>(EntityHandle& p_owner, HierarchyComponent& p_hierarchy)
+    void ComponentTraits::OnAdd(EntityHandle& p_entity, HierarchyComponent& p_component)
     {
-        ASSERT(p_hierarchy.m_firstChild == NULL_ENTITY, "Adding a pre-existing hierarchy is not supported");
-        ASSERT(p_hierarchy.m_previousSibling == NULL_ENTITY, "Adding a pre-existing hierarchy is not supported");
-        ASSERT(p_hierarchy.m_nextSibling == NULL_ENTITY, "Adding a pre-existing hierarchy is not supported");
-        ASSERT(p_hierarchy.m_childCount == 0, "Adding a pre-existing hierarchy is not supported");
+        ASSERT(p_component.m_firstChild == NULL_ENTITY, "Adding a pre-existing hierarchy is not supported");
+        ASSERT(p_component.m_previousSibling == NULL_ENTITY, "Adding a pre-existing hierarchy is not supported");
+        ASSERT(p_component.m_nextSibling == NULL_ENTITY, "Adding a pre-existing hierarchy is not supported");
+        ASSERT(p_component.m_childCount == 0, "Adding a pre-existing hierarchy is not supported");
 
-        OnChange(p_owner, p_hierarchy);
+        OnChange(p_entity, p_component);
     }
 
     template <>
-    void ComponentTraits::OnRemove<HierarchyComponent>(EntityHandle& p_entity, HierarchyComponent& p_hierarchy)
+    void ComponentTraits::OnRemove(EntityHandle& p_entity, HierarchyComponent& p_component)
     {
-        OnBeforeChange(p_entity, p_hierarchy);
+        OnBeforeChange(p_entity, p_component);
 
-        EntityHandle child(p_entity.GetScene(), p_hierarchy.m_firstChild);
+        EntityHandle child(p_entity.GetScene(), p_component.m_firstChild);
 
-        p_hierarchy.m_parent          = NULL_ENTITY;
-        p_hierarchy.m_nextSibling     = NULL_ENTITY;
-        p_hierarchy.m_previousSibling = NULL_ENTITY;
+        p_component.m_parent          = NULL_ENTITY;
+        p_component.m_nextSibling     = NULL_ENTITY;
+        p_component.m_previousSibling = NULL_ENTITY;
 
         while (child)
         {
@@ -120,19 +120,19 @@ namespace SvCore::ECS
             child = nextChild;
         }
 
-        p_hierarchy.m_childCount = 0;
+        p_component.m_childCount = 0;
         UnlinkTransforms(p_entity);
     }
 
     template <>
-    void ComponentTraits::OnBeforeChange<HierarchyComponent>(EntityHandle& p_entity, HierarchyComponent& p_hierarchy)
+    void ComponentTraits::OnBeforeChange(EntityHandle& p_entity, HierarchyComponent& p_component)
     {
         Scene* scene = p_entity.GetScene();
         ASSERT(scene);
 
-        EntityHandle parent(scene, p_hierarchy.m_parent);
-        EntityHandle nextSibling(scene, p_hierarchy.m_nextSibling);
-        EntityHandle prevSibling(scene, p_hierarchy.m_previousSibling);
+        EntityHandle parent(scene, p_component.m_parent);
+        EntityHandle nextSibling(scene, p_component.m_nextSibling);
+        EntityHandle prevSibling(scene, p_component.m_previousSibling);
 
         if (HierarchyComponent* parentHierarchy = parent.Get<HierarchyComponent>())
         {
@@ -148,20 +148,20 @@ namespace SvCore::ECS
         if (HierarchyComponent* nextHierarchy = nextSibling.Get<HierarchyComponent>())
             nextHierarchy->m_previousSibling = prevSibling;
 
-        p_hierarchy.m_parent          = NULL_ENTITY;
-        p_hierarchy.m_nextSibling     = NULL_ENTITY;
-        p_hierarchy.m_previousSibling = NULL_ENTITY;
+        p_component.m_parent          = NULL_ENTITY;
+        p_component.m_nextSibling     = NULL_ENTITY;
+        p_component.m_previousSibling = NULL_ENTITY;
     }
 
     template <>
-    void ComponentTraits::OnChange<HierarchyComponent>(EntityHandle& p_entity, HierarchyComponent& p_hierarchy)
+    void ComponentTraits::OnChange(EntityHandle& p_entity, HierarchyComponent& p_component)
     {
         Scene* scene = p_entity.GetScene();
         ASSERT(scene);
 
-        EntityHandle parent(scene, p_hierarchy.m_parent);
+        EntityHandle parent(scene, p_component.m_parent);
 
-        if (EntityHandle firstChild(scene, p_hierarchy.m_firstChild); firstChild && !firstChild.Has<HierarchyComponent>())
+        if (EntityHandle firstChild(scene, p_component.m_firstChild); firstChild && !firstChild.Has<HierarchyComponent>())
             firstChild.Make<HierarchyComponent>(p_entity);
 
         if (!parent)
@@ -169,7 +169,7 @@ namespace SvCore::ECS
 
         if (HierarchyComponent* parentHierarchy = parent.Get<HierarchyComponent>())
         {
-            EntityHandle nextSibling(scene, p_hierarchy.m_nextSibling = parentHierarchy->m_firstChild);
+            EntityHandle nextSibling(scene, p_component.m_nextSibling = parentHierarchy->m_firstChild);
 
             if (nextSibling)
                 nextSibling.Get<HierarchyComponent>()->m_previousSibling = p_entity;

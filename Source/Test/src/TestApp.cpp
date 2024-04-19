@@ -1,5 +1,7 @@
 #include "SurvivantTest/TestApp.h"
 
+#include "SurvivantScripting/LuaScriptList.h"
+
 #include "SurvivantTest/RotatorComponent.h"
 #include "SurvivantTest/SceneTest.h"
 #include "SurvivantTest/TemporaryComponent.h"
@@ -204,7 +206,8 @@ namespace SvTest
 
     void TestApp::MakeScene()
     {
-        LuaContext::GetInstance().Stop();
+        LuaContext& luaContext = LuaContext::GetInstance();
+        luaContext.Stop();
         m_scene.Clear();
 
         EntityHandle camEntity = m_scene.Create();
@@ -298,9 +301,14 @@ namespace SvTest
         UpdateLightSSBO();
 
         for (size_t i = 0; i < TEST_SCRIPTS_COUNT; ++i)
-            m_scene.Create().Make<LuaScriptComponent>(ResourceRef<LuaScript>("scripts/test.lua"));
+        {
+            LuaScriptList& scripts = m_scene.Create().Make<LuaScriptList>();
+            scripts.Add("scripts/test.lua");
 
-        LuaContext::GetInstance().Start();
+            ASSERT(luaContext.IsValid());
+        }
+
+        luaContext.Start();
     }
 
     void TestApp::UpdateLightSSBO() const
