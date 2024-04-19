@@ -13,16 +13,16 @@ namespace SvCore::Utility
 
     template <class TypeInfo>
     template <typename T>
-    void TypeRegistry<TypeInfo>::RegisterType(const std::string& p_name, const TypeInfo& p_info)
+    TypeInfo& TypeRegistry<TypeInfo>::RegisterType(const std::string& p_name, const TypeInfo& p_info)
     {
         ASSERT(!m_typeIds.contains(p_name), "Type name \"%s\" has already been registered", p_name.c_str());
 
         TypeId id = GetTypeId<T>();
         ASSERT(!m_typeInfos.contains(id), "Type %llu (\"%s\") has already been registered", id, typeid(T).name());
 
-        m_typeInfos[id]   = p_info;
         m_typeNames[id]   = p_name;
         m_typeIds[p_name] = id;
+        return (m_typeInfos[id] = p_info);
     }
 
     template <class TypeInfo>

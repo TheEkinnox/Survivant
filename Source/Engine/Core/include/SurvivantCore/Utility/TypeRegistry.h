@@ -61,7 +61,7 @@ namespace SvCore::Utility
          * \param p_info The registered type's info
          */
         template <typename T>
-        void RegisterType(const std::string& p_name, const TypeInfo& p_info);
+        TypeInfo& RegisterType(const std::string& p_name, const TypeInfo& p_info);
 
         /**
          * \brief Checks whether the given type has been registered or not
