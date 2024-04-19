@@ -58,3 +58,15 @@
 
 #endif // _DEBUG || SV_VERBOSE_LOG
 #endif // !ASSUME
+
+#ifndef ASSUME_FALSE
+#if defined(_DEBUG) || defined(PTH_VERBOSE_LOG)
+
+#define ASSUME_FALSE(condition, ...) !CHECK(!(condition) __VA_OPT__(,) __VA_ARGS__)
+
+#else
+
+#define ASSUME_FALSE(condition, ...) false
+
+#endif // _DEBUG || PTH_VERBOSE_LOG
+#endif // !ASSUME_FALSE
