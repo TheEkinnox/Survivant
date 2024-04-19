@@ -96,11 +96,23 @@ TEST_CASE("Quaternion", "[.all][quaternion]")
 
         // from-to
         LibMath::Quaternion fromTo = LibMath::Quaternion::fromTo(LibMath::Vector3::front(), LibMath::Vector3::right());
-        glm::quat           fromToGlm = glm::angleAxis(glm::radians(90.f), glm::vec3{ 0, -1, 0 });
+        glm::quat           fromToGlm = glm::angleAxis(glm::radians(90.f), glm::vec3{ 0, 1, 0 });
         CHECK_QUATERNION(fromTo, fromToGlm);
+
+        {
+            LibMath::Vector3 tmp = LibMath::Vector3::front();
+            tmp.rotate(fromTo);
+            CHECK(tmp == LibMath::Vector3::right());
+        }
 
         LibMath::Quaternion fromToParallel = LibMath::Quaternion::fromTo(LibMath::Vector3::front(), LibMath::Vector3::front());
         CHECK(fromToParallel == LibMath::Quaternion::identity());
+
+        {
+            LibMath::Vector3 tmp = LibMath::Vector3::front();
+            tmp.rotate(fromToParallel);
+            CHECK(tmp == LibMath::Vector3::front());
+        }
 
         LibMath::Quaternion fromToOpposite = LibMath::Quaternion::fromTo(LibMath::Vector3::front(), LibMath::Vector3::back());
         LibMath::Vector3    fromToOppositeVec{ fromToOpposite.m_x, fromToOpposite.m_y, fromToOpposite.m_z };
@@ -108,6 +120,12 @@ TEST_CASE("Quaternion", "[.all][quaternion]")
         CHECK(fromToOppositeVec != LibMath::Vector3::front());
         CHECK(fromToOppositeVec != LibMath::Vector3::back());
         CHECK(fromToOppositeVec != LibMath::Vector3::zero());
+
+        {
+            LibMath::Vector3 tmp = LibMath::Vector3::front();
+            tmp.rotate(fromToOpposite);
+            CHECK(tmp == LibMath::Vector3::back());
+        }
 
         // yaw-pitch-roll
         LibMath::TVector3<LibMath::Radian> angles(90_deg, 75_deg, 30_deg);
