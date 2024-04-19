@@ -41,4 +41,9 @@ namespace SvCore::ECS
     {
         return (p_index & INDEX_MASK) | ((p_version & VERSION_MASK) << INDEX_BITS);
     }
+
+    inline std::ostream& operator<<(std::ostream& p_stream, const Entity& p_entity)
+    {
+        return p_stream << p_entity.GetIndex() << ':' << p_entity.GetVersion();
+    }
 }

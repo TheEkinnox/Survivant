@@ -1,6 +1,7 @@
 #pragma once
 #include <climits>
 #include <cstdint>
+#include <ostream>
 
 namespace SvCore::ECS
 {
@@ -67,6 +68,14 @@ namespace SvCore::ECS
          */
         static constexpr Id Make(Id p_index, Id p_version);
     };
+
+    /**
+     * \brief Adds an entity's string representation to the given output stream
+     * \param p_stream The output stream
+     * \param p_entity The output entity
+     * \return The modified stream
+     */
+    std::ostream& operator<<(std::ostream& p_stream, const Entity& p_entity);
 }
 
 #include "SurvivantCore/ECS/Entity.inl"
