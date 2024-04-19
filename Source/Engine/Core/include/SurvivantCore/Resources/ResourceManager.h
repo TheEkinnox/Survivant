@@ -163,6 +163,13 @@ namespace SvCore::Resources
          */
         std::string GetFullPath(const std::string& p_path) const;
 
+        /**
+         * \brief Gets the relative path of a resource from its full path
+         * \param p_path The resource's full path
+         * \return The resource's relative path
+         */
+        std::string GetRelativePath(std::string p_path) const;
+
     private:
         ResourceMap m_resources;
 

@@ -174,6 +174,31 @@ namespace SvCore::Resources
         return p_path;
     }
 
+    std::string ResourceManager::GetRelativePath(std::string p_path) const
+    {
+        if (p_path.empty())
+            return {};
+
+        p_path = Utility::GetAbsolutePath(GetFullPath(p_path));
+
+        size_t bestMatch = 0;
+
+        const char* appDir = Utility::GetApplicationDirectory();
+
+        if (p_path.starts_with(appDir))
+            bestMatch = strlen(appDir);
+
+        for (const auto& searchPath : m_searchPaths)
+        {
+            const std::string absSearchPath = Utility::GetAbsolutePath(searchPath);
+
+            if (absSearchPath.size() > bestMatch && p_path.starts_with(absSearchPath))
+                bestMatch = absSearchPath.size() + 1;
+        }
+
+        return p_path.substr(bestMatch);
+    }
+
     bool ResourceManager::LoadResource(IResource* p_resource, const std::string& p_path) const
     {
         return p_resource->Load(GetFullPath(p_path)) && p_resource->Init();
