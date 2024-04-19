@@ -128,8 +128,8 @@ namespace SvCore::ECS
 
     EntityHandle EntityHandle::Copy() const
     {
-        if (*this)
-            return *this;
+        if (!*this)
+            return {};
 
         return m_scene->Create(m_entity);
     }
