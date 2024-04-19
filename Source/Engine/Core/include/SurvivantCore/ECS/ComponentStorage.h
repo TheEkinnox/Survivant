@@ -56,6 +56,13 @@ namespace SvCore::ECS
         virtual bool Contains(Entity p_entity) const = 0;
 
         /**
+         * \brief Finds or assigns a default component instance to the given entity
+         * \param p_owner The component's owner
+         * \return True on success. False otherwise
+         */
+        virtual void* GetOrCreateRaw(Entity p_owner) = 0;
+
+        /**
          * \brief Finds the component owned by the given entity
          * \param p_owner The searched component's owner
          * \return A pointer to the found component on success. Nullptr otherwise
@@ -240,6 +247,13 @@ namespace SvCore::ECS
          * \return True if the entity owns a component of in the storage. False otherwise
          */
         bool Has(Entity p_owner) const;
+
+        /**
+         * \brief Finds or assigns a default component instance to the given entity
+         * \param p_owner The component's owner
+         * \return True on success. False otherwise
+         */
+        void* GetOrCreateRaw(Entity p_owner) override;
 
         /**
          * \brief Finds the component owned by the given entity

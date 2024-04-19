@@ -164,6 +164,13 @@ namespace SvCore::ECS
     }
 
     template <class T>
+    void* ComponentStorage<T>::GetOrCreateRaw(const Entity p_owner)
+    {
+        void* out = FindRaw(p_owner);
+        return out ? out : (void*)&Construct(p_owner);
+    }
+
+    template <class T>
     void* ComponentStorage<T>::FindRaw(const Entity p_owner)
     {
         return (void*)Find(p_owner);
