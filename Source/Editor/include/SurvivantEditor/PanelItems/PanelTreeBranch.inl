@@ -193,11 +193,11 @@ namespace SvEditor::PanelItems
     template <typename T>
     inline bool PanelTreeBranch<T>::InvokeOpen()
     {
-        if (IsBranch() && s_branchesOnOpenCallback)
-            return s_branchesOnOpenCallback(*this);
+        if (IsBranch() && s_branchesOnOpen)
+            return s_branchesOnOpen(*this);
 
-        else if (s_leavesOnOpenCallback)
-            return s_leavesOnOpenCallback(*this);
+        else if (s_leavesOnOpen)
+            return s_leavesOnOpen(*this);
 
         return false;
     }
@@ -205,8 +205,11 @@ namespace SvEditor::PanelItems
     template<typename T>
     inline bool PanelTreeBranch<T>::InvokeSelected()
     {
-        if (s_allOnSelectedCallback)
-            s_allOnSelectedCallback(*this);
+        if (IsBranch() && s_branchesOnSelect)
+            return s_branchesOnSelect(*this);
+
+        else if (s_leavesOnSelect)
+            return s_leavesOnSelect(*this);
 
         return false;
     }
@@ -261,14 +264,19 @@ namespace SvEditor::PanelItems
         bool open = ImGui::TreeNodeEx(m_name.c_str(), flags);
         DisplayAndUpdatePopupMenu();
 
-        if (ImGui::GetMouseClickedCount(0) == 1 && ImGui::IsItemHovered())
+        auto hov = ImGui::IsItemHovered();
+        auto cliks = ImGui::GetMouseClickedCount(0);
+
+        if (hov && cliks == 1)
         {
             SV_CURRENT_UI()->SetSelected(this);
             m_isSelected = true;
 
-            if (s_allOnSelectedCallback)
-                s_allOnSelectedCallback(*this);
+            InvokeSelected();
         }
+
+        if (hov && cliks == 2)
+            InvokeOpen();
 
         if (open)
         {

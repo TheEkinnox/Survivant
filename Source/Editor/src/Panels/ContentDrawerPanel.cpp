@@ -20,11 +20,11 @@ namespace SvEditor::Panels
         SetupTree();
 
         // setup folder callbacks
-        ResourceBranch::s_branchesOnOpenCallback =
+        ResourceBranch::s_branchesOnSelect =
             std::bind(&ContentDrawerPanel::SetGridDisplay, this, std::placeholders::_1);
 
         // setup file callback
-        ResourceBranch::s_leavesOnOpenCallback =
+        ResourceBranch::s_leavesOnOpen =
             std::bind(&ContentDrawerPanel::TryOpenFile, this, std::placeholders::_1);
 
         m_tree->SetAllPriority(&ResourceBranch::HasChildreenPriority);

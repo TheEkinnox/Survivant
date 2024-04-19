@@ -51,7 +51,8 @@ namespace SvEditor::PanelItems
             item->DisplayAndUpdatePopupMenu();
 
             ImGui::SetCursorPos(cursorBefore);
-            isBreak = DisplaySelectable(item, doubleClicked);
+            DisplaySelectable(item);
+            isBreak = doubleClicked ? item->InvokeOpen() : false;
 
             ImGui::EndChild();
 
@@ -99,7 +100,7 @@ namespace SvEditor::PanelItems
         ImGui::PopTextWrapPos();
     }
 
-    bool PanelSelectionBox::DisplaySelectable(ISelectable* p_item, bool p_doubleClicked)
+    void PanelSelectionBox::DisplaySelectable(ISelectable* p_item)
     {
         static auto font = SV_CURRENT_UI()->GetIconFont();
         auto cursorPos = ImGui::GetCursorPos();
@@ -125,10 +126,5 @@ namespace SvEditor::PanelItems
         ImGui::PushTextWrapPos(m_width - 4);
         ImGui::TextWrapped(p_item->GetName().c_str());
         ImGui::PopTextWrapPos();
-
-        if (p_doubleClicked)
-            return p_item->InvokeOpen();
-
-        return false;
     }
 }

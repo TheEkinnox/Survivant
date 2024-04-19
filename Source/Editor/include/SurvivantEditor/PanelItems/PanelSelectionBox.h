@@ -29,7 +29,7 @@ namespace SvEditor::PanelItems
 
 		static void DisplayCenteredText(const std::string& p_text, float p_maxWidth);
 	private:
-		bool DisplaySelectable(ISelectable* p_item, bool p_doubleClicked);
+		void DisplaySelectable(ISelectable* p_item);
 
 		SelectableMap				m_elements;
 		std::set<ISelectable*>	m_currentSelection;
