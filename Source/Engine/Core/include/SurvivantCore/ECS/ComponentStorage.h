@@ -105,7 +105,7 @@ namespace SvCore::ECS
          * \brief Gets the current number of entities
          * \return The current number of entities
          */
-        virtual Entity::Id GetCount() const = 0;
+        virtual Entity::Id size() const = 0;
 
         /**
          * \brief Serializes the component storage to json
@@ -239,7 +239,7 @@ namespace SvCore::ECS
          * \brief Gets the current number of entities
          * \return The current number of entities
          */
-        Entity::Id GetCount() const override;
+        Entity::Id size() const override;
 
         /**
          * \brief Checks if the given entity owns a component in the storage

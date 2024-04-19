@@ -71,17 +71,17 @@ namespace SvTest
             CHECK(i == 4, "Setting a component for an existing entity should have updated it's value");
         }
 
-        CHECK(scene.GetStorage<Entity>().GetCount() == 5);
-        CHECK(scene.GetStorage<int>().GetCount() == 5);
+        CHECK(scene.GetStorage<Entity>().size() == 5);
+        CHECK(scene.GetStorage<int>().size() == 5);
 
         scene.Remove<const int>(Entity(1));
-        CHECK(scene.GetStorage<int>().GetCount() == 4);
+        CHECK(scene.GetStorage<int>().size() == 4);
 
         scene.Remove<int>(*scene.Get<int>(lastEntity));
-        CHECK(scene.GetStorage<int>().GetCount() == 3);
+        CHECK(scene.GetStorage<int>().size() == 3);
 
         scene.Remove<int>(lastEntity);
-        CHECK(scene.GetStorage<int>().GetCount() == 3);
+        CHECK(scene.GetStorage<int>().size() == 3);
 
         SceneView<int, char, float> view(scene);
 
@@ -89,9 +89,9 @@ namespace SvTest
         lastEntity.Set<char>('j');
         lastEntity.Set<float>(2.5f);
 
-        CHECK(scene.GetStorage<int>().GetCount() == 4);
-        CHECK(scene.GetStorage<float>().GetCount() == 1);
-        CHECK(scene.GetStorage<char>().GetCount() == 1);
+        CHECK(scene.GetStorage<int>().size() == 4);
+        CHECK(scene.GetStorage<float>().size() == 1);
+        CHECK(scene.GetStorage<char>().size() == 1);
 
         const char c1       = *view.Get<char>(lastEntity);
         auto       [i1, f1] = view.Get<int, float>(lastEntity);
@@ -129,10 +129,10 @@ namespace SvTest
 
         lastEntity.Destroy();
 
-        CHECK(scene.GetStorage<Entity>().GetCount() == 4);
-        CHECK(scene.GetStorage<int>().GetCount() == 3);
-        CHECK(scene.GetStorage<float>().GetCount() == 0);
-        CHECK(scene.GetStorage<char>().GetCount() == 0);
+        CHECK(scene.GetStorage<Entity>().size() == 4);
+        CHECK(scene.GetStorage<int>().size() == 3);
+        CHECK(scene.GetStorage<float>().size() == 0);
+        CHECK(scene.GetStorage<char>().size() == 0);
 
         auto [iDestroyed, cDestroyed, fDestroyed] = view.Get(lastEntity);
 
@@ -145,10 +145,10 @@ namespace SvTest
 
         lastEntity = scene.Create();
 
-        CHECK(scene.GetStorage<Entity>().GetCount() == 5);
-        CHECK(scene.GetStorage<int>().GetCount() == 3);
-        CHECK(scene.GetStorage<float>().GetCount() == 0);
-        CHECK(scene.GetStorage<char>().GetCount() == 0);
+        CHECK(scene.GetStorage<Entity>().size() == 5);
+        CHECK(scene.GetStorage<int>().size() == 3);
+        CHECK(scene.GetStorage<float>().size() == 0);
+        CHECK(scene.GetStorage<char>().size() == 0);
 
         for ([[maybe_unused]] const auto _ : view)
             CHECK(false, "The only releveant entity should have been destroyed");

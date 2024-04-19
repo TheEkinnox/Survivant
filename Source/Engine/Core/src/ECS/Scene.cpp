@@ -42,7 +42,7 @@ namespace SvCore::ECS
         p_writer.StartObject();
 
         p_writer.Key("entities");
-        p_writer.Uint64(m_entities.GetCount());
+        p_writer.Uint64(m_entities.size());
 
         p_writer.Key("components");
         p_writer.StartArray();
@@ -55,7 +55,7 @@ namespace SvCore::ECS
 
         for (const auto& [typeId, storage] : m_components)
         {
-            if (!storage || storage->GetCount() == 0)
+            if (!storage || storage->size() == 0)
                 continue;
 
             p_writer.StartObject();

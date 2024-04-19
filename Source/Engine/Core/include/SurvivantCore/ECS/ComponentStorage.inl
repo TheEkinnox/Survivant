@@ -159,7 +159,7 @@ namespace SvCore::ECS
     }
 
     template <class T>
-    Entity::Id ComponentStorage<T>::GetCount() const
+    Entity::Id ComponentStorage<T>::size() const
     {
         return static_cast<Entity::Id>(m_components.size());
     }

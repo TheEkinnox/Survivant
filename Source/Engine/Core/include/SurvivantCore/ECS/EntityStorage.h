@@ -111,7 +111,7 @@ namespace SvCore::ECS
          * \brief Gets the current number of entities
          * \return The current number of entities
          */
-        Entity::Id GetCount() const;
+        Entity::Id size() const;
 
     private:
         std::vector<Entity> m_entities;
