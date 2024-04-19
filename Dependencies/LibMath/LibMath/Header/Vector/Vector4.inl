@@ -394,13 +394,13 @@ namespace LibMath
     template <class T>
     void TVector4<T>::scale(const TVector3<T>& other)
     {
-        *this *= other;
+        *this *= TVector4(other, 1.f);
     }
 
     template <class T>
     void TVector4<T>::translate(const TVector3<T>& other)
     {
-        *this += other;
+        *this += TVector4(other, 0.f);
     }
 
     template <class T>
