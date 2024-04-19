@@ -62,8 +62,8 @@ namespace SvEditor::Core
 		// Inherited via IUI
 		ImFont* GetFontDefault() override;
 		ImFont* GetIconFont() override;
-		ISelectable* GetSelected() override;
-		void SetSelected(ISelectable* p_selected) override;
+		//ISelectable* GetSelected() override;
+		//void SetSelected(ISelectable* p_selected) override;
 
 	private:
 		typedef std::shared_ptr<Panel> (EditorUI::* CreatePanelCallback)();

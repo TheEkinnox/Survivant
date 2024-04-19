@@ -25,8 +25,8 @@ namespace SvEditor::Core
 		virtual ImFont* GetFontDefault() = 0;
 		virtual ImFont* GetIconFont() = 0;
 
-		virtual Interfaces::ISelectable*	GetSelected() = 0;
-		virtual void						SetSelected(Interfaces::ISelectable* p_selected = nullptr) = 0;
+		//virtual Interfaces::ISelectable*	GetSelected() = 0;
+		//virtual void						SetSelected(Interfaces::ISelectable* p_selected = nullptr) = 0;
 
 		static IUI* GetCurrentUI();
 

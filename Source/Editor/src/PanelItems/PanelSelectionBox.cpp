@@ -32,13 +32,13 @@ namespace SvEditor::PanelItems
         {
             auto item = itemPair.second.get();
             bool isSelected = item->GetSelectedState();
-            auto isBreak = false; auto open = false;
+            auto isBreak = false; auto selected = false;
 
             ImGui::BeginChild(std::string("##" + std::to_string(i)).c_str(), ImVec2(m_width + Padding.x, m_height + Padding.y), cFlags);
 
             auto cursorBefore = ImGui::GetCursorPos();
             ImGui::PushID(static_cast<int>(i));
-            open = ImGui::Selectable("##", isSelected, sFlags, ImVec2(m_width, m_height));
+            selected = ImGui::Selectable("##", isSelected, sFlags, ImVec2(m_width, m_height));
             ImGui::PopID();
             auto cursorAfter = ImGui::GetCursorPos();
 
@@ -59,11 +59,8 @@ namespace SvEditor::PanelItems
             if (i + 1 < count && next_button_x2 < window_visible_x2)
                 ImGui::SameLine();
 
-            if (open)
-            {
-                SV_CURRENT_UI()->SetSelected(item);
-                item->SetSelectedState(true);
-            }
+            if (selected)
+                item->InvokeSelected();
 
             if (isBreak)
                 break;

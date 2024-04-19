@@ -44,12 +44,15 @@ namespace SvEditor::Panels
 
     bool ExamplResource::InvokeOpen()
     {
+        ISelectable::InvokeOpen();
+
         SV_EVENT_MANAGER().Invoke<Core::IUI::DebugEvent>("Clicked Resource");
         return false;
     }
 
     bool ExamplResource::InvokeSelected()
     {
+        ISelectable::InvokeSelected();
         return false;
     }
 

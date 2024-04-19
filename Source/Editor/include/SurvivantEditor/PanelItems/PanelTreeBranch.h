@@ -36,7 +36,6 @@ namespace SvEditor::PanelItems
 		bool				InvokeSelected() override;
 		void				DisplayAndUpdatePopupMenu() override;
 		bool				GetSelectedState() override;
-		void				SetSelectedState(bool p_isSelected)override;
 
 		bool				IsBranch()const;
 		const Childreen&	GetChildreen()const;
@@ -63,6 +62,10 @@ namespace SvEditor::PanelItems
 	private:
 		std::vector<std::unique_ptr<IMenuable>>		GetPopupMenuItems();
 		void										DisplayTreePanel();
+
+		// Inherited via ISelectable
+		void				SetSelectedState(bool p_isSelected)override;
+
 
 		enum class EForceState
 		{

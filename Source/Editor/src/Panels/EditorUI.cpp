@@ -67,6 +67,15 @@ namespace SvEditor::Core
 
         //UIManager
         SvEditor::Core::IUI::m_currentUI = this;
+
+        //Propagate selection
+        ISelectable::m_onSelected.AddListener([this](ISelectable* p_selected) 
+            { 
+            if (m_selected)
+                m_selected->InvokeClearSelected(); 
+            m_selected = p_selected; 
+            });
+        ISelectable::m_onClearSelected.AddListener([this]() { m_selected = nullptr; });
     }
 
     EditorUI::~EditorUI()
@@ -259,20 +268,20 @@ namespace SvEditor::Core
             SvApp::InputManager::GetInstance().SetInputBindings(m_inputs);
     }
 
-    ISelectable* EditorUI::GetSelected()
-    {
-        return m_selected;
-    }
+    //ISelectable* EditorUI::GetSelected()
+    //{
+    //    return m_selected;
+    //}
 
-    void EditorUI::SetSelected(ISelectable* p_selected)
-    {
-        //remose selection
-        if (m_selected != nullptr)
-            m_selected->SetSelectedState(false);
+    //void EditorUI::SetSelected(ISelectable* p_selected)
+    //{
+    //    //remose selection
+    //    if (m_selected != nullptr)
+    //        m_selected->SetSelectedState(false);
 
-        //set new selection
-        m_selected = p_selected;
-    }
+    //    //set new selection
+    //    m_selected = p_selected;
+    //}
 
     ImFont* EditorUI::GetFontDefault()
     {

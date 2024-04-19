@@ -40,7 +40,7 @@ namespace SvEditor::PanelItems
     PanelTreeBranch<T>::~PanelTreeBranch()
     {
         if (m_isSelected)
-            SV_CURRENT_UI()->SetSelected();
+            InvokeClearSelected();
     }
 
     template <typename T>
@@ -193,6 +193,8 @@ namespace SvEditor::PanelItems
     template <typename T>
     inline bool PanelTreeBranch<T>::InvokeOpen()
     {
+        ISelectable::InvokeOpen();
+
         if (IsBranch() && s_branchesOnOpen)
             return s_branchesOnOpen(*this);
 
@@ -205,6 +207,8 @@ namespace SvEditor::PanelItems
     template<typename T>
     inline bool PanelTreeBranch<T>::InvokeSelected()
     {
+        ISelectable::InvokeSelected();
+
         if (IsBranch() && s_branchesOnSelect)
             return s_branchesOnSelect(*this);
 
@@ -268,14 +272,9 @@ namespace SvEditor::PanelItems
         auto cliks = ImGui::GetMouseClickedCount(0);
 
         if (hov && cliks == 1)
-        {
-            SV_CURRENT_UI()->SetSelected(this);
-            m_isSelected = true;
-
             InvokeSelected();
-        }
 
-        if (hov && cliks == 2)
+        else if (hov && cliks == 2)
             InvokeOpen();
 
         if (open)
