@@ -55,10 +55,17 @@ namespace SvCore::ECS
         EntityHandle& operator=(EntityHandle&& p_other) noexcept = default;
 
         /**
+         * \brief Checks whether the given handle references the same entity as this one
+         * \param p_other The compared entity handle
+         * \return True if the other handle references the same entity. False otherwise
+         */
+        bool operator==(const EntityHandle& p_other) const;
+
+        /**
          * \brief Checks whether the entity is valid or not
          * \return True if the entity is valid. False otherwise.
          */
-        explicit operator bool() const;
+        operator bool() const;
 
         /**
          * \brief Implicitly converts the handle to it's linked entity
@@ -267,6 +274,21 @@ namespace SvCore::ECS
         Scene* m_scene;
         Entity m_entity;
     };
+
+    /**
+     * \brief Adds an entity handle's string representation to the given output stream
+     * \param p_stream The output stream
+     * \param p_handle The output entity handle
+     * \return The modified stream
+     */
+    std::ostream& operator<<(std::ostream& p_stream, const EntityHandle& p_handle);
+
+    template <>
+    bool ComponentRegistry::ToJson(
+        const EntityHandle& p_component, rapidjson::Writer<rapidjson::StringBuffer>& p_writer, const EntitiesMap& p_toSerialized);
+
+    template <>
+    bool ComponentRegistry::FromJson(EntityHandle& p_out, const rapidjson::Value& p_json, Scene* p_scene);
 }
 
 #include "SurvivantCore/ECS/EntityHandle.inl"

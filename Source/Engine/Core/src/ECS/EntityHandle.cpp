@@ -10,6 +10,11 @@ namespace SvCore::ECS
     {
     }
 
+    bool EntityHandle::operator==(const EntityHandle& p_other) const
+    {
+        return m_entity == p_other.m_entity && m_scene == p_other.m_scene;
+    }
+
     EntityHandle::operator bool() const
     {
         return m_scene && m_scene->IsValid(m_entity);
@@ -150,5 +155,39 @@ namespace SvCore::ECS
     std::vector<std::pair<ComponentRegistry::TypeId, void*>> EntityHandle::GetComponents() const
     {
         return m_scene ? m_scene->GetComponents(m_entity) : std::vector<std::pair<ComponentRegistry::TypeId, void*>>();
+    }
+
+    std::ostream& operator<<(std::ostream& p_stream, const EntityHandle& p_handle)
+    {
+        return p_stream << p_handle.GetEntity();
+    }
+
+    template <>
+    bool ComponentRegistry::ToJson(
+        const EntityHandle& p_component, rapidjson::Writer<rapidjson::StringBuffer>& p_writer, const EntitiesMap& p_toSerialized)
+    {
+        Entity entity = p_component.GetEntity();
+
+        if (entity != NULL_ENTITY)
+        {
+            const auto it = p_toSerialized.find(entity);
+
+            if (!CHECK(it != p_toSerialized.end(), "Unable to serialize entity handle - Entity is not serialized"))
+                return false;
+
+            entity = it->second;
+        }
+
+        return p_writer.Uint64(entity);
+    }
+
+    template <>
+    bool ComponentRegistry::FromJson(EntityHandle& p_out, const rapidjson::Value& p_json, Scene* p_scene)
+    {
+        if (!CHECK(p_json.Is<Entity::Id>(), "Unable to deserialize entity handle - Json value should be castable to Entity::Id"))
+            return false;
+
+        p_out = { p_scene, Entity(p_json.Get<Entity::Id>()) };
+        return true;
     }
 }
