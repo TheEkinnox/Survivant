@@ -27,7 +27,8 @@ namespace SvEditor::Panels
 		// Inherited via ISelectable
 		const std::string& GetIcon() override;
 		const std::string& GetName() override;
-		bool InvokeDoubleClick() override;
+		bool InvokeOpen() override;
+		bool InvokeSelected() override;
 		void DisplayAndUpdatePopupMenu() override;
 		bool GetSelectedState() override;
 		void SetSelectedState(bool p_isSelected) override;

@@ -71,7 +71,7 @@ namespace SvEditor::PanelItems
         }
     }
 
-    void PanelSelectionBox::SetSelectionBoxable(const MAP& p_elements)
+    void PanelSelectionBox::SetSelectionBoxable(const SelectableMap& p_elements)
     {
         m_elements = p_elements;
     }
@@ -127,7 +127,7 @@ namespace SvEditor::PanelItems
         ImGui::PopTextWrapPos();
 
         if (p_doubleClicked)
-            return p_item->InvokeDoubleClick();
+            return p_item->InvokeOpen();
 
         return false;
     }

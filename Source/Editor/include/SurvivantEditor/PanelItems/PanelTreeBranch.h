@@ -14,6 +14,7 @@ namespace SvEditor::PanelItems
 {
 	using namespace Interfaces;
 
+	template<typename T>
 	class PanelTreeBranch : public IPanelable, public ISelectable
 	{
 	public:
@@ -31,7 +32,8 @@ namespace SvEditor::PanelItems
 		// Inherited via ISelectable
 		const std::string&	GetIcon() override;
 		const std::string&	GetName() override;
-		bool				InvokeDoubleClick() override;
+		bool				InvokeOpen() override;
+		bool				InvokeSelected() override;
 		void				DisplayAndUpdatePopupMenu() override;
 		bool				GetSelectedState() override;
 		void				SetSelectedState(bool p_isSelected)override;
@@ -42,25 +44,20 @@ namespace SvEditor::PanelItems
 
 		Childreen&	SetBranches(const Childreen& p_branches);
 		Childreen&	SetBranches(const std::vector<std::shared_ptr<PanelTreeBranch>>& p_branches);
-		void		AddBranch(const std::shared_ptr<PanelTreeBranch>& p_branch, const PriorityFunc& p_prioFunc = &NoPriority);
+		void		AddBranch(const std::shared_ptr<PanelTreeBranch>& p_branch, const PriorityFunc& p_prioFunc = nullptr);
 		void		RemoveBranch(const std::string& p_name);
 		void		ForceOpenParents(bool p_openSelf = false);
 		void		ForceCloseChildreen(bool p_closeSelf = false);
 		void		ForceOpenAll();
 
-		void		SetOnClickCallback(const std::shared_ptr<BranchCallback>& p_callback);
-		void		SetAllOnClickCallback(const std::shared_ptr<BranchCallback>& p_callback);
-		void		SetAllBranchesOnClickCallback(const std::shared_ptr<BranchCallback>& p_callback);
-		void		SetAllLeavesOnClickCallback(const std::shared_ptr<BranchCallback>& p_callback);
+		void			SetAllPriority(const PriorityFunc& p_prioFunc);
+		//void			NoPriority(const PriorityFunc& p_prioFunc);
 
-		void		SetAllPriority(const PriorityFunc& p_prioFunc);
-		void		SetAllBranchesPriority(const PriorityFunc& p_prioFunc);
-		void		SetAllLeavesPriority(const PriorityFunc& p_prioFunc);
-		void		SetAllBranchesPriority(size_t p_prio);
-		void		SetAllLeavesPriority(size_t p_prio);
-
-		static size_t	NoPriority(const PanelTreeBranch& p_branch);
 		static size_t	HasChildreenPriority(const PanelTreeBranch& p_branch);
+
+		static inline BranchCallback s_branchesOnOpenCallback = nullptr;
+		static inline BranchCallback s_leavesOnOpenCallback = nullptr;
+		static inline BranchCallback s_allOnSelectedCallback = nullptr;
 
 	private:
 		std::vector<std::unique_ptr<IMenuable>>		GetPopupMenuItems();
@@ -77,9 +74,11 @@ namespace SvEditor::PanelItems
 		std::string							m_name;
 		PanelTreeBranch*					m_parent;
 		Childreen							m_childreen;
+		T									m_value;
 		EForceState							m_forceState;
-		std::shared_ptr<BranchCallback>		m_callback;
 		MenuItems::PopupMenu				m_popup;
 		bool								m_isSelected;
 	};
 }
+
+#include "SurvivantEditor/PanelItems/PanelTreeBranch.inl"

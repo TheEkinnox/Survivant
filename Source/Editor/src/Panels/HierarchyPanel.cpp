@@ -15,20 +15,20 @@ namespace SvEditor::Panels
 {
     void HierarchyPanel::SetupTree()
     {
-        std::vector<std::shared_ptr<PanelTreeBranch>> objects;
+        std::vector<std::shared_ptr<HierarchyBranch>> objects;
         std::string name = "Obj ";
 
         for (size_t i = 0; i < 20; i++)
         {
-            auto ref = objects.insert(objects.end(), std::make_shared<PanelTreeBranch>(name + std::to_string(i), false));
+            auto ref = objects.insert(objects.end(), std::make_shared<HierarchyBranch>(name + std::to_string(i), false));
 
             if (i % 3)
             {
                 ref->get()->SetBranches(
                     { 
-                        std::make_shared<PanelTreeBranch>(name + std::to_string(i) + ".1", false),
-                        std::make_shared<PanelTreeBranch>(name + std::to_string(i) + ".2", false),
-                        std::make_shared<PanelTreeBranch>(name + std::to_string(i) + ".3", false),
+                        std::make_shared<HierarchyBranch>(name + std::to_string(i) + ".1", false),
+                        std::make_shared<HierarchyBranch>(name + std::to_string(i) + ".2", false),
+                        std::make_shared<HierarchyBranch>(name + std::to_string(i) + ".3", false),
                     });
             }
         }
@@ -58,10 +58,8 @@ namespace SvEditor::Panels
             return Panel::ERenderFlags();
         }
 
-        //m_tree.DisplayAndUpdatePanel();
         for (auto& branch : m_tree.GetChildreen())
             branch.second->DisplayAndUpdatePanel();
-
 
         ImGui::End();
 

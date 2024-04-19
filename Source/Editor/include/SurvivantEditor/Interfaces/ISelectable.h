@@ -17,7 +17,6 @@ namespace SvEditor::Interfaces
 			std::string m_name = "";
 			size_t m_priority = 0;
 
-
 			bool operator <(const SelectablePrioKey& p_rhs) const
 			{
 				if (this->m_priority != p_rhs.m_priority)
@@ -38,7 +37,8 @@ namespace SvEditor::Interfaces
 
 		virtual const std::string&	GetIcon() = 0;
 		virtual const std::string&	GetName() = 0;
-		virtual bool				InvokeDoubleClick() = 0;
+		virtual bool				InvokeOpen() = 0;
+		virtual bool				InvokeSelected() = 0;
 		virtual void				DisplayAndUpdatePopupMenu() = 0;
 		virtual bool				GetSelectedState() = 0;
 		virtual void				SetSelectedState(bool p_isSelected) = 0;

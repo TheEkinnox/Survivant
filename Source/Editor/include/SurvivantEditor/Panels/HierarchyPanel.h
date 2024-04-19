@@ -4,6 +4,8 @@
 #include "SurvivantCore/Utility/UnusedIdGenerator.h"
 #include "SurvivantEditor/Panels/Panel.h"
 #include "SurvivantEditor/PanelItems/PanelTreeBranch.h"
+#include "SurvivantCore/ECS/Entity.h"
+
 
 
 namespace SvEditor::Panels
@@ -13,6 +15,8 @@ namespace SvEditor::Panels
 	class HierarchyPanel : public Panel
 	{
 	public:
+		using HierarchyBranch = PanelTreeBranch<SvCore::ECS::Entity>;
+
 		HierarchyPanel();
 		~HierarchyPanel();
 
@@ -23,6 +27,6 @@ namespace SvEditor::Panels
 	private:
 		void SetupTree();
 		
-		PanelTreeBranch m_tree;
+		HierarchyBranch m_tree;
 	};
 }

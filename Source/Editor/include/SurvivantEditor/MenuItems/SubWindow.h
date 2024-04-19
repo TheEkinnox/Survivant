@@ -296,7 +296,7 @@
 //	class PanelTreeBranch : public IPanelable, public ISelectionBoxable
 //	{
 //	public:
-//		using BranchCallback = std::function<bool(PanelTreeBranch&)>;
+//		using OnOpenCallback = std::function<bool(PanelTreeBranch&)>;
 //		using Childreen = std::unordered_map<std::string, std::shared_ptr<PanelTreeBranch>>;
 //
 //		PanelTreeBranch(const std::string& p_name, bool p_hideLeafs = true);
@@ -324,10 +324,10 @@
 //		void		ForceCloseChildreen(bool p_closeSelf = false);
 //		void		ForceOpenAll();
 //
-//		void		SetOnClickCallback(const std::shared_ptr<BranchCallback>& p_callback);
-//		void		SetAllOnClickCallback(const std::shared_ptr<BranchCallback>& p_callback);
-//		void		SetAllBranchesOnClickCallback(const std::shared_ptr<BranchCallback>& p_callback);
-//		void		SetAllLeavesOnClickCallback(const std::shared_ptr<BranchCallback>& p_callback);
+//		void		SetOnClickCallback(const std::shared_ptr<OnOpenCallback>& p_callback);
+//		void		SetAllOnClickCallback(const std::shared_ptr<OnOpenCallback>& p_callback);
+//		void		SetAllBranchesOnClickCallback(const std::shared_ptr<OnOpenCallback>& p_callback);
+//		void		SetAllLeavesOnClickCallback(const std::shared_ptr<OnOpenCallback>& p_callback);
 //
 //	private:
 //		enum class EForceState
@@ -342,7 +342,7 @@
 //		PanelTreeBranch*					m_parent;
 //		Childreen							m_childreen;
 //		EForceState							m_forceState;
-//		std::shared_ptr<BranchCallback>		m_callback;
+//		std::shared_ptr<OnOpenCallback>		m_callback;
 //	};
 //
 //

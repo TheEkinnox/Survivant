@@ -1,9 +1,10 @@
 //PanelTreeBranch.cpp
+#pragma once
 
 #include "SurvivantEditor/PanelItems/PanelTreeBranch.h"
+
 #include "SurvivantEditor/Core/IUI.h"
 #include "SurvivantEditor/MenuItems/MenuButton.h"
-
 
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
@@ -12,37 +13,38 @@ namespace SvEditor::PanelItems
 {
     using namespace MenuItems;
 
-    PanelTreeBranch::PanelTreeBranch(const std::string& p_name, bool p_hideLeafs) :
+    template <typename T>
+    PanelTreeBranch<T>::PanelTreeBranch(const std::string& p_name, bool p_hideLeafs) :
         m_name(p_name),
         m_forceState(EForceState::NOTHING),
         m_hideLeafs(p_hideLeafs),
         m_parent(nullptr),
-        m_callback(nullptr),
         m_isSelected(false)
     {
         m_popup.m_items = GetPopupMenuItems();
     }
 
-    PanelTreeBranch::PanelTreeBranch(const std::string& p_name, const Childreen& p_branches, bool p_hideLeafs) :
+    template <typename T>
+    PanelTreeBranch<T>::PanelTreeBranch(const std::string& p_name, const Childreen& p_branches, bool p_hideLeafs) :
         m_name(p_name),
         m_forceState(EForceState::NOTHING),
         m_hideLeafs(p_hideLeafs),
         m_parent(nullptr),
-        m_callback(nullptr),
         m_isSelected(false)
     {
         m_popup.m_items = GetPopupMenuItems();
         SetBranches(p_branches);
     }
 
-    PanelTreeBranch::~PanelTreeBranch()
+    template <typename T>
+    PanelTreeBranch<T>::~PanelTreeBranch()
     {
         if (m_isSelected)
             SV_CURRENT_UI()->SetSelected();
     }
 
-
-    PanelTreeBranch::Childreen& PanelTreeBranch::SetBranches(const Childreen& p_branches)
+    template <typename T>
+    inline PanelTreeBranch<T>::Childreen& PanelTreeBranch<T>::SetBranches(const Childreen& p_branches)
     {
         m_childreen = p_branches;
 
@@ -52,7 +54,8 @@ namespace SvEditor::PanelItems
         return m_childreen;
     }
 
-    PanelTreeBranch::Childreen& PanelTreeBranch::SetBranches(const std::vector<std::shared_ptr<PanelTreeBranch>>& p_branches)
+    template <typename T>
+    inline PanelTreeBranch<T>::Childreen& PanelTreeBranch<T>::SetBranches(const std::vector<std::shared_ptr<PanelTreeBranch>>& p_branches)
     {
         m_childreen.clear();
         for (auto& child : p_branches)
@@ -64,15 +67,17 @@ namespace SvEditor::PanelItems
         return m_childreen;
     }
 
-    void PanelTreeBranch::AddBranch(const std::shared_ptr<PanelTreeBranch>& p_branch, const PriorityFunc& p_prio)
+    template <typename T>
+    inline void PanelTreeBranch<T>::AddBranch(const std::shared_ptr<PanelTreeBranch>& p_branch, const PriorityFunc& p_prio)
     {
-        auto it = m_childreen.insert( 
-            { { p_branch.get()->GetName(), p_prio(*p_branch) }, p_branch});
+        auto it = m_childreen.insert(
+            { { p_branch.get()->GetName(), p_prio? p_prio(*p_branch) : 0 }, p_branch });
 
         it.first->second->m_parent = this;
     }
 
-    void PanelTreeBranch::RemoveBranch(const std::string& p_name)
+    template <typename T>
+    inline void PanelTreeBranch<T>::RemoveBranch(const std::string& p_name)
     {
         for (auto it = m_childreen.begin(); it != m_childreen.end(); it++)
         {
@@ -84,7 +89,8 @@ namespace SvEditor::PanelItems
         }
     }
 
-    void PanelTreeBranch::ForceOpenParents(bool p_openSelf)
+    template <typename T>
+    inline void PanelTreeBranch<T>::ForceOpenParents(bool p_openSelf)
     {
         if (p_openSelf)
             m_forceState = EForceState::FORCE_OPEN;
@@ -93,7 +99,8 @@ namespace SvEditor::PanelItems
             m_parent->ForceOpenParents(true);
     }
 
-    void PanelTreeBranch::ForceCloseChildreen(bool p_closeSelf)
+    template <typename T>
+    inline void PanelTreeBranch<T>::ForceCloseChildreen(bool p_closeSelf)
     {
         if (p_closeSelf)
             m_forceState = EForceState::FORCE_CLOSE;
@@ -102,7 +109,8 @@ namespace SvEditor::PanelItems
             child.second->ForceCloseChildreen(true);
     }
 
-    void PanelTreeBranch::ForceOpenAll()
+    template <typename T>
+    inline void PanelTreeBranch<T>::ForceOpenAll()
     {
         m_forceState = EForceState::FORCE_OPEN;
 
@@ -110,38 +118,8 @@ namespace SvEditor::PanelItems
             child.second->ForceOpenAll();
     }
 
-    void PanelTreeBranch::SetOnClickCallback(const std::shared_ptr<BranchCallback>& p_callback)
-    {
-        m_callback = p_callback;
-    }
-
-    void PanelTreeBranch::SetAllOnClickCallback(const std::shared_ptr<BranchCallback>& p_callback)
-    {
-        m_callback = p_callback;
-
-        for (auto& child : m_childreen)
-            child.second->SetAllOnClickCallback(p_callback);
-    }
-
-    void PanelTreeBranch::SetAllBranchesOnClickCallback(const std::shared_ptr<BranchCallback>& p_callback)
-    {
-        if (IsBranch())
-            m_callback = p_callback;
-
-        for (auto& child : m_childreen)
-            child.second->SetAllBranchesOnClickCallback(p_callback);
-    }
-
-    void PanelTreeBranch::SetAllLeavesOnClickCallback(const std::shared_ptr<BranchCallback>& p_callback)
-    {
-        if (!IsBranch())
-            m_callback = p_callback;
-
-        for (auto& child : m_childreen)
-            child.second->SetAllLeavesOnClickCallback(p_callback);
-    }
-
-    void PanelTreeBranch::SetAllPriority(const PriorityFunc& p_prioFunc)
+    template <typename T>
+    inline void PanelTreeBranch<T>::SetAllPriority(const PriorityFunc& p_prioFunc)
     {
         std::vector<Childreen::node_type> extracted;
 
@@ -168,47 +146,34 @@ namespace SvEditor::PanelItems
         }
 
         for (auto& child : m_childreen)
-            child.second->SetAllBranchesPriority(p_prioFunc);
+            child.second->SetAllPriority(p_prioFunc);
     }
 
-    void PanelTreeBranch::SetAllBranchesPriority(const PriorityFunc& /*p_prioFunc*/)
+    //template<typename T>
+    //void PanelTreeBranch<T>::NoPriority(const PriorityFunc& /*p_prioFunc*/)
+    //{
+    //}
+
+    template <typename T>
+    inline size_t PanelTreeBranch<T>::HasChildreenPriority(const PanelTreeBranch& p_branch)
     {
+        return p_branch.GetChildreen().empty() ? 0 : 1;
     }
 
-    void PanelTreeBranch::SetAllLeavesPriority(const PriorityFunc& /*p_prioFunc*/)
-    {
-    }
-
-    void PanelTreeBranch::SetAllBranchesPriority(size_t /*p_prio*/)
-    {
-    }
-
-    void PanelTreeBranch::SetAllLeavesPriority(size_t /*p_prio*/)
-    {
-    }
-
-    size_t PanelTreeBranch::NoPriority(const PanelTreeBranch& /*p_branch*/)
-    {
-        return 0;
-    }
-
-    size_t PanelTreeBranch::HasChildreenPriority(const PanelTreeBranch& p_branch)
-    {
-        return p_branch.GetChildreen().empty()? 0 : 1;
-    }
-
-    std::vector<std::unique_ptr<IMenuable>> PanelTreeBranch::GetPopupMenuItems()
+    template <typename T>
+    inline std::vector<std::unique_ptr<IMenuable>> PanelTreeBranch<T>::GetPopupMenuItems()
     {
         std::vector<std::unique_ptr<IMenuable>> menu;
 
-        menu.emplace_back(std::make_unique<MenuButton>("Open All",  [this](char) { ForceOpenAll(); }));
+        menu.emplace_back(std::make_unique<MenuButton>("Open All", [this](char) { ForceOpenAll(); }));
         menu.emplace_back(std::make_unique<MenuButton>("Close All", [this](char) { ForceCloseChildreen(); }));
-        menu.emplace_back(std::make_unique<MenuButton>("Test3",     [this](char) {} ));
+        menu.emplace_back(std::make_unique<MenuButton>("Test3", [this](char) {}));
 
         return menu;
     }
 
-    const std::string& PanelTreeBranch::GetIcon()
+    template <typename T>
+    inline const std::string& PanelTreeBranch<T>::GetIcon()
     {
         static std::string branch = "Fl";
         static std::string leaf = "Tx";
@@ -219,46 +184,64 @@ namespace SvEditor::PanelItems
             return leaf;
     }
 
-    const std::string& PanelTreeBranch::GetName()
+    template <typename T>
+    inline const std::string& PanelTreeBranch<T>::GetName()
     {
         return m_name;
     }
 
-    bool PanelTreeBranch::InvokeDoubleClick()
+    template <typename T>
+    inline bool PanelTreeBranch<T>::InvokeOpen()
     {
-        if (m_callback)
-            return (*m_callback)(*this);
+        if (IsBranch() && s_branchesOnOpenCallback)
+            return s_branchesOnOpenCallback(*this);
+
+        else if (s_leavesOnOpenCallback)
+            return s_leavesOnOpenCallback(*this);
 
         return false;
     }
 
-    void PanelTreeBranch::DisplayAndUpdatePopupMenu()
+    template<typename T>
+    inline bool PanelTreeBranch<T>::InvokeSelected()
+    {
+        if (s_allOnSelectedCallback)
+            s_allOnSelectedCallback(*this);
+
+        return false;
+    }
+
+    template <typename T>
+    inline void PanelTreeBranch<T>::DisplayAndUpdatePopupMenu()
     {
         m_popup.DisplayAndUpdatePanel();
     }
 
-    bool PanelTreeBranch::GetSelectedState()
+    template <typename T>
+    inline bool PanelTreeBranch<T>::GetSelectedState()
     {
         return m_isSelected;
     }
 
-    void PanelTreeBranch::SetSelectedState(bool p_isSelected)
+    template <typename T>
+    inline void PanelTreeBranch<T>::SetSelectedState(bool p_isSelected)
     {
         m_isSelected = p_isSelected;
     }
 
-    void PanelTreeBranch::DisplayAndUpdatePanel()
+    template <typename T>
+    inline void PanelTreeBranch<T>::DisplayAndUpdatePanel()
     {
         switch (m_forceState)
         {
-        case PanelTreeBranch::EForceState::FORCE_OPEN:
+        case PanelTreeBranch<T>::EForceState::FORCE_OPEN:
             ImGui::SetNextItemOpen(true, ImGuiCond_::ImGuiCond_Always);
             break;
-        case PanelTreeBranch::EForceState::FORCE_CLOSE:
+        case PanelTreeBranch<T>::EForceState::FORCE_CLOSE:
             ForceCloseChildreen();
             ImGui::SetNextItemOpen(false, ImGuiCond_::ImGuiCond_Always);
             break;
-        case PanelTreeBranch::EForceState::NOTHING:
+        case PanelTreeBranch<T>::EForceState::NOTHING:
         default:
             break;
         }
@@ -268,7 +251,8 @@ namespace SvEditor::PanelItems
         m_forceState = EForceState::NOTHING;
     }
 
-    void PanelTreeBranch::DisplayTreePanel()
+    template <typename T>
+    inline void PanelTreeBranch<T>::DisplayTreePanel()
     {
         ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnDoubleClick;
         flags |= IsBranch() ? ImGuiTreeNodeFlags_OpenOnArrow : ImGuiTreeNodeFlags_Bullet;
@@ -277,13 +261,13 @@ namespace SvEditor::PanelItems
         bool open = ImGui::TreeNodeEx(m_name.c_str(), flags);
         DisplayAndUpdatePopupMenu();
 
-        if (ImGui::GetMouseClickedCount(0) == 1 && ImGui::IsItemHovered() )
+        if (ImGui::GetMouseClickedCount(0) == 1 && ImGui::IsItemHovered())
         {
             SV_CURRENT_UI()->SetSelected(this);
             m_isSelected = true;
 
-            if (m_callback)
-                (*m_callback)(*this);
+            if (s_allOnSelectedCallback)
+                s_allOnSelectedCallback(*this);
         }
 
         if (open)
@@ -298,17 +282,20 @@ namespace SvEditor::PanelItems
         }
     }
 
-    bool PanelTreeBranch::IsBranch() const
+    template <typename T>
+    inline bool PanelTreeBranch<T>::IsBranch() const
     {
         return !m_childreen.empty();
     }
 
-    const PanelTreeBranch::Childreen& PanelTreeBranch::GetChildreen() const
+    template <typename T>
+    inline const PanelTreeBranch<T>::Childreen& PanelTreeBranch<T>::GetChildreen() const
     {
         return m_childreen;
     }
 
-    std::string PanelTreeBranch::GetPathName() const
+    template <typename T>
+    inline std::string PanelTreeBranch<T>::GetPathName() const
     {
         std::vector<const PanelTreeBranch*> parents;
         parents.push_back(this);
