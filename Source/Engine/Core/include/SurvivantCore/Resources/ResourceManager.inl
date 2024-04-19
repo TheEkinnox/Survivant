@@ -34,7 +34,9 @@ namespace SvCore::Resources
 
         if (!LoadResource(resource, p_path))
         {
-            m_resources.erase(it);
+            if (it != m_resources.end())
+                m_resources.erase(it);
+
             return {};
         }
 
