@@ -3,19 +3,19 @@
 namespace SvCore::ECS
 {
     template <>
-    bool ComponentRegistry::ToJson<TagComponent>(
-        const TagComponent& tag, rapidjson::Writer<rapidjson::StringBuffer>& writer, const EntitiesMap&)
+    bool ComponentRegistry::ToJson(
+        const TagComponent& p_component, rapidjson::Writer<rapidjson::StringBuffer>& p_writer, const EntitiesMap&)
     {
-        return CHECK(writer.String(tag.m_tag.c_str(), static_cast<rapidjson::SizeType>(tag.m_tag.size())));
+        return CHECK(p_writer.String(p_component.m_tag.c_str(), static_cast<rapidjson::SizeType>(p_component.m_tag.size())));
     }
 
     template <>
-    bool ComponentRegistry::FromJson<TagComponent>(TagComponent& out, const rapidjson::Value& json)
+    bool ComponentRegistry::FromJson(TagComponent& p_out, const rapidjson::Value& p_json, Scene*)
     {
-        if (!CHECK(json.IsString(), "Unable to deserialize tag - Json value should be a string"))
+        if (!CHECK(p_json.IsString(), "Unable to deserialize tag - Json value should be a string"))
             return false;
 
-        out.m_tag = json.GetString();
+        p_out.m_tag = p_json.GetString();
 
         return true;
     }

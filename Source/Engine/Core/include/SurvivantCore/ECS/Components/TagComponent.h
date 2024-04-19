@@ -14,5 +14,5 @@ namespace SvCore::ECS
     bool ComponentRegistry::ToJson(const TagComponent&, rapidjson::Writer<rapidjson::StringBuffer>&, const EntitiesMap&);
 
     template <>
-    bool ComponentRegistry::FromJson<TagComponent>(TagComponent&, const rapidjson::Value&);
+    bool ComponentRegistry::FromJson(TagComponent&, const rapidjson::Value&, Scene*);
 }

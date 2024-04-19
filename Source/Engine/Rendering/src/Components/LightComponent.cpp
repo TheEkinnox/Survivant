@@ -326,8 +326,8 @@ namespace SvCore::ECS
     using namespace SvRendering::Components;
 
     template <>
-    bool ComponentRegistry::ToJson<LightComponent>(
-        const LightComponent& p_light, rapidjson::Writer<rapidjson::StringBuffer>& p_writer, const EntitiesMap&)
+    bool ComponentRegistry::ToJson(
+        const LightComponent& p_component, rapidjson::Writer<rapidjson::StringBuffer>& p_writer, const EntitiesMap&)
     {
         p_writer.StartObject();
 
@@ -338,23 +338,23 @@ namespace SvCore::ECS
 
         p_writer.Key("data");
 
-        switch (p_light.m_type)
+        switch (p_component.m_type)
         {
         case ELightType::AMBIENT:
-            return SerializeAmbient(p_light.m_ambient, p_writer) && CHECK(p_writer.EndObject());
+            return SerializeAmbient(p_component.m_ambient, p_writer) && CHECK(p_writer.EndObject());
         case ELightType::DIRECTIONAL:
-            return SerializeDirectional(p_light.m_directional, p_writer);
+            return SerializeDirectional(p_component.m_directional, p_writer);
         case ELightType::POINT:
-            return SerializePoint(p_light.m_point, p_writer) && CHECK(p_writer.EndObject());
+            return SerializePoint(p_component.m_point, p_writer) && CHECK(p_writer.EndObject());
         case ELightType::SPOT:
-            return SerializeSpot(p_light.m_spot, p_writer) && CHECK(p_writer.EndObject());
+            return SerializeSpot(p_component.m_spot, p_writer) && CHECK(p_writer.EndObject());
         default:
             return ASSUME(false, "Unsupported light type") && false;
         }
     }
 
     template <>
-    bool ComponentRegistry::FromJson<LightComponent>(LightComponent& p_out, const rapidjson::Value& p_json)
+    bool ComponentRegistry::FromJson(LightComponent& p_out, const rapidjson::Value& p_json, Scene*)
     {
         if (!CHECK(p_json.IsObject(), "Unable to deserialize light - Json value should be an object"))
             return false;

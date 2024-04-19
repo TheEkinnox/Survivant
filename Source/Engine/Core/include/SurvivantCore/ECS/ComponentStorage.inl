@@ -282,7 +282,7 @@ namespace SvCore::ECS
                 return false;
 
             ComponentT component;
-            if (!ComponentRegistry::FromJson(component, it->value))
+            if (!ComponentRegistry::FromJson(component, it->value, m_scene))
                 return false;
 
             Set(owner, component);

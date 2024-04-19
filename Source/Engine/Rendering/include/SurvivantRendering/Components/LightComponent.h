@@ -128,10 +128,10 @@ namespace SvRendering::Components
 namespace SvCore::ECS
 {
     template <>
-    bool ComponentRegistry::ToJson<SvRendering::Components::LightComponent>(
+    bool ComponentRegistry::ToJson(
         const SvRendering::Components::LightComponent&, rapidjson::Writer<rapidjson::StringBuffer>&, const EntitiesMap&);
 
     template <>
-    bool ComponentRegistry::FromJson<SvRendering::Components::LightComponent>(
-        SvRendering::Components::LightComponent&, const rapidjson::Value&);
+    bool ComponentRegistry::FromJson(
+        SvRendering::Components::LightComponent&, const rapidjson::Value&, Scene*);
 }

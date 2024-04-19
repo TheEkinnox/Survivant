@@ -102,18 +102,18 @@ namespace SvCore::ECS
 
         /**
          * \brief Serializes the component storage to json
-         * \param writer The output json writer
-         * \param entitiesMap The entity index to scene entity map
+         * \param p_writer The output json writer
+         * \param p_entitiesMap The entity index to scene entity map
          * \return True on success. False otherwise.
          */
-        virtual bool ToJson(rapidjson::Writer<rapidjson::StringBuffer>& writer, const EntitiesMap& entitiesMap) const = 0;
+        virtual bool ToJson(rapidjson::Writer<rapidjson::StringBuffer>& p_writer, const EntitiesMap& p_entitiesMap) const = 0;
 
         /**
          * \brief Deserializes the component storage from json
-         * \param json The input json data
+         * \param p_json The input json data
          * \return True on success. False otherwise.
          */
-        virtual bool FromJson(const rapidjson::Value& json) = 0;
+        virtual bool FromJson(const rapidjson::Value& p_json) = 0;
 
     protected:
         /**

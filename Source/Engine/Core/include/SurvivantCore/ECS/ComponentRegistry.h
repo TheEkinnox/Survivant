@@ -65,10 +65,11 @@ namespace SvCore::ECS
          * \tparam T The component type to deserialize
          * \param p_out The output component
          * \param p_json The input json data
+         * \param p_scene The component's target scene
          * \return True on success. False otherwise
          */
         template <typename T>
-        static bool FromJson(T& p_out, const rapidjson::Value& p_json);
+        static bool FromJson(T& p_out, const rapidjson::Value& p_json, Scene* p_scene);
     };
 }
 
