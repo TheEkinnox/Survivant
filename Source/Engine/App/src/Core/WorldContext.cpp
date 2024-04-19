@@ -12,16 +12,16 @@ namespace SvApp::Core
     {
         using namespace ToRemove;
 
-        TestLevelBeginPlay(*m_currentScene);
+        TestLevelBeginPlay(*CurrentScene());
     }
 
     void WorldContext::Update()
     {
         using namespace ToRemove;
 
-        SceneView<Temporary>                  temporariesView(*m_currentScene);
-        SceneView<const UserInput, Transform> userInputsView(*m_currentScene);
-        SceneView<const Rotator, Transform>   rotatorsView(*m_currentScene);
+        SceneView<Temporary>                  temporariesView(*CurrentScene());
+        SceneView<const UserInput, Transform> userInputsView(*CurrentScene());
+        SceneView<const Rotator, Transform>   rotatorsView(*CurrentScene());
 
         UpdateTemporaries(temporariesView, SV_DELTA_TIME());
         UpdateInput(userInputsView, ToRemove::GameInfo::moveInput, ToRemove::GameInfo::rotateInput, SV_DELTA_TIME());
@@ -30,7 +30,13 @@ namespace SvApp::Core
 
     void WorldContext::Render()
     {
-        m_renderingContext->Render(*m_currentScene);
+        m_renderingContext->Render(*CurrentScene());
+    }
+
+    void WorldContext::LoadCurrentScene()
+    {
+        using namespace ToRemove;
+        MakeScene(*CurrentScene());
     }
 
     void WorldContext::SetSceneCamera(const EntityHandle& p_entity)
@@ -40,10 +46,10 @@ namespace SvApp::Core
 
     SvCore::ECS::EntityHandle WorldContext::GetDefaultSceneCamera()
     {
-        SceneView<Camera> cameras(*m_currentScene);
+        SceneView<Camera> cameras(*CurrentScene());
 
         ASSERT(cameras.begin() != cameras.end(), "No Cameras In World");
-        return EntityHandle(m_currentScene.get(), *cameras.begin());
+        return EntityHandle(CurrentScene().get(), *cameras.begin());
     }
 
     void WorldContext::SetOwningCamera(const SvRendering::Core::Camera& p_cam, const LibMath::Transform& p_trans)
@@ -54,5 +60,15 @@ namespace SvApp::Core
     void WorldContext::SetInputs()
     {
         InputManager::GetInstance().SetInputBindings(m_inputs);
+    }
+
+    std::shared_ptr<SvCore::ECS::Scene>& WorldContext::CurrentScene()
+    {
+        return *m_currentSceneRef;
+    }
+
+    std::weak_ptr<WorldContext::ScenePtr> WorldContext::CurrentSceneRef()
+    {
+        return m_currentSceneRef;
     }
 }

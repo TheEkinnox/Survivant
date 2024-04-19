@@ -13,24 +13,25 @@ namespace SvEditor::PanelItems
 {
     using namespace MenuItems;
 
-    template <typename T>
-    PanelTreeBranch<T>::PanelTreeBranch(const std::string& p_name, bool p_hideLeafs) :
-        m_name(p_name),
-        m_forceState(EForceState::NOTHING),
-        m_hideLeafs(p_hideLeafs),
-        m_parent(nullptr),
-        m_isSelected(false)
+    template<typename T>
+    inline PanelTreeBranch<T>::PanelTreeBranch(
+        const std::string& p_name, bool p_hideLeafs, const T& p_value) :
+        PanelTreeBranch(p_name, Childreen(), p_hideLeafs, p_value)
     {
-        m_popup.m_items = GetPopupMenuItems();
     }
 
     template <typename T>
-    PanelTreeBranch<T>::PanelTreeBranch(const std::string& p_name, const Childreen& p_branches, bool p_hideLeafs) :
+    PanelTreeBranch<T>::PanelTreeBranch(
+            const std::string& p_name, 
+            const Childreen & p_branches,
+            bool p_hideLeafs,
+            const T& p_value) :
         m_name(p_name),
         m_forceState(EForceState::NOTHING),
         m_hideLeafs(p_hideLeafs),
         m_parent(nullptr),
-        m_isSelected(false)
+        m_isSelected(false),
+        m_value(p_value)
     {
         m_popup.m_items = GetPopupMenuItems();
         SetBranches(p_branches);
@@ -70,8 +71,14 @@ namespace SvEditor::PanelItems
     template <typename T>
     inline void PanelTreeBranch<T>::AddBranch(const std::shared_ptr<PanelTreeBranch>& p_branch, const PriorityFunc& p_prio)
     {
+        return AddBranch(p_branch, p_prio ? p_prio(*p_branch) : 0);
+    }
+
+    template<typename T>
+    inline void PanelTreeBranch<T>::AddBranch(const std::shared_ptr<PanelTreeBranch>& p_branch, size_t p_prio)
+    {
         auto it = m_childreen.insert(
-            { { p_branch.get()->GetName(), p_prio? p_prio(*p_branch) : 0 }, p_branch });
+            { { p_branch.get()->GetName(), p_prio }, p_branch });
 
         it.first->second->m_parent = this;
     }
@@ -301,6 +308,12 @@ namespace SvEditor::PanelItems
         return m_childreen;
     }
 
+    template<typename T>
+    inline PanelTreeBranch<T>* PanelTreeBranch<T>::GetParent() const
+    {
+        return m_parent;
+    }
+
     template <typename T>
     inline std::string PanelTreeBranch<T>::GetPathName() const
     {
@@ -319,5 +332,18 @@ namespace SvEditor::PanelItems
             path += (*it)->m_name + "$";
 
         return path;
+    }
+
+    template<typename T>
+    inline const T& PanelTreeBranch<T>::SetValue(const T& p_value) const
+    {
+        m_value = p_value;
+        return m_value;
+    }
+
+    template<typename T>
+    inline const T& PanelTreeBranch<T>::GetValue() const
+    {
+        return m_value;
     }
 }

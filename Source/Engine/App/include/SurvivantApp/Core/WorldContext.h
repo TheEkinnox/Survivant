@@ -28,6 +28,7 @@ namespace SvApp::Core
 		using DefaultTextureArray = std::vector<std::shared_ptr<SvRendering::RHI::ITexture>>;
 
 		using WorldCreator = std::function<std::shared_ptr<WorldContext>(const LibMath::Vector2I&)>;
+		using ScenePtr = std::shared_ptr<SvCore::ECS::Scene>;
 
 		enum class EWorldType
 		{
@@ -46,11 +47,14 @@ namespace SvApp::Core
 		void BeginPlay();
 		void Update();
 		void Render();
+		void LoadCurrentScene();
 
-		void SetOwningCamera(const SvRendering::Core::Camera& p_cam, const LibMath::Transform& p_trans);
-		void SetSceneCamera(const SvCore::ECS::EntityHandle& p_entity);
-
-		SvCore::ECS::EntityHandle GetDefaultSceneCamera();
+		void						SetOwningCamera(const SvRendering::Core::Camera& p_cam, const LibMath::Transform& p_trans);
+		void						SetSceneCamera(const SvCore::ECS::EntityHandle& p_entity);
+		SvCore::ECS::EntityHandle	GetDefaultSceneCamera();
+		void						SetInputs();
+		ScenePtr&					CurrentScene();
+		std::weak_ptr<ScenePtr>		CurrentSceneRef();
 
 
 		//TODO: deal with persistentLevel
@@ -61,11 +65,11 @@ namespace SvApp::Core
 		LibMath::TVector2<int>	m_viewport = LibMath::Vector2(800, 600);
 
 		std::unique_ptr<SvRendering::RHI::IShaderStorageBuffer>		m_lightsSSBO = nullptr;
-		std::shared_ptr<SvCore::ECS::Scene>							m_currentScene = nullptr;
 		std::shared_ptr<InputManager::InputBindings>				m_inputs;
 		std::shared_ptr<RenderingContext>							m_renderingContext;
 		bool														m_isVisalbe;
 
-		void SetInputs();
+	private:
+		std::shared_ptr<ScenePtr>	m_currentSceneRef = std::make_shared<ScenePtr>(nullptr);
 	};
 }

@@ -171,8 +171,8 @@ namespace SvApp::Core
     bool Engine::CommitSceneChange(WorldContext& p_context, const std::shared_ptr<Scene>& p_newLevel)
     {
         //switch and the unload old scene
-        std::shared_ptr<Scene> m_levelToUnload = p_context.m_currentScene;
-        p_context.m_currentScene = p_newLevel;
+        std::shared_ptr<Scene> m_levelToUnload = p_context.CurrentScene();
+        p_context.CurrentScene() = p_newLevel;
 
         if (m_levelToUnload != nullptr)
         {

@@ -52,7 +52,7 @@ namespace SvEditor::Core
 			});
 
 		//using namespace SvEditor;
-		//Panels::ScenePanel::AddClickSceneListenner(
+		//Panels::4Panel::AddClickSceneListenner(
 		//	[](const LibMath::Vector2& p_uv)
 		//	{
 		//		ToRemove::g_idFrameBuffer->Bind();
@@ -99,11 +99,13 @@ namespace SvEditor::Core
 		{
 			m_onStopInEditor.Invoke(*m_gameInstance.lock());
 			m_editorEngine.DestroyGameInstance();
+			m_window->GetUI().ForceSceneFocus();
 		}
 		else //game not running
 		{
 			m_gameInstance = m_editorEngine.CreatePIEGameInstance();
 			m_gameInstance.lock()->Start();
+			m_window->GetUI().ForceGameFocus();
 			//this is tmp game
 		}
 	}

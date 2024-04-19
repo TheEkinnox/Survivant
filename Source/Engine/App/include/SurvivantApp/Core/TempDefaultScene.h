@@ -666,9 +666,9 @@ namespace ToRemove
         return scene;
     }
 
-    void inline TestLevelBeginPlay(Scene& p_scene)
+    void inline TestLevelBeginPlay(Scene& /*p_scene*/)
     {
-        MakeScene(p_scene);
+        //MakeScene(p_scene);
         //GameInfo::gameCamera.Get<Transform>()->setAll(INITIAL_CAM_POS, Quaternion::identity(), Vector3::one());
     }
 

@@ -34,7 +34,7 @@ namespace SvApp::Core
         //std::shared_ptr<Scene> dummyLevel = std::make_shared<Scene>();
         ////dummyLevel->m_gameInstance = this;
 
-        //m_worldContext.lock()->m_currentScene = dummyLevel;
+        //m_worldContext.lock()->CurrentScene() = dummyLevel;
     }
 
     void GameInstance::Start()

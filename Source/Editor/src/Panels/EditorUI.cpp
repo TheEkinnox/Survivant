@@ -127,6 +127,12 @@ namespace SvEditor::Core
         m_main->SetMenuBar(CreateMenuBar());
     }
 
+    void EditorUI::InitHierchyPanel(std::weak_ptr<WorldContext> p_world)
+    {
+        HierarchyPanel::SetCurrentSceneGetter(
+            [p_world]() { return p_world.lock()->CurrentSceneRef(); });
+    }
+
     void EditorUI::StartFrameUpdate()
     {
         // Update the Dear ImGui frame
@@ -179,6 +185,16 @@ namespace SvEditor::Core
         }
 
         m_endFrameCallbacks.clear();
+    }
+
+    void EditorUI::ForceGameFocus()
+    {
+        m_main->ForceFocus(GamePanel::NAME);
+    }
+
+    void EditorUI::ForceSceneFocus()
+    {
+        m_main->ForceFocus(ScenePanel::NAME);
     }
 
     MenuBar EditorUI::CreateMenuBar()

@@ -47,11 +47,15 @@ namespace SvEditor::Core
 		m_gameInstance.reset();
 		m_gameInstance = nullptr;
 
+
 		//while playing, loaded new scene, so go back to selected
 		if (m_currentScene != m_editorSelectedScene)
 			BrowseToScene(*m_editorWorld, m_editorSelectedScene);
 
 		m_editorWorld->SetInputs();
+		m_editorWorld->LoadCurrentScene();
+
+		m_PIEWorld.lock()->Render();
 	}
 
 	std::shared_ptr<WorldContext> EditorEngine::CreatePIEWorldByDuplication(const WorldContext& p_context, std::shared_ptr<Scene> p_inScene)
@@ -61,7 +65,7 @@ namespace SvEditor::Core
 
 		pieWorld->m_owningGameInstance = p_context.m_owningGameInstance;
 		pieWorld->m_viewport = p_context.m_viewport; //TODO : setup viewport when dupliucating world
-		pieWorld->m_currentScene = p_inScene;
+		pieWorld->CurrentScene() = p_inScene;
 		pieWorld->SetSceneCamera(pieWorld->GetDefaultSceneCamera());
 		pieWorld->m_inputs = ToRemove::SetupGameInputs();
 		pieWorld->m_lightsSSBO = ToRemove::SetupLightSSBO(*p_inScene);
@@ -233,7 +237,7 @@ namespace SvEditor::Core
 			return -1;
 
 		//update selected scene, dont keep ref to current scene
-		m_editorSelectedScene = p_worldContext.m_currentScene;
+		m_editorSelectedScene = p_worldContext.CurrentScene();
 
 		return 1;
 	}
@@ -250,13 +254,16 @@ namespace SvEditor::Core
 
 		world->m_lightsSSBO = ToRemove::SetupLightSSBO(*p_inScene);
 		world->m_viewport = { 800, 600 };
-		world->m_currentScene = p_inScene;
+		world->CurrentScene() = p_inScene;
 		auto cam = Camera(perspectiveProjection(120_deg, 4.f / 3.f, .01f, 14.f));
 		cam.SetClearColor(Color::black);
 		world->SetOwningCamera(cam, Transform({ 0.f, 1.8f, 2.f }, Quaternion::identity(), Vector3::one()));
 		world->m_inputs = CreateEditorInputs();
 
+		//load and render
+		//world->LoadCurrentScene();
 		world->Render();
+
 		//world->m_persistentLevel = nullptr;
 
 		return world;
@@ -271,15 +278,12 @@ namespace SvEditor::Core
 		ASSERT(!worldContext.expired(), "GameInstance has no world");
 
 		worldContext.lock()->m_owningGameInstance = &p_instance;
-		worldContext.lock()->m_lightsSSBO = ToRemove::SetupLightSSBO(*worldContext.lock()->m_currentScene);
+		worldContext.lock()->m_lightsSSBO = ToRemove::SetupLightSSBO(*worldContext.lock()->CurrentScene());
 
 		worldContext.lock()->SetInputs();
 
 		//init
 		p_instance.Init();
-
-		////TODO: do we install a garbage collector?
-		// add world to garbage collector
 
 		//TODO : find and set main camera
 
@@ -344,7 +348,7 @@ namespace SvEditor::Core
 	bool EditorEngine::ChangeScene(const std::string& p_sceneName)
 	{
 		ASSERT(!m_allLevels.empty(), "No levels to browse to");
-		//ASSERT(p_worldContext.m_currentScene != nullptr); can have no current if first browse
+		//ASSERT(p_worldContext.CurrentScene != nullptr); can have no current if first browse
 
 		auto destination = m_allLevels.find(p_sceneName);
 
@@ -357,7 +361,7 @@ namespace SvEditor::Core
 			return false;
 
 		//update editorWorld level
-		m_editorWorld->m_currentScene = destination->second;
+		m_editorWorld->CurrentScene() = destination->second;
 		//dont update selected editor scene
 
 		return true;

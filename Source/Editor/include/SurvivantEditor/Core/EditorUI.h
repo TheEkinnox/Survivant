@@ -41,10 +41,14 @@ namespace SvEditor::Core
 
 		void InitGamePanel(const WorldContext::WorldCreator& p_worldCreator, const std::array<std::function<void()>, 3> p_playPauseFrameCallbacks);
 		void InitScenePanel(std::weak_ptr<WorldContext> p_world);
+		void InitHierchyPanel(std::weak_ptr<WorldContext> p_world);
 
 		void StartFrameUpdate() override;
 		void RenderPanels();
 		void EndFrameUpdate() override;
+
+		void ForceGameFocus();
+		void ForceSceneFocus();
 
 		std::shared_ptr<Panel> CreateNewTestPanel();
 		std::shared_ptr<Panel> CreateSavePanel();

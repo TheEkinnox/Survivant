@@ -42,7 +42,6 @@ namespace SvEditor::Core
 		void RedrawViewports() override;
 		float GetDeltaTime() override;
 
-
 		////scene panel, where you mofi
 		//void CreateEditorWorld();
 		//void CreatePIEWorld();
