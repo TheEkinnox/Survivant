@@ -187,9 +187,9 @@ namespace SvEditor::Panels
     void HierarchyPanel::SelectSelectable(const SvCore::ECS::Entity::Id& p_entity)
     {
         auto it = s_entities.find(p_entity);
-        ASSERT(it != s_entities.end(), "Entity cant be selected | Not in hierarchy");
 
-        it->second->InvokeSelected();
+        if (it != s_entities.end())
+            it->second->InvokeSelected();
     }
 
 }
