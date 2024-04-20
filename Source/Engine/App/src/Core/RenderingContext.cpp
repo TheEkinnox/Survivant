@@ -50,27 +50,31 @@ namespace SvApp::Core
         return static_cast<intptr_t>(dynamic_cast<OpenGLTexture&>(*m_frameTextures[0]).GetId());
     }
 
-    SvCore::ECS::Entity RenderingContext::GetIdTextureValue(const Vec2& p_uv)
+    SvCore::ECS::Entity::Id RenderingContext::GetEntityIdValue(const Vec2& p_uv)
     {
         ASSERT(!m_frameTextures.empty(), "World has no textures");
 
-        SvRendering::RHI::ITexture* idText = nullptr;
-        for (size_t i = 0; i < m_textureTypeBuffer.size(); i++)
+        SvRendering::RHI::IFrameBuffer* idBuff = nullptr;
+        for (size_t i = 0; i < m_renderTypes.size(); i++)
         {
-            if (m_textureTypeBuffer[i] == ERenderType::ID)
-                idText = m_frameTextures[i].get();
+            if (m_renderTypes[i] == ERenderType::ID)
+            {
+                idBuff = m_frameBuffers[i].get();
+                break;
+            }
         }
 
-        ASSERT(idText != nullptr, "Rendering context does not contain render type");
+        ASSERT(idBuff != nullptr, "Rendering context does not contain render type");
 
-        idText->Bind(0);
-        uint32_t val;
+        idBuff->Bind();
+        int val;
+
         IRenderAPI::GetCurrent().ReadPixels(
             p_uv * LibMath::Vector2(800, 600), DimensionsT(1, 1), EPixelDataFormat::RED_INT, EPixelDataType::INT, &val);
 
-        idText->Unbind(0);
+        idBuff->Unbind();
 
-        return SvCore::ECS::Entity(val);
+        return SvCore::ECS::Entity::Id(*(uint32_t*)(&val));
     }
 
     void RenderingContext::DefaultRender(Scene& p_scene)
@@ -131,7 +135,9 @@ namespace SvApp::Core
         if (!(camInfo.first && camInfo.second))
             return;
 
-        IRenderAPI::GetCurrent().Clear(true, true, true);
+        IRenderAPI::GetCurrent().Clear(false, true, true);
+        //IRenderAPI::GetCurrent().SetClearColor(NULL_ENTITY);
+
         DrawMainCameraScene(p_scene, *camInfo.first, *camInfo.second, true);
     }
 

@@ -113,10 +113,12 @@ namespace SvEditor::Core
         ScenePanel::AddClickSceneListenner(
             [p_world](const LibMath::Vector2& p_uv)
             { 
-                auto id = p_world.lock()->
-                    m_renderingContext->GetIdTextureValue(p_uv);
+                auto index = p_world.lock()->
+                    m_renderingContext->GetEntityIdValue(p_uv);
 
+                SV_EVENT_MANAGER().Invoke<EditorUI::DebugEvent>(SvCore::Utility::FormatString("ID = %d", index).c_str());
 
+                HierarchyPanel::SelectSelectable(index);
             });
         
         ScenePanel::AddResizeListenner(

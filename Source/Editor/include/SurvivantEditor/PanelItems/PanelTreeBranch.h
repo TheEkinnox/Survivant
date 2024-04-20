@@ -69,9 +69,9 @@ namespace SvEditor::PanelItems
 		static size_t	HasChildreenPriority(const PanelTreeBranch& p_branch);
 
 		static inline BranchCallback s_branchesOnSelect = nullptr;
-		static inline BranchCallback s_leavesOnSelect= nullptr;
-		static inline BranchCallback s_branchesOnOpen= nullptr;
-		static inline BranchCallback s_leavesOnOpen= nullptr;
+		static inline BranchCallback s_leavesOnSelect = nullptr;
+		static inline BranchCallback s_branchesOnOpen = nullptr;
+		static inline BranchCallback s_leavesOnOpen = nullptr;
 
 	private:
 		std::vector<std::unique_ptr<IMenuable>>		GetPopupMenuItems();

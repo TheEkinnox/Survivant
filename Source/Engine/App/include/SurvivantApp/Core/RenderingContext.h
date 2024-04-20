@@ -44,7 +44,7 @@ namespace SvApp::Core
 
 		void Render(Scene& p_scene);
 		intptr_t GetTextureId(ERenderType p_renderType = ERenderType::DEFAULT);
-		SvCore::ECS::Entity GetIdTextureValue(const Vec2& p_uv);
+		SvCore::ECS::Entity::Id GetEntityIdValue(const Vec2& p_uv);
 
 		/// <summary>
 		/// Adds coresponding framebuffer, render type and attached texture(s)

@@ -1,8 +1,9 @@
 //ScenePanel.h
 #pragma once
 
-#include "SurvivantCore/Utility/UnusedIdGenerator.h"
+#include "SurvivantCore/ECS/Entity.h"
 #include "SurvivantCore/Events/Event.h"
+#include "SurvivantCore/Utility/UnusedIdGenerator.h"
 #include "SurvivantEditor/Panels/Panel.h"
 #include "SurvivantEditor/PanelItems/PanelImage.h"
 #include "SurvivantEditor/PanelItems/PanelButtonList.h"
@@ -48,6 +49,7 @@ namespace SvEditor::Panels
 		/// <param name="p_callback">callback that takes new size as param</param>
 		static void AddResizeListenner(const ResizeEvent::EventDelegate& p_callback);
 
+		static inline SvCore::ECS::Entity::Id s_selectedEntity = SvCore::ECS::NULL_ENTITY;
 		static constexpr char NAME[] = "Scene";
 
 	private:

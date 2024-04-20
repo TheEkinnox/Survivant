@@ -565,7 +565,7 @@ namespace ToRemove
                 ASSERT(model->m_model && model->m_material);
 
                 if (isIdTexture)
-                    DrawModelEditorScene(*model->m_model, camFrustum, transform->getWorldMatrix(), *model->m_material, modelEntity);
+                    DrawModelEditorScene(*model->m_model, camFrustum, transform->getWorldMatrix(), *model->m_material, modelEntity.GetIndex());
                 else
                     DrawModel(*model->m_model, camFrustum, transform->getWorldMatrix(), *model->m_material);
             }

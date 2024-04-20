@@ -6,6 +6,7 @@
 #include "SurvivantCore/Utility/Utility.h"
 #include "SurvivantEditor/Core/EditorUI.h"
 #include "SurvivantEditor/Panels/ExamplGameObj.h"
+#include "SurvivantEditor/Panels/ScenePanel.h"
 
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
@@ -25,7 +26,7 @@ namespace SvEditor::Panels
             [this](const EntityHandle& p_handle)
             {
                 auto parent = p_handle.GetParent();
-                auto& parentBranch = parent.GetEntity() == NULL_ENTITY ? m_tree : *m_entities.at(p_handle.GetEntity());
+                auto& parentBranch = parent.GetEntity() == NULL_ENTITY ? m_tree : *s_entities.at(p_handle.GetEntity());
 
                 auto childBranch = CreateEntityBranch(p_handle);
                 AddEntityBranch(parentBranch, childBranch);
@@ -35,6 +36,16 @@ namespace SvEditor::Panels
             {
                 RemoveEntity(p_handle);
             });
+
+        //propagate selection
+        auto selectFunc = [](HierarchyBranch& p_branch)
+            { 
+                ScenePanel::s_selectedEntity = p_branch.GetValue();
+                return false; 
+            };
+
+        HierarchyBranch::s_branchesOnSelect =   selectFunc;
+        HierarchyBranch::s_leavesOnSelect =     selectFunc;
     }
 
     HierarchyPanel::~HierarchyPanel()
@@ -102,21 +113,16 @@ namespace SvEditor::Panels
         auto prio = SIZE_MAX - p_parent.GetChildreen().size();
 
         p_parent.AddBranch(p_childBranch, prio);
-        auto ins = m_entities.insert({ p_childBranch->GetValue(), p_childBranch}).second;
-
-        if (!ins)
-        {
-            int i = 0; i;
-        }
+        auto ins = s_entities.insert({ p_childBranch->GetValue(), p_childBranch}).second;
 
         ASSERT(ins, "Entity cant be added");
     }
 
     void HierarchyPanel::RemoveEntity(const SvCore::ECS::EntityHandle& p_entity)
     {
-        auto it = m_entities.find(p_entity.GetEntity());
+        auto it = s_entities.find(p_entity.GetEntity());
 
-        if (it == m_entities.end())
+        if (it == s_entities.end())
             return;
 
         auto& childBranch = it->second;
@@ -136,7 +142,7 @@ namespace SvEditor::Panels
         for (auto& [name, branch] : p_childreen)
         {
 
-            m_entities.emplace(branch->GetValue(), branch);
+            s_entities.emplace(branch->GetValue(), branch);
         }
 
         for (auto& [name, branch] : p_childreen)
@@ -176,6 +182,14 @@ namespace SvEditor::Panels
     void HierarchyPanel::SetCurrentSceneGetter(CurrentSceneGetter p_getCurrentScene)
     {
         s_getCurrentScene = p_getCurrentScene;
+    }
+
+    void HierarchyPanel::SelectSelectable(const SvCore::ECS::Entity::Id& p_entity)
+    {
+        auto it = s_entities.find(p_entity);
+        ASSERT(it != s_entities.end(), "Entity cant be selected | Not in hierarchy");
+
+        it->second->InvokeSelected();
     }
 
 }
