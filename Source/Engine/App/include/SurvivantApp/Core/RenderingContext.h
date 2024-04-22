@@ -26,7 +26,8 @@ namespace SvApp::Core
 		friend WorldContext;
 
 		using FrameBufferArray = std::vector<std::unique_ptr<SvRendering::RHI::IFrameBuffer>>;
-		using DefaultTextureArray = std::vector<std::shared_ptr<SvRendering::RHI::ITexture>>;
+		using TexturePtr = std::shared_ptr<SvRendering::RHI::ITexture>;
+		using DefaultTextureArray = std::vector<TexturePtr>;
 		using CamInfo = std::pair<SvRendering::Core::Camera*, LibMath::Transform*>;
 
 		using Scene = SvCore::ECS::Scene;
@@ -39,12 +40,19 @@ namespace SvApp::Core
 			ID
 		};
 
+		enum class ETextureType
+		{
+			COLOR,
+			DEPTH,
+			ID
+		};
+
 		RenderingContext(const SvRendering::Core::Camera& p_cam, const LibMath::Transform& p_trans);
 		RenderingContext(SvCore::ECS::EntityHandle p_entity);
 		~RenderingContext() = default;
 
 		void Render(Scene& p_scene);
-		intptr_t GetTextureId(ERenderType p_renderType);
+		intptr_t GetTextureId(ETextureType p_renderType);
 		SvCore::ECS::Entity GetEntityIdValue(const Vec2& p_uv);
 
 		/// <summary>
@@ -59,6 +67,7 @@ namespace SvApp::Core
 		Vec2&		CameraMoveInput();
 		Vec2&		CameraRotateInput();
 		void		UpdateCameraInput();
+		void		Resize(const Vec2& p_size);
 
 		static inline SvCore::ECS::Entity s_editorSelectedEntity = SvCore::ECS::NULL_ENTITY;
 
@@ -67,8 +76,10 @@ namespace SvApp::Core
 		void SceneRender(Scene& p_scene);
 		void IdRender(Scene& p_scene);
 
-		void AddDefaultRenderPass(const ERenderType& p_type);
+		void AddDefaultRenderPass();
 		void AddIdRenderPass();
+
+		TexturePtr CreateTexture(const ETextureType& p_type);
 
 		LibMath::TVector2<int>		m_viewport = LibMath::Vector2(800, 600);
 		MainCamera					m_mainCamera;
@@ -76,6 +87,6 @@ namespace SvApp::Core
 		std::vector<ERenderType>	m_renderTypes;
 
 		DefaultTextureArray			m_frameTextures;
-		std::vector<ERenderType>	m_textureTypeBuffer;
+		std::vector<ETextureType>	m_textureTypeBuffer;
 	};
 }

@@ -123,8 +123,11 @@ namespace SvEditor::Core
             });
         
         ScenePanel::AddResizeListenner(
-            [](const LibMath::Vector2& p_size)
-            { SV_EVENT_MANAGER().Invoke<EditorUI::DebugEvent>(SvCore::Utility::FormatString("Size = %f, %f", p_size.m_x, p_size.m_y).c_str()); });
+            [p_world](const LibMath::Vector2& p_size)
+            { 
+                p_world.lock()->m_renderingContext->Resize(p_size);
+                SV_EVENT_MANAGER().Invoke<EditorUI::DebugEvent>(SvCore::Utility::FormatString("Size = %f, %f", p_size.m_x, p_size.m_y).c_str()); 
+            });
 
         m_inputs = p_world.lock()->m_inputs;
         m_main->SetMenuBar(CreateMenuBar());

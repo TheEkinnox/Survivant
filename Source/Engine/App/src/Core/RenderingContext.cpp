@@ -37,7 +37,7 @@ namespace SvApp::Core
         }
     }
 
-    intptr_t RenderingContext::GetTextureId(ERenderType p_renderType)
+    intptr_t RenderingContext::GetTextureId(ETextureType p_renderType)
     {
         ASSERT(!m_frameTextures.empty(), "World has no textures");
 
@@ -107,9 +107,9 @@ namespace SvApp::Core
     {
         switch (p_type)
         {
-        case ERenderType::GAME:     AddDefaultRenderPass(ERenderType::GAME);    break;
-        case ERenderType::SCENE:    AddDefaultRenderPass(ERenderType::SCENE);   break;
-        case ERenderType::ID:       AddIdRenderPass();                          break;
+        case ERenderType::GAME:     AddDefaultRenderPass();     break;
+        case ERenderType::SCENE:    AddDefaultRenderPass();     break;
+        case ERenderType::ID:       AddIdRenderPass();          break;
         default:
             break;
         }
@@ -137,6 +137,23 @@ namespace SvApp::Core
         m_mainCamera.UpdateInput();
     }
 
+    void RenderingContext::Resize(const Vec2& p_size)
+    {
+        //TODO: get this info in camera (perspectiveProjection(90_deg, 4.f / 3.f, .01f, 14.f))
+        
+        //textures
+        m_viewport = p_size;
+        for (size_t i = 0; i < m_frameTextures.size(); i++)
+            *m_frameTextures[i] = *CreateTexture(m_textureTypeBuffer[i]);
+
+        //camera
+        auto [cam, trans] = m_mainCamera.GetCamInfo();
+        cam->SetProjection(perspectiveProjection(
+            90_deg, 
+            static_cast<float>(m_viewport.m_x) / static_cast<float>(m_viewport.m_y),
+            .01f, 14.f));
+    }
+
     void RenderingContext::IdRender(Scene& p_scene)
     {
         using namespace ToRemove;
@@ -151,15 +168,13 @@ namespace SvApp::Core
         DrawMainCameraScene(p_scene, *camInfo.first, *camInfo.second, true);
     }
 
-    void RenderingContext::AddDefaultRenderPass(const ERenderType& p_type)
+    void RenderingContext::AddDefaultRenderPass()
     {
-        std::shared_ptr<ITexture> color = m_frameTextures.emplace_back(
-            ITexture::Create(m_viewport.m_x, m_viewport.m_y, EPixelDataFormat::RGB));
-        std::shared_ptr<ITexture> depth = m_frameTextures.emplace_back(
-            ITexture::Create(m_viewport.m_x, m_viewport.m_y, EPixelDataFormat::DEPTH_COMPONENT));
+        std::shared_ptr<ITexture> color = m_frameTextures.emplace_back(CreateTexture(ETextureType::COLOR));
+        m_textureTypeBuffer.push_back(ETextureType::COLOR);
 
-        m_textureTypeBuffer.push_back(p_type);
-        m_textureTypeBuffer.push_back(ERenderType(-1));
+        std::shared_ptr<ITexture> depth = m_frameTextures.emplace_back(CreateTexture(ETextureType::DEPTH));
+        m_textureTypeBuffer.push_back(ETextureType::DEPTH);
 
         color->Bind(0);
 
@@ -170,13 +185,11 @@ namespace SvApp::Core
 
     void RenderingContext::AddIdRenderPass()
     {
-        std::shared_ptr<ITexture> id = m_frameTextures.emplace_back(
-            ITexture::Create(m_viewport.m_x, m_viewport.m_y, EPixelDataFormat::RED_32I, EPixelDataFormat::RED_INT, EPixelDataType::UNSIGNED_INT));
-        std::shared_ptr<ITexture> depth = m_frameTextures.emplace_back(
-            ITexture::Create(m_viewport.m_x, m_viewport.m_y, EPixelDataFormat::DEPTH_COMPONENT));
+        std::shared_ptr<ITexture> id = m_frameTextures.emplace_back(CreateTexture(ETextureType::ID));
+        m_textureTypeBuffer.push_back(ETextureType::ID);
 
-        m_textureTypeBuffer.push_back(ERenderType::ID);
-        m_textureTypeBuffer.push_back(ERenderType(-1));
+        std::shared_ptr<ITexture> depth = m_frameTextures.emplace_back(CreateTexture(ETextureType::DEPTH));
+        m_textureTypeBuffer.push_back(ETextureType::DEPTH);
 
         id->SetFilters(ETextureFilter::NEAREST, ETextureFilter::NEAREST);
         id->Bind(0);
@@ -184,5 +197,20 @@ namespace SvApp::Core
         auto frameBuffer = m_frameBuffers.emplace_back(IFrameBuffer::Create()).get();
         frameBuffer->Attach(*id, EFrameBufferAttachment::COLOR);
         frameBuffer->Attach(*depth, EFrameBufferAttachment::DEPTH);
+    }
+
+    RenderingContext::TexturePtr RenderingContext::CreateTexture(const ETextureType& p_type)
+    {
+        switch (p_type)
+        {
+        case ETextureType::COLOR:   return ITexture::Create(m_viewport.m_x, m_viewport.m_y, EPixelDataFormat::RGB);
+        case ETextureType::DEPTH:   return ITexture::Create(m_viewport.m_x, m_viewport.m_y, 
+                                                            EPixelDataFormat::DEPTH_COMPONENT);
+        case ETextureType::ID:      return ITexture::Create(m_viewport.m_x, m_viewport.m_y, 
+                                                            EPixelDataFormat::RED_32I, EPixelDataFormat::RED_INT, 
+                                                            EPixelDataType::UNSIGNED_INT);
+        default: return nullptr;
+        }
+        
     }
 }

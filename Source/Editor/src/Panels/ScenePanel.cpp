@@ -18,7 +18,7 @@ namespace SvEditor::Panels
 		using namespace SvApp::Core;
 		m_name = NAME;
 
-		m_image.SetTexture(s_world.lock()->m_renderingContext->GetTextureId(RenderingContext::ERenderType::SCENE));
+		m_image.SetTexture(s_world.lock()->m_renderingContext->GetTextureId(RenderingContext::ETextureType::COLOR));
 		m_buttons.m_buttons.push_back(PanelButton("Toogle Texture", [this]() { ToggleTexture(); }));
 	}
 

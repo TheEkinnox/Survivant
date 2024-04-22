@@ -228,6 +228,7 @@ namespace SvRendering::RHI
             return {};
         }
     }
+
     std::shared_ptr<ITexture> ITexture::Create(int p_width, int p_height, Enums::EPixelDataFormat p_internalFormat, Enums::EPixelDataFormat p_format, Enums::EPixelDataType p_dataType)
     {
         switch (IRenderAPI::GetCurrent().GetBackend())
