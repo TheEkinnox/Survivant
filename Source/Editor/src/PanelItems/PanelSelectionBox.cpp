@@ -52,7 +52,7 @@ namespace SvEditor::PanelItems
 
             ImGui::SetCursorPos(cursorBefore);
             DisplaySelectable(item);
-            isBreak = doubleClicked ? item->Open() : false;
+            isBreak |= doubleClicked ? item->Open() : false;
 
             ImGui::EndChild();
 
@@ -60,7 +60,7 @@ namespace SvEditor::PanelItems
                 ImGui::SameLine();
 
             if (selected)
-                item->Select();
+                isBreak |= item->Select();
 
             if (isBreak)
                 break;

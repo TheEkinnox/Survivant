@@ -429,8 +429,8 @@ namespace SvEditor::Core
         //auto dock_id_top = ImGui::DockBuilderSplitNode(id, ImGuiDir_Up, 0.2f, nullptr, &id);
 
         // we now dock our windows into the docking node we made above
-        ImGui::DockBuilderDockWindow(CreateGamePanel()->GetName().c_str(), id);
         ImGui::DockBuilderDockWindow(CreateScenePanel()->GetName().c_str(), id);
+        ImGui::DockBuilderDockWindow(CreateGamePanel()->GetName().c_str(), id);
         ImGui::DockBuilderDockWindow(CreateInspectorPanel()->GetName().c_str(), dock_id_right);
         ImGui::DockBuilderDockWindow(CreateHierarchyPanel()->GetName().c_str(), dock_id_left);
         ImGui::DockBuilderDockWindow(CreateConsolePanel()->GetName().c_str(), dock_id_down);

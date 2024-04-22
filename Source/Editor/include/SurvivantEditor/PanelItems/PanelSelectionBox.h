@@ -32,7 +32,7 @@ namespace SvEditor::PanelItems
 		void DisplaySelectable(ISelectable* p_item);
 
 		SelectableMap				m_elements;
-		std::set<ISelectable*>	m_currentSelection;
+		std::set<ISelectable*>		m_currentSelection;
 		float						m_width;
 		float						m_height;
 	};
