@@ -9,7 +9,7 @@
 namespace SvApp::Core
 {
     RenderingContext::RenderingContext(
-        const SvRendering::Core::Camera& p_cam, const LibMath::Transform& p_trans):
+        const MainCamera::Cam& p_cam, const LibMath::Transform& p_trans):
         m_mainCamera(p_cam, p_trans)
     {
     }
@@ -87,7 +87,7 @@ namespace SvApp::Core
             return;
 
         IRenderAPI::GetCurrent().Clear(true, true, true);
-        DrawMainCameraScene(p_scene, *camInfo.first, *camInfo.second);
+        DrawMainCameraScene(p_scene, *(camInfo.first), *camInfo.second);
     }
 
     void RenderingContext::SceneRender(Scene& p_scene)
@@ -117,7 +117,7 @@ namespace SvApp::Core
         m_renderTypes.push_back(p_type);
     }
 
-    RenderingContext::CamInfo RenderingContext::GetCameraInfo()
+    RenderingContext::CameraInfo RenderingContext::GetCameraInfo()
     {
         return m_mainCamera.GetCamInfo();
     }
@@ -138,9 +138,7 @@ namespace SvApp::Core
     }
 
     void RenderingContext::Resize(const Vec2& p_size)
-    {
-        //TODO: get this info in camera (perspectiveProjection(90_deg, 4.f / 3.f, .01f, 14.f))
-        
+    {        
         //textures
         m_viewport = p_size;
         for (size_t i = 0; i < m_frameTextures.size(); i++)
@@ -148,10 +146,7 @@ namespace SvApp::Core
 
         //camera
         auto [cam, trans] = m_mainCamera.GetCamInfo();
-        cam->SetProjection(perspectiveProjection(
-            90_deg, 
-            static_cast<float>(m_viewport.m_x) / static_cast<float>(m_viewport.m_y),
-            .01f, 14.f));
+        cam->SetAspect(static_cast<float>(m_viewport.m_x) / static_cast<float>(m_viewport.m_y));
     }
 
     void RenderingContext::IdRender(Scene& p_scene)

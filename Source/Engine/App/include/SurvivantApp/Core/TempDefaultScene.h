@@ -20,6 +20,7 @@
 #include <SurvivantRendering/RHI/ITexture.h>
 #include <SurvivantRendering/RHI/IUniformBuffer.h>
 #include <SurvivantRendering/RHI/OpenGL/OpenGLTexture.h>
+#include <SurvivantRendering/Components/CameraComponent.h>
 
 #include "SurvivantApp/Inputs/InputManager.h"
 #include "SurvivantApp/Inputs/KeyboardInputs.h"
@@ -420,8 +421,10 @@ namespace ToRemove
         p_scene.Clear();
         EntityHandle camEntity = p_scene.Create();
 
-        auto& cam = camEntity.Make<Camera>(perspectiveProjection(90_deg, 4.f / 3.f, .01f, 14.f));
-        cam.SetClearColor(Color::gray);
+        auto& cam = camEntity.Make<CameraComponent>();
+        cam.SetAspect(4.f / 3.f);
+        cam.SetPerspective(90_deg, .01f, 14.f);
+        cam.SetClearColor(Color::darkGray);
 
         const Vector3 camPos(0.f, 1.8f, 2.f);
         camEntity.Make<Transform>(camPos, Quaternion::identity(), Vector3::one());
@@ -539,12 +542,15 @@ namespace ToRemove
 
     void inline DrawScene(Scene& p_scene, bool isIdTexture = false)
     {
-        SceneView<Camera>                                cameras(p_scene);
+        SceneView<CameraComponent>                                cameras(p_scene);
         SceneView<const ModelComponent, const Transform> renderables(p_scene);
 
         for (const auto camEntity : cameras)
         {
-            Camera& cam = *cameras.Get<Camera>(camEntity);
+            auto& camComp = *cameras.Get<CameraComponent>(camEntity);
+            camComp.Clear();
+
+            Camera cam = camComp;
 
             if (const Transform* transform = p_scene.Get<const Transform>(camEntity))
             {
@@ -556,7 +562,6 @@ namespace ToRemove
                 BindCamUBO(cam.GetViewProjection(), Vector3::zero());
             }
 
-            cam.Clear();
             const Frustum camFrustum = cam.GetFrustum();
 
             for (const auto modelEntity : renderables)
@@ -573,18 +578,17 @@ namespace ToRemove
     }
 
     void inline DrawMainCameraScene(
-        Scene& p_scene, Camera& p_camera, const Transform& p_trans, 
+        Scene& p_scene, const CameraComponent& p_camera, const Transform& p_trans,
         bool isIdTexture = false)
     {
         SceneView<const ModelComponent, const Transform> renderables(p_scene);
-        SceneView<Camera>                                cameras(p_scene);
         std::pair<ModelComponent*, Transform*>           selectedModel = { nullptr, nullptr };
 
-        Camera& cam = p_camera;
+        p_camera.Clear();
+        Camera cam = p_camera;
         cam.SetView(p_trans.getWorldMatrix().inverse());
         BindCamUBO(cam.GetViewProjection(), p_trans.getWorldPosition());
 
-        cam.Clear();
         const Frustum camFrustum = cam.GetFrustum();
 
         for (const auto modelEntity : renderables)
@@ -612,20 +616,19 @@ namespace ToRemove
     }
 
     void inline DrawSelectedMainCameraScene(
-        Scene& p_scene, Camera& p_camera, const Transform& p_trans, const Entity& p_entityIndex)
+        Scene& p_scene, const CameraComponent p_camera, const Transform& p_trans, const Entity& p_entityIndex)
     {
         static auto defaultMaterial = TempDefaultMaterial();
         static auto darkenColor = Vector4(0.3f, 0.3f, 0.3f, 1);
 
         SceneView<const ModelComponent, const Transform>    renderables(p_scene);
-        SceneView<Camera>                                   cameras(p_scene);
         std::pair<const ModelComponent*, const Transform*>  selectedModel = { nullptr, nullptr };
 
-        Camera& cam = p_camera;
+        p_camera.Clear();
+        Camera cam = p_camera;
         cam.SetView(p_trans.getWorldMatrix().inverse());
         BindCamUBO(cam.GetViewProjection(), p_trans.getWorldPosition());
 
-        cam.Clear();
         const Frustum camFrustum = cam.GetFrustum();
 
         for (const auto modelEntity : renderables)

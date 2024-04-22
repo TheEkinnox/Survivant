@@ -5,6 +5,7 @@
 #include "SurvivantApp/Core/GameInstance.h"
 #include "SurvivantApp/Core/IEngine.h"
 #include "SurvivantCore/ECS/EntityHandle.h"
+#include "SurvivantRendering/Components/CameraComponent.h"
 
 
 #include "Transform.h"
@@ -191,6 +192,9 @@ namespace SvApp::Core
     {
         using namespace LibMath;
         using namespace SvCore::ECS;
+        using namespace SvRendering::Components;
+
+        static CameraComponent EditorCameraComponent = CameraComponent();
 
         std::shared_ptr<WorldContext> wrdPtr = std::make_unique<WorldContext>();
         WorldContext& world = *wrdPtr;
@@ -205,7 +209,7 @@ namespace SvApp::Core
             world.m_renderingContext->AddRenderPass(RenderingContext::ERenderType::GAME);
             break;
         case WorldContext::EWorldType::EDITOR:
-            world.m_renderingContext = std::make_shared<RenderingContext>(Camera(), Transform());
+            world.m_renderingContext = std::make_shared<RenderingContext>(CameraComponent(), Transform());
             world.m_renderingContext->AddRenderPass(RenderingContext::ERenderType::SCENE);
             world.m_renderingContext->AddRenderPass(RenderingContext::ERenderType::ID);
             break;

@@ -11,7 +11,7 @@ using namespace LibMath;
 namespace SvApp::Core
 {
     MainCamera::MainCamera(
-        const SvRendering::Core::Camera& p_cam, const LibMath::Transform& p_trans) :
+        const Cam& p_cam, const LibMath::Transform& p_trans) :
         m_union(p_cam, p_trans),
         m_hasEntity(false)
     {
@@ -23,14 +23,14 @@ namespace SvApp::Core
     {
     }
 
-    RenderingContext::CamInfo MainCamera::GetCamInfo()
+    MainCamera::CamInfo MainCamera::GetCamInfo()
     {
         if (m_hasEntity)
         {
             if (!m_union.m_entity)
                 return { nullptr, nullptr };
 
-            return { m_union.m_entity.Get<Camera>(), m_union.m_entity.Get<Transform>() };
+            return { m_union.m_entity.Get<Cam>(), m_union.m_entity.Get<Transform>() };
         }
 
         return { &m_union.m_camInfo.m_cam, &m_union.m_camInfo.m_trans };
@@ -52,7 +52,7 @@ namespace SvApp::Core
         m_hasEntity = true;
     }
 
-    void MainCamera::SetCamera(const SvRendering::Core::Camera& p_cam, const LibMath::Transform& p_trans)
+    void MainCamera::SetCamera(const Cam& p_cam, const LibMath::Transform& p_trans)
     {
         m_union.m_camInfo = { p_cam, p_trans };
         m_hasEntity = false;

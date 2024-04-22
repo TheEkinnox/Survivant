@@ -46,13 +46,14 @@ namespace SvApp::Core
 
     SvCore::ECS::EntityHandle WorldContext::GetDefaultSceneCamera()
     {
-        SceneView<Camera> cameras(*CurrentScene());
+        SceneView<CameraComponent> cameras(*CurrentScene());
 
         ASSERT(cameras.begin() != cameras.end(), "No Cameras In World");
         return EntityHandle(CurrentScene().get(), *cameras.begin());
     }
 
-    void WorldContext::SetOwningCamera(const SvRendering::Core::Camera& p_cam, const LibMath::Transform& p_trans)
+    void WorldContext::SetOwningCamera(
+        const SvRendering::Components::CameraComponent& p_cam, const LibMath::Transform& p_trans)
     {
         m_renderingContext->m_mainCamera.SetCamera(p_cam, p_trans);
     }

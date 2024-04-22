@@ -28,7 +28,7 @@ namespace SvApp::Core
 		using FrameBufferArray = std::vector<std::unique_ptr<SvRendering::RHI::IFrameBuffer>>;
 		using TexturePtr = std::shared_ptr<SvRendering::RHI::ITexture>;
 		using DefaultTextureArray = std::vector<TexturePtr>;
-		using CamInfo = std::pair<SvRendering::Core::Camera*, LibMath::Transform*>;
+		using CameraInfo = MainCamera::CamInfo;
 
 		using Scene = SvCore::ECS::Scene;
 		using Vec2 = LibMath::Vector2;
@@ -47,7 +47,7 @@ namespace SvApp::Core
 			ID
 		};
 
-		RenderingContext(const SvRendering::Core::Camera& p_cam, const LibMath::Transform& p_trans);
+		RenderingContext(const MainCamera::Cam& p_cam, const LibMath::Transform& p_trans);
 		RenderingContext(SvCore::ECS::EntityHandle p_entity);
 		~RenderingContext() = default;
 
@@ -61,7 +61,7 @@ namespace SvApp::Core
 		/// <param name="p_renderType">Type of render pass</param>
 		void AddRenderPass(ERenderType p_renderType);
 
-		CamInfo		GetCameraInfo();
+		CameraInfo		GetCameraInfo();
 		
 
 		Vec2&		CameraMoveInput();

@@ -8,7 +8,7 @@
 
 #include "SurvivantRendering/RHI/IShaderStorageBuffer.h"
 #include "SurvivantRendering/RHI/IFrameBuffer.h"
-#include "SurvivantRendering/Core/Camera.h"	
+#include "SurvivantRendering/Components/CameraComponent.h"	
 
 #include "Vector/Vector2.h"
 #include "Transform.h"
@@ -49,7 +49,8 @@ namespace SvApp::Core
 		void Render();
 		void LoadCurrentScene();
 
-		void						SetOwningCamera(const SvRendering::Core::Camera& p_cam, const LibMath::Transform& p_trans);
+		void						SetOwningCamera(
+			const SvRendering::Components::CameraComponent& p_cam, const LibMath::Transform& p_trans);
 		void						SetSceneCamera(const SvCore::ECS::EntityHandle& p_entity);
 		SvCore::ECS::EntityHandle	GetDefaultSceneCamera();
 		void						SetInputs();
