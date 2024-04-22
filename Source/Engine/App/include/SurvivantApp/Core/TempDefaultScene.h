@@ -240,9 +240,14 @@ namespace ToRemove
         return Vector2((float)((p_value) >> 32), (float)((p_value) & 0xffffffff00000000));
     }
 
-    int inline TempCast(const Entity::Id& p_value)
+    int inline EntityToTextureValue(const Entity::Id& p_entity)
     {
-        return *(int*)(& p_value);
+        return (*(int*)(&p_entity)) + 1;
+    }
+
+    Entity::Id inline TextureValueToEntity(const int& p_value)
+    {
+        return Entity::Id((*(uint32_t*)(&p_value)) - 1);
     }
 
     void inline DrawModelEditorScene(const Model& p_model, const Frustum& p_viewFrustum, 
@@ -260,7 +265,8 @@ namespace ToRemove
         editorSceneShader->Bind();
         editorSceneShader->SetUniformMat4("sv_modelMat", p_transform);
         editorSceneShader->SetUniformMat4("sv_normalMat", p_transform.transposed().inverse());
-        editorSceneShader->SetUniformInt("u_entityID", TempCast(p_id));
+        auto val = EntityToTextureValue(p_id);
+        editorSceneShader->SetUniformInt("u_entityID", val);
         
         //id uniform
         //editorSceneShader->SetUniformMat4("sv_normalMat", p_transform.transposed().inverse());
@@ -578,13 +584,20 @@ namespace ToRemove
     }
 
     void inline DrawMainCameraScene(
-        Scene& p_scene, const CameraComponent& p_camera, const Transform& p_trans,
+        Scene& p_scene, CameraComponent p_camera, const Transform& p_trans,
         bool isIdTexture = false)
     {
         SceneView<const ModelComponent, const Transform> renderables(p_scene);
         std::pair<ModelComponent*, Transform*>           selectedModel = { nullptr, nullptr };
 
-        p_camera.Clear();
+        if (isIdTexture)
+        {
+            IRenderAPI::GetCurrent().SetClearColor(Color::black);
+            IRenderAPI::GetCurrent().Clear(true, false, false);
+        }
+        else
+            p_camera.Clear();            
+
         Camera cam = p_camera;
         cam.SetView(p_trans.getWorldMatrix().inverse());
         BindCamUBO(cam.GetViewProjection(), p_trans.getWorldPosition());

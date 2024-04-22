@@ -75,7 +75,8 @@ namespace SvApp::Core
 
         idBuff->Unbind();
 
-        return SvCore::ECS::Entity(*(uint32_t*)(&val));
+        auto id = ToRemove::TextureValueToEntity(val);
+        return Entity(id);
     }
 
     void RenderingContext::GameRender(Scene& p_scene)
@@ -157,8 +158,7 @@ namespace SvApp::Core
         if (!(camInfo.first && camInfo.second))
             return;
 
-        IRenderAPI::GetCurrent().Clear(false, true, true);
-        //IRenderAPI::GetCurrent().SetClearColor(NULL_ENTITY);
+        IRenderAPI::GetCurrent().Clear(true, true, true);
 
         DrawMainCameraScene(p_scene, *camInfo.first, *camInfo.second, true);
     }
