@@ -69,7 +69,10 @@ namespace SvEditor::Panels
 				
 				if (0 <= uv.m_x && uv.m_x <= 1 &&
 					0 <= uv.m_y && uv.m_y <= 1)
-					s_onClickSceneEvent.Invoke(CalculateUVCords({ mousePos.x, mousePos.y }));
+				{
+					uv.m_y = 1.0f - uv.m_y;
+					s_onClickSceneEvent.Invoke(uv);
+				}
 			}
 		}
 
