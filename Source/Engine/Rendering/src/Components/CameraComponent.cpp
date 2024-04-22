@@ -1,5 +1,7 @@
 #include "SurvivantRendering/Components/CameraComponent.h"
 
+#include "SurvivantRendering/RHI/IRenderAPI.h"
+
 #include <Angle.h>
 
 using namespace LibMath;
@@ -8,7 +10,7 @@ using namespace SvRendering::Core;
 
 namespace SvRendering::Components
 {
-    CameraComponent::operator Camera() const
+    CameraComponent::operator const Camera&() const
     {
         return m_camera;
     }
@@ -37,6 +39,68 @@ namespace SvRendering::Components
     {
         m_projectionType = p_projectionType;
         Recalculate();
+    }
+
+    void CameraComponent::Clear() const
+    {
+        RHI::IRenderAPI& renderAPI = RHI::IRenderAPI::GetCurrent();
+        renderAPI.SetClearColor(m_clearColor);
+
+        bool clearColor, clearDepth, clearStencil;
+        GetClearMask(clearColor, clearDepth, clearStencil);
+
+        renderAPI.Clear(clearColor, clearDepth, clearStencil);
+    }
+
+    void CameraComponent::SetClearColor(const Color p_color)
+    {
+        m_clearColor = p_color;
+    }
+
+    Color CameraComponent::GetClearColor() const
+    {
+        return m_clearColor;
+    }
+
+    void CameraComponent::SetClearMask(const uint8_t p_clearMask)
+    {
+        m_clearMask = p_clearMask & SV_CLEAR_MASK;
+    }
+
+    void CameraComponent::SetClearMask(const bool p_clearColor, const bool p_clearDepth, const bool p_clearStencil)
+    {
+        m_clearMask = static_cast<uint8_t>(
+            p_clearColor << SV_CLEAR_COLOR_OFFSET |
+            p_clearDepth << SV_CLEAR_DEPTH_OFFSET |
+            p_clearStencil << SV_CLEAR_STENCIL_OFFSET
+        );
+    }
+
+    uint8_t CameraComponent::GetClearMask() const
+    {
+        return m_clearMask;
+    }
+
+    void CameraComponent::GetClearMask(bool& p_clearColor, bool& p_clearDepth, bool& p_clearStencil) const
+    {
+        p_clearColor   = m_clearMask & SV_CLEAR_COLOR_BIT;
+        p_clearDepth   = m_clearMask & SV_CLEAR_DEPTH_BIT;
+        p_clearStencil = m_clearMask & SV_CLEAR_STENCIL_BIT;
+    }
+
+    void CameraComponent::SetCullingMask(const LayerMask p_cullingMask)
+    {
+        m_cullingMask = p_cullingMask;
+    }
+
+    LayerMask CameraComponent::GetCullingMask() const
+    {
+        return m_cullingMask;
+    }
+
+    bool CameraComponent::IsVisible(const LayerMask p_layerMask) const
+    {
+        return (p_layerMask & m_cullingMask) != 0;
     }
 
     float CameraComponent::GetAspect() const

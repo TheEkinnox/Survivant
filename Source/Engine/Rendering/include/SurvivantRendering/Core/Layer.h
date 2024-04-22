@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 
-namespace PantheonRendering::Core
+namespace SvRendering::Core
 {
     using LayerMask = uint32_t;
 
