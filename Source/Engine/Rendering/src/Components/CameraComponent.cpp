@@ -174,7 +174,7 @@ namespace SvCore::ECS
     }
 
     template <>
-    bool ComponentRegistry::FromJson(CameraComponent& p_out, const rapidjson::Value& p_json, Scene*)
+    bool ComponentRegistry::FromJson(CameraComponent& p_out, const rapidjson::Value& p_json)
     {
         if (!CHECK(p_json.IsObject(), "Unable to deserialize camera component - Json value should be an object"))
             return false;
