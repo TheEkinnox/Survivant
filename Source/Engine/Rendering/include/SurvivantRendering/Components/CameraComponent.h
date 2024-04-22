@@ -274,5 +274,5 @@ namespace SvCore::ECS
         const EntitiesMap&);
 
     template <>
-    bool ComponentRegistry::FromJson(SvRendering::Components::CameraComponent& p_out, const rapidjson::Value& p_json);
+    bool ComponentRegistry::FromJson(SvRendering::Components::CameraComponent& p_out, const rapidjson::Value& p_json, Scene*);
 }
