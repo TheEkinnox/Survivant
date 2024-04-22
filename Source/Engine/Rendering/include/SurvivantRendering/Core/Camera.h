@@ -1,28 +1,13 @@
 #pragma once
-#include "SurvivantRendering/Core/Color.h"
-
-#include "Matrix/Matrix4.h"
-
 #include "SurvivantRendering/Geometry/Frustum.h"
+
+#include <Matrix/Matrix4.h>
 
 namespace SvRendering::Core
 {
-    constexpr uint8_t SV_CLEAR_COLOR_OFFSET = 0;
-    constexpr uint8_t SV_CLEAR_COLOR_BIT    = 1 << SV_CLEAR_COLOR_OFFSET;
-
-    constexpr uint8_t SV_CLEAR_DEPTH_OFFSET = SV_CLEAR_COLOR_OFFSET + 1;
-    constexpr uint8_t SV_CLEAR_DEPTH_BIT    = 1 << SV_CLEAR_DEPTH_OFFSET;
-
-    constexpr uint8_t SV_CLEAR_STENCIL_OFFSET = SV_CLEAR_DEPTH_OFFSET + 1;
-    constexpr uint8_t SV_CLEAR_STENCIL_BIT    = 1 << SV_CLEAR_STENCIL_OFFSET;
-
-    constexpr uint8_t SV_CLEAR_MASK = SV_CLEAR_COLOR_BIT | SV_CLEAR_DEPTH_BIT | SV_CLEAR_STENCIL_BIT;
-
     class Camera
     {
     public:
-        using LayerMask = uint32_t;
-
         /**
          * \brief Creates a default camera
          */
@@ -46,7 +31,11 @@ namespace SvRendering::Core
          * \param p_other The camera to move
          */
         Camera(Camera&& p_other) noexcept = default;
-        ~Camera()                         = default;
+
+        /**
+         * \brief Destroys the camera
+         */
+        ~Camera() = default;
 
         /**
          * \brief Assigns a copy of the given camera to this one
@@ -86,68 +75,15 @@ namespace SvRendering::Core
          */
         Geometry::Frustum GetFrustum() const;
 
-        void Clear() const;
-
-        void  SetClearColor(Color p_color);
-        Color GetClearColor() const;
-
-        /**
-         * \brief Sets the camera's buffer clearing mask
-         * \param p_clearMask The buffer clear mask (any of SV_CLEAR_COLOR_BIT, SV_CLEAR_DEPTH_BIT and SV_CLEAR_STENCIL_BIT)
-         */
-        void SetClearMask(uint8_t p_clearMask);
-
-        /**
-         * \brief Updates the camera's clear mask from the given values
-         * \param p_clearColor Whether the color buffer should be cleared
-         * \param p_clearDepth Whether the depth buffer should be cleared
-         * \param p_clearStencil Whether the stencil buffer should be cleared
-         */
-        void SetClearMask(bool p_clearColor, bool p_clearDepth, bool p_clearStencil);
-
-        /**
-         * \brief Gets the camera's buffer clearing mask
-         * \return The camera's clear mask
-         */
-        uint8_t GetClearMask() const;
-
-        /**
-         * \brief Breaks the buffer clearing mask into separate values
-         * \param p_clearColor The output target for whether the color buffer should be cleared
-         * \param p_clearDepth The output target for whether the depth buffer should be cleared
-         * \param p_clearStencil The output target for whether the stencil buffer should be cleared
-         */
-        void GetClearMask(bool& p_clearColor, bool& p_clearDepth, bool& p_clearStencil) const;
-
-        /**
-         * \brief Sets the mask for the layers visible by the camera
-         * \param p_cullingMask The camera's culling mask
-         */
-        void SetCullingMask(LayerMask p_cullingMask);
-
-        /**
-         * \brief Gets the camera's culling mask
-         * \return The camera's culling layer mask
-         */
-        LayerMask GetCullingMask() const;
-
-        /**
-         * \brief Checks whether the given layer mask is visible by the camera
-         * \param p_layerMask The layer mask to check against
-         * \return True if the given layer mask is visible by the camera. False otherwise
-         */
-        bool IsVisible(LayerMask p_layerMask) const;
-
     private:
         LibMath::Matrix4  m_projectionMatrix;
         LibMath::Matrix4  m_viewProjection;
         LibMath::Matrix4  m_viewMatrix;
         Geometry::Frustum m_frustum;
 
-        Color     m_clearColor  = Color::black;
-        uint8_t   m_clearMask   = SV_CLEAR_MASK;
-        LayerMask m_cullingMask = static_cast<LayerMask>(-1);
-
+        /**
+         * \brief Updates the camera's information
+         */
         void OnChange();
     };
 }
