@@ -72,7 +72,7 @@ namespace SvEditor::Core
         ISelectable::m_onSelected.AddListener([this](ISelectable* p_selected) 
             { 
             if (m_selected)
-                m_selected->InvokeClearSelected(); 
+                m_selected->ClearSelection(); 
             m_selected = p_selected; 
             });
         ISelectable::m_onClearSelected.AddListener([this]() { m_selected = nullptr; });
@@ -113,12 +113,13 @@ namespace SvEditor::Core
         ScenePanel::AddClickSceneListenner(
             [p_world](const LibMath::Vector2& p_uv)
             { 
-                auto index = p_world.lock()->
+                auto entity = p_world.lock()->
                     m_renderingContext->GetEntityIdValue(p_uv);
 
-                SV_EVENT_MANAGER().Invoke<EditorUI::DebugEvent>(SvCore::Utility::FormatString("ID = %d", index).c_str());
+                SV_EVENT_MANAGER().Invoke<EditorUI::DebugEvent>(SvCore::Utility::FormatString("ID = %d", entity.GetIndex()).c_str());
 
-                HierarchyPanel::SelectSelectable(index);
+                p_world.lock()->m_renderingContext->s_editorSelectedEntity = entity;
+                HierarchyPanel::SelectSelectable(entity.GetIndex());
             });
         
         ScenePanel::AddResizeListenner(
@@ -286,20 +287,10 @@ namespace SvEditor::Core
             SvApp::InputManager::GetInstance().SetInputBindings(m_inputs);
     }
 
-    //ISelectable* EditorUI::GetSelected()
-    //{
-    //    return m_selected;
-    //}
-
-    //void EditorUI::SetSelected(ISelectable* p_selected)
-    //{
-    //    //remose selection
-    //    if (m_selected != nullptr)
-    //        m_selected->SetSelectedState(false);
-
-    //    //set new selection
-    //    m_selected = p_selected;
-    //}
+    ISelectable* EditorUI::GetSelected()
+    {
+        return m_selected;
+    }
 
     ImFont* EditorUI::GetFontDefault()
     {

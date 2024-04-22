@@ -572,10 +572,13 @@ namespace ToRemove
         }
     }
 
-    void inline DrawMainCameraScene(Scene& p_scene, Camera& p_camera, const Transform& p_trans, bool isIdTexture = false)
+    void inline DrawMainCameraScene(
+        Scene& p_scene, Camera& p_camera, const Transform& p_trans, 
+        bool isIdTexture = false)
     {
         SceneView<const ModelComponent, const Transform> renderables(p_scene);
         SceneView<Camera>                                cameras(p_scene);
+        std::pair<ModelComponent*, Transform*>           selectedModel = { nullptr, nullptr };
 
         Camera& cam = p_camera;
         cam.SetView(p_trans.getWorldMatrix().inverse());
@@ -591,6 +594,55 @@ namespace ToRemove
 
             if (isIdTexture)
                 DrawModelEditorScene(*model->m_model, camFrustum, transform->getWorldMatrix(), *model->m_material, modelEntity);
+            else
+                DrawModel(*model->m_model, camFrustum, transform->getWorldMatrix(), *model->m_material);
+        }
+    }
+
+    SvCore::Resources::ResourceRef<Material> inline TempDefaultMaterial()
+    {
+        ResourceRef<IShader> unlitShader(UNLIT_SHADER_PATH);
+        ASSERT(unlitShader, "Failed to load shader at path \"%s\"", UNLIT_SHADER_PATH);
+
+        ResourceRef<Material> whiteMaterial("", new Material(unlitShader));
+        whiteMaterial->GetProperty<ResourceRef<ITexture>>("u_diffuse") = GetTexture();
+        whiteMaterial->GetProperty<Vector4>("u_tint") = Color::white;
+
+        return whiteMaterial;
+    }
+
+    void inline DrawSelectedMainCameraScene(
+        Scene& p_scene, Camera& p_camera, const Transform& p_trans, const Entity& p_entityIndex)
+    {
+        static auto defaultMaterial = TempDefaultMaterial();
+        static auto darkenColor = Vector4(0.3f, 0.3f, 0.3f, 1);
+
+        SceneView<const ModelComponent, const Transform>    renderables(p_scene);
+        SceneView<Camera>                                   cameras(p_scene);
+        std::pair<const ModelComponent*, const Transform*>  selectedModel = { nullptr, nullptr };
+
+        Camera& cam = p_camera;
+        cam.SetView(p_trans.getWorldMatrix().inverse());
+        BindCamUBO(cam.GetViewProjection(), p_trans.getWorldPosition());
+
+        cam.Clear();
+        const Frustum camFrustum = cam.GetFrustum();
+
+        for (const auto modelEntity : renderables)
+        {
+            const auto [model, transform] = renderables.Get(modelEntity);
+            ASSERT(model->m_model && model->m_material);
+
+            if (p_entityIndex && (modelEntity == p_entityIndex))
+            {
+                auto& colorRef = model->m_material->GetProperty<Vector4>("u_tint");
+                auto oldColor = colorRef;
+
+                colorRef = oldColor * darkenColor;
+                DrawModel(*model->m_model, camFrustum, transform->getWorldMatrix(), *model->m_material);
+
+                colorRef = oldColor;
+            }
             else
                 DrawModel(*model->m_model, camFrustum, transform->getWorldMatrix(), *model->m_material);
         }

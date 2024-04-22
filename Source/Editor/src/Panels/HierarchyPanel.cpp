@@ -40,7 +40,7 @@ namespace SvEditor::Panels
         //propagate selection
         auto selectFunc = [](HierarchyBranch& p_branch)
             { 
-                ScenePanel::s_selectedEntity = p_branch.GetValue();
+                ScenePanel::SelectEntity(p_branch.GetValue());
                 return false; 
             };
 
@@ -103,7 +103,7 @@ namespace SvEditor::Panels
         auto name = FormatString("Entity(%d)", p_childEntity.GetEntity().GetIndex());
 
         return std::make_shared<HierarchyBranch>(
-            name, false, p_childEntity.GetEntity().GetIndex());
+            name, false, p_childEntity.GetEntity());
     }
 
     void HierarchyPanel::AddEntityBranch(
@@ -188,8 +188,16 @@ namespace SvEditor::Panels
     {
         auto it = s_entities.find(p_entity);
 
-        if (it != s_entities.end())
-            it->second->InvokeSelected();
+        if (it == s_entities.end())
+        {
+            auto currentSelected = SV_CURRENT_UI()->GetSelected();
+            if (currentSelected != nullptr)
+                currentSelected->ClearSelection();
+
+            return;
+        }
+
+        it->second->Select();
     }
 
 }

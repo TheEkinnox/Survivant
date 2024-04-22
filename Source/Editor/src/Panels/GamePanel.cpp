@@ -14,6 +14,8 @@ namespace SvEditor::Panels
 {
 	GamePanel::GamePanel()
 	{
+		using namespace SvApp::Core;
+
 		m_name = NAME; 
 
 		m_buttons.m_buttons.reserve(3);
@@ -22,7 +24,7 @@ namespace SvEditor::Panels
 		m_buttons.m_buttons.push_back(PanelButton(" Frame -> ", s_frameListenners));
 
 		m_world = s_worldCreator({ 0, 0 });
-		m_image.SetTexture(m_world->m_renderingContext->GetTextureId());
+		m_image.SetTexture(m_world->m_renderingContext->GetTextureId(RenderingContext::ERenderType::GAME));
 	}
 
 	GamePanel::~GamePanel()

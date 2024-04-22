@@ -42,17 +42,17 @@ namespace SvEditor::Panels
         return m_name;
     }
 
-    bool ExamplResource::InvokeOpen()
+    bool ExamplResource::Open()
     {
-        ISelectable::InvokeOpen();
+        ISelectable::Open();
 
         SV_EVENT_MANAGER().Invoke<Core::IUI::DebugEvent>("Clicked Resource");
         return false;
     }
 
-    bool ExamplResource::InvokeSelected()
+    bool ExamplResource::Select()
     {
-        ISelectable::InvokeSelected();
+        ISelectable::Select();
         return false;
     }
 

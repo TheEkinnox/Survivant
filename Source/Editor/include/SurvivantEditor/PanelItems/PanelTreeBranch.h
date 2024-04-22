@@ -40,8 +40,8 @@ namespace SvEditor::PanelItems
 		// Inherited via ISelectable
 		const std::string&	GetIcon() override;
 		const std::string&	GetName() override;
-		bool				InvokeOpen() override;
-		bool				InvokeSelected() override;
+		bool				Open() override;
+		bool				Select() override;
 		void				DisplayAndUpdatePopupMenu() override;
 		bool				GetSelectedState() override;
 

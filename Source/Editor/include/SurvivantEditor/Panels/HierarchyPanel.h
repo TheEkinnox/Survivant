@@ -48,5 +48,7 @@ namespace SvEditor::Panels
 		
 		HierarchyBranch		m_tree;
 		SceneRef			m_scene;
+
+		std::weak_ptr<HierarchyBranch> m_currentSelected;
 	};
 }

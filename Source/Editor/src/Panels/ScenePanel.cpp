@@ -15,9 +15,10 @@ namespace SvEditor::Panels
 {
 	ScenePanel::ScenePanel()
 	{
+		using namespace SvApp::Core;
 		m_name = NAME;
 
-		m_image.SetTexture(s_world.lock()->m_renderingContext->GetTextureId());
+		m_image.SetTexture(s_world.lock()->m_renderingContext->GetTextureId(RenderingContext::ERenderType::SCENE));
 		m_buttons.m_buttons.push_back(PanelButton("Toogle Texture", [this]() { ToggleTexture(); }));
 	}
 
@@ -89,6 +90,14 @@ namespace SvEditor::Panels
 	void ScenePanel::AddResizeListenner(const ResizeEvent::EventDelegate& p_callback)
 	{
 		s_onResizeEvent.AddListener(p_callback);
+	}
+
+	void ScenePanel::SelectEntity(SvCore::ECS::Entity::Id p_id)
+	{
+		if (s_world.expired())
+			return;
+
+		s_world.lock()->m_renderingContext->s_editorSelectedEntity = SvCore::ECS::Entity(p_id);
 	}
 
 	void ScenePanel::ToggleTexture()

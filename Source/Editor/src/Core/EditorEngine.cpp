@@ -62,7 +62,6 @@ namespace SvEditor::Core
 	{
 		auto pieWorld = Engine::CreateNewWorldContext(WorldContext::EWorldType::PIE);
 
-
 		pieWorld->m_owningGameInstance = p_context.m_owningGameInstance;
 		pieWorld->m_viewport = p_context.m_viewport; //TODO : setup viewport when dupliucating world
 		pieWorld->CurrentScene() = p_inScene;
@@ -255,7 +254,7 @@ namespace SvEditor::Core
 		world->m_lightsSSBO = ToRemove::SetupLightSSBO(*p_inScene);
 		world->m_viewport = { 800, 600 };
 		world->CurrentScene() = p_inScene;
-		auto cam = Camera(perspectiveProjection(120_deg, 4.f / 3.f, .01f, 14.f));
+		auto cam = Camera(perspectiveProjection(90_deg, 4.f / 3.f, .01f, 14.f));
 		cam.SetClearColor(Color::white);
 		world->SetOwningCamera(cam, Transform({ 0.f, 1.8f, 2.f }, Quaternion::identity(), Vector3::one()));
 		world->m_inputs = CreateEditorInputs();

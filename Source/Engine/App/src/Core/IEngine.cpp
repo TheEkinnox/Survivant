@@ -202,16 +202,16 @@ namespace SvApp::Core
             break;
         case WorldContext::EWorldType::PIE:
             world.m_renderingContext = std::make_shared<RenderingContext>(EntityHandle());
-            world.m_renderingContext->AddRenderPass(RenderingContext::ERenderType::DEFAULT);
+            world.m_renderingContext->AddRenderPass(RenderingContext::ERenderType::GAME);
             break;
         case WorldContext::EWorldType::EDITOR:
             world.m_renderingContext = std::make_shared<RenderingContext>(Camera(), Transform());
-            world.m_renderingContext->AddRenderPass(RenderingContext::ERenderType::DEFAULT);
+            world.m_renderingContext->AddRenderPass(RenderingContext::ERenderType::SCENE);
             world.m_renderingContext->AddRenderPass(RenderingContext::ERenderType::ID);
             break;
         case WorldContext::EWorldType::GAME:
             world.m_renderingContext = std::make_shared<RenderingContext>(EntityHandle());
-            world.m_renderingContext->AddRenderPass(RenderingContext::ERenderType::DEFAULT);
+            world.m_renderingContext->AddRenderPass(RenderingContext::ERenderType::GAME);
             break;
         default:
             break;

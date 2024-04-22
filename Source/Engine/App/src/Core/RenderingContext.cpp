@@ -26,8 +26,9 @@ namespace SvApp::Core
 
             switch (m_renderTypes[i])
             {
-            case ERenderType::DEFAULT:  DefaultRender(p_scene);     break;
-            case ERenderType::ID:       IdPassRender(p_scene);      break;
+            case ERenderType::GAME:     GameRender(p_scene);     break;
+            case ERenderType::SCENE:    SceneRender(p_scene);     break;
+            case ERenderType::ID:       IdRender(p_scene);      break;
             default:
                 break;
             }
@@ -50,7 +51,7 @@ namespace SvApp::Core
         return static_cast<intptr_t>(dynamic_cast<OpenGLTexture&>(*m_frameTextures[0]).GetId());
     }
 
-    SvCore::ECS::Entity::Id RenderingContext::GetEntityIdValue(const Vec2& p_uv)
+    SvCore::ECS::Entity RenderingContext::GetEntityIdValue(const Vec2& p_uv)
     {
         ASSERT(!m_frameTextures.empty(), "World has no textures");
 
@@ -74,10 +75,10 @@ namespace SvApp::Core
 
         idBuff->Unbind();
 
-        return SvCore::ECS::Entity::Id(*(uint32_t*)(&val));
+        return SvCore::ECS::Entity(*(uint32_t*)(&val));
     }
 
-    void RenderingContext::DefaultRender(Scene& p_scene)
+    void RenderingContext::GameRender(Scene& p_scene)
     {
         using namespace ToRemove;
 
@@ -89,22 +90,31 @@ namespace SvApp::Core
         DrawMainCameraScene(p_scene, *camInfo.first, *camInfo.second);
     }
 
+    void RenderingContext::SceneRender(Scene& p_scene)
+    {
+        using namespace ToRemove;
+
+        auto camInfo = m_mainCamera.GetCamInfo();
+        if (!(camInfo.first && camInfo.second))
+            return;
+
+        IRenderAPI::GetCurrent().Clear(true, true, true);
+
+        DrawSelectedMainCameraScene(p_scene, *camInfo.first, *camInfo.second, s_editorSelectedEntity);
+    }
+
     void RenderingContext::AddRenderPass(ERenderType p_type)
     {
         switch (p_type)
         {
-        case ERenderType::DEFAULT: AddDefaultRenderPass();     break;
-        case ERenderType::ID:      AddIdRenderPass();          break;
+        case ERenderType::GAME:     AddDefaultRenderPass(ERenderType::GAME);    break;
+        case ERenderType::SCENE:    AddDefaultRenderPass(ERenderType::SCENE);   break;
+        case ERenderType::ID:       AddIdRenderPass();                          break;
         default:
             break;
         }
 
         m_renderTypes.push_back(p_type);
-    }
-
-    void RenderingContext::SetIsDisplayed(bool /*p_isDisplayed*/)
-    {
-        //m_isDisplayed = p_isDisplayed;
     }
 
     RenderingContext::CamInfo RenderingContext::GetCameraInfo()
@@ -127,7 +137,7 @@ namespace SvApp::Core
         m_mainCamera.UpdateInput();
     }
 
-    void RenderingContext::IdPassRender(Scene& p_scene)
+    void RenderingContext::IdRender(Scene& p_scene)
     {
         using namespace ToRemove;
 
@@ -141,14 +151,14 @@ namespace SvApp::Core
         DrawMainCameraScene(p_scene, *camInfo.first, *camInfo.second, true);
     }
 
-    void RenderingContext::AddDefaultRenderPass()
+    void RenderingContext::AddDefaultRenderPass(const ERenderType& p_type)
     {
         std::shared_ptr<ITexture> color = m_frameTextures.emplace_back(
             ITexture::Create(m_viewport.m_x, m_viewport.m_y, EPixelDataFormat::RGB));
         std::shared_ptr<ITexture> depth = m_frameTextures.emplace_back(
             ITexture::Create(m_viewport.m_x, m_viewport.m_y, EPixelDataFormat::DEPTH_COMPONENT));
 
-        m_textureTypeBuffer.push_back(ERenderType::DEFAULT);
+        m_textureTypeBuffer.push_back(p_type);
         m_textureTypeBuffer.push_back(ERenderType(-1));
 
         color->Bind(0);

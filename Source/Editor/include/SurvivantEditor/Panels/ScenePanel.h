@@ -49,7 +49,7 @@ namespace SvEditor::Panels
 		/// <param name="p_callback">callback that takes new size as param</param>
 		static void AddResizeListenner(const ResizeEvent::EventDelegate& p_callback);
 
-		static inline SvCore::ECS::Entity::Id s_selectedEntity = SvCore::ECS::NULL_ENTITY;
+		static void SelectEntity(SvCore::ECS::Entity::Id p_id);
 		static constexpr char NAME[] = "Scene";
 
 	private:

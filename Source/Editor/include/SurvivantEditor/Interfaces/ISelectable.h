@@ -38,15 +38,18 @@ namespace SvEditor::Interfaces
 
 		virtual const std::string&	GetIcon() = 0;
 		virtual const std::string&	GetName() = 0;
-		virtual bool				InvokeOpen() { m_onOpened.Invoke(this); return false; };
-		virtual bool				InvokeSelected() { SetSelectedState(true); m_onSelected.Invoke(this); return false; };
+		virtual bool				Open() { m_onOpened.Invoke(this); return false; };
+		virtual bool				Select() { SetSelectedState(true); m_onSelected.Invoke(this); return false; };
 		virtual void				DisplayAndUpdatePopupMenu() = 0;
 		virtual bool				GetSelectedState() = 0;
 
-		void						InvokeClearSelected() { 
+		void						ClearSelection() { 
 			
+			auto prevState = GetSelectedState();
 			SetSelectedState(false); 
-			m_onClearSelected.Invoke(); 
+
+			if (prevState)
+				m_onClearSelected.Invoke(); 
 		};
 
 		inline static SvCore::Events::Event<ISelectable*>	m_onOpened;

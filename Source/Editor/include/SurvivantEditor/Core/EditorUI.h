@@ -66,7 +66,7 @@ namespace SvEditor::Core
 		// Inherited via IUI
 		ImFont* GetFontDefault() override;
 		ImFont* GetIconFont() override;
-		//ISelectable* GetSelected() override;
+		ISelectable* GetSelected() override;
 		//void SetSelected(ISelectable* p_selected) override;
 
 	private:
