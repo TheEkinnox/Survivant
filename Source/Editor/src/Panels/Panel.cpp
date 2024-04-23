@@ -14,6 +14,20 @@ namespace SvEditor::Panels
         m_name(p_name)
     {}
 
+    bool Panel::IsWindowDifferentSize(LibMath::Vector2& p_oldSize)
+    {
+        ImVec2 view = ImGui::GetContentRegionAvail();
+
+        if (view.x != 0 && view.y != 0 &&
+            view.x != p_oldSize.m_x || view.y != p_oldSize.m_y)
+        {
+            p_oldSize = { view.x, view.y };
+            return true;
+        }
+
+        return false;
+    }
+
     bool Panel::IsWindowDifferentSize(LibMath::Vector2& p_oldSize, bool& p_lastVal)
     {
         //one frame behind resize

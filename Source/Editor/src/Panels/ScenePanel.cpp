@@ -47,13 +47,10 @@ namespace SvEditor::Panels
 			//else if (val == -1)
 			//	s_world.lock()->m_onLoseFocus.Invoke();
 
-			//render
-			//s_world.lock()->Render();
-
 			//panelables
 			m_buttons.DisplayAndUpdatePanel();
 
-			if (IsWindowDifferentSize(m_imageSize, oldWindowSizeValue))
+			if (IsWindowDifferentSize(m_imageSize))
 				s_onResizeEvent.Invoke(m_imageSize);
 
 			auto pos = ImGui::GetCursorPos();

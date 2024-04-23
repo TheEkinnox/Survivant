@@ -24,6 +24,7 @@ namespace SvEditor::Panels
 		Panel() = default;
 		Panel(const std::string& p_name);
 
+		static bool IsWindowDifferentSize(LibMath::Vector2& p_oldSize);
 		static bool IsWindowDifferentSize(LibMath::Vector2& p_oldSize, bool& p_lastVal);
 
 		/// <summary>
