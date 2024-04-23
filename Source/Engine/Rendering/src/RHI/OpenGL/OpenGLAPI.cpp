@@ -29,90 +29,103 @@ namespace SvRendering::RHI
         if (p_id == 131169 || p_id == 131185 || p_id == 131218 || p_id == 131204)
             return;
 
-        Logger& logger = Logger::GetInstance();
+        std::ostringstream oss;
 
-        logger.Print("---------------\n");
-        logger.Print("Debug message (%u): %s\n", false, p_id, p_message);
+        oss << "---------------\n";
+        oss << "Debug message (" << p_id << "): " << p_message << '\n';
 
         switch (p_source)
         {
         case GL_DEBUG_SOURCE_API:
-            logger.Print("Source: API");
+            oss << "Source: API";
             break;
         case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
-            logger.Print("Source: Window System");
+            oss << "Source: Window System";
             break;
         case GL_DEBUG_SOURCE_SHADER_COMPILER:
-            logger.Print("Source: Shader Compiler");
+            oss << "Source: Shader Compiler";
             break;
         case GL_DEBUG_SOURCE_THIRD_PARTY:
-            logger.Print("Source: Third Party");
+            oss << "Source: Third Party";
             break;
         case GL_DEBUG_SOURCE_APPLICATION:
-            logger.Print("Source: Application");
+            oss << "Source: Application";
             break;
         case GL_DEBUG_SOURCE_OTHER:
         default:
-            logger.Print("Source: Other");
+            oss << "Source: Other";
             break;
         }
 
-        logger.Print("\n");
+        oss << '\n';
+
+        ELogType logType = ELogType::DEBUG_LOG;
 
         switch (p_type)
         {
         case GL_DEBUG_TYPE_ERROR:
-            logger.Print("Type: Error", true);
+            oss << "Type: Error";
+            logType = ELogType::ERROR_LOG;
             break;
         case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
-            logger.Print("Type: Deprecated Behaviour", true);
+            oss << "Type: Deprecated Behaviour";
+            logType = ELogType::ERROR_LOG;
             break;
         case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
-            logger.Print("Type: Undefined Behaviour", true);
+            oss << "Type: Undefined Behaviour";
+            logType = ELogType::ERROR_LOG;
             break;
         case GL_DEBUG_TYPE_PORTABILITY:
-            logger.Print("Type: Portability", true);
+            oss << "Type: Portability";
+            logType = ELogType::ERROR_LOG;
             break;
         case GL_DEBUG_TYPE_PERFORMANCE:
-            logger.Print("Type: Performance", true);
+            oss << "Type: Performance";
+            logType = ELogType::ERROR_LOG;
             break;
         case GL_DEBUG_TYPE_MARKER:
-            logger.Print("Type: Marker");
+            oss << "Type: Marker";
             break;
         case GL_DEBUG_TYPE_PUSH_GROUP:
-            logger.Print("Type: Push Group");
+            oss << "Type: Push Group";
             break;
         case GL_DEBUG_TYPE_POP_GROUP:
-            logger.Print("Type: Pop Group");
+            oss << "Type: Pop Group";
             break;
         case GL_DEBUG_TYPE_OTHER:
         default:
-            logger.Print("Type: Other");
+            oss << "Type: Other";
             break;
         }
 
-        logger.Print("\n");
+        oss << '\n';
 
         switch (p_severity)
         {
         case GL_DEBUG_SEVERITY_HIGH:
-            logger.Print("Severity: high");
+            oss << "Severity: high";
             break;
         case GL_DEBUG_SEVERITY_MEDIUM:
-            logger.Print("Severity: medium");
+            oss << "Severity: medium";
+
+            if (logType != ELogType::ERROR_LOG)
+                logType = ELogType::WARNING_LOG;
+
             break;
         case GL_DEBUG_SEVERITY_LOW:
-            logger.Print("Severity: low");
+            oss << "Severity: low";
             break;
         case GL_DEBUG_SEVERITY_NOTIFICATION:
-            logger.Print("Severity: notification");
+            oss << "Severity: notification";
             break;
         default:
-            logger.Print("Severity: unknown");
+            oss << "Severity: unknown";
             break;
         }
 
-        logger.Print("\n\n");
+        oss << "\n\n";
+
+        Logger::GetInstance().Print(oss.str().c_str(), logType);
     }
 
     std::string GetGLString(const GLenum p_name)

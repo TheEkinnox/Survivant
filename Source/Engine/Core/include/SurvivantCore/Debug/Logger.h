@@ -1,17 +1,29 @@
 #pragma once
 
+#include "SurvivantCore/Debug/ELogType.h"
+#include "SurvivantCore/Events/Event.h"
+
 #include <filesystem>
 
 #ifndef SV_LOG
-#define SV_LOG(format, ...) SvCore::Debug::Logger::GetInstance().DebugLog(__FILE__, __LINE__, format, false, ##__VA_ARGS__)
-#define SV_LOG_ERROR(format, ...) SvCore::Debug::Logger::GetInstance().DebugLog(__FILE__, __LINE__, format, true, ##__VA_ARGS__)
+#define SV_LOG(format, ...) SvCore::Debug::Logger::GetInstance().DebugLog(__FILE__, __LINE__, format, SvCore::Debug::ELogType::DEBUG_LOG __VA_OPT__(,) __VA_ARGS__)
+#define SV_LOG_WARNING(format, ...) SvCore::Debug::Logger::GetInstance().DebugLog(__FILE__, __LINE__, format, SvCore::Debug::ELogType::WARNING_LOG __VA_OPT__(,) __VA_ARGS__)
+#define SV_LOG_ERROR(format, ...) SvCore::Debug::Logger::GetInstance().DebugLog(__FILE__, __LINE__, format, SvCore::Debug::ELogType::ERROR_LOG __VA_OPT__(,) __VA_ARGS__)
 #endif //SV_LOG
 
 namespace SvCore::Debug
 {
+    struct LogInfo
+    {
+        ELogType    m_type;
+        std::string m_message;
+    };
+
     class Logger
     {
     public:
+        Events::Event<LogInfo> m_onPrint;
+
         Logger()                          = default;
         Logger(const Logger& p_other)     = default;
         Logger(Logger&& p_other) noexcept = default;
@@ -30,11 +42,11 @@ namespace SvCore::Debug
          * \brief Logs a message with the given format following printf's syntax.
          * \tparam Args The arguments to insert into the format string
          * \param p_format The format of the message
-         * \param p_isError Whether the message is an error message or not
+         * \param p_type The type of message getting logged
          * \param p_args Additional arguments to insert into the message
          */
         template <typename... Args>
-        void Print(const char* p_format, bool p_isError = false, Args... p_args);
+        void Print(const char* p_format, ELogType p_type, Args... p_args);
 
         /**
          * \brief Logs a message with the given format following printf's syntax.
@@ -43,11 +55,11 @@ namespace SvCore::Debug
          * \param p_file The file for which the function was called
          * \param p_line The line for which the function was called
          * \param p_format The format of the message
-         * \param p_isError Whether the message is an error message or not
+         * \param p_type The type of message getting logged
          * \param p_args Additional arguments to insert into the message
          */
         template <typename... Args>
-        void DebugLog(const char* p_file, size_t p_line, const char* p_format, bool p_isError, Args... p_args);
+        void DebugLog(const char* p_file, size_t p_line, const char* p_format, ELogType p_type, Args... p_args);
 
         /**
         * \brief Accessor to the Logger singleton
@@ -60,4 +72,4 @@ namespace SvCore::Debug
     };
 }
 
-#include "Logger.inl"
+#include "SurvivantCore/Debug/Logger.inl"

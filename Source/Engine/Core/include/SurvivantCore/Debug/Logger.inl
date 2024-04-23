@@ -20,23 +20,41 @@ namespace SvCore::Debug
     }
 
     template <typename... Args>
-    void Logger::Print(const char* p_format, const bool p_isError, Args... p_args)
+    void Logger::Print(const char* p_format, const ELogType p_type, Args... p_args)
     {
         const std::string message = Utility::FormatString(p_format, p_args...);
 
-        (p_isError ? std::cerr : std::cout) << message << std::flush;
+        m_onPrint.Invoke({ p_type, message });
+
+        (p_type == ELogType::ERROR_LOG ? std::cerr : std::cout) << message << std::flush;
 
         if (m_filePath.empty())
             return;
 
         std::ofstream file(m_filePath, std::ios::app);
         assert(file.is_open());
-        file << message << std::flush;
+
+        switch (p_type)
+        {
+        case ELogType::DEBUG_LOG:
+            file << "[INFO] " << message << std::flush;
+            break;
+        case ELogType::WARNING_LOG:
+            file << "[WARNING] " << message << std::flush;
+            break;
+        case ELogType::ERROR_LOG:
+            file << "[ERROR] " << message << std::flush;
+            break;
+        case ELogType::DEFAULT_LOG:
+        default:
+            file << message << std::flush;
+            break;
+        }
     }
 
     template <typename... Args>
     void Logger::DebugLog([[maybe_unused]] const char*  p_file,
-                          [[maybe_unused]] const size_t p_line, const char* p_format, const bool p_isError, Args... p_args)
+                          [[maybe_unused]] const size_t p_line, const char* p_format, const ELogType p_type, Args... p_args)
     {
         std::string message = Utility::FormatString(p_format, p_args...);
 
@@ -46,6 +64,6 @@ namespace SvCore::Debug
         message += '\n';
 #endif // _DEBUG || SV_VERBOSE_LOG
 
-        Print(message.c_str(), p_isError);
+        Print(message.c_str(), p_type);
     }
 }
