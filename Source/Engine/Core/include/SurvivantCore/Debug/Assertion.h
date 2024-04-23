@@ -9,8 +9,9 @@
 
 #define ASSERT(condition, ...) if (!(condition))   \
 {                                                  \
-    SV_LOG_ERROR("Assertion failed: " #condition); \
-    __VA_OPT__(SV_LOG_ERROR(__VA_ARGS__);)         \
+    SV_LOG_ERROR("Assertion failed: " #condition   \
+    __VA_OPT__( "\n%s", SvCore::Utility::FormatString(__VA_ARGS__).c_str()) \
+    );                                             \
     DEBUG_BREAK();                                 \
     abort();                                       \
 } ((void)0)
@@ -29,8 +30,9 @@
 {                                                    \
     if (!(condition))                                \
     {                                                \
-        SV_LOG_ERROR("Check failed: " #condition);   \
-        __VA_OPT__(SV_LOG_ERROR(__VA_ARGS__);)       \
+        SV_LOG_ERROR("Check failed: " #condition     \
+        __VA_OPT__( "\n%s", SvCore::Utility::FormatString(__VA_ARGS__).c_str()) \
+        );                                           \
         DEBUG_BREAK();                               \
         return false;                                \
     }                                                \
@@ -60,7 +62,7 @@
 #endif // !ASSUME
 
 #ifndef ASSUME_FALSE
-#if defined(_DEBUG) || defined(PTH_VERBOSE_LOG)
+#if defined(_DEBUG) || defined(SV_VERBOSE_LOG)
 
 #define ASSUME_FALSE(condition, ...) !CHECK(!(condition) __VA_OPT__(,) __VA_ARGS__)
 
@@ -68,5 +70,5 @@
 
 #define ASSUME_FALSE(condition, ...) false
 
-#endif // _DEBUG || PTH_VERBOSE_LOG
+#endif // _DEBUG || SV_VERBOSE_LOG
 #endif // !ASSUME_FALSE
