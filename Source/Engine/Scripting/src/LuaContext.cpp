@@ -60,7 +60,7 @@ namespace SvScripting
             return;
 
         m_state = std::make_unique<sol::state>();
-        m_state->open_libraries(sol::lib::base, sol::lib::package, sol::lib::math);
+        m_state->open_libraries(sol::lib::base, sol::lib::package, sol::lib::string, sol::lib::math);
         m_state->add_package_loader(&LoadModule);
         m_isValid = true;
 
