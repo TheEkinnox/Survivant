@@ -1,7 +1,5 @@
 #include "SurvivantTest/TestApp.h"
 
-#include "SurvivantScripting/LuaScriptList.h"
-
 #include "SurvivantTest/RotatorComponent.h"
 #include "SurvivantTest/SceneTest.h"
 #include "SurvivantTest/TemporaryComponent.h"
@@ -11,6 +9,7 @@
 #include <SurvivantCore/ECS/Components/Hierarchy.h>
 #include <SurvivantCore/Utility/FileSystem.h>
 
+#include <SurvivantRendering/Components/CameraComponent.h>
 #include <SurvivantRendering/Components/LightComponent.h>
 #include <SurvivantRendering/Components/ModelComponent.h>
 #include <SurvivantRendering/Core/Camera.h>
@@ -21,6 +20,7 @@
 #include <SurvivantRendering/RHI/IUniformBuffer.h>
 
 #include <SurvivantScripting/LuaContext.h>
+#include <SurvivantScripting/LuaScriptList.h>
 
 #include <Transform.h>
 
@@ -212,8 +212,8 @@ namespace SvTest
 
         EntityHandle camEntity = m_scene.Create();
 
-        Camera& cam = camEntity.Make<Camera>(perspectiveProjection(90_deg, 4.f / 3.f, .01f, 14.f));
-        cam.SetClearColor(Color::gray);
+        CameraComponent& cam = camEntity.Make<CameraComponent>();
+        cam.SetClearColor(Color::gray).SetPerspective(90_deg, .01f, 14.f).SetAspect(4.f / 3.f);
 
         const Vector3 camPos(0.f, 1.8f, 2.f);
         camEntity.Make<Transform>(camPos, Quaternion::identity(), Vector3::one());
@@ -406,25 +406,26 @@ namespace SvTest
 
     void TestApp::DrawScene()
     {
-        SceneView<Camera>                                cameras(m_scene);
+        SceneView<CameraComponent>                       cameras(m_scene);
         SceneView<const ModelComponent, const Transform> renderables(m_scene);
 
         for (const auto camEntity : cameras)
         {
-            Camera& cam = *cameras.Get<Camera>(camEntity);
+            CameraComponent& cam = *cameras.Get<CameraComponent>(camEntity);
 
             if (const Transform* transform = m_scene.Get<const Transform>(camEntity))
             {
-                cam.SetView(transform->getWorldMatrix().inverse());
-                BindCamUBO(cam.GetViewProjection(), transform->getWorldPosition());
+                cam.Recalculate(transform->getWorldMatrix().inverse());
+                BindCamUBO(cam->GetViewProjection(), transform->getWorldPosition());
             }
             else
             {
-                BindCamUBO(cam.GetViewProjection(), Vector3::zero());
+                cam.Recalculate(Matrix4(1.f));
+                BindCamUBO(cam->GetViewProjection(), Vector3::zero());
             }
 
             cam.Clear();
-            const Frustum camFrustum = cam.GetFrustum();
+            const Frustum camFrustum = cam->GetFrustum();
 
             for (const auto modelEntity : renderables)
             {
