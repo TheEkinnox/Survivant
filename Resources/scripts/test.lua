@@ -193,6 +193,9 @@ function Test:OnInit()
         testCalled = true
         TestECS(self.owner)
         self.owner:AddScript("scripts.mathTest")
+
+        local inputEntity = self.owner.scene:Create() -- Create a new entity since this one will be destroyed
+        inputEntity:AddScript("scripts.inputTest")
     end
 
     if self.max_tick ~= 0 then

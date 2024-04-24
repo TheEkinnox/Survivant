@@ -1,13 +1,13 @@
 #include "SurvivantScripting/LuaContext.h"
 
-#include "SurvivantCore/Utility/FileSystem.h"
-
 #include "SurvivantScripting/FunctionNames.h"
 #include "SurvivantScripting/LuaScriptList.h"
 #include "SurvivantScripting/Bindings/LuaECSBinder.h"
+#include "SurvivantScripting/Bindings/LuaInputBinder.h"
 #include "SurvivantScripting/Bindings/LuaMathBinder.h"
 
 #include <SurvivantCore/Resources/ResourceManager.h>
+#include <SurvivantCore/Utility/FileSystem.h>
 
 using namespace SvCore::ECS;
 using namespace SvCore::Resources;
@@ -323,5 +323,6 @@ namespace SvScripting
     {
         Bindings::LuaECSBinder::Bind(p_luaState);
         Bindings::LuaMathBinder::Bind(p_luaState);
+        Bindings::LuaInputBinder::Bind(p_luaState);
     }
 }
