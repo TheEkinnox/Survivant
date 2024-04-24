@@ -245,7 +245,7 @@ namespace SvCore::ECS
     }
 
     template <class T>
-    bool ComponentStorage<T>::ToJson(rapidjson::Writer<rapidjson::StringBuffer>& p_writer, const EntitiesMap& p_entitiesMap) const
+    bool ComponentStorage<T>::ToJson(Serialization::JsonWriter& p_writer, const EntitiesMap& p_entitiesMap) const
     {
         p_writer.StartArray();
 
@@ -273,7 +273,7 @@ namespace SvCore::ECS
     }
 
     template <class T>
-    bool ComponentStorage<T>::FromJson(const rapidjson::Value& p_json)
+    bool ComponentStorage<T>::FromJson(const Serialization::JsonValue& p_json)
     {
         if (!CHECK(p_json.IsArray(), "Failed to deserialize component storage - Json value should be an array"))
             return false;

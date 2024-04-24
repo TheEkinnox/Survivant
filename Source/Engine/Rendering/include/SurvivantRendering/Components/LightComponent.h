@@ -34,7 +34,7 @@ namespace SvRendering::Components
      * \param p_writer The output json writer
      * \return True on success. False otherwise
      */
-    bool SerializeAmbient(const Core::Light& p_light, rapidjson::Writer<rapidjson::StringBuffer>& p_writer);
+    bool SerializeAmbient(const Core::Light& p_light, SvCore::Serialization::JsonWriter& p_writer);
 
     /**
      * \brief Deserializes the given ambient light from json
@@ -42,7 +42,7 @@ namespace SvRendering::Components
      * \param p_json The input json data
      * \return True on success. False otherwise
      */
-    bool DeserializeAmbient(Core::Light& p_out, const rapidjson::Value& p_json);
+    bool DeserializeAmbient(Core::Light& p_out, const SvCore::Serialization::JsonValue& p_json);
 
     /**
      * \brief Serializes the given directional light to json
@@ -50,7 +50,7 @@ namespace SvRendering::Components
      * \param p_writer The output json writer
      * \return True on success. False otherwise
      */
-    bool SerializeDirectional(const Core::DirectionalLight& p_light, rapidjson::Writer<rapidjson::StringBuffer>& p_writer);
+    bool SerializeDirectional(const Core::DirectionalLight& p_light, SvCore::Serialization::JsonWriter& p_writer);
 
     /**
      * \brief Deserializes the given directional light from json
@@ -58,7 +58,7 @@ namespace SvRendering::Components
      * \param p_json The input json data
      * \return True on success. False otherwise
      */
-    bool DeserializeDirectional(Core::DirectionalLight& p_out, const rapidjson::Value& p_json);
+    bool DeserializeDirectional(Core::DirectionalLight& p_out, const SvCore::Serialization::JsonValue& p_json);
 
     /**
      * \brief Serializes the given attenuation data to json
@@ -66,7 +66,7 @@ namespace SvRendering::Components
      * \param p_writer The output json writer
      * \return True on success. False otherwise
      */
-    bool SerializeAttenuation(const Core::Attenuation& p_attenuation, rapidjson::Writer<rapidjson::StringBuffer>& p_writer);
+    bool SerializeAttenuation(const Core::Attenuation& p_attenuation, SvCore::Serialization::JsonWriter& p_writer);
 
     /**
      * \brief Deserializes the given attenuation data from json
@@ -74,7 +74,7 @@ namespace SvRendering::Components
      * \param p_json The input json data
      * \return True on success. False otherwise
      */
-    bool DeserializeAttenuation(Core::Attenuation& p_out, const rapidjson::Value& p_json);
+    bool DeserializeAttenuation(Core::Attenuation& p_out, const SvCore::Serialization::JsonValue& p_json);
 
     /**
      * \brief Serializes the given point light to json
@@ -82,7 +82,7 @@ namespace SvRendering::Components
      * \param p_writer The output json writer
      * \return True on success. False otherwise
      */
-    bool SerializePoint(const Core::PointLight& p_light, rapidjson::Writer<rapidjson::StringBuffer>& p_writer);
+    bool SerializePoint(const Core::PointLight& p_light, SvCore::Serialization::JsonWriter& p_writer);
 
     /**
      * \brief Deserializes the given point light from json
@@ -90,7 +90,7 @@ namespace SvRendering::Components
      * \param p_json The input json data
      * \return True on success. False otherwise
      */
-    bool DeserializePoint(Core::PointLight& p_out, const rapidjson::Value& p_json);
+    bool DeserializePoint(Core::PointLight& p_out, const SvCore::Serialization::JsonValue& p_json);
 
     /**
      * \brief Serializes the given cutoff data to json
@@ -98,7 +98,7 @@ namespace SvRendering::Components
      * \param p_writer The output json writer
      * \return True on success. False otherwise
      */
-    bool SerializeCutoff(const Core::Cutoff& p_cutoff, rapidjson::Writer<rapidjson::StringBuffer>& p_writer);
+    bool SerializeCutoff(const Core::Cutoff& p_cutoff, SvCore::Serialization::JsonWriter& p_writer);
 
     /**
      * \brief Deserializes the given cutoff data from json
@@ -106,7 +106,7 @@ namespace SvRendering::Components
      * \param p_json The input json data
      * \return True on success. False otherwise
      */
-    bool DeserializeCutoff(Core::Cutoff& p_out, const rapidjson::Value& p_json);
+    bool DeserializeCutoff(Core::Cutoff& p_out, const SvCore::Serialization::JsonValue& p_json);
 
     /**
      * \brief Serializes the given spot light to json
@@ -114,7 +114,7 @@ namespace SvRendering::Components
      * \param p_writer The output json writer
      * \return True on success. False otherwise
      */
-    bool SerializeSpot(const Core::SpotLight& p_light, rapidjson::Writer<rapidjson::StringBuffer>& p_writer);
+    bool SerializeSpot(const Core::SpotLight& p_light, SvCore::Serialization::JsonWriter& p_writer);
 
     /**
      * \brief Deserializes the given spot light from json
@@ -122,16 +122,16 @@ namespace SvRendering::Components
      * \param p_json The input json data
      * \return True on success. False otherwise
      */
-    bool DeserializeSpot(Core::SpotLight& p_out, const rapidjson::Value& p_json);
+    bool DeserializeSpot(Core::SpotLight& p_out, const SvCore::Serialization::JsonValue& p_json);
 }
 
 namespace SvCore::ECS
 {
     template <>
     bool ComponentRegistry::ToJson(
-        const SvRendering::Components::LightComponent&, rapidjson::Writer<rapidjson::StringBuffer>&, const EntitiesMap&);
+        const SvRendering::Components::LightComponent&, SvCore::Serialization::JsonWriter&, const EntitiesMap&);
 
     template <>
     bool ComponentRegistry::FromJson(
-        SvRendering::Components::LightComponent&, const rapidjson::Value&, Scene*);
+        SvRendering::Components::LightComponent&, const SvCore::Serialization::JsonValue&, Scene*);
 }

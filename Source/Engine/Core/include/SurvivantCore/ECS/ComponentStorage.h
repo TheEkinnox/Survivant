@@ -1,11 +1,9 @@
 #pragma once
 #include "SurvivantCore/ECS/Entity.h"
 #include "SurvivantCore/Events/Event.h"
+#include "SurvivantCore/Serialization/Serializer.h"
 
 #include <unordered_map>
-
-#include <rapidjson/document.h>
-#include <rapidjson/writer.h>
 
 namespace SvCore::ECS
 {
@@ -113,14 +111,14 @@ namespace SvCore::ECS
          * \param p_entitiesMap The entity index to scene entity map
          * \return True on success. False otherwise.
          */
-        virtual bool ToJson(rapidjson::Writer<rapidjson::StringBuffer>& p_writer, const EntitiesMap& p_entitiesMap) const = 0;
+        virtual bool ToJson(Serialization::JsonWriter& p_writer, const EntitiesMap& p_entitiesMap) const = 0;
 
         /**
          * \brief Deserializes the component storage from json
          * \param p_json The input json data
          * \return True on success. False otherwise.
          */
-        virtual bool FromJson(const rapidjson::Value& p_json) = 0;
+        virtual bool FromJson(const Serialization::JsonValue& p_json) = 0;
 
     protected:
         /**
@@ -137,10 +135,10 @@ namespace SvCore::ECS
         using iterator = typename std::vector<ComponentT>::iterator;
         using const_iterator = typename std::vector<ComponentT>::const_iterator;
 
-        SvCore::Events::Event<EntityHandle, T&> m_onAdd;
-        SvCore::Events::Event<EntityHandle, T&> m_onRemove;
-        SvCore::Events::Event<EntityHandle, T&> m_onBeforeChange;
-        SvCore::Events::Event<EntityHandle, T&> m_onChange;
+        Events::Event<EntityHandle, T&> m_onAdd;
+        Events::Event<EntityHandle, T&> m_onRemove;
+        Events::Event<EntityHandle, T&> m_onBeforeChange;
+        Events::Event<EntityHandle, T&> m_onChange;
 
         /**
          * \brief Creates an empty component storage
@@ -320,14 +318,14 @@ namespace SvCore::ECS
          * \param p_entitiesMap The entity index to scene entity map
          * \return True on success. False otherwise.
          */
-        bool ToJson(rapidjson::Writer<rapidjson::StringBuffer>& p_writer, const EntitiesMap& p_entitiesMap) const override;
+        bool ToJson(Serialization::JsonWriter& p_writer, const EntitiesMap& p_entitiesMap) const override;
 
         /**
          * \brief Deserializes the component storage from json
          * \param p_json The input json data
          * \return True on success. False otherwise.
          */
-        bool FromJson(const rapidjson::Value& p_json) override;
+        bool FromJson(const Serialization::JsonValue& p_json) override;
 
     private:
         std::vector<ComponentT>                m_components;

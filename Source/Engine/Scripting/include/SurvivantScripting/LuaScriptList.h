@@ -100,19 +100,7 @@ namespace SvScripting
      * \return The created object on success. A null optional otherwise
      */
     sol::optional<sol::object> LuaObjectFromJson(
-        lua_State* p_luaState, const rapidjson::Value& p_json, SvCore::ECS::Scene* p_scene);
-
-    /**
-     * \brief Deserializes the lua object from binary
-     * \param p_luaState The object's lua state
-     * \param p_data The input memory buffer
-     * \param p_length The input memory buffer's length
-     * \param p_readBytes The output variable for the number of deserialized bytes
-     * \param p_scene The object's target scene
-     * \return The number of read bytes on success. 0 otherwise
-     */
-    sol::optional<sol::object> LuaObjectFromBinary(
-        lua_State* p_luaState, const char* p_data, size_t p_length, size_t& p_readBytes, SvCore::ECS::Scene* p_scene);
+        lua_State* p_luaState, const SvCore::Serialization::JsonValue& p_json, SvCore::ECS::Scene* p_scene);
 }
 
 namespace SvCore::ECS
@@ -157,8 +145,8 @@ namespace SvCore::ECS
      * \return True on success. False otherwise
      */
     template <>
-    bool ComponentRegistry::ToJson(const SvScripting::LuaScriptList&           p_component,
-                                   rapidjson::Writer<rapidjson::StringBuffer>& p_writer, const EntitiesMap& p_toSerialized);
+    bool ComponentRegistry::ToJson(const SvScripting::LuaScriptList& p_component,
+                                   Serialization::JsonWriter&        p_writer, const EntitiesMap& p_toSerialized);
 
     /**
      * \brief Deserializes the lua script component from json
@@ -168,7 +156,8 @@ namespace SvCore::ECS
      * \return True on success. False otherwise
      */
     template <>
-    bool ComponentRegistry::FromJson(SvScripting::LuaScriptList& p_out, const rapidjson::Value& p_json, Scene* p_scene);
+    bool ComponentRegistry::FromJson(SvScripting::LuaScriptList& p_out, const Serialization::JsonValue& p_json,
+                                     Scene*                      p_scene);
 
     /**
      * \brief Serializes the given lua table to json
@@ -179,7 +168,7 @@ namespace SvCore::ECS
      */
     template <>
     bool ComponentRegistry::ToJson(
-        const sol::table& p_component, rapidjson::Writer<rapidjson::StringBuffer>& p_writer, const EntitiesMap& p_toSerialized);
+        const sol::table& p_component, Serialization::JsonWriter& p_writer, const EntitiesMap& p_toSerialized);
 
     /**
      * \brief Deserializes the lua table from json
@@ -189,7 +178,7 @@ namespace SvCore::ECS
      * \return True on success. False otherwise
      */
     template <>
-    bool ComponentRegistry::FromJson(sol::table& p_out, const rapidjson::Value& p_json, Scene* p_scene);
+    bool ComponentRegistry::FromJson(sol::table& p_out, const Serialization::JsonValue& p_json, Scene* p_scene);
 
     /**
      * \brief Serializes the given lua object to json
@@ -200,5 +189,5 @@ namespace SvCore::ECS
      */
     template <>
     bool ComponentRegistry::ToJson(
-        const sol::object& p_component, rapidjson::Writer<rapidjson::StringBuffer>& p_writer, const EntitiesMap& p_toSerialized);
+        const sol::object& p_component, Serialization::JsonWriter& p_writer, const EntitiesMap& p_toSerialized);
 }

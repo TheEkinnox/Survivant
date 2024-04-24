@@ -2,8 +2,6 @@
 #include "SurvivantCore/ECS/ComponentRegistry.h"
 #include "SurvivantCore/ECS/ComponentStorage.h"
 
-#include "SurvivantCore/Debug/Assertion.h"
-
 namespace SvCore::ECS
 {
     inline ComponentRegistry& ComponentRegistry::GetInstance()
@@ -29,45 +27,30 @@ namespace SvCore::ECS
     }
 
     template <typename T>
-    bool ComponentRegistry::ToJson(
-        const T& p_component, rapidjson::Writer<rapidjson::StringBuffer>& p_writer, const EntitiesMap& p_toSerialized)
+    bool ComponentRegistry::ToJson(const T& p_value, Serialization::JsonWriter& p_writer, const EntitiesMap& p_toSerialized)
     {
         constexpr bool hasToJsonWithMap = requires
         {
-            p_component.ToJson(p_writer, p_toSerialized);
-        };
-
-        constexpr bool hasToJson = requires
-        {
-            p_component.ToJson(p_writer);
+            p_value.ToJson(p_writer, p_toSerialized);
         };
 
         if constexpr (hasToJsonWithMap)
-            return p_component.ToJson(p_writer, p_toSerialized);
-        else if constexpr (hasToJson)
-            return p_component.ToJson(p_writer);
+            return p_value.ToJson(p_writer, p_toSerialized);
         else
-            return ASSUME(false, "Json serialization is not defined for \"%s\"", typeid(T).name()) && false;
+            return Serialization::ToJson(p_value, p_writer);
     }
 
     template <typename T>
-    bool ComponentRegistry::FromJson(T& p_out, const rapidjson::Value& p_json, Scene* p_scene)
+    bool ComponentRegistry::FromJson(T& p_out, const Serialization::JsonValue& p_json, Scene* p_scene)
     {
         constexpr bool hasFromJsonWithScene = requires
         {
             p_out.FromJson(p_json, p_scene);
         };
 
-        constexpr bool hasFromJson = requires
-        {
-            p_out.FromJson(p_json);
-        };
-
         if constexpr (hasFromJsonWithScene)
             return p_out.FromJson(p_json, p_scene);
-        else if constexpr (hasFromJson)
-            return p_out.FromJson(p_json);
         else
-            return ASSUME(false, "Json deserialization is not defined for \"%s\"", typeid(T).name()) && false;
+            return Serialization::FromJson(p_out, p_json);
     }
 }

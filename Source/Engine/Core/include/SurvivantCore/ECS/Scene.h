@@ -1,9 +1,7 @@
 #pragma once
 #include "SurvivantCore/ECS/EntityStorage.h"
 #include "SurvivantCore/Resources/IResource.h"
-
-#include <rapidjson/document.h>
-#include <rapidjson/writer.h>
+#include "SurvivantCore/Serialization/Serializer.h"
 
 namespace SvCore::ECS
 {
@@ -78,14 +76,14 @@ namespace SvCore::ECS
          * \param p_writer The output json writer
          * \return True on success. False otherwise.
          */
-        bool ToJson(rapidjson::Writer<rapidjson::StringBuffer>& p_writer) const;
+        bool ToJson(Serialization::JsonWriter& p_writer) const;
 
         /**
          * \brief Deserializes the scene from json
          * \param p_json The input json data
          * \return True on success. False otherwise.
          */
-        bool FromJson(const rapidjson::Value& p_json);
+        bool FromJson(const Serialization::JsonValue& p_json);
 
         /**
          * \brief Creates a new entity
@@ -255,7 +253,7 @@ namespace SvCore::ECS
          * \param p_json The input json data
          * \return True on success. False otherwise
          */
-        bool DeserializeStorage(const rapidjson::Value& p_json);
+        bool DeserializeStorage(const Serialization::JsonValue& p_json);
     };
 }
 

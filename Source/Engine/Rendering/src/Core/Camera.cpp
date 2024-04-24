@@ -1,43 +1,35 @@
 #include "SurvivantRendering/Core/Camera.h"
 
+using namespace LibMath;
+using namespace SvRendering::Geometry;
+
 namespace SvRendering::Core
 {
     Camera::Camera()
-        : Camera(LibMath::Matrix4(1))
+        : Camera(Matrix4(1.f))
     {
     }
 
-    Camera::Camera(LibMath::Matrix4 p_projection, LibMath::Matrix4 p_view)
-        : m_projectionMatrix(std::move(p_projection)), m_viewMatrix(std::move(p_view)),
-        m_viewProjection(m_projectionMatrix * m_viewMatrix), m_frustum(m_viewProjection)
+    Camera::Camera(Matrix4 p_viewProjection)
+        : m_viewProjectionMatrix(std::move(p_viewProjection)), m_frustum(m_viewProjectionMatrix)
     {
     }
 
-    void Camera::SetView(LibMath::Matrix4 p_view)
+    const Matrix4& Camera::GetViewProjection() const
     {
-        m_viewMatrix = std::move(p_view);
-        OnChange();
+        return m_viewProjectionMatrix;
     }
 
-    void Camera::SetProjection(LibMath::Matrix4 p_projection)
+    Camera& Camera::SetViewProjection(const Matrix4& p_viewProjection)
     {
-        m_projectionMatrix = std::move(p_projection);
-        OnChange();
+        m_viewProjectionMatrix = p_viewProjection;
+        m_frustum              = Frustum(m_viewProjectionMatrix);
+
+        return *this;
     }
 
-    LibMath::Matrix4 Camera::GetViewProjection() const
-    {
-        return m_viewProjection;
-    }
-
-    Geometry::Frustum Camera::GetFrustum() const
+    const Frustum& Camera::GetFrustum() const
     {
         return m_frustum;
-    }
-
-    void Camera::OnChange()
-    {
-        m_viewProjection = m_projectionMatrix * m_viewMatrix;
-        m_frustum        = Geometry::Frustum(m_viewProjection);
     }
 }

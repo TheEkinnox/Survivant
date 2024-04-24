@@ -3,6 +3,8 @@
 #include "SurvivantCore/ECS/Scene.h"
 #include "SurvivantCore/ECS/Components/Hierarchy.h"
 
+using namespace SvCore::Serialization;
+
 namespace SvCore::ECS
 {
     EntityHandle::EntityHandle(Scene* p_scene, const Entity p_entity)
@@ -163,8 +165,7 @@ namespace SvCore::ECS
     }
 
     template <>
-    bool ComponentRegistry::ToJson(
-        const EntityHandle& p_component, rapidjson::Writer<rapidjson::StringBuffer>& p_writer, const EntitiesMap& p_toSerialized)
+    bool ComponentRegistry::ToJson(const EntityHandle& p_component, JsonWriter& p_writer, const EntitiesMap& p_toSerialized)
     {
         Entity entity = p_component.GetEntity();
 
@@ -182,7 +183,7 @@ namespace SvCore::ECS
     }
 
     template <>
-    bool ComponentRegistry::FromJson(EntityHandle& p_out, const rapidjson::Value& p_json, Scene* p_scene)
+    bool ComponentRegistry::FromJson(EntityHandle& p_out, const JsonValue& p_json, Scene* p_scene)
     {
         if (!CHECK(p_json.Is<Entity::Id>(), "Unable to deserialize entity handle - Json value should be castable to Entity::Id"))
             return false;

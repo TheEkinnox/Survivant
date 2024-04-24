@@ -1,5 +1,5 @@
 #pragma once
-#include <SurvivantCore/ECS/Serializers/MathSerializers.h>
+#include <SurvivantCore/Serialization/MathSerializers.h>
 
 namespace sol
 {

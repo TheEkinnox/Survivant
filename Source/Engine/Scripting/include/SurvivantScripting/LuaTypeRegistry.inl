@@ -49,7 +49,7 @@ namespace SvScripting
                 return ComponentRegistry::ToJson<T>(obj, p_writer, p_toSerialized);
             },
             .FromJson =
-            [](lua_State* p_luaState, const rapidjson::Value& p_json, Scene* p_scene)
+            [](lua_State* p_luaState, const SvCore::Serialization::JsonValue& p_json, Scene* p_scene)
             -> sol::optional<sol::object>
             {
                 T out;

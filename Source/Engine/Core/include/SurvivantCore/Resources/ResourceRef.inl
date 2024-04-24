@@ -173,7 +173,7 @@ namespace SvCore::Resources
     }
 
     template <class T>
-    bool ResourceRef<T>::ToJson(rapidjson::Writer<rapidjson::StringBuffer>& p_writer) const
+    bool ResourceRef<T>::ToJson(Serialization::JsonWriter& p_writer) const
     {
         p_writer.StartObject();
 
@@ -184,7 +184,7 @@ namespace SvCore::Resources
     }
 
     template <class T>
-    bool ResourceRef<T>::FromJson(const rapidjson::Value& p_json)
+    bool ResourceRef<T>::FromJson(const Serialization::JsonValue& p_json)
     {
         if (!CHECK(p_json.IsObject(), "Unable to deserialize resource ref - Json value should be an object"))
             return false;
@@ -254,7 +254,7 @@ namespace SvCore::Resources
         return m_type;
     }
 
-    inline bool GenericResourceRef::ToJson(rapidjson::Writer<rapidjson::StringBuffer>& p_writer) const
+    inline bool GenericResourceRef::ToJson(Serialization::JsonWriter& p_writer) const
     {
         p_writer.StartObject();
 
@@ -267,7 +267,7 @@ namespace SvCore::Resources
         return p_writer.EndObject();
     }
 
-    inline bool GenericResourceRef::FromJson(const rapidjson::Value& p_json)
+    inline bool GenericResourceRef::FromJson(const Serialization::JsonValue& p_json)
     {
         const auto it = p_json.FindMember("type");
         if (!CHECK(it != p_json.MemberEnd() && it->value.IsString(), "Unable to deserialize resource ref - Invalid resource type"))

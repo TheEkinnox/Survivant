@@ -6,6 +6,8 @@
 
 #include <rapidjson/istreamwrapper.h>
 
+using namespace SvCore::Serialization;
+
 namespace SvCore::ECS
 {
     Scene::Scene()
@@ -37,7 +39,7 @@ namespace SvCore::ECS
         return FromJson(json);
     }
 
-    bool Scene::ToJson(rapidjson::Writer<rapidjson::StringBuffer>& p_writer) const
+    bool Scene::ToJson(JsonWriter& p_writer) const
     {
         p_writer.StartObject();
 
@@ -78,7 +80,7 @@ namespace SvCore::ECS
         return p_writer.EndObject();
     }
 
-    bool Scene::FromJson(const rapidjson::Value& p_json)
+    bool Scene::FromJson(const JsonValue& p_json)
     {
         Clear();
 
@@ -226,7 +228,7 @@ namespace SvCore::ECS
         return components;
     }
 
-    bool Scene::DeserializeStorage(const rapidjson::Value& p_json)
+    bool Scene::DeserializeStorage(const JsonValue& p_json)
     {
         if (!CHECK(p_json.IsObject(), "Unable to deserialize scene component storage - Json value should be an object"))
             return false;

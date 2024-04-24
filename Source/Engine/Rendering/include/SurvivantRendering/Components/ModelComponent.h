@@ -17,8 +17,8 @@ namespace SvCore::ECS
 {
     template <>
     bool ComponentRegistry::ToJson(
-        const SvRendering::Components::ModelComponent&, rapidjson::Writer<rapidjson::StringBuffer>&, const EntitiesMap&);
+        const SvRendering::Components::ModelComponent&, SvCore::Serialization::JsonWriter&, const EntitiesMap&);
 
     template <>
-    bool ComponentRegistry::FromJson(SvRendering::Components::ModelComponent&, const rapidjson::Value&, Scene*);
+    bool ComponentRegistry::FromJson(SvRendering::Components::ModelComponent&, const SvCore::Serialization::JsonValue&, Scene*);
 }

@@ -285,10 +285,10 @@ namespace SvCore::ECS
 
     template <>
     bool ComponentRegistry::ToJson(
-        const EntityHandle& p_component, rapidjson::Writer<rapidjson::StringBuffer>& p_writer, const EntitiesMap& p_toSerialized);
+        const EntityHandle& p_component, Serialization::JsonWriter& p_writer, const EntitiesMap& p_toSerialized);
 
     template <>
-    bool ComponentRegistry::FromJson(EntityHandle& p_out, const rapidjson::Value& p_json, Scene* p_scene);
+    bool ComponentRegistry::FromJson(EntityHandle& p_out, const Serialization::JsonValue& p_json, Scene* p_scene);
 }
 
 #include "SurvivantCore/ECS/EntityHandle.inl"

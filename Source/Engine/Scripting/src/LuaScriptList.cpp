@@ -87,7 +87,8 @@ namespace SvScripting
         m_scripts.clear();
     }
 
-    sol::optional<sol::object> LuaObjectFromJson(lua_State* p_luaState, const rapidjson::Value& p_json, Scene* p_scene)
+    sol::optional<sol::object> LuaObjectFromJson(lua_State* p_luaState, const SvCore::Serialization::JsonValue& p_json,
+                                                 Scene*     p_scene)
     {
         if (!CHECK(p_luaState, "Unable to deserialize lua object - No lua state"))
             return sol::nullopt;
@@ -111,7 +112,7 @@ namespace SvScripting
             if (!CHECK(it->value.IsNull(), "Unable to deserialize lua object - Expected null value"))
                 return sol::nullopt;
 
-            return sol::make_object(p_luaState, sol::nil);
+            return make_object(p_luaState, sol::nil);
         }
         case sol::type::string:
         {
@@ -217,7 +218,7 @@ namespace SvCore::ECS
 
     template <>
     bool ComponentRegistry::ToJson(
-        const LuaScriptList& p_component, rapidjson::Writer<rapidjson::StringBuffer>& p_writer, const EntitiesMap& p_toSerialized)
+        const LuaScriptList& p_component, Serialization::JsonWriter& p_writer, const EntitiesMap& p_toSerialized)
     {
         p_writer.StartArray();
 
@@ -244,7 +245,7 @@ namespace SvCore::ECS
     }
 
     template <>
-    bool ComponentRegistry::FromJson(LuaScriptList& p_out, const rapidjson::Value& p_json, Scene* p_scene)
+    bool ComponentRegistry::FromJson(LuaScriptList& p_out, const Serialization::JsonValue& p_json, Scene* p_scene)
     {
         p_out.Clear();
 
@@ -264,7 +265,7 @@ namespace SvCore::ECS
 
             if (p_out.m_scripts.contains(name))
             {
-                SV_LOG("[WARNING] Ignoring duplicate lua script \"%s\"", name.c_str());
+                SV_LOG_WARNING("Ignoring duplicate lua script \"%s\"", name.c_str());
                 continue;
             }
 
@@ -286,7 +287,7 @@ namespace SvCore::ECS
 
     template <>
     bool ComponentRegistry::ToJson(
-        const sol::table& p_component, rapidjson::Writer<rapidjson::StringBuffer>& p_writer, const EntitiesMap& p_toSerialized)
+        const sol::table& p_component, Serialization::JsonWriter& p_writer, const EntitiesMap& p_toSerialized)
     {
         if (p_component == sol::nil)
             return p_writer.Null();
@@ -315,7 +316,7 @@ namespace SvCore::ECS
     }
 
     template <>
-    bool ComponentRegistry::FromJson(sol::table& p_out, const rapidjson::Value& p_json, Scene* p_scene)
+    bool ComponentRegistry::FromJson(sol::table& p_out, const Serialization::JsonValue& p_json, Scene* p_scene)
     {
         if (!CHECK(p_json.IsArray(), "Unable to deserialize lua table - Json value should be an array"))
             return false;
@@ -353,7 +354,7 @@ namespace SvCore::ECS
 
     template <>
     bool ComponentRegistry::ToJson(
-        const sol::object& p_component, rapidjson::Writer<rapidjson::StringBuffer>& p_writer, const EntitiesMap& p_toSerialized)
+        const sol::object& p_component, Serialization::JsonWriter& p_writer, const EntitiesMap& p_toSerialized)
     {
         if (!CHECK(p_component.valid(), "Unable to seriliaze lua object - Invalid value"))
             return false;

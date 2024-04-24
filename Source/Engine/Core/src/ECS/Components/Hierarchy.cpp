@@ -4,6 +4,7 @@
 #include "SurvivantCore/ECS/SceneView.h"
 
 using namespace LibMath;
+using namespace SvCore::Serialization;
 
 namespace SvCore::ECS
 {
@@ -206,11 +207,9 @@ namespace SvCore::ECS
     }
 
     template <>
-    bool ComponentRegistry::ToJson(
-        const HierarchyComponent& p_component, rapidjson::Writer<rapidjson::StringBuffer>& p_writer,
-        const EntitiesMap&        p_toSerialized)
+    bool ComponentRegistry::ToJson(const HierarchyComponent& p_value, JsonWriter& p_writer, const EntitiesMap& p_toSerialized)
     {
-        Entity parent = p_component.GetParent();
+        Entity parent = p_value.GetParent();
 
         if (parent != NULL_ENTITY)
         {
@@ -231,7 +230,7 @@ namespace SvCore::ECS
     }
 
     template <>
-    bool ComponentRegistry::FromJson(HierarchyComponent& p_out, const rapidjson::Value& p_json, Scene*)
+    bool ComponentRegistry::FromJson(HierarchyComponent& p_out, const JsonValue& p_json, Scene*)
     {
         if (!CHECK(p_json.IsObject(), "Unable to deserialize hierarchy - Json value should be an object"))
             return false;

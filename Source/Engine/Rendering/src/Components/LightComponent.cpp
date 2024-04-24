@@ -25,7 +25,7 @@ namespace SvRendering::Components
     {
     }
 
-    bool SerializeAmbient(const Core::Light& p_light, rapidjson::Writer<rapidjson::StringBuffer>& p_writer)
+    bool SerializeAmbient(const Core::Light& p_light, SvCore::Serialization::JsonWriter& p_writer)
     {
         p_writer.StartObject();
 
@@ -36,7 +36,7 @@ namespace SvRendering::Components
         return CHECK(p_writer.EndObject());
     }
 
-    bool DeserializeAmbient(Core::Light& p_out, const rapidjson::Value& p_json)
+    bool DeserializeAmbient(Core::Light& p_out, const SvCore::Serialization::JsonValue& p_json)
     {
         if (!CHECK(p_json.IsObject(), "Unable to deserialize ambient light - Json value should be an object"))
             return false;
@@ -55,7 +55,7 @@ namespace SvRendering::Components
         return true;
     }
 
-    bool SerializeDirectional(const Core::DirectionalLight& p_light, rapidjson::Writer<rapidjson::StringBuffer>& p_writer)
+    bool SerializeDirectional(const Core::DirectionalLight& p_light, SvCore::Serialization::JsonWriter& p_writer)
     {
         p_writer.StartObject();
 
@@ -70,7 +70,7 @@ namespace SvRendering::Components
         return CHECK(p_writer.EndObject());
     }
 
-    bool DeserializeDirectional(Core::DirectionalLight& p_out, const rapidjson::Value& p_json)
+    bool DeserializeDirectional(Core::DirectionalLight& p_out, const SvCore::Serialization::JsonValue& p_json)
     {
         if (!CHECK(p_json.IsObject(), "Unable to deserialize directional light - Json value should be an object"))
             return false;
@@ -101,7 +101,7 @@ namespace SvRendering::Components
         return true;
     }
 
-    bool SerializeAttenuation(const Core::Attenuation& p_attenuation, rapidjson::Writer<rapidjson::StringBuffer>& p_writer)
+    bool SerializeAttenuation(const Core::Attenuation& p_attenuation, SvCore::Serialization::JsonWriter& p_writer)
     {
         p_writer.StartObject();
 
@@ -117,7 +117,7 @@ namespace SvRendering::Components
         return CHECK(p_writer.EndObject());
     }
 
-    bool DeserializeAttenuation(Core::Attenuation& p_out, const rapidjson::Value& p_json)
+    bool DeserializeAttenuation(Core::Attenuation& p_out, const SvCore::Serialization::JsonValue& p_json)
     {
         if (!CHECK(p_json.IsObject(), "Unable to deserialize light attenuation - Json value should be an object"))
             return false;
@@ -146,7 +146,7 @@ namespace SvRendering::Components
         return true;
     }
 
-    bool SerializePoint(const Core::PointLight& p_light, rapidjson::Writer<rapidjson::StringBuffer>& p_writer)
+    bool SerializePoint(const Core::PointLight& p_light, SvCore::Serialization::JsonWriter& p_writer)
     {
         p_writer.StartObject();
 
@@ -166,7 +166,7 @@ namespace SvRendering::Components
         return CHECK(p_writer.EndObject());
     }
 
-    bool DeserializePoint(Core::PointLight& p_out, const rapidjson::Value& p_json)
+    bool DeserializePoint(Core::PointLight& p_out, const SvCore::Serialization::JsonValue& p_json)
     {
         if (!CHECK(p_json.IsObject(), "Unable to deserialize point light - Json value should be an object"))
             return false;
@@ -202,7 +202,7 @@ namespace SvRendering::Components
         return DeserializeAttenuation(p_out.m_attenuationData, it->value);
     }
 
-    bool SerializeCutoff(const Core::Cutoff& p_cutoff, rapidjson::Writer<rapidjson::StringBuffer>& p_writer)
+    bool SerializeCutoff(const Core::Cutoff& p_cutoff, SvCore::Serialization::JsonWriter& p_writer)
     {
         p_writer.StartObject();
 
@@ -215,7 +215,7 @@ namespace SvRendering::Components
         return CHECK(p_writer.EndObject());
     }
 
-    bool DeserializeCutoff(Core::Cutoff& p_out, const rapidjson::Value& p_json)
+    bool DeserializeCutoff(Core::Cutoff& p_out, const SvCore::Serialization::JsonValue& p_json)
     {
         if (!CHECK(p_json.IsObject(), "Unable to deserialize light cutoff - Json value should be an object"))
             return false;
@@ -237,7 +237,7 @@ namespace SvRendering::Components
         return true;
     }
 
-    bool SerializeSpot(const Core::SpotLight& p_light, rapidjson::Writer<rapidjson::StringBuffer>& p_writer)
+    bool SerializeSpot(const Core::SpotLight& p_light, SvCore::Serialization::JsonWriter& p_writer)
     {
         p_writer.StartObject();
 
@@ -266,7 +266,7 @@ namespace SvRendering::Components
         return CHECK(p_writer.EndObject());
     }
 
-    bool DeserializeSpot(Core::SpotLight& p_out, const rapidjson::Value& p_json)
+    bool DeserializeSpot(Core::SpotLight& p_out, const SvCore::Serialization::JsonValue& p_json)
     {
         if (!CHECK(p_json.IsObject(), "Unable to deserialize spot light - Json value should be an object"))
             return false;
@@ -327,7 +327,7 @@ namespace SvCore::ECS
 
     template <>
     bool ComponentRegistry::ToJson(
-        const LightComponent& p_component, rapidjson::Writer<rapidjson::StringBuffer>& p_writer, const EntitiesMap&)
+        const LightComponent& p_component, SvCore::Serialization::JsonWriter& p_writer, const EntitiesMap&)
     {
         p_writer.StartObject();
 
@@ -354,7 +354,7 @@ namespace SvCore::ECS
     }
 
     template <>
-    bool ComponentRegistry::FromJson(LightComponent& p_out, const rapidjson::Value& p_json, Scene*)
+    bool ComponentRegistry::FromJson(LightComponent& p_out, const SvCore::Serialization::JsonValue& p_json, Scene*)
     {
         if (!CHECK(p_json.IsObject(), "Unable to deserialize light - Json value should be an object"))
             return false;

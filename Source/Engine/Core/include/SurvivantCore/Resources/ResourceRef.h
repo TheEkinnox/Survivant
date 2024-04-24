@@ -1,10 +1,8 @@
 #pragma once
 #include "SurvivantCore/Resources/IResource.h"
+#include "SurvivantCore/Serialization/Serializer.h"
 
 #include <type_traits>
-
-#include <rapidjson/document.h>
-#include <rapidjson/writer.h>
 
 namespace SvCore::Resources
 {
@@ -144,14 +142,14 @@ namespace SvCore::Resources
          * \param p_writer The output json writer
          * \return True on success. False otherwise.
          */
-        virtual bool ToJson(rapidjson::Writer<rapidjson::StringBuffer>& p_writer) const;
+        virtual bool ToJson(Serialization::JsonWriter& p_writer) const;
 
         /**
          * \brief Deserializes the resource reference from json
          * \param p_json The input json data
          * \return True on success. False otherwise.
          */
-        virtual bool FromJson(const rapidjson::Value& p_json);
+        virtual bool FromJson(const Serialization::JsonValue& p_json);
 
     protected:
         template <typename U>
@@ -265,14 +263,14 @@ namespace SvCore::Resources
          * \param p_writer The output json writer
          * \return True on success. False otherwise.
          */
-        bool ToJson(rapidjson::Writer<rapidjson::StringBuffer>& p_writer) const override;
+        bool ToJson(Serialization::JsonWriter& p_writer) const override;
 
         /**
          * \brief Deserializes the generic resource reference from json
          * \param p_json The input json data
          * \return True on success. False otherwise.
          */
-        bool FromJson(const rapidjson::Value& p_json) override;
+        bool FromJson(const Serialization::JsonValue& p_json) override;
 
     private:
         std::string m_type;
