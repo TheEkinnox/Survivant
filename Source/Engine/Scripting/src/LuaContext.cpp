@@ -113,7 +113,7 @@ namespace SvScripting
         if (source.empty())
             return (m_isValid = false);
 
-        const auto result = m_state->safe_script(source, &sol::script_pass_on_error);
+        const auto result = m_state->safe_script(source, &sol::script_pass_on_error, p_handle.m_script.GetPath());
 
         if (!result.valid())
         {
