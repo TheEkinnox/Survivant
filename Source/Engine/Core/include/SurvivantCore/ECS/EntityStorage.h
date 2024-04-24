@@ -73,6 +73,13 @@ namespace SvCore::ECS
         bool Has(Entity p_entity) const;
 
         /**
+         * \brief Finds the entity with the given index
+         * \param p_index The entity's index
+         * \return The entity with the given index on success. NULL_ENTITY otherwise
+         */
+        Entity Find(Entity::Id p_index) const;
+
+        /**
          * \brief Removes all entities from the manager
          */
         void Clear();

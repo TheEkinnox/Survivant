@@ -134,6 +134,11 @@ namespace SvCore::ECS
         return { this, entity };
     }
 
+    EntityHandle Scene::Find(Entity::Id p_index)
+    {
+        return { this, m_entities.Find(p_index) };
+    }
+
     void Scene::Destroy(const Entity p_entity)
     {
         for (const auto& componentStorage : m_components | std::views::values)
