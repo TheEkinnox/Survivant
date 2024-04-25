@@ -22,18 +22,21 @@ namespace SvEditor::PanelItems
 
     void PanelTransformInput::DisplayAndUpdatePanel()
     {
-        static int flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll;
+        static auto speedSlider = 1.0f;
+        static auto minSlider = -FLT_MAX;
+        static auto maxSlider = FLT_MAX;
 
-        auto position = GetRef().getPosition();
-        auto rotation = GetRef().getRotation();
-        auto scale =    GetRef().getScale();
+        auto& trans = GetRef();
+        auto position = trans.getPosition();
+        auto rotation = trans.getRotation();
+        auto scale =    trans.getScale();
 
         ImGui::Text("Position");
         ImGui::SameLine();
         ImGui::PushID(0);
-        if (ImGui::InputFloat3("##", position.getArray(), "%3.f", flags))
+        if (ImGui::DragFloat3("##", position.getArray(), speedSlider, minSlider, maxSlider))
         {
-            GetRef().setPosition(position);
+            trans.setPosition(position);
 
             if (m_callback)
                 m_callback({ &position, nullptr, nullptr });
@@ -46,7 +49,7 @@ namespace SvEditor::PanelItems
         ImGui::Text("Rotation");
         ImGui::SameLine();
         ImGui::PushID(1);
-        if (ImGui::InputFloat3("##", asDegree.getArray(), "%3.f", flags))
+        if (ImGui::DragFloat3("##", asDegree.getArray(), speedSlider, minSlider, maxSlider))
         {
             LibMath::Vector3 currentDeg = asDegree;// - ToVector3Degree(m_yawPitchRoll); //m_yawPitchRoll hasnt been modified so still prev
             //LibMath::Vector3 diffDegree = asDegree - ToVector3Degree(m_yawPitchRoll); //m_yawPitchRoll hasnt been modified so still prev
@@ -56,7 +59,7 @@ namespace SvEditor::PanelItems
             rotation = LibMath::Quaternion(currentRad);
             m_yawPitchRoll = currentRad; // m_yawPitchRoll += ToVector3Radian(diffDegree);
 
-            GetRef().setRotation(rotation);
+            trans.setRotation(rotation);
 
             if (m_callback)
                 m_callback({ nullptr, &rotation, nullptr });
@@ -67,9 +70,16 @@ namespace SvEditor::PanelItems
         ImGui::Text("Scale   ");
         ImGui::SameLine();
         ImGui::PushID(2);
-        if (ImGui::InputFloat3("##", scale.getArray(), "%3.f", flags))
+        if (ImGui::DragFloat3("##", scale.getArray(), speedSlider, minSlider, maxSlider))
         {
-            GetRef().setScale(scale);
+            if (scale.m_x == 0)
+                scale.m_x = FLT_MIN;
+            if (scale.m_y == 0)
+                scale.m_y = FLT_MIN;
+            if (scale.m_z == 0)
+                scale.m_z = FLT_MIN;
+
+            trans.setScale(scale);
 
             if (m_callback)
                 m_callback({ nullptr, nullptr, &scale });
