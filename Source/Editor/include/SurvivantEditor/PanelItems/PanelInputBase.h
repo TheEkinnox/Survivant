@@ -29,7 +29,8 @@ namespace SvEditor::PanelItems
 		virtual void	DisplayAndUpdatePanel() override = 0;
 
 	protected:
-		Value&			GetRef();
+		Value&				GetRef();
+		const Value&		GetRef()const;
 
 		Callback	m_callback;
 
@@ -56,6 +57,11 @@ namespace SvEditor::PanelItems
 
 	template<class T, typename ...Params >
 	inline T& PanelInputBase<T, Params...>::GetRef()
+	{
+		return m_getRef();
+	}
+	template<class T, typename ...Params>
+	inline const T& PanelInputBase<T, Params...>::GetRef() const
 	{
 		return m_getRef();
 	}

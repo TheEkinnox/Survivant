@@ -141,10 +141,11 @@ namespace SvEditor::Panels
         }
     }
 
-    void ConsolePanel::TextInputCallback(PanelTextInput& p_textInput)
+    void ConsolePanel::TextInputCallback(const std::tuple<PanelTextInput*>& p_textInput)
     {
-        m_textBox.AddItem(std::make_shared<LogText>(LogInfo{ ELogType::WARNING_LOG, p_textInput.GetText() }), true);
-        p_textInput.Clear();
+        auto& [input] = p_textInput;
+        m_textBox.AddItem(std::make_shared<LogText>(LogInfo{ ELogType::WARNING_LOG, input->GetText()}), true);
+        input->Clear();
     }
 
     ConsolePanel::LogText::LogText(const LogInfo& p_logInfo) :

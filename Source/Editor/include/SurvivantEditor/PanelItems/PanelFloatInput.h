@@ -2,7 +2,6 @@
 #pragma once
 
 #include "SurvivantEditor/PanelItems/PanelInputBase.h"
-#include "SurvivantEditor/PanelItems/PanelInputBase.h"
 
 #include <functional>
 
@@ -24,7 +23,7 @@ namespace SvEditor::PanelItems
 		PanelFloatInput(
 			const std::string& p_name,
 			const GetCopyFunc& p_getCopy,
-			const Callback& p_callback = Callback());
+			const Callback& p_callback);
 		~PanelFloatInput() = default;
 
 		virtual void DisplayAndUpdatePanel() override;

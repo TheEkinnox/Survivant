@@ -73,7 +73,7 @@ namespace SvEditor::Panels
 		/// <param name="p_color">[out]</param>
 		static void LogTypeColor(ELogType p_type, ImVec4* p_color);
 
-		void TextInputCallback(PanelTextInput& p_textInput);
+		void TextInputCallback(const std::tuple<PanelTextInput*>& p_textInput);
 
 		static inline int s_panelCount = 0;
 

@@ -58,33 +58,53 @@ bool InputText(const char* label, std::string* str, ImGuiInputTextFlags flags, I
 
 namespace SvEditor::PanelItems
 {
-
     PanelTextInput::PanelTextInput(
-        std::string p_name,
+        const std::string& p_name,
         std::string& p_buffer,
         const Callback& p_callback) :
-        m_name(p_name),
-        m_callback(p_callback),
-        m_buffer(p_buffer)
+        PanelTextInput(p_name, GetRefFunc([p_buffer]() mutable -> std::string& { return p_buffer; }), p_callback)
+    {}
+
+    PanelTextInput::PanelTextInput(
+        const std::string& p_name, const GetRefFunc& p_getRef, const Callback& p_callback) :
+        PanelInputBase(p_getRef, p_callback),
+        m_name(p_name)
+    {}
+
+    PanelTextInput::PanelTextInput(
+        const std::string& p_name, const GetCopyFunc& p_getCopy, const Callback& p_callback) :
+        PanelInputBase(p_getCopy, p_callback),
+        m_name(p_name)
     {
+        m_callback = p_callback;
     }
-
-
 
     void PanelTextInput::DisplayAndUpdatePanel()
     {
         //Command-line
-        bool reclaim_focus = false;
-        ImGuiInputTextFlags input_text_flags =
+        static ImGuiInputTextFlags input_text_flags =
             ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_EscapeClearsAll |
             ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory;
 
-        if (InputText(m_name.c_str(), &m_buffer, input_text_flags, nullptr, (void*)this))
+        bool reclaim_focus = false;
+
+        auto& buffer = GetRef();
+
+
+        ImGui::Text(m_name.c_str());
+        ImGui::SameLine();
+
+        ImGui::PushID(m_name.c_str());
+        if (InputText("##", &buffer, input_text_flags, nullptr, (void*)this))
         {
             //when iconTxt is finished being inputed
-            m_callback(*this);
+            if (m_callback)
+                m_callback({ this });
+
             reclaim_focus = true;
         }
+        ImGui::PopID();
+
 
         // Auto-focus on window apparition
         ImGui::SetItemDefaultFocus();
@@ -94,12 +114,12 @@ namespace SvEditor::PanelItems
 
     void PanelTextInput::Clear()
     {
-        m_buffer.clear();
+        GetRef().clear();
     }
 
     const std::string& PanelTextInput::GetText() const
     {
-        return m_buffer;
+        return GetRef();
     }
 
     void PanelTextInput::ClearPanelText(PanelTextInput& p_panel)
