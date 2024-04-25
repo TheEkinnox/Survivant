@@ -41,7 +41,7 @@ namespace SvEditor::Panels
 
         auto panelSize = ImGui::GetContentRegionAvail();
         ImGuiWindowFlags    window_flags = ImGuiWindowFlags_None;
-        ImGuiChildFlags     child_flags = ImGuiChildFlags_AlwaysAutoResize | ImGuiChildFlags_AutoResizeY;
+        ImGuiChildFlags     child_flags = ImGuiChildFlags_AutoResizeY;
 
         if (!ImGui::Begin(m_name.c_str(), &open))
         {

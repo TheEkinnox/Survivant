@@ -37,7 +37,7 @@ namespace SvEditor::Core
 		EditorUI();
 		~EditorUI(); 
 
-		void InitEditorUi(SvApp::Window* p_window);
+		void InitWindow(SvApp::Window* p_window);
 
 		void InitGamePanel(const WorldContext::WorldCreator& p_worldCreator, const std::array<std::function<void()>, 3> p_playPauseFrameCallbacks);
 		void InitScenePanel(std::weak_ptr<WorldContext> p_world);
@@ -74,12 +74,15 @@ namespace SvEditor::Core
 		using Inputs = std::shared_ptr<SvApp::InputManager::InputBindings>;
 
 		MenuBar CreateMenuBar();
-		//void DisplayPopupMenu();
 		void HandlePanelFlags(const std::string& p_name, Panel::ERenderFlags p_flags);
 
 		//TODO : add ratio vfont sizes
 		static constexpr int DEFAULT_FONT_SIZE = 16;
 		static constexpr int ICON_FONT_SIZE = 64;
+
+
+		void TempTest();
+
 
 		std::vector<ImFont*> m_fonts;
 

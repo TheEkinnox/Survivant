@@ -5,8 +5,11 @@
 #include "SurvivantCore/Events/EventManager.h"
 #include "SurvivantCore/Utility/Utility.h"
 #include "SurvivantEditor/Core/EditorUI.h"
+#include "SurvivantEditor/Core/InspectorComponentManager.h"
+#include "SurvivantEditor/PanelItems/PanelEntity.h"
 #include "SurvivantEditor/Panels/ExamplGameObj.h"
 #include "SurvivantEditor/Panels/ScenePanel.h"
+#include "SurvivantEditor/Panels/InspectorPanel.h"
 
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
@@ -40,6 +43,12 @@ namespace SvEditor::Panels
         //propagate selection
         auto selectFunc = [](HierarchyBranch& p_branch)
             { 
+                using namespace Core;
+
+                auto entityPanel = InspectorComponentManager::GetPanelableEntity(
+                    EntityHandle(s_getCurrentScene().lock().get()->get(), Entity(p_branch.GetValue())));
+
+                InspectorPanel::SetInpectorInfo(entityPanel, "Entity");
                 ScenePanel::SelectEntity(p_branch.GetValue());
                 return false; 
             };

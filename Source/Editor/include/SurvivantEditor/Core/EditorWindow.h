@@ -38,6 +38,9 @@ namespace SvEditor::Core
 		std::unique_ptr<EditorUI>	m_ui;
 		bool						m_shouldClose = false; 
 
+
+		void TestComponents();
+
 		std::shared_ptr<SvApp::InputManager::InputBindings>		m_inputs;
 	};
 }

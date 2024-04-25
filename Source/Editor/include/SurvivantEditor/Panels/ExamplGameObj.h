@@ -15,7 +15,7 @@ namespace SvEditor::Panels
 	using namespace Interfaces;
 	using namespace PanelItems;
 
-	class ExamplResource : public IPanelable, public ISelectable
+	class ExamplResource : public ISelectable
 	{
 	public:
 		ExamplResource() = default;

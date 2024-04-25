@@ -4,10 +4,11 @@
 
 #include "SurvivantApp/Inputs/InputManager.h"
 #include "SurvivantApp/Windows/Window.h"
+#include "SurvivantCore/Debug/Assertion.h"
 #include "SurvivantCore/Events/EventManager.h"
 #include "SurvivantCore/Utility/Utility.h"
-#include "SurvivantCore/Debug/Assertion.h"
 #include "SurvivantEditor/Core/IUI.h"
+#include "SurvivantEditor/Core/InspectorComponentManager.h"
 #include "SurvivantEditor/MenuItems/MenuButton.h"
 #include "SurvivantEditor/Panels/ConsolePanel.h"
 #include "SurvivantEditor/Panels/ContentDrawerPanel.h"
@@ -51,6 +52,9 @@ namespace SvEditor::Core
         MainPanel::ChangeLayout l = std::bind(&EditorUI::Layout1, this, std::placeholders::_1);
         m_main->ChangePanelLayout(l);
 
+        //setup InspectorComponents
+        InspectorComponentManager::Init();
+
         //TODO : add spawn save m_panel on event close request
         SvCore::Events::EventManager::GetInstance().AddListenner<SvApp::Window::WindowCloseRequest>(
             SvApp::Window::WindowCloseRequest::EventDelegate(std::bind(&EditorUI::TryCreateSavePanel, this)));
@@ -82,7 +86,7 @@ namespace SvEditor::Core
     {
     }
 
-    void EditorUI::InitEditorUi(SvApp::Window* p_window)
+    void EditorUI::InitWindow(SvApp::Window* p_window)
     {
         ImGui_ImplGlfw_InitForOpenGL(p_window->GetWindow(), true);
         //#ifdef __EMSCRIPTEN__
@@ -119,7 +123,11 @@ namespace SvEditor::Core
                 SV_EVENT_MANAGER().Invoke<EditorUI::DebugEvent>(SvCore::Utility::FormatString("ID = %d", entity.GetIndex()).c_str());
 
                 p_world.lock()->m_renderingContext->s_editorSelectedEntity = entity;
-                HierarchyPanel::SelectSelectable(entity.GetIndex());
+                HierarchyPanel::SelectSelectable(entity);
+
+                auto entityPanel = InspectorComponentManager::GetPanelableEntity(
+                    SvCore::ECS::EntityHandle(p_world.lock()->CurrentScene().get(), entity)); 
+                InspectorPanel::SetInpectorInfo(entityPanel, "Entity");
             });
         
         ScenePanel::AddResizeListenner(

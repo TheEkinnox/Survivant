@@ -26,4 +26,10 @@ namespace SvCore::Utility
 
     template <typename T, typename First>
     constexpr size_t IndexOf<T, First> = std::is_same_v<T, First> ? 0 : 1;
+
+    template <typename ...Args>
+    constexpr bool IsEmpty = true;
+
+    template <typename ...Args>
+    constexpr bool IsEmpty<Args...> = false;
 }
