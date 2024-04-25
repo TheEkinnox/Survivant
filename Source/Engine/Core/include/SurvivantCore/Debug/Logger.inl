@@ -26,7 +26,25 @@ namespace SvCore::Debug
 
         m_onPrint.Invoke({ p_type, message });
 
-        (p_type == ELogType::ERROR_LOG ? std::cerr : std::cout) << message << std::flush;
+        std::string prefix;
+
+        switch (p_type)
+        {
+        case ELogType::DEBUG_LOG:
+            prefix = "[INFO] ";
+            break;
+        case ELogType::WARNING_LOG:
+            prefix = "[WARNING] ";
+            break;
+        case ELogType::ERROR_LOG:
+            prefix = "[ERROR] ";
+            break;
+        case ELogType::DEFAULT_LOG:
+        default:
+            break;
+        }
+
+        (p_type == ELogType::ERROR_LOG ? std::cerr : std::cout) << prefix << message << std::flush;
 
         if (m_filePath.empty())
             return;
@@ -34,22 +52,7 @@ namespace SvCore::Debug
         std::ofstream file(m_filePath, std::ios::app);
         assert(file.is_open());
 
-        switch (p_type)
-        {
-        case ELogType::DEBUG_LOG:
-            file << "[INFO] " << message << std::flush;
-            break;
-        case ELogType::WARNING_LOG:
-            file << "[WARNING] " << message << std::flush;
-            break;
-        case ELogType::ERROR_LOG:
-            file << "[ERROR] " << message << std::flush;
-            break;
-        case ELogType::DEFAULT_LOG:
-        default:
-            file << message << std::flush;
-            break;
-        }
+        file << prefix << message << std::flush;
     }
 
     template <typename... Args>
