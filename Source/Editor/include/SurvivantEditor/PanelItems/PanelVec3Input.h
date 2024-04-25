@@ -1,7 +1,7 @@
 //PanelVec3Input.h
 #pragma once
 
-#include "SurvivantEditor/Interfaces/IPanelable.h"
+#include "SurvivantEditor/PanelItems/PanelInputBase.h"
 
 #include "Vector/Vector3.h"
 
@@ -9,14 +9,20 @@
 
 namespace SvEditor::PanelItems
 {
-	class PanelVec3Input : public Interfaces::IPanelable
+	class PanelVec3Input : public PanelInputBase<LibMath::Vector3>
 	{
 	public:
-		using Callback = std::function<void(LibMath::Vector3)>;
-
 		PanelVec3Input(
 			const std::string& p_name,
 			LibMath::Vector3& p_value,
+			const Callback& p_callback = Callback());
+		PanelVec3Input(
+			const std::string& p_name,
+			const GetRefFunc& p_getRef,
+			const Callback& p_callback = Callback());
+		PanelVec3Input(
+			const std::string& p_name,
+			const GetCopyFunc& p_getCopy,
 			const Callback& p_callback);
 		~PanelVec3Input() = default;
 
@@ -24,8 +30,5 @@ namespace SvEditor::PanelItems
 
 	private:
 		std::string			m_name;
-		Callback			m_callback;
-		LibMath::Vector3&	m_value;
-
 	};
 }

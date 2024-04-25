@@ -11,17 +11,29 @@ namespace SvEditor::PanelItems
         const std::string& p_name,
         LibMath::Vector3& p_value,
         const Callback& p_callback) :
-        m_name(p_name),
-        m_value(p_value),
-        m_callback(p_callback)
+        PanelVec3Input(p_name, GetRefFunc([p_value]() mutable -> LibMath::Vector3& { return p_value; }), p_callback)
+    {}
+
+    PanelVec3Input::PanelVec3Input(
+        const std::string & p_name, const GetRefFunc & p_getRef, const Callback & p_callback) :
+        PanelInputBase(p_getRef, p_callback),
+        m_name(p_name)
+    {}
+
+    PanelVec3Input::PanelVec3Input(
+        const std::string& p_name, const GetCopyFunc& p_getCopy, const Callback& p_callback) :
+        PanelInputBase(p_getCopy, p_callback),
+
+        m_name(p_name)
     {}
 
     void PanelVec3Input::DisplayAndUpdatePanel()
     {
         static int flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll;
 
-        if (ImGui::InputFloat3(m_name.c_str(), m_value.getArray(), "%3.f", flags))
-            m_callback(m_value);
+        auto& value = GetRef();
+        if (ImGui::InputFloat3(m_name.c_str(), value.getArray(), "%3.f", flags))
+            m_callback(value);
     }
 
 
