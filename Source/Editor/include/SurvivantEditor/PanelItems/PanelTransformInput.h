@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SurvivantEditor/Interfaces/IPanelable.h"
+#include "SurvivantEditor/PanelItems/PanelInputBase.h"
 
 #include "Transform.h"
 #include "Vector/Vector3.h"
@@ -12,14 +13,23 @@ namespace SvEditor::PanelItems
 {
 	using namespace LibMath;
 
-	class PanelTransformInput : public Interfaces::IPanelable
+
+	using BasePanelTransformInput = PanelInputBase<Transform,
+		const LibMath::Vector3* const,
+		const LibMath::Quaternion* const,
+		const LibMath::Vector3* const>;
+
+	class PanelTransformInput : public BasePanelTransformInput
 	{
 	public:
-		using Callback = std::function<void(const LibMath::Vector3* const, const LibMath::Quaternion* const, const LibMath::Vector3* const)>;
+		using TransformCallback = BasePanelTransformInput::Callback;
 
 		PanelTransformInput(
-			Transform& p_transform,
-			const Callback& p_callback = Callback());
+			const GetRefFunc& p_getRef,
+			const TransformCallback& p_callback = nullptr);
+		PanelTransformInput(
+			const GetCopyFunc& p_getCopy,
+			const TransformCallback& p_callback);
 		~PanelTransformInput() = default;
 
 		virtual void DisplayAndUpdatePanel() override;
@@ -29,11 +39,11 @@ namespace SvEditor::PanelItems
 		LibMath::TVector3<LibMath::Radian>	ToVector3Radian(const LibMath::Vector3& p_degrees);
 		//void								ResetVector3ValIfNan(LibMath::Vector3& p_value);
 
-		Callback					m_callback;
-		Transform&					m_transform;
+		TransformCallback					m_callback;
+		TVector3<LibMath::Radian>			m_yawPitchRoll;
+
 		/*LibMath::Vector3					m_position;
 		LibMath::Quaternion					m_rotation;
 		LibMath::Vector3					m_scale;*/
-		TVector3<LibMath::Radian>	m_yawPitchRoll;
 	};
 }

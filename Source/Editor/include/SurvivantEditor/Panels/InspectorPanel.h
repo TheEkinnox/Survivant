@@ -1,7 +1,7 @@
 //InspectorPanel.h
 #pragma once
 
-#include "SurvivantEditor/Interfaces/IPanelable.h"
+#include "SurvivantEditor/Interfaces/IInspectorable.h"
 #include "SurvivantEditor/Panels/Panel.h"
 #include "SurvivantCore/Utility/UnusedIdGenerator.h"
 
@@ -19,15 +19,15 @@ namespace SvEditor::Panels
 		InspectorPanel();
 		~InspectorPanel();
 
-		//TODO : change to resource
-		void SetInpectorInfo(const std::shared_ptr<IPanelable>& p_info);
-		void ClearInfo();
+		static void SetInpectorInfo(const std::shared_ptr<IInspectorable>& p_selected, const std::string& p_resourceName);
+		static void ClearInfo();
 
 		virtual ERenderFlags Render()override;
 
 		static constexpr char NAME[] = "Inspector";
 	private:
 
-		std::shared_ptr<IPanelable> m_info;
+		static inline std::shared_ptr<IInspectorable>	s_selected;
+		static inline std::string						s_resourceName;
 	};
 }

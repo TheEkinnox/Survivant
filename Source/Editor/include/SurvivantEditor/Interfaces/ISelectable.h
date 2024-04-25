@@ -1,14 +1,15 @@
 #pragma once
 
 #include "SurvivantCore/Events/Event.h"
-#include <SurvivantEditor/MenuItems/PopupMenu.h>
 #include "SurvivantCore/Utility/Utility.h"
+#include "SurvivantEditor/Interfaces/IInspectorable.h"
+#include <SurvivantEditor/MenuItems/PopupMenu.h>
 
 #include <string>
 
 namespace SvEditor::Interfaces
 {
-	class ISelectable
+	class ISelectable : public IInspectorable
 	{
 	public:
 		virtual ~ISelectable() = default;
@@ -36,8 +37,8 @@ namespace SvEditor::Interfaces
 			}
 		};
 
-		virtual const std::string&	GetIcon() = 0;
-		virtual const std::string&	GetName() = 0;
+		virtual const std::string&	GetIcon()override = 0;
+		virtual const std::string&	GetName()override = 0;
 		virtual bool				Open() { m_onOpened.Invoke(this); return false; };
 		virtual bool				Select() { SetSelectedState(true); m_onSelected.Invoke(this); return false; };
 		virtual void				DisplayAndUpdatePopupMenu() = 0;

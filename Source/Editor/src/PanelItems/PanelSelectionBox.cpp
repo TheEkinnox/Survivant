@@ -23,7 +23,7 @@ namespace SvEditor::PanelItems
         float window_visible_x2 = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
 
         ImGuiSelectableFlags    sFlags = ImGuiSelectableFlags_None;
-        auto                    cFlags = ImGuiChildFlags_AutoResizeX | ImGuiChildFlags_AutoResizeY | ImGuiChildFlags_AlwaysAutoResize;
+        auto                    cFlags = ImGuiChildFlags_AutoResizeX | ImGuiChildFlags_AutoResizeY;
 
         size_t count = m_elements.size();
 

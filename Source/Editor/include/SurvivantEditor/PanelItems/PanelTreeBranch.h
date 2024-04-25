@@ -15,7 +15,7 @@ namespace SvEditor::PanelItems
 	using namespace Interfaces;
 
 	template<typename T>
-	class PanelTreeBranch : public IPanelable, public ISelectable
+	class PanelTreeBranch : public ISelectable
 	{
 	public:
 		using BranchCallback = std::function<bool(PanelTreeBranch&)>;

@@ -18,7 +18,7 @@ namespace SvEditor::Core
 		SvCore::Events::EventManager::GetInstance().AddListenner<SvApp::Window::WindowClosing>(([this]() { m_shouldClose = true; }));
 
 		m_ui = std::make_unique<EditorUI>();
-		m_ui->InitEditorUi(this);
+		m_ui->InitWindow(this);
 	}
 
 	void EditorWindow::Update()

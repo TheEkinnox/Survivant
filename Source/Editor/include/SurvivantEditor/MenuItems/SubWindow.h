@@ -124,7 +124,7 @@
 //	class PanelUniqueSelection : public IPanelable
 //	{
 //	public:
-//		using Callback = std::function<void(int)>;
+//		using TransformCallback = std::function<void(int)>;
 //
 //		/// <summary>
 //		/// 
@@ -134,7 +134,7 @@
 //		PanelUniqueSelection(
 //			const std::string& p_name,
 //			const std::vector<std::string>& p_selectable, 
-//			const Callback& p_callback);
+//			const TransformCallback& p_callback);
 //		~PanelUniqueSelection() = default;
 //
 //		virtual void DisplayAndUpdatePanel() override;
@@ -144,13 +144,13 @@
 //		std::string		m_items;
 //		int				m_count;
 //		int				m_curentSelection;
-//		Callback		m_callback;
+//		TransformCallback		m_callback;
 //	};
 //
 //	class PanelMultipleSelection : public IPanelable
 //	{
 //	public:
-//		using Callback = std::function<void(int)>;
+//		using TransformCallback = std::function<void(int)>;
 //
 //		/// <summary>
 //		/// 
@@ -160,7 +160,7 @@
 //		PanelMultipleSelection(
 //			const std::string& p_name,
 //			const std::vector<std::string>& p_selectable, 
-//			const Callback& p_callback);
+//			const TransformCallback& p_callback);
 //		~PanelMultipleSelection() = default;
 //
 //		virtual void DisplayAndUpdatePanel() override;
@@ -172,63 +172,63 @@
 //		std::vector<std::string>	m_items;
 //		int							m_count;
 //		int							m_curentSelection;
-//		Callback					m_callback;
+//		TransformCallback					m_callback;
 //	};
 //
 //	class PanelFloatInput : public IPanelable
 //	{
 //	public:
-//		using Callback = std::function<void(float)>;
+//		using TransformCallback = std::function<void(float)>;
 //
 //		PanelFloatInput(
 //			const std::string& p_name,
 //			const float& p_value,
-//			const Callback& p_callback);
+//			const TransformCallback& p_callback);
 //		~PanelFloatInput() = default;
 //
 //		virtual void DisplayAndUpdatePanel() override;
 //
 //	private:
 //		std::string		m_name;
-//		Callback		m_callback;
+//		TransformCallback		m_callback;
 //		float			m_value;
 //	};
 //
 //	class PanelIntInput : public IPanelable
 //	{
 //	public:
-//		using Callback = std::function<void(int)>;
+//		using TransformCallback = std::function<void(int)>;
 //
 //		PanelIntInput(
 //			const std::string& p_name,
 //			int p_value,
-//			const Callback& p_callback);
+//			const TransformCallback& p_callback);
 //		~PanelIntInput() = default;
 //
 //		virtual void DisplayAndUpdatePanel() override;
 //
 //	private:
 //		std::string		m_name;
-//		Callback		m_callback;
+//		TransformCallback		m_callback;
 //		int				m_value;
 //	};
 //
 //	class PanelVec3Input : public IPanelable
 //	{
 //	public:
-//		using Callback = std::function<void(LibMath::Vector3)>;
+//		using TransformCallback = std::function<void(LibMath::Vector3)>;
 //
 //		PanelVec3Input(
 //			const std::string& p_name,
 //			const LibMath::Vector3& p_value,
-//			const Callback& p_callback);
+//			const TransformCallback& p_callback);
 //		~PanelVec3Input() = default;
 //
 //		virtual void DisplayAndUpdatePanel() override;
 //
 //	private:
 //		std::string			m_name;
-//		Callback			m_callback;
+//		TransformCallback			m_callback;
 //		LibMath::Vector3	m_value;
 //
 //	};
@@ -236,13 +236,13 @@
 //	class PanelTransformInput : public IPanelable
 //	{
 //	public:
-//		using Callback = std::function<void(const LibMath::Vector3 * const, const LibMath::Quaternion * const, const LibMath::Vector3 * const)>;
+//		using TransformCallback = std::function<void(const LibMath::Vector3 * const, const LibMath::Quaternion * const, const LibMath::Vector3 * const)>;
 //
 //		PanelTransformInput(
 //			const LibMath::Vector3&		p_position = LibMath::Vector3(),
 //			const LibMath::Quaternion&	p_rotation = LibMath::Quaternion(),
 //			const LibMath::Vector3&		p_scale = LibMath::Vector3(),
-//			const Callback& p_callback = Callback());
+//			const TransformCallback& p_callback = TransformCallback());
 //		~PanelTransformInput() = default;
 //
 //		virtual void DisplayAndUpdatePanel() override;
@@ -251,7 +251,7 @@
 //		LibMath::Vector3 					ToVector3Degree(const LibMath::TVector3<LibMath::Radian>& p_radians);
 //		LibMath::TVector3<LibMath::Radian>	ToVector3Radian(const LibMath::Vector3& p_degrees);
 //
-//		Callback							m_callback;
+//		TransformCallback							m_callback;
 //		LibMath::Vector3					m_position;
 //		LibMath::Quaternion					m_rotation;
 //		LibMath::Vector3					m_scale;
@@ -518,7 +518,7 @@
 //	protected:
 //		std::string m_name = "None";
 //		std::string m_resourceLogo = "Tmp";
-//		std::string m_resourceName = "Default";
+//		std::string s_resourceName = "Default";
 //	//private:
 //	//	static void OpenCallback();
 //	};
@@ -564,7 +564,7 @@
 //		static constexpr char NAME[] = "Inspector";
 //		static inline SvCore::Utility::UnusedIdGenerator s_idGenerator;
 //
-//		std::shared_ptr<IPanelable> m_info;
+//		std::shared_ptr<IPanelable> m_items;
 //
 //	};
 //}

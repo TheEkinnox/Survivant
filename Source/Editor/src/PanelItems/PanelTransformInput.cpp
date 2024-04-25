@@ -8,31 +8,35 @@
 namespace SvEditor::PanelItems
 {
     PanelTransformInput::PanelTransformInput(
-        Transform& p_transform,
-        const Callback& p_callback) :
-        m_transform(p_transform),
-        m_callback(p_callback)
+        const GetRefFunc& p_getRef, const TransformCallback& p_callback) :
+        BasePanelTransformInput(p_getRef, p_callback)
     {
-        m_yawPitchRoll = m_transform.getRotation().toYawPitchRoll();
+        m_yawPitchRoll = GetRef().getRotation().toYawPitchRoll();
+    }
+
+    PanelTransformInput::PanelTransformInput(
+        const BasePanelTransformInput::GetCopyFunc& p_getCopy, const TransformCallback& p_callback) :
+        BasePanelTransformInput(p_getCopy, p_callback)
+    {
     }
 
     void PanelTransformInput::DisplayAndUpdatePanel()
     {
         static int flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll;
 
-        auto position = m_transform.getPosition();
-        auto rotation = m_transform.getRotation();
-        auto scale =    m_transform.getScale();
+        auto position = GetRef().getPosition();
+        auto rotation = GetRef().getRotation();
+        auto scale =    GetRef().getScale();
 
         ImGui::Text("Position");
         ImGui::SameLine();
         ImGui::PushID(0);
         if (ImGui::InputFloat3("##", position.getArray(), "%3.f", flags))
         {
-            m_transform.setPosition(position);
+            GetRef().setPosition(position);
 
             if (m_callback)
-                m_callback(&position, nullptr, nullptr);
+                m_callback({ &position, nullptr, nullptr });
         }
         ImGui::PopID();
 
@@ -52,10 +56,10 @@ namespace SvEditor::PanelItems
             rotation = LibMath::Quaternion(currentRad);
             m_yawPitchRoll = currentRad; // m_yawPitchRoll += ToVector3Radian(diffDegree);
 
-            m_transform.setRotation(rotation);
+            GetRef().setRotation(rotation);
 
             if (m_callback)
-                m_callback(nullptr, &rotation, nullptr);
+                m_callback({ nullptr, &rotation, nullptr });
         }
         ImGui::PopID();
 
@@ -65,10 +69,10 @@ namespace SvEditor::PanelItems
         ImGui::PushID(2);
         if (ImGui::InputFloat3("##", scale.getArray(), "%3.f", flags))
         {
-            m_transform.setScale(scale);
+            GetRef().setScale(scale);
 
             if (m_callback)
-                m_callback(nullptr, nullptr, &scale);
+                m_callback({ nullptr, nullptr, &scale });
         }
         ImGui::PopID();
     }
