@@ -31,5 +31,5 @@ namespace SvCore::Utility
     constexpr bool IsEmpty = true;
 
     template <typename ...Args>
-    constexpr bool IsEmpty<Args...> = false;
+    constexpr bool IsEmpty<Args...> = sizeof...(Args) == 0;
 }
