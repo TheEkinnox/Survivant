@@ -11,7 +11,7 @@ namespace SvEditor::App
 {
 	void EditorEngine::Update()
 	{
-		m_time.tick();
+		m_time.Tick();
 
 		//if (m_gameInstance != nullptr)
 		//{
@@ -191,6 +191,6 @@ namespace SvEditor::App
 
 	float EditorEngine::GetDeltaTime()
 	{
-		return m_time.getDeltaTime();
+		return m_time.GetDeltaTime();
 	}
 }

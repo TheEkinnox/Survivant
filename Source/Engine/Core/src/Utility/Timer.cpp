@@ -4,12 +4,18 @@
 
 namespace SvCore::Utility
 {
-    Timer::Timer(const float timeScale)
-        : m_timeScale(timeScale)
+    Timer::Timer(const float p_timeScale)
+        : m_timeScale(p_timeScale)
     {
     }
 
-    void Timer::tick()
+    Timer& Timer::GetInstance()
+    {
+        static Timer timer;
+        return timer;
+    }
+
+    void Timer::Tick()
     {
         if (m_isFirstUpdate)
         {
@@ -31,37 +37,43 @@ namespace SvCore::Utility
         m_frameCount++;
     }
 
-    float Timer::getTime() const
+    void Timer::Reset(const float p_timeScale)
+    {
+        m_isFirstUpdate = true;
+        m_timeScale     = p_timeScale;
+    }
+
+    float Timer::GetTime() const
     {
         return m_time;
     }
 
-    float Timer::getDeltaTime() const
+    float Timer::GetDeltaTime() const
     {
         return m_deltaTime * m_timeScale;
     }
 
-    float Timer::getUnscaledTime() const
+    float Timer::GetUnscaledTime() const
     {
         return m_unscaledTime;
     }
 
-    float Timer::getUnscaledDeltaTime() const
+    float Timer::GetUnscaledDeltaTime() const
     {
         return m_deltaTime;
     }
 
-    float Timer::getTimeScale() const
+    float Timer::GetTimeScale() const
     {
         return m_timeScale;
     }
 
-    void Timer::setTimeScale(const float timeScale)
+    void Timer::SetTimeScale(const float p_timeScale)
     {
-        m_timeScale = timeScale;
+        m_timeScale = p_timeScale;
     }
 
-    uint64_t Timer::getFrameCount() const
+    uint64_t Timer::GetFrameCount() const
     {
         return m_frameCount;
     }

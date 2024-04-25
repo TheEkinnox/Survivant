@@ -13,9 +13,21 @@ namespace SvCore::Utility
 
         /**
          * \brief Creates a timer with the given time scale
-         * \param timeScale The timer's initial time scale
+         * \param p_timeScale The timer's initial time scale
          */
-        explicit Timer(float timeScale);
+        explicit Timer(float p_timeScale);
+
+        /**
+         * \brief Creates a copy of the given timer
+         * \param p_other The timer to copy
+         */
+        Timer(const Timer& p_other) = default;
+
+        /**
+         * \brief Creates a move copy of the given timer
+         * \param p_other The timer to move
+         */
+        Timer(Timer&& p_other) noexcept = default;
 
         /**
          * \brief Destroys the timer
@@ -23,50 +35,76 @@ namespace SvCore::Utility
         ~Timer() = default;
 
         /**
+         * \brief Assigns a copy of the given timer to this one
+         * \param p_other The timer to copy
+         * \return A reference to the modified timer
+         */
+        Timer& operator=(const Timer& p_other) = default;
+
+        /**
+         * \brief Moves the given timer into this one
+         * \param p_other The timer to move
+         * \return A reference to the modified timer
+         */
+        Timer& operator=(Timer&& p_other) noexcept = default;
+
+        /**
+         * \brief Gets the shared timer instance
+         * \return The shared timer instance
+         */
+        static Timer& GetInstance();
+
+        /**
          * \brief Updates the timer's info
          */
-        void tick();
+        void Tick();
+
+        /**
+         * \brief Resets the timer with the given time scale
+         * \param p_timeScale The timer's new time scale
+         */
+        void Reset(float p_timeScale);
 
         /**
          * \brief Gets the scaled time since the creation of this timer
          * \return The scaled time elapsed since the creation of this timer
          */
-        float getTime() const;
+        float GetTime() const;
 
         /**
          * \brief Gets the scaled time between the previous and last ticks
          * \return The scaled time between the previous and last ticks
          */
-        float getDeltaTime() const;
+        float GetDeltaTime() const;
 
         /**
          * \brief Gets the unscaled time since the creation of this timer
          * \return The unscaled time elapsed since the creation of this timer
          */
-        float getUnscaledTime() const;
+        float GetUnscaledTime() const;
 
         /**
          * \brief Gets the unscaled time between the previous and last ticks
          * \return The unscaled time between the previous and last ticks
          */
-        float getUnscaledDeltaTime() const;
+        float GetUnscaledDeltaTime() const;
 
         /**
          * \brief Gets the current time scale
          * \return The current time scale
          */
-        float getTimeScale() const;
+        float GetTimeScale() const;
 
         /**
          * \brief Sets the timer's time scale
          */
-        void setTimeScale(float timeScale);
+        void SetTimeScale(float p_timeScale);
 
         /**
          * \brief Gets the number of time the "tick" function has been called
          * \return The elapsed number of frames since the timer's creation
          */
-        uint64_t getFrameCount() const;
+        uint64_t GetFrameCount() const;
 
     private:
         using clock = std::chrono::steady_clock;
@@ -76,10 +114,10 @@ namespace SvCore::Utility
 
         uint64_t m_frameCount = 0;
 
-        float m_time         = 0;
-        float m_unscaledTime = 0;
-        float m_deltaTime    = 0;
-        float m_timeScale    = 1;
+        float m_time         = 0.f;
+        float m_unscaledTime = 0.f;
+        float m_deltaTime    = 0.f;
+        float m_timeScale    = 1.f;
 
         bool m_isFirstUpdate = true;
     };

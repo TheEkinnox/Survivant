@@ -90,14 +90,14 @@ namespace SvTest
 
         while (!m_window->ShouldClose())
         {
-            m_timer.tick();
+            m_timer.Tick();
             m_window->Update();
 
             UpdateTemporaries();
             UpdateInput();
             UpdateRotators();
 
-            luaContext.Update(m_timer.getDeltaTime());
+            luaContext.Update(m_timer.GetDeltaTime());
 
             IRenderAPI::GetCurrent().Clear(true, true, true);
             DrawScene();
@@ -343,7 +343,7 @@ namespace SvTest
 
     void TestApp::UpdateTemporaries()
     {
-        const float deltaTime = m_timer.getDeltaTime();
+        const float deltaTime = m_timer.GetDeltaTime();
 
         SceneView<Temporary> view(m_scene);
 
@@ -359,7 +359,7 @@ namespace SvTest
 
     void TestApp::UpdateInput()
     {
-        const float deltaTime = m_timer.getDeltaTime();
+        const float deltaTime = m_timer.GetDeltaTime();
 
         SceneView<const UserInput, Transform> view(m_scene);
 
@@ -393,7 +393,7 @@ namespace SvTest
 
     void TestApp::UpdateRotators()
     {
-        const float deltaTime = m_timer.getDeltaTime();
+        const float deltaTime = m_timer.GetDeltaTime();
 
         SceneView<const Rotator, Transform> view(m_scene);
 
