@@ -10,7 +10,7 @@ namespace SvEditor::PanelItems
 	class PanelMultipleSelection : public Interfaces::IPanelable
 	{
 	public:
-		using Callback = std::function<void(int)>;
+		using Callback = std::function<void(size_t)>;
 
 		/// <summary>
 		/// 
@@ -31,8 +31,8 @@ namespace SvEditor::PanelItems
 		std::string					m_name;
 		std::vector<std::string>	m_items;
 		std::string					m_displayString;
-		int							m_count;
-		int							m_curentSelection;
+		size_t						m_count;
+		size_t						m_curentSelection;
 		Callback					m_callback;
 	};
 }

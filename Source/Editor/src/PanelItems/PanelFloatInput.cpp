@@ -11,16 +11,27 @@ namespace SvEditor::PanelItems
         const std::string& p_name,
         float& p_value,
         const Callback& p_callback) :
-        m_name(p_name),
-        m_value(p_value),
-        m_callback(p_callback)
+        PanelFloatInput(p_name, GetRefFunc([p_value]() mutable -> float& { return p_value; }), p_callback)
+    {}
+
+    PanelFloatInput::PanelFloatInput(
+        const std::string & p_name, const GetRefFunc & p_getRef, const Callback & p_callback) :
+        PanelInputBase(p_getRef, p_callback),
+        m_name(p_name)
+    {}
+
+    PanelFloatInput::PanelFloatInput(
+        const std::string& p_name, const GetCopyFunc& p_getCopy, const Callback& p_callback) :
+        PanelInputBase(p_getCopy, p_callback),
+        m_name(p_name)
     {}
 
     void PanelFloatInput::DisplayAndUpdatePanel()
     {
         static int flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll;
 
-        if (ImGui::InputFloat(m_name.c_str(), &m_value, 0, 0, "%.3f", flags))
-            m_callback(m_value);
+        auto value = GetRef();
+        if (ImGui::InputFloat(m_name.c_str(), &value, 0, 0, "%.3f", flags))
+            m_callback(value);
     }
 }

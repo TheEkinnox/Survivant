@@ -1,20 +1,26 @@
 //PanelIntInput.h
 #pragma once
 
-#include "SurvivantEditor/Interfaces/IPanelable.h"
+#include "SurvivantEditor/PanelItems/PanelInputBase.h"
 
 #include <functional>
 
 namespace SvEditor::PanelItems
 {
-	class PanelIntInput : public Interfaces::IPanelable
+	class PanelIntInput : public PanelInputBase<int>
 	{
 	public:
-		using Callback = std::function<void(int)>;
-
 		PanelIntInput(
 			const std::string& p_name,
 			int& p_value,
+			const Callback& p_callback = Callback());
+		PanelIntInput(
+			const std::string& p_name,
+			const GetRefFunc& p_refFunc,
+			const Callback& p_callback = Callback());
+		PanelIntInput(
+			const std::string& p_name,
+			const GetCopyFunc& p_copyFunc,
 			const Callback& p_callback);
 		~PanelIntInput() = default;
 
@@ -22,7 +28,5 @@ namespace SvEditor::PanelItems
 
 	private:
 		std::string		m_name;
-		Callback		m_callback;
-		int&			m_value;
 	};
 }
