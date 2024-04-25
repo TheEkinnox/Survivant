@@ -20,9 +20,7 @@ namespace SvCore::ECS
 
     struct ComponentTypeInfo
     {
-        using TypeId = size_t;
-
-        TypeId m_typeId;
+        Utility::TypeId m_typeId;
 
         std::shared_ptr<IComponentStorage> (*MakeStorage)(Scene*);
     };

@@ -4,12 +4,12 @@
 
 namespace SvCore::Utility
 {
+    using TypeId = size_t;
+
     template <class TypeInfo>
     class TypeRegistry
     {
     public:
-        using TypeId = size_t;
-
         /**
          * \brief Creates an empty type registry
          */

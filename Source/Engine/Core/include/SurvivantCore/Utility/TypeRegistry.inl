@@ -6,7 +6,7 @@ namespace SvCore::Utility
 {
     template <class TypeInfo>
     template <typename T>
-    typename TypeRegistry<TypeInfo>::TypeId TypeRegistry<TypeInfo>::GetTypeId()
+    TypeId TypeRegistry<TypeInfo>::GetTypeId()
     {
         return typeid(std::remove_cvref_t<T>).hash_code();
     }

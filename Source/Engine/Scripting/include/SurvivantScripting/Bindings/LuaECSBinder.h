@@ -13,8 +13,8 @@ namespace SvScripting::Bindings
     public:
         struct ComponentHandle
         {
-            SvCore::ECS::EntityHandle              m_owner;
-            SvCore::ECS::ComponentRegistry::TypeId m_typeId;
+            SvCore::ECS::EntityHandle m_owner;
+            SvCore::Utility::TypeId   m_typeId;
 
             /**
              * \brief Checks whether the given handle references the same component as this one or not

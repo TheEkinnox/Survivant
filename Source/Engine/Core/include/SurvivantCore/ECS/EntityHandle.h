@@ -1,6 +1,6 @@
 #pragma once
-#include "SurvivantCore/ECS/ComponentRegistry.h"
 #include "SurvivantCore/ECS/Entity.h"
+#include "SurvivantCore/Utility/TypeRegistry.h"
 
 namespace SvCore::ECS
 {
@@ -262,13 +262,13 @@ namespace SvCore::ECS
          * \brief Gets the ids of all the component types owned by the linked entity
          * \return The ids of all the component types owned by the entity
          */
-        std::vector<ComponentRegistry::TypeId> GetComponentIds() const;
+        std::vector<Utility::TypeId> GetComponentIds() const;
 
         /**
          * \brief Gets all the components owned by the linked entity
          * \return The components owned by the entity
          */
-        std::vector<std::pair<ComponentRegistry::TypeId, void*>> GetComponents() const;
+        std::vector<std::pair<Utility::TypeId, void*>> GetComponents() const;
 
     private:
         Scene* m_scene;
@@ -282,13 +282,6 @@ namespace SvCore::ECS
      * \return The modified stream
      */
     std::ostream& operator<<(std::ostream& p_stream, const EntityHandle& p_handle);
-
-    template <>
-    bool ComponentRegistry::ToJson(
-        const EntityHandle& p_component, Serialization::JsonWriter& p_writer, const EntitiesMap& p_toSerialized);
-
-    template <>
-    bool ComponentRegistry::FromJson(EntityHandle& p_out, const Serialization::JsonValue& p_json, Scene* p_scene);
 }
 
 #include "SurvivantCore/ECS/EntityHandle.inl"

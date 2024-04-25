@@ -4,6 +4,7 @@
 #include "SurvivantCore/ECS/Components/Hierarchy.h"
 
 using namespace SvCore::Serialization;
+using namespace SvCore::Utility;
 
 namespace SvCore::ECS
 {
@@ -149,14 +150,14 @@ namespace SvCore::ECS
         return m_scene ? m_scene->GetComponentCount(m_entity) : 0;
     }
 
-    std::vector<ComponentRegistry::TypeId> EntityHandle::GetComponentIds() const
+    std::vector<TypeId> EntityHandle::GetComponentIds() const
     {
-        return m_scene ? m_scene->GetComponentIds(m_entity) : std::vector<ComponentRegistry::TypeId>();
+        return m_scene ? m_scene->GetComponentIds(m_entity) : std::vector<TypeId>();
     }
 
-    std::vector<std::pair<ComponentRegistry::TypeId, void*>> EntityHandle::GetComponents() const
+    std::vector<std::pair<TypeId, void*>> EntityHandle::GetComponents() const
     {
-        return m_scene ? m_scene->GetComponents(m_entity) : std::vector<std::pair<ComponentRegistry::TypeId, void*>>();
+        return m_scene ? m_scene->GetComponents(m_entity) : std::vector<std::pair<TypeId, void*>>();
     }
 
     std::ostream& operator<<(std::ostream& p_stream, const EntityHandle& p_handle)

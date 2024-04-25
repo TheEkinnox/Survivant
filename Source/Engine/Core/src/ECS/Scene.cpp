@@ -7,6 +7,7 @@
 #include <rapidjson/istreamwrapper.h>
 
 using namespace SvCore::Serialization;
+using namespace SvCore::Utility;
 
 namespace SvCore::ECS
 {
@@ -183,7 +184,7 @@ namespace SvCore::ECS
         return const_cast<Scene*>(this)->GetStorage(p_id);
     }
 
-    std::vector<Scene::TypeId> Scene::GetComponentIds() const
+    std::vector<TypeId> Scene::GetComponentIds() const
     {
         const auto view = m_components | std::views::keys;
         return { view.begin(), view.end() };
@@ -205,7 +206,7 @@ namespace SvCore::ECS
         return count;
     }
 
-    std::vector<Scene::TypeId> Scene::GetComponentIds(const Entity p_owner) const
+    std::vector<TypeId> Scene::GetComponentIds(const Entity p_owner) const
     {
         std::vector<TypeId> ids;
         ids.reserve(m_components.size());
@@ -219,7 +220,7 @@ namespace SvCore::ECS
         return ids;
     }
 
-    std::vector<std::pair<Scene::TypeId, void*>> Scene::GetComponents(const Entity p_owner) const
+    std::vector<std::pair<TypeId, void*>> Scene::GetComponents(const Entity p_owner) const
     {
         std::vector<std::pair<TypeId, void*>> components;
         components.reserve(m_components.size());

@@ -71,8 +71,8 @@ namespace SvCore::ECS
         }
         else
         {
-            const TypeId typeId = ComponentRegistry::GetTypeId<T>();
-            const auto   it     = m_components.find(typeId);
+            const Utility::TypeId typeId = ComponentRegistry::GetTypeId<T>();
+            const auto            it     = m_components.find(typeId);
 
             if (it != m_components.end())
                 return reinterpret_cast<ComponentStorage<T>&>(*it->second);
@@ -91,8 +91,8 @@ namespace SvCore::ECS
         }
         else
         {
-            const TypeId typeId = ComponentRegistry::GetTypeId<T>();
-            const auto   it     = m_components.find(typeId);
+            const Utility::TypeId typeId = ComponentRegistry::GetTypeId<T>();
+            const auto            it     = m_components.find(typeId);
 
             if (it != m_components.end())
                 return reinterpret_cast<const ComponentStorage<T>&>(*it->second);
