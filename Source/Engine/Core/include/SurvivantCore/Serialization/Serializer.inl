@@ -5,7 +5,7 @@
 namespace SvCore::Serialization
 {
     template <typename T>
-    bool ToJson(const T& value, JsonWriter& writer) requires !std::is_enum_v<T>
+    bool ToJson(const T& value, JsonWriter& writer) requires (!std::is_enum_v<T>)
     {
         constexpr bool hasToJson = requires
         {
@@ -19,7 +19,7 @@ namespace SvCore::Serialization
     }
 
     template <typename T>
-    bool FromJson(T& out, const JsonValue& json) requires !std::is_enum_v<T>
+    bool FromJson(T& out, const JsonValue& json) requires (!std::is_enum_v<T>)
     {
         constexpr bool hasFromJson = requires
         {
