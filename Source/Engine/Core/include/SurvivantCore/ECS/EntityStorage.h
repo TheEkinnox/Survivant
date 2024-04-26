@@ -77,7 +77,7 @@ namespace SvCore::ECS
          * \param p_index The entity's index
          * \return The entity with the given index on success. NULL_ENTITY otherwise
          */
-        Entity Find(Entity::Id p_index) const;
+        Entity Find(Entity::Index p_index) const;
 
         /**
          * \brief Removes all entities from the manager
@@ -88,7 +88,7 @@ namespace SvCore::ECS
          * \brief Reserves the given number of entities
          * \param p_count The number of entities to reserve
          */
-        void Reserve(size_t p_count);
+        void Reserve(Entity::Index p_count);
 
         /**
          * \brief Gets an iterator to the start of the entities array
@@ -118,11 +118,11 @@ namespace SvCore::ECS
          * \brief Gets the current number of entities
          * \return The current number of entities
          */
-        Entity::Id size() const;
+        Entity::Index size() const;
 
     private:
         std::vector<Entity> m_entities;
-        Entity::Id          m_count = 0;
+        Entity::Index       m_count = 0;
         Scene*              m_scene = nullptr;
     };
 }

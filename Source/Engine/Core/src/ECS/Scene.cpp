@@ -51,7 +51,7 @@ namespace SvCore::ECS
         p_writer.StartArray();
 
         IComponentStorage::EntitiesMap entitiesMap;
-        Entity::Id                     index = 0;
+        Entity::Index                  index = 0;
 
         for (const auto entity : m_entities)
             entitiesMap[entity] = Entity(index++);
@@ -92,10 +92,10 @@ namespace SvCore::ECS
         if (!CHECK(it != p_json.MemberEnd() && it->value.IsUint64(), "Unable to deserialize scene - Invalid entities count"))
             return false;
 
-        const Entity::Id entityCount = it->value.GetUint64();
+        const Entity::Index entityCount = static_cast<Entity::Index>(it->value.GetUint64());
         m_entities.Reserve(entityCount);
 
-        for (Entity::Id id = 0; id < entityCount; ++id)
+        for (Entity::Index id = 0; id < entityCount; ++id)
         {
             [[maybe_unused]] Entity entity = Create();
             if (!ASSUME(entity.GetIndex() == id))
@@ -135,7 +135,7 @@ namespace SvCore::ECS
         return { this, entity };
     }
 
-    EntityHandle Scene::Find(Entity::Id p_index)
+    EntityHandle Scene::Find(const Entity::Index p_index)
     {
         return { this, m_entities.Find(p_index) };
     }

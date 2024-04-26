@@ -10,7 +10,7 @@ namespace SvCore::ECS
     {
     }
 
-    constexpr Entity::Entity(const Id p_index, const Version p_version)
+    constexpr Entity::Entity(const Index p_index, const Version p_version)
         : Entity(Make(p_index, p_version))
     {
     }
@@ -25,7 +25,7 @@ namespace SvCore::ECS
         return m_id >> INDEX_BITS & VERSION_MASK;
     }
 
-    constexpr Entity::Id Entity::GetIndex() const
+    constexpr Entity::Index Entity::GetIndex() const
     {
         return m_id & INDEX_MASK;
     }

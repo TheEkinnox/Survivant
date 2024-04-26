@@ -102,7 +102,7 @@ namespace SvCore::ECS
          * \param p_index The entity's index
          * \return A handle to the entity with the given index on success. An empty handle otherwise
          */
-        EntityHandle Find(Entity::Id p_index);
+        EntityHandle Find(Entity::Index p_index);
 
         /**
          * \brief Destroys the given entity
