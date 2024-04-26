@@ -105,12 +105,12 @@ namespace SvEditor::Core
 		auto component = PanelComponent("Hierarchy",
 			PanelComponent::Items({
 					std::make_shared<PanelTextInput>(PanelTextInput(
-						"Parent",
+						"Parent      ",
 						PanelTextInput::GetRefFunc([entity = p_entity]() mutable -> std::string& {
 							static std::string val;
 
 							auto parent = entity.Get<HierarchyComponent>()->GetParent();
-							if (!parent)
+							if (!parent || parent == NULL_ENTITY)
 								val = "None";
 							else
 								val = GetEntityName(EntityHandle(entity.GetScene(), parent));
@@ -118,7 +118,7 @@ namespace SvEditor::Core
 						PanelTextInput::Callback()
 						)),
 					std::make_shared<PanelIntInput>(PanelIntInput(
-						"Number of Childreen",
+						"Child Count ",
 						PanelIntInput::GetCopyFunc([entity = p_entity]() mutable -> int { return
 							static_cast<int>(entity.Get<HierarchyComponent>()->GetChildCount()); }),
 						PanelIntInput::Callback()
@@ -136,7 +136,7 @@ namespace SvEditor::Core
 		auto component = PanelComponent("Tag",
 			PanelComponent::Items({
 					std::make_shared<PanelTextInput>(PanelTextInput(
-						"Name",
+						"Name ",
 						[entity = p_entity]() mutable -> std::string& { return 
 							entity.Get<TagComponent>()->m_tag; }
 					))
@@ -160,7 +160,7 @@ namespace SvEditor::Core
 		//Core::Light            m_ambient;
 		display.emplace_back(PanelSelectionDisplay::SelectedDisplay({
 				std::make_shared<PanelColorInput>(PanelColorInput(
-					"Color", 
+					"Color ", 
 					[entity = p_entity]() mutable -> Vector4& { return //cast from (float[4])[0] to &Vec4
 						*(Vector4*)&(entity.Get<LightComponent>()->m_ambient.m_color.m_r); }
 				))
@@ -169,12 +169,12 @@ namespace SvEditor::Core
 		//Core::DirectionalLight m_directional;
 		display.emplace_back(PanelSelectionDisplay::SelectedDisplay({
 				std::make_shared<PanelColorInput>(PanelColorInput(
-					"Color",
+					"Color     ",
 					[entity = p_entity]() mutable -> Vector4& { return //cast from (float[4])[0] to &Vec4
 						*(Vector4*)&(entity.Get<LightComponent>()->m_directional.m_color); }
 				)),
 				std::make_shared<PanelVec3Input>(PanelVec3Input(
-					"Direction",
+					"Direction ",
 					[entity = p_entity]() mutable -> Vector3& { return
 						entity.Get<LightComponent>()->m_directional.m_direction; }
 				))
@@ -183,17 +183,17 @@ namespace SvEditor::Core
 		//Core::PointLight       m_point;
 		display.emplace_back(PanelSelectionDisplay::SelectedDisplay({
 				std::make_shared<PanelColorInput>(PanelColorInput(
-					"Color",
+					"Color       ",
 					[entity = p_entity]() mutable -> Vector4&{ return //cast from (float[4])[0] to &Vec4
 						*(Vector4*)&(entity.Get<LightComponent>()->m_point.m_color); }
 				)),
 				std::make_shared<PanelVec3Input>(PanelVec3Input(
-					"Position",
+					"Position    ",
 					[entity = p_entity]() mutable -> Vector3& { return
 						entity.Get<LightComponent>()->m_point.m_position; }
 				)),
 				std::make_shared<PanelVec3Input>(PanelVec3Input(
-					"Attenuation (constant, linear, quadratic)",
+					"Attenuation ",
 					[entity = p_entity]() mutable -> LibMath::Vector3& { return //cast from (float[3])[0] to &Vec3
 						*(Vector3*)&(entity.Get<LightComponent>()->m_point.m_attenuationData.m_constant); }
 				))
@@ -202,27 +202,27 @@ namespace SvEditor::Core
 		//Core::SpotLight        m_spot;
 		display.emplace_back(PanelSelectionDisplay::SelectedDisplay({
 				std::make_shared<PanelColorInput>(PanelColorInput(
-					"Color",
+					"Color       ",
 					[entity = p_entity]() mutable -> Vector4& { return //cast from (float[4])[0] to &Vec4
 						*(Vector4*)&(entity.Get<LightComponent>()->m_spot.m_color); }
 				)),
 				std::make_shared<PanelVec3Input>(PanelVec3Input(
-					"Position",
+					"Position    ",
 					[entity = p_entity]() mutable -> Vector3& { return
 						entity.Get<LightComponent>()->m_spot.m_position; }
 				)),
 				std::make_shared<PanelVec3Input>(PanelVec3Input(
-					"Direction",
+					"Direction   ",
 					[entity = p_entity]() mutable -> Vector3& { return
 						entity.Get<LightComponent>()->m_spot.m_direction; }
 				)),
 				std::make_shared<PanelVec3Input>(PanelVec3Input(
-					"Attenuation (constant, linear, quadratic)",
+					"Attenuation ",
 					[entity = p_entity]() mutable -> LibMath::Vector3& { return //cast from (float[3])[0] to &Vec3
 						*(Vector3*)&(entity.Get<LightComponent>()->m_spot.m_attenuationData.m_constant); }
 				)),
 				std::make_shared<PanelVec2Input>(PanelVec2Input(
-					"Cutoff (inner, outer)",
+					"Cutoff      ",
 					[entity = p_entity]() mutable -> LibMath::Vector2& { return //cast from (float[2])[0] to &Vec2
 						*(Vector2*)&(entity.Get<LightComponent>()->m_spot.m_cutoff.m_inner); }
 				))
@@ -231,7 +231,7 @@ namespace SvEditor::Core
 		auto component = PanelComponent("Light",
 			PanelComponent::Items({
 					std::make_shared<PanelSelectionDisplay>(PanelSelectionDisplay(
-						"Type", enumNames, display, 
+						"Type ", enumNames, display, 
 						[p_entity]() -> int { return static_cast<int>( //copy enum to int
 							p_entity.Get<LightComponent>()->m_type); },
 						[entity = p_entity] (const int& p_val) mutable { //set enum
