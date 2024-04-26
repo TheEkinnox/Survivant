@@ -193,6 +193,7 @@ function Test:OnInit()
         testCalled = true
         TestECS(self.owner)
         self.owner:AddScript("scripts.mathTest")
+        self.owner:AddScript("scripts.utilityTest")
 
         local inputEntity = self.owner.scene:Create() -- Create a new entity since this one will be destroyed
         inputEntity:AddScript("scripts.inputTest")

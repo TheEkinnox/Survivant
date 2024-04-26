@@ -5,6 +5,7 @@
 #include "SurvivantScripting/Bindings/LuaECSBinder.h"
 #include "SurvivantScripting/Bindings/LuaInputBinder.h"
 #include "SurvivantScripting/Bindings/LuaMathBinder.h"
+#include "SurvivantScripting/Bindings/LuaUtilityBinder.h"
 
 #include <SurvivantCore/Resources/ResourceManager.h>
 #include <SurvivantCore/Utility/FileSystem.h>
@@ -324,5 +325,6 @@ namespace SvScripting
         Bindings::LuaECSBinder::Bind(p_luaState);
         Bindings::LuaMathBinder::Bind(p_luaState);
         Bindings::LuaInputBinder::Bind(p_luaState);
+        Bindings::LuaUtilityBinder::Bind(p_luaState);
     }
 }
