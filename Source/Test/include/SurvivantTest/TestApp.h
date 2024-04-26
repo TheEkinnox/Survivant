@@ -28,7 +28,6 @@ namespace SvTest
 
     private:
         std::unique_ptr<SvApp::Window> m_window;
-        SvCore::Utility::Timer         m_timer;
         SvCore::ECS::Scene             m_scene;
         LibMath::Vector2               m_moveInput, m_rotateInput;
 
