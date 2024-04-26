@@ -1,9 +1,7 @@
 #pragma once
 #include "SurvivantCore/ECS/EntityStorage.h"
 #include "SurvivantCore/Resources/IResource.h"
-
-#include <rapidjson/document.h>
-#include <rapidjson/writer.h>
+#include "SurvivantCore/Serialization/Serializer.h"
 
 namespace SvCore::ECS
 {
@@ -15,7 +13,6 @@ namespace SvCore::ECS
     class Scene final : public Resources::IResource
     {
         REGISTERED_RESOURCE_BODY()
-        using TypeId = size_t;
 
     public:
         template <typename T>
@@ -78,14 +75,14 @@ namespace SvCore::ECS
          * \param p_writer The output json writer
          * \return True on success. False otherwise.
          */
-        bool ToJson(rapidjson::Writer<rapidjson::StringBuffer>& p_writer) const;
+        bool ToJson(Serialization::JsonWriter& p_writer) const;
 
         /**
          * \brief Deserializes the scene from json
          * \param p_json The input json data
          * \return True on success. False otherwise.
          */
-        bool FromJson(const rapidjson::Value& p_json);
+        bool FromJson(const Serialization::JsonValue& p_json);
 
         /**
          * \brief Creates a new entity
@@ -99,6 +96,13 @@ namespace SvCore::ECS
          * \return A handle to the created entity
          */
         EntityHandle Create(Entity p_source);
+
+        /**
+         * \brief Finds the entity with the given index
+         * \param p_index The entity's index
+         * \return A handle to the entity with the given index on success. An empty handle otherwise
+         */
+        EntityHandle Find(Entity::Index p_index);
 
         /**
          * \brief Destroys the given entity
@@ -210,20 +214,20 @@ namespace SvCore::ECS
          * \param p_id The component's type's id
          * \return A reference to the storage
          */
-        IComponentStorage& GetStorage(TypeId p_id);
+        IComponentStorage& GetStorage(Utility::TypeId p_id);
 
         /**
          * \brief Gets the component storage for the given type
          * \param p_id The component's type's id
          * \return A constant reference to the storage
          */
-        const IComponentStorage& GetStorage(TypeId p_id) const;
+        const IComponentStorage& GetStorage(Utility::TypeId p_id) const;
 
         /**
          * \brief Gets the ids of all the component types
          * \return The ids of all the component types
          */
-        std::vector<TypeId> GetComponentIds() const;
+        std::vector<Utility::TypeId> GetComponentIds() const;
 
         /**
          * \brief Gets the number of components owned by the given entity
@@ -237,25 +241,25 @@ namespace SvCore::ECS
          * \param p_owner The components' owner
          * \return The ids of all the component types owned by the given entity
          */
-        std::vector<TypeId> GetComponentIds(Entity p_owner) const;
+        std::vector<Utility::TypeId> GetComponentIds(Entity p_owner) const;
 
         /**
          * \brief Gets all the components owned by the given entity
          * \param p_owner The components' owner
          * \return The components owned by the given entity
          */
-        std::vector<std::pair<TypeId, void*>> GetComponents(Entity p_owner) const;
+        std::vector<std::pair<Utility::TypeId, void*>> GetComponents(Entity p_owner) const;
 
     private:
-        EntityStorage                                                          m_entities;
-        mutable std::unordered_map<TypeId, std::unique_ptr<IComponentStorage>> m_components;
+        EntityStorage                                                                   m_entities;
+        mutable std::unordered_map<Utility::TypeId, std::shared_ptr<IComponentStorage>> m_components;
 
         /**
          * \brief Deserializes a component storage from json
          * \param p_json The input json data
          * \return True on success. False otherwise
          */
-        bool DeserializeStorage(const rapidjson::Value& p_json);
+        bool DeserializeStorage(const Serialization::JsonValue& p_json);
     };
 }
 

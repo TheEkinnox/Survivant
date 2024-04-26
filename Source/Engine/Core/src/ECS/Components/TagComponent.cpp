@@ -1,21 +1,20 @@
 #include "SurvivantCore/ECS/Components/TagComponent.h"
 
-namespace SvCore::ECS
+namespace SvCore::Serialization
 {
     template <>
-    bool ComponentRegistry::ToJson<TagComponent>(
-        const TagComponent& tag, rapidjson::Writer<rapidjson::StringBuffer>& writer, const EntitiesMap&)
+    bool ToJson(const ECS::TagComponent& p_value, JsonWriter& p_writer)
     {
-        return CHECK(writer.String(tag.m_tag.c_str(), static_cast<rapidjson::SizeType>(tag.m_tag.size())));
+        return CHECK(p_writer.String(p_value.m_tag.c_str(), static_cast<rapidjson::SizeType>(p_value.m_tag.size())));
     }
 
     template <>
-    bool ComponentRegistry::FromJson<TagComponent>(TagComponent& out, const rapidjson::Value& json)
+    bool FromJson(ECS::TagComponent& p_out, const JsonValue& p_json)
     {
-        if (!CHECK(json.IsString(), "Unable to deserialize tag - Json value should be a string"))
+        if (!CHECK(p_json.IsString(), "Unable to deserialize tag - Json value should be a string"))
             return false;
 
-        out.m_tag = json.GetString();
+        p_out.m_tag = p_json.GetString();
 
         return true;
     }

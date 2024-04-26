@@ -75,10 +75,9 @@ namespace SvCore::Resources
          * \brief Tries to create an empty resource of the given type
          * \param p_type The resource's type
          * \param p_path The resource's path
-         * \param p_shouldLoad Whether the resource should be loaded on creation
          * \return A pointer to the created resource on success, nullptr otherwise
          */
-        GenericResourceRef Create(const std::string& p_type, const std::string& p_path, bool p_shouldLoad = true);
+        GenericResourceRef Create(const std::string& p_type, const std::string& p_path);
 
         /**
          * \brief Tries to find the resource with the given path.
@@ -113,6 +112,21 @@ namespace SvCore::Resources
          * \return A pointer to the resource on success, nullptr otherwise.
          */
         GenericResourceRef GetOrCreate(const std::string& p_type, const std::string& p_path);
+
+        /**
+         * \brief Gets all the loaded resources of the given type
+         * \tparam T The target resource type
+         * \return The list of all loaded resources of the given type
+         */
+        template <typename T>
+        std::vector<ResourceRef<T>> GetAll() const;
+
+        /**
+         * \brief Gets all the loaded resources of the given type
+         * \param p_type The target resource type
+         * \return The list of all loaded resources of the given type
+         */
+        std::vector<GenericResourceRef> GetAll(const std::string& p_type) const;
 
         /**
          * \brief Reads the content of the resource at the given path
@@ -162,6 +176,13 @@ namespace SvCore::Resources
          * \return The resource's path including the search path
          */
         std::string GetFullPath(const std::string& p_path) const;
+
+        /**
+         * \brief Gets the relative path of a resource from its full path
+         * \param p_path The resource's full path
+         * \return The resource's relative path
+         */
+        std::string GetRelativePath(std::string p_path) const;
 
     private:
         ResourceMap m_resources;

@@ -2,8 +2,7 @@
 #include "SurvivantCore/ECS/ComponentTraits.h"
 #include "SurvivantCore/ECS/ComponentRegistry.h"
 #include "SurvivantCore/ECS/Entity.h"
-
-#include <Transform.h>
+#include "SurvivantCore/Serialization/MathSerializers.h"
 
 namespace SvCore::ECS
 {
@@ -130,15 +129,8 @@ namespace SvCore::ECS
     void ComponentTraits::OnChange<LibMath::Transform>(EntityHandle&, LibMath::Transform&);
 
     template <>
-    bool ComponentRegistry::ToJson(const HierarchyComponent&, rapidjson::Writer<rapidjson::StringBuffer>&, const EntitiesMap&);
+    bool ComponentRegistry::ToJson(const HierarchyComponent&, Serialization::JsonWriter&, const EntitiesMap&);
 
     template <>
-    bool ComponentRegistry::FromJson<HierarchyComponent>(HierarchyComponent&, const rapidjson::Value&);
-
-    template <>
-    bool ComponentRegistry::ToJson<LibMath::Transform>(
-        const LibMath::Transform&, rapidjson::Writer<rapidjson::StringBuffer>&, const EntitiesMap&);
-
-    template <>
-    bool ComponentRegistry::FromJson<LibMath::Transform>(LibMath::Transform&, const rapidjson::Value&);
+    bool ComponentRegistry::FromJson<HierarchyComponent>(HierarchyComponent&, const Serialization::JsonValue&, Scene*);
 }

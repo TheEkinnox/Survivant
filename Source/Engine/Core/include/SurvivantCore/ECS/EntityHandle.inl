@@ -5,6 +5,13 @@
 
 namespace SvCore::ECS
 {
+    template <>
+    bool ComponentRegistry::ToJson(
+        const EntityHandle& p_component, Serialization::JsonWriter& p_writer, const EntitiesMap& p_toSerialized);
+
+    template <>
+    bool ComponentRegistry::FromJson(EntityHandle& p_out, const Serialization::JsonValue& p_json, Scene* p_scene);
+
     template <typename T>
     bool EntityHandle::Has() const
     {

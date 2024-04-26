@@ -9,10 +9,13 @@ namespace SvCore::ECS
     {
         std::string m_tag;
     };
+}
+
+namespace SvCore::Serialization
+{
+    template <>
+    bool Serialization::ToJson(const ECS::TagComponent&, JsonWriter&);
 
     template <>
-    bool ComponentRegistry::ToJson(const TagComponent&, rapidjson::Writer<rapidjson::StringBuffer>&, const EntitiesMap&);
-
-    template <>
-    bool ComponentRegistry::FromJson<TagComponent>(TagComponent&, const rapidjson::Value&);
+    bool Serialization::FromJson(ECS::TagComponent&, const JsonValue&);
 }

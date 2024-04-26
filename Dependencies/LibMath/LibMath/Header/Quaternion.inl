@@ -197,16 +197,13 @@ namespace LibMath
     template <class U>
     constexpr TQuaternion<T> TQuaternion<T>::fromTo(const TVector3<U>& from, const TVector3<U>& to)
     {
-        if (from != -to)
-        {
-            const TVector3<U> cross = to.cross(from);
-            return TQuaternion{
-                squareRoot(from.magnitudeSquared() * to.magnitudeSquared()) + from.dot(to),
-                cross.m_x, cross.m_y, cross.m_z
-            }.normalized();
-        }
+        if (from == -to)
+            return TQuaternion(0, from.m_y + from.m_z, -from.m_x, -from.m_x).normalized();
 
-        return TQuaternion(0, sign(from.m_x), -sign(from.m_z), sign(from.m_x)).normalized();
+        return TQuaternion{
+            squareRoot(from.magnitudeSquared() * to.magnitudeSquared()) + from.dot(to),
+            from.cross(to)
+        }.normalized();
     }
 
     template <class T>

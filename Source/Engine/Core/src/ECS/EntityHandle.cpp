@@ -3,11 +3,19 @@
 #include "SurvivantCore/ECS/Scene.h"
 #include "SurvivantCore/ECS/Components/Hierarchy.h"
 
+using namespace SvCore::Serialization;
+using namespace SvCore::Utility;
+
 namespace SvCore::ECS
 {
     EntityHandle::EntityHandle(Scene* p_scene, const Entity p_entity)
         : m_scene(p_scene), m_entity(p_entity)
     {
+    }
+
+    bool EntityHandle::operator==(const EntityHandle& p_other) const
+    {
+        return m_entity == p_other.m_entity && m_scene == p_other.m_scene;
     }
 
     EntityHandle::operator bool() const
@@ -123,8 +131,8 @@ namespace SvCore::ECS
 
     EntityHandle EntityHandle::Copy() const
     {
-        if (*this)
-            return *this;
+        if (!*this)
+            return {};
 
         return m_scene->Create(m_entity);
     }
@@ -142,13 +150,46 @@ namespace SvCore::ECS
         return m_scene ? m_scene->GetComponentCount(m_entity) : 0;
     }
 
-    std::vector<ComponentRegistry::TypeId> EntityHandle::GetComponentIds() const
+    std::vector<TypeId> EntityHandle::GetComponentIds() const
     {
-        return m_scene ? m_scene->GetComponentIds(m_entity) : std::vector<ComponentRegistry::TypeId>();
+        return m_scene ? m_scene->GetComponentIds(m_entity) : std::vector<TypeId>();
     }
 
-    std::vector<std::pair<ComponentRegistry::TypeId, void*>> EntityHandle::GetComponents() const
+    std::vector<std::pair<TypeId, void*>> EntityHandle::GetComponents() const
     {
-        return m_scene ? m_scene->GetComponents(m_entity) : std::vector<std::pair<ComponentRegistry::TypeId, void*>>();
+        return m_scene ? m_scene->GetComponents(m_entity) : std::vector<std::pair<TypeId, void*>>();
+    }
+
+    std::ostream& operator<<(std::ostream& p_stream, const EntityHandle& p_handle)
+    {
+        return p_stream << p_handle.GetEntity();
+    }
+
+    template <>
+    bool ComponentRegistry::ToJson(const EntityHandle& p_component, JsonWriter& p_writer, const EntitiesMap& p_toSerialized)
+    {
+        Entity entity = p_component.GetEntity();
+
+        if (entity != NULL_ENTITY)
+        {
+            const auto it = p_toSerialized.find(entity);
+
+            if (!CHECK(it != p_toSerialized.end(), "Unable to serialize entity handle - Entity is not serialized"))
+                return false;
+
+            entity = it->second;
+        }
+
+        return p_writer.Uint64(entity);
+    }
+
+    template <>
+    bool ComponentRegistry::FromJson(EntityHandle& p_out, const JsonValue& p_json, Scene* p_scene)
+    {
+        if (!CHECK(p_json.Is<Entity::Id>(), "Unable to deserialize entity handle - Json value should be castable to Entity::Id"))
+            return false;
+
+        p_out = { p_scene, Entity(p_json.Get<Entity::Id>()) };
+        return true;
     }
 }

@@ -9,6 +9,7 @@
 #include <SurvivantCore/ECS/Components/Hierarchy.h>
 #include <SurvivantCore/Utility/FileSystem.h>
 
+#include <SurvivantRendering/Components/CameraComponent.h>
 #include <SurvivantRendering/Components/LightComponent.h>
 #include <SurvivantRendering/Components/ModelComponent.h>
 #include <SurvivantRendering/Core/Camera.h>
@@ -17,6 +18,9 @@
 #include <SurvivantRendering/RHI/IRenderAPI.h>
 #include <SurvivantRendering/RHI/ITexture.h>
 #include <SurvivantRendering/RHI/IUniformBuffer.h>
+
+#include <SurvivantScripting/LuaContext.h>
+#include <SurvivantScripting/LuaScriptList.h>
 
 #include <Transform.h>
 
@@ -35,12 +39,16 @@ using namespace SvRendering::Geometry;
 using namespace SvRendering::Resources;
 using namespace SvRendering::Components;
 
+using namespace SvScripting;
+
 constexpr const char* UNLIT_SHADER_PATH = "shaders/Unlit.glsl";
 constexpr const char* LIT_SHADER_PATH   = "shaders/Lit.glsl";
 constexpr const char* TEXTURE_PATH      = "textures/grid.png";
 
 constexpr float  CAM_MOVE_SPEED     = 3.f;
 constexpr Radian CAM_ROTATION_SPEED = 90_deg;
+
+constexpr size_t TEST_SCRIPTS_COUNT = 250;
 
 namespace SvTest
 {
@@ -74,22 +82,34 @@ namespace SvTest
     {
         RunSceneTests();
 
+        LuaContext& luaContext = LuaContext::GetInstance();
+        luaContext.Init();
+        luaContext.Start();
+
         MakeScene();
+
+        Timer& timer = Timer::GetInstance();
 
         while (!m_window->ShouldClose())
         {
-            m_timer.tick();
+            timer.Tick();
             m_window->Update();
 
             UpdateTemporaries();
             UpdateInput();
             UpdateRotators();
 
+            luaContext.Update(timer.GetDeltaTime());
+
             IRenderAPI::GetCurrent().Clear(true, true, true);
             DrawScene();
 
             m_window->EndRender();
         }
+
+        luaContext.Stop();
+        m_scene.Clear();
+        luaContext.Reset();
     }
 
     void TestApp::SetupInput()
@@ -188,11 +208,15 @@ namespace SvTest
 
     void TestApp::MakeScene()
     {
+        Timer::GetInstance().Reset();
+        LuaContext& luaContext = LuaContext::GetInstance();
+        luaContext.Stop();
         m_scene.Clear();
+
         EntityHandle camEntity = m_scene.Create();
 
-        /*ProjectionCamera& cam = */camEntity.Make<ProjectionCamera>(perspectiveProjection(90_deg, 4.f / 3.f, .01f, 14.f));
-        //cam.SetClearColor(Color::gray);
+        CameraComponent& cam = camEntity.Make<CameraComponent>();
+        cam.SetClearColor(Color::gray).SetPerspective(90_deg, .01f, 14.f).SetAspect(4.f / 3.f);
 
         const Vector3 camPos(0.f, 1.8f, 2.f);
         camEntity.Make<Transform>(camPos, Quaternion::identity(), Vector3::one());
@@ -278,6 +302,16 @@ namespace SvTest
         m_scene.Create().Make<LightComponent>(spot);
 
         UpdateLightSSBO();
+
+        for (size_t i = 0; i < TEST_SCRIPTS_COUNT; ++i)
+        {
+            LuaScriptList& scripts = m_scene.Create().Make<LuaScriptList>();
+            scripts.Add("scripts/test.lua");
+
+            ASSERT(luaContext.IsValid());
+        }
+
+        luaContext.Start();
     }
 
     void TestApp::UpdateLightSSBO() const
@@ -312,7 +346,7 @@ namespace SvTest
 
     void TestApp::UpdateTemporaries()
     {
-        const float deltaTime = m_timer.getDeltaTime();
+        const float deltaTime = Timer::GetInstance().GetDeltaTime();
 
         SceneView<Temporary> view(m_scene);
 
@@ -328,7 +362,7 @@ namespace SvTest
 
     void TestApp::UpdateInput()
     {
-        const float deltaTime = m_timer.getDeltaTime();
+        const float deltaTime = Timer::GetInstance().GetDeltaTime();
 
         SceneView<const UserInput, Transform> view(m_scene);
 
@@ -362,7 +396,7 @@ namespace SvTest
 
     void TestApp::UpdateRotators()
     {
-        const float deltaTime = m_timer.getDeltaTime();
+        const float deltaTime = Timer::GetInstance().GetDeltaTime();
 
         SceneView<const Rotator, Transform> view(m_scene);
 
@@ -375,25 +409,26 @@ namespace SvTest
 
     void TestApp::DrawScene()
     {
-        SceneView<Camera>                                cameras(m_scene);
+        SceneView<CameraComponent>                       cameras(m_scene);
         SceneView<const ModelComponent, const Transform> renderables(m_scene);
 
         for (const auto camEntity : cameras)
         {
-            Camera& cam = *cameras.Get<Camera>(camEntity);
+            CameraComponent& cam = *cameras.Get<CameraComponent>(camEntity);
 
             if (const Transform* transform = m_scene.Get<const Transform>(camEntity))
             {
-                cam.SetView(transform->getWorldMatrix().inverse());
-                BindCamUBO(cam.GetViewProjection(), transform->getWorldPosition());
+                cam.Recalculate(transform->getWorldMatrix().inverse());
+                BindCamUBO(cam->GetViewProjection(), transform->getWorldPosition());
             }
             else
             {
-                BindCamUBO(cam.GetViewProjection(), Vector3::zero());
+                cam.Recalculate(Matrix4(1.f));
+                BindCamUBO(cam->GetViewProjection(), Vector3::zero());
             }
 
             cam.Clear();
-            const Frustum camFrustum = cam.GetFrustum();
+            const Frustum camFrustum = cam->GetFrustum();
 
             for (const auto modelEntity : renderables)
             {

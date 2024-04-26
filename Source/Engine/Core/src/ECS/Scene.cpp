@@ -6,6 +6,9 @@
 
 #include <rapidjson/istreamwrapper.h>
 
+using namespace SvCore::Serialization;
+using namespace SvCore::Utility;
+
 namespace SvCore::ECS
 {
     Scene::Scene()
@@ -37,25 +40,25 @@ namespace SvCore::ECS
         return FromJson(json);
     }
 
-    bool Scene::ToJson(rapidjson::Writer<rapidjson::StringBuffer>& p_writer) const
+    bool Scene::ToJson(JsonWriter& p_writer) const
     {
         p_writer.StartObject();
 
         p_writer.Key("entities");
-        p_writer.Uint64(m_entities.GetCount());
+        p_writer.Uint64(m_entities.size());
 
         p_writer.Key("components");
         p_writer.StartArray();
 
         IComponentStorage::EntitiesMap entitiesMap;
-        Entity::Id                     index = 0;
+        Entity::Index                  index = 0;
 
         for (const auto entity : m_entities)
             entitiesMap[entity] = Entity(index++);
 
         for (const auto& [typeId, storage] : m_components)
         {
-            if (!storage || storage->GetCount() == 0)
+            if (!storage || storage->size() == 0)
                 continue;
 
             p_writer.StartObject();
@@ -78,7 +81,7 @@ namespace SvCore::ECS
         return p_writer.EndObject();
     }
 
-    bool Scene::FromJson(const rapidjson::Value& p_json)
+    bool Scene::FromJson(const JsonValue& p_json)
     {
         Clear();
 
@@ -89,10 +92,10 @@ namespace SvCore::ECS
         if (!CHECK(it != p_json.MemberEnd() && it->value.IsUint64(), "Unable to deserialize scene - Invalid entities count"))
             return false;
 
-        const Entity::Id entityCount = it->value.GetUint64();
+        const Entity::Index entityCount = static_cast<Entity::Index>(it->value.GetUint64());
         m_entities.Reserve(entityCount);
 
-        for (Entity::Id id = 0; id < entityCount; ++id)
+        for (Entity::Index id = 0; id < entityCount; ++id)
         {
             [[maybe_unused]] Entity entity = Create();
             if (!ASSUME(entity.GetIndex() == id))
@@ -130,6 +133,11 @@ namespace SvCore::ECS
             componentStorage->Copy(p_source, entity);
 
         return { this, entity };
+    }
+
+    EntityHandle Scene::Find(const Entity::Index p_index)
+    {
+        return { this, m_entities.Find(p_index) };
     }
 
     void Scene::Destroy(const Entity p_entity)
@@ -176,7 +184,7 @@ namespace SvCore::ECS
         return const_cast<Scene*>(this)->GetStorage(p_id);
     }
 
-    std::vector<Scene::TypeId> Scene::GetComponentIds() const
+    std::vector<TypeId> Scene::GetComponentIds() const
     {
         const auto view = m_components | std::views::keys;
         return { view.begin(), view.end() };
@@ -198,7 +206,7 @@ namespace SvCore::ECS
         return count;
     }
 
-    std::vector<Scene::TypeId> Scene::GetComponentIds(const Entity p_owner) const
+    std::vector<TypeId> Scene::GetComponentIds(const Entity p_owner) const
     {
         std::vector<TypeId> ids;
         ids.reserve(m_components.size());
@@ -212,7 +220,7 @@ namespace SvCore::ECS
         return ids;
     }
 
-    std::vector<std::pair<Scene::TypeId, void*>> Scene::GetComponents(const Entity p_owner) const
+    std::vector<std::pair<TypeId, void*>> Scene::GetComponents(const Entity p_owner) const
     {
         std::vector<std::pair<TypeId, void*>> components;
         components.reserve(m_components.size());
@@ -226,7 +234,7 @@ namespace SvCore::ECS
         return components;
     }
 
-    bool Scene::DeserializeStorage(const rapidjson::Value& p_json)
+    bool Scene::DeserializeStorage(const JsonValue& p_json)
     {
         if (!CHECK(p_json.IsObject(), "Unable to deserialize scene component storage - Json value should be an object"))
             return false;

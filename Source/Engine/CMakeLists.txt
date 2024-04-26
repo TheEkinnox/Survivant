@@ -31,10 +31,15 @@ add_subdirectory(App)
 list(APPEND ENGINE_TARGETS ${APP_NAME})
 list(APPEND ENGINE_INCLUDE_DIRS ${APP_INCLUDE_DIR})
 
-# ui
-# add_subdirectory(ui)
-# list(append engine_targets ${ui_name})
-# list(append engine_include_dirs ${ui_include_dir})
+# UI
+# add_subdirectory(UI)
+list(APPEND ENGINE_TARGETS ${UI_NAME})
+list(APPEND ENGINE_INCLUDE_DIRS ${UI_INCLUDE_DIR})
+
+# Scripting
+add_subdirectory(Scripting)
+list(APPEND ENGINE_TARGETS ${SCRIPTING_NAME})
+list(APPEND ENGINE_INCLUDE_DIRS ${SCRIPTING_INCLUDE_DIR})
 
 message(STATUS "ENGINE_TARGETS: ${ENGINE_TARGETS}")
 message(STATUS "ENGINE_INCLUDE_DIRS: ${ENGINE_INCLUDE_DIRS}")

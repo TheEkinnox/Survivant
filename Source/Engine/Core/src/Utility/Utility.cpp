@@ -64,6 +64,25 @@ namespace SvCore::Utility
         return p_str;
     }
 
+    void ReplaceInPlace(std::string& p_str, const std::string& p_from, const std::string& p_to)
+    {
+        if (p_str.empty() || p_from.empty() || p_from.size() > p_str.size())
+            return;
+
+        size_t startPos = 0;
+        while ((startPos = p_str.find(p_from, startPos)) != std::string::npos)
+        {
+            p_str.replace(startPos, p_from.length(), p_to);
+            startPos += p_to.length();
+        }
+    }
+
+    std::string Replace(std::string p_str, const std::string& p_from, const std::string& p_to)
+    {
+        ReplaceInPlace(p_str, p_from, p_to);
+        return p_str;
+    }
+
     int CompareAlphabeticly(std::string p_str1, std::string p_str2)
     {
         size_t len = p_str1.size() < p_str2.size() ? p_str1.size() : p_str2.size();

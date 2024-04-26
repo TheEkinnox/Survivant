@@ -8,20 +8,18 @@
 
 namespace SvRendering::Components
 {
-    constexpr uint8_t SV_CLEAR_COLOR_OFFSET = 0;
-    constexpr uint8_t SV_CLEAR_COLOR_BIT    = 1 << SV_CLEAR_COLOR_OFFSET;
-
-    constexpr uint8_t SV_CLEAR_DEPTH_OFFSET = SV_CLEAR_COLOR_OFFSET + 1;
-    constexpr uint8_t SV_CLEAR_DEPTH_BIT    = 1 << SV_CLEAR_DEPTH_OFFSET;
-
-    constexpr uint8_t SV_CLEAR_STENCIL_OFFSET = SV_CLEAR_DEPTH_OFFSET + 1;
-    constexpr uint8_t SV_CLEAR_STENCIL_BIT    = 1 << SV_CLEAR_STENCIL_OFFSET;
-
-    constexpr uint8_t SV_CLEAR_MASK = SV_CLEAR_COLOR_BIT | SV_CLEAR_DEPTH_BIT | SV_CLEAR_STENCIL_BIT;
-
     class CameraComponent
     {
     public:
+        static constexpr uint8_t SV_CLEAR_COLOR_OFFSET = 0;
+        static constexpr uint8_t SV_CLEAR_COLOR_BIT    = 1 << SV_CLEAR_COLOR_OFFSET;
+
+        static constexpr uint8_t SV_CLEAR_DEPTH_OFFSET = SV_CLEAR_COLOR_OFFSET + 1;
+        static constexpr uint8_t SV_CLEAR_DEPTH_BIT    = 1 << SV_CLEAR_DEPTH_OFFSET;
+
+        static constexpr uint8_t SV_CLEAR_STENCIL_OFFSET = SV_CLEAR_DEPTH_OFFSET + 1;
+        static constexpr uint8_t SV_CLEAR_STENCIL_BIT    = 1 << SV_CLEAR_STENCIL_OFFSET;
+
         /**
          * \brief Creates a default camera component
          */
@@ -61,12 +59,32 @@ namespace SvRendering::Components
         /**
          * \brief Converts the camera component into a low level camera
          */
-        operator const Core::Camera&() const;
+        const Core::Camera& operator*() const;
+
+        /**
+         * \brief Converts the camera component into a low level camera
+         */
+        const Core::Camera* operator->() const;
+
+        /**
+         * \brief Serializes the camera component to json
+         * \param p_writer The output json writer
+         * \return True on success. False otherwise
+         */
+        bool ToJson(SvCore::Serialization::JsonWriter& p_writer) const;
+
+        /**
+         * \brief Deserializes the camera component from json
+         * \param p_json The input json value
+         * \return True on success. False otherwise
+         */
+        bool FromJson(const SvCore::Serialization::JsonValue& p_json);
 
         /**
          * \brief Recalculates the camera's projection matrix
+         * \param p_view The camera's view matrix
          */
-        void Recalculate();
+        void Recalculate(const LibMath::Matrix4& p_view);
 
         /**
          * \brief Gets the camera's projection type
@@ -77,45 +95,50 @@ namespace SvRendering::Components
         /**
          * \brief Sets the camera's projection type
          * \param p_projectionType The camera's new projection type
+         * \return A reference to the modified component
          */
-        void SetProjectionType(Enums::EProjectionType p_projectionType);
-
-        /**
-         * \brief Clears the screen using this camera's settings
-         */
-        void Clear() const;
+        CameraComponent& SetProjectionType(Enums::EProjectionType p_projectionType);
 
         /**
          * \brief Sets the camera's clear color
-         * \param p_color The camera's new clear color
+         * \param p_color The new clear color
+         * \return A reference to the modified component
          */
-        void SetClearColor(Core::Color p_color);
+        CameraComponent& SetClearColor(const Core::Color& p_color);
 
         /**
-         * \brief Gets the camera's clear color
-         * \return The camera's clear color
+         * \brief Sets the camera's clear color
+         * \param p_r The clear color's red component
+         * \param p_g The clear color's green component
+         * \param p_b The clear color's blue component
+         * \param p_a The clear color's alpha component
+         * \return A reference to the modified component
+         */
+        CameraComponent& SetClearColor(float p_r, float p_g, float p_b, float p_a = 1.f);
+
+        /**
+         * \brief Gets the camera's current clear color
+         * \return The camera's current clear color
          */
         Core::Color GetClearColor() const;
 
         /**
-         * \brief Sets the camera's buffer clearing mask
-         * \param p_clearMask The buffer clear mask (any of SV_CLEAR_COLOR_BIT, SV_CLEAR_DEPTH_BIT and SV_CLEAR_STENCIL_BIT)
+         * \brief Clears the current frame buffer using the camera's info
          */
-        void SetClearMask(uint8_t p_clearMask);
-
-        /**
-         * \brief Updates the camera's clear mask from the given values
-         * \param p_clearColor Whether the color buffer should be cleared
-         * \param p_clearDepth Whether the depth buffer should be cleared
-         * \param p_clearStencil Whether the stencil buffer should be cleared
-         */
-        void SetClearMask(bool p_clearColor, bool p_clearDepth, bool p_clearStencil);
+        void Clear() const;
 
         /**
          * \brief Gets the camera's buffer clearing mask
          * \return The camera's clear mask
          */
         uint8_t GetClearMask() const;
+
+        /**
+         * \brief Sets the camera's buffer clearing mask
+         * \param p_clearMask The buffer clear mask (any of CLEAR_COLOR_BIT, CLEAR_DEPTH_BIT and CLEAR_STENCIL_BIT)
+         * \return A reference to the modified component
+         */
+        CameraComponent& SetClearMask(uint8_t p_clearMask);
 
         /**
          * \brief Breaks the buffer clearing mask into separate values
@@ -126,10 +149,13 @@ namespace SvRendering::Components
         void GetClearMask(bool& p_clearColor, bool& p_clearDepth, bool& p_clearStencil) const;
 
         /**
-         * \brief Sets the mask for the layers visible by the camera
-         * \param p_cullingMask The camera's culling mask
+         * \brief Updates the camera's clear mask from the given values
+         * \param p_clearColor Whether the color buffer should be cleared
+         * \param p_clearDepth Whether the depth buffer should be cleared
+         * \param p_clearStencil Whether the stencil buffer should be cleared
+         * \return A reference to the modified component
          */
-        void SetCullingMask(Core::LayerMask p_cullingMask);
+        CameraComponent& SetClearMask(bool p_clearColor, bool p_clearDepth, bool p_clearStencil);
 
         /**
          * \brief Gets the camera's culling mask
@@ -138,11 +164,11 @@ namespace SvRendering::Components
         Core::LayerMask GetCullingMask() const;
 
         /**
-         * \brief Checks whether the given layer mask is visible by the camera
-         * \param p_layerMask The layer mask to check against
-         * \return True if the given layer mask is visible by the camera. False otherwise
+         * \brief Sets the mask for the layers visible by the camera
+         * \param p_cullingMask The camera's culling mask
+         * \return A reference to the modified component
          */
-        bool IsVisible(Core::LayerMask p_layerMask) const;
+        CameraComponent& SetCullingMask(Core::LayerMask p_cullingMask);
 
         /**
          * \brief Gets the camera's aspect ratio
@@ -153,8 +179,9 @@ namespace SvRendering::Components
         /**
          * \brief Sets the camera's aspect ratio
          * \param p_aspect The camera's new aspect ratio
+         * \return A reference to the modified component
          */
-        void SetAspect(float p_aspect);
+        CameraComponent& SetAspect(float p_aspect);
 
         /**
          * \brief Gets the camera's vertical field of view
@@ -165,8 +192,9 @@ namespace SvRendering::Components
         /**
          * \brief Sets the camera's vertical field of view
          * \param p_fovY The camera's new vertical field of view
+         * \return A reference to the modified component
          */
-        void SetFovY(const LibMath::Radian& p_fovY);
+        CameraComponent& SetFovY(const LibMath::Radian& p_fovY);
 
         /**
          * \brief Gets the camera's perspective near clipping plane
@@ -177,8 +205,9 @@ namespace SvRendering::Components
         /**
          * \brief Sets the camera's perspective near clipping plane
          * \param p_zNear The camera's new perspective near clipping plane
+         * \return A reference to the modified component
          */
-        void SetPerspectiveNear(float p_zNear);
+        CameraComponent& SetPerspectiveNear(float p_zNear);
 
         /**
          * \brief Gets the camera's perspective far clipping plane
@@ -189,16 +218,18 @@ namespace SvRendering::Components
         /**
          * \brief Sets the camera's perspective far clipping plane
          * \param p_zFar The camera's new perspective far clipping plane
+         * \return A reference to the modified component
          */
-        void SetPerspectiveFar(float p_zFar);
+        CameraComponent& SetPerspectiveFar(float p_zFar);
 
         /**
          * \brief Sets the camera's field of view and its perspective near and far clipping planes
          * \param p_fovY The camera's new vertical field of view
          * \param p_zNear The camera's new near clipping plane
          * \param p_zFar The camera's new far clipping plane
+         * \return A reference to the modified component
          */
-        void SetPerspective(const LibMath::Radian& p_fovY, float p_zNear, float p_zFar);
+        CameraComponent& SetPerspective(const LibMath::Radian& p_fovY, float p_zNear, float p_zFar);
 
         /**
          * \brief Gets the camera's orthographic size
@@ -209,8 +240,9 @@ namespace SvRendering::Components
         /**
          * \brief Sets the camera's orthographic size
          * \param p_size The camera's new orthographic size
+         * \return A reference to the modified component
          */
-        void SetOrthographicSize(float p_size);
+        CameraComponent& SetOrthographicSize(float p_size);
 
         /**
          * \brief Gets the camera's orthographic near clipping plane
@@ -221,8 +253,9 @@ namespace SvRendering::Components
         /**
          * \brief Sets the camera's orthographic near clipping plane
          * \param p_zNear The camera's new orthographic near clipping plane
+         * \return A reference to the modified component
          */
-        void SetOrthographicNear(float p_zNear);
+        CameraComponent& SetOrthographicNear(float p_zNear);
 
         /**
          * \brief Gets the camera's orthographic far clipping plane
@@ -233,26 +266,26 @@ namespace SvRendering::Components
         /**
          * \brief Sets the camera's orthographic far clipping plane
          * \param p_zFar The camera's new orthographic far clipping plane
+         * \return A reference to the modified component
          */
-        void SetOrthographicFar(float p_zFar);
+        CameraComponent& SetOrthographicFar(float p_zFar);
 
         /**
          * \brief Sets the camera's orthographic size and near/far clipping planes
          * \param p_size The camera's new orthographic size
          * \param p_zNear The camera's new orthographic near clipping plane
          * \param p_zFar The camera's new orthographic far clipping plane
+         * \return A reference to the modified component
          */
-        void SetOrthographic(float p_size, float p_zNear, float p_zFar);
+        CameraComponent& SetOrthographic(float p_size, float p_zNear, float p_zFar);
 
     private:
-        friend class SvCore::ECS::ComponentRegistry;
-
         Core::Camera           m_camera;
         Enums::EProjectionType m_projectionType;
 
+        uint8_t         m_clearMask   = SV_CLEAR_COLOR_BIT | SV_CLEAR_DEPTH_BIT | SV_CLEAR_STENCIL_BIT;
         Core::Color     m_clearColor  = Core::Color::black;
-        uint8_t         m_clearMask   = SV_CLEAR_MASK;
-        Core::LayerMask m_cullingMask = static_cast<Core::LayerMask>(-1);
+        Core::LayerMask m_cullingMask = Core::Layer::ALL;
 
         LibMath::Radian m_fovY;
         float           m_perspectiveNear;
@@ -263,16 +296,6 @@ namespace SvRendering::Components
         float m_orthographicFar;
 
         float m_aspect;
+        bool  m_isDirty;
     };
-}
-
-namespace SvCore::ECS
-{
-    template <>
-    bool ComponentRegistry::ToJson(
-        const SvRendering::Components::CameraComponent& p_component, rapidjson::Writer<rapidjson::StringBuffer>& p_writer,
-        const EntitiesMap&);
-
-    template <>
-    bool ComponentRegistry::FromJson(SvRendering::Components::CameraComponent& p_out, const rapidjson::Value& p_json);
 }

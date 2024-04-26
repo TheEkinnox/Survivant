@@ -13,8 +13,8 @@ namespace SvCore::ECS
         using iterator = std::vector<Entity>::iterator;
         using const_iterator = std::vector<Entity>::const_iterator;
 
-        SvCore::Events::Event<EntityHandle> m_onAdd;
-        SvCore::Events::Event<EntityHandle> m_onRemove;
+        Events::Event<EntityHandle> m_onAdd;
+        Events::Event<EntityHandle> m_onRemove;
 
         /**
          * \brief Creates an empty entity storage
@@ -73,6 +73,13 @@ namespace SvCore::ECS
         bool Has(Entity p_entity) const;
 
         /**
+         * \brief Finds the entity with the given index
+         * \param p_index The entity's index
+         * \return The entity with the given index on success. NULL_ENTITY otherwise
+         */
+        Entity Find(Entity::Index p_index) const;
+
+        /**
          * \brief Removes all entities from the manager
          */
         void Clear();
@@ -81,7 +88,7 @@ namespace SvCore::ECS
          * \brief Reserves the given number of entities
          * \param p_count The number of entities to reserve
          */
-        void Reserve(size_t p_count);
+        void Reserve(Entity::Index p_count);
 
         /**
          * \brief Gets an iterator to the start of the entities array
@@ -111,11 +118,11 @@ namespace SvCore::ECS
          * \brief Gets the current number of entities
          * \return The current number of entities
          */
-        Entity::Id GetCount() const;
+        Entity::Index size() const;
 
     private:
         std::vector<Entity> m_entities;
-        Entity::Id          m_count = 0;
+        Entity::Index       m_count = 0;
         Scene*              m_scene = nullptr;
     };
 }

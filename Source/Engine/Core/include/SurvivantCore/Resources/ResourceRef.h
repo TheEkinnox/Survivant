@@ -1,15 +1,17 @@
 #pragma once
 #include "SurvivantCore/Resources/IResource.h"
+#include "SurvivantCore/Serialization/Serializer.h"
 
 #include <type_traits>
 
-#include <rapidjson/document.h>
-#include <rapidjson/writer.h>
-
 namespace SvCore::Resources
 {
+    class ResourceRefBase
+    {
+    };
+
     template <class T>
-    class ResourceRef
+    class ResourceRef : public ResourceRefBase
     {
         static_assert(std::is_same_v<IResource, T> || std::is_base_of_v<IResource, T>);
 
@@ -82,6 +84,13 @@ namespace SvCore::Resources
         ResourceRef& operator=(ResourceRef&& p_other) noexcept;
 
         /**
+         * \brief Checks whether the given resource reference is equivalent to this one
+         * \param p_other The compared resource reference
+         * \return True if the other resource reference is equivalent to this one. False otherwise
+         */
+        bool operator==(const ResourceRef& p_other) const;
+
+        /**
          * \brief Gets a reference to the referenced resource
          * \return A reference to the referenced resource
          */
@@ -133,14 +142,14 @@ namespace SvCore::Resources
          * \param p_writer The output json writer
          * \return True on success. False otherwise.
          */
-        virtual bool ToJson(rapidjson::Writer<rapidjson::StringBuffer>& p_writer) const;
+        virtual bool ToJson(Serialization::JsonWriter& p_writer) const;
 
         /**
          * \brief Deserializes the resource reference from json
          * \param p_json The input json data
          * \return True on success. False otherwise.
          */
-        virtual bool FromJson(const rapidjson::Value& p_json);
+        virtual bool FromJson(const Serialization::JsonValue& p_json);
 
     protected:
         template <typename U>
@@ -254,14 +263,14 @@ namespace SvCore::Resources
          * \param p_writer The output json writer
          * \return True on success. False otherwise.
          */
-        bool ToJson(rapidjson::Writer<rapidjson::StringBuffer>& p_writer) const override;
+        bool ToJson(Serialization::JsonWriter& p_writer) const override;
 
         /**
          * \brief Deserializes the generic resource reference from json
          * \param p_json The input json data
          * \return True on success. False otherwise.
          */
-        bool FromJson(const rapidjson::Value& p_json) override;
+        bool FromJson(const Serialization::JsonValue& p_json) override;
 
     private:
         std::string m_type;

@@ -1,6 +1,6 @@
 #pragma once
-#include "SurvivantCore/ECS/ComponentRegistry.h"
 #include "SurvivantCore/ECS/Entity.h"
+#include "SurvivantCore/Utility/TypeRegistry.h"
 
 namespace SvCore::ECS
 {
@@ -55,10 +55,17 @@ namespace SvCore::ECS
         EntityHandle& operator=(EntityHandle&& p_other) noexcept = default;
 
         /**
+         * \brief Checks whether the given handle references the same entity as this one
+         * \param p_other The compared entity handle
+         * \return True if the other handle references the same entity. False otherwise
+         */
+        bool operator==(const EntityHandle& p_other) const;
+
+        /**
          * \brief Checks whether the entity is valid or not
          * \return True if the entity is valid. False otherwise.
          */
-        explicit operator bool() const;
+        operator bool() const;
 
         /**
          * \brief Implicitly converts the handle to it's linked entity
@@ -255,18 +262,26 @@ namespace SvCore::ECS
          * \brief Gets the ids of all the component types owned by the linked entity
          * \return The ids of all the component types owned by the entity
          */
-        std::vector<ComponentRegistry::TypeId> GetComponentIds() const;
+        std::vector<Utility::TypeId> GetComponentIds() const;
 
         /**
          * \brief Gets all the components owned by the linked entity
          * \return The components owned by the entity
          */
-        std::vector<std::pair<ComponentRegistry::TypeId, void*>> GetComponents() const;
+        std::vector<std::pair<Utility::TypeId, void*>> GetComponents() const;
 
     private:
         Scene* m_scene;
         Entity m_entity;
     };
+
+    /**
+     * \brief Adds an entity handle's string representation to the given output stream
+     * \param p_stream The output stream
+     * \param p_handle The output entity handle
+     * \return The modified stream
+     */
+    std::ostream& operator<<(std::ostream& p_stream, const EntityHandle& p_handle);
 }
 
 #include "SurvivantCore/ECS/EntityHandle.inl"

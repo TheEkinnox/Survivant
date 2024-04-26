@@ -5,8 +5,8 @@ using namespace SvRendering::Components;
 namespace SvCore::ECS
 {
     template <>
-    bool ComponentRegistry::ToJson<ModelComponent>(
-        const ModelComponent& p_model, rapidjson::Writer<rapidjson::StringBuffer>& p_writer, const EntitiesMap&)
+    bool ComponentRegistry::ToJson(
+        const ModelComponent& p_model, SvCore::Serialization::JsonWriter& p_writer, const EntitiesMap&)
     {
         p_writer.StartObject();
 
@@ -24,7 +24,7 @@ namespace SvCore::ECS
     }
 
     template <>
-    bool ComponentRegistry::FromJson<ModelComponent>(ModelComponent& p_out, const rapidjson::Value& p_json)
+    bool ComponentRegistry::FromJson(ModelComponent& p_out, const SvCore::Serialization::JsonValue& p_json, Scene*)
     {
         if (!CHECK(p_json.IsObject(), "Failed to deserialize model component - Json value should be an object"))
             return false;

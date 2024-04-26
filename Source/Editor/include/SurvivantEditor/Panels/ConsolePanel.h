@@ -9,7 +9,7 @@
 #include "SurvivantEditor/PanelItems/PanelButtonList.h"
 #include "SurvivantEditor/Panels/Panel.h"
 
-#include <functional>
+#include <SurvivantCore/Debug/Logger.h>
 
 //foward declaration
 struct ImVec4;
@@ -22,20 +22,8 @@ namespace SvEditor::Panels
 	class ConsolePanel : public Panel
 	{
 	public:
-		enum class ELogType
-		{
-			DEFAULT_LOG = 1 << 0,
-			DEBUG_LOG = 1 << 1,
-			WARNING_LOG = 1 << 2,
-			ERROR_LOG = 1 << 3,
-			//COMMAND_LOG	=	1 << 4
-		};
-
-		struct LogInfo
-		{
-			ELogType m_type;
-			std::string m_message;
-		};
+		using ELogType = SvCore::Debug::ELogType;
+		using LogInfo = SvCore::Debug::LogInfo;
 
 		ConsolePanel();
 		~ConsolePanel();

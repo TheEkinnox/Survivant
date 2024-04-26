@@ -1,11 +1,9 @@
 #pragma once
 #include "SurvivantCore/ECS/Entity.h"
 #include "SurvivantCore/Events/Event.h"
+#include "SurvivantCore/Serialization/Serializer.h"
 
 #include <unordered_map>
-
-#include <rapidjson/document.h>
-#include <rapidjson/writer.h>
 
 namespace SvCore::ECS
 {
@@ -56,6 +54,13 @@ namespace SvCore::ECS
         virtual bool Contains(Entity p_entity) const = 0;
 
         /**
+         * \brief Finds or assigns a default component instance to the given entity
+         * \param p_owner The component's owner
+         * \return True on success. False otherwise
+         */
+        virtual void* GetOrCreateRaw(Entity p_owner) = 0;
+
+        /**
          * \brief Finds the component owned by the given entity
          * \param p_owner The searched component's owner
          * \return A pointer to the found component on success. Nullptr otherwise
@@ -98,22 +103,22 @@ namespace SvCore::ECS
          * \brief Gets the current number of entities
          * \return The current number of entities
          */
-        virtual Entity::Id GetCount() const = 0;
+        virtual Entity::Id size() const = 0;
 
         /**
          * \brief Serializes the component storage to json
-         * \param writer The output json writer
-         * \param entitiesMap The entity index to scene entity map
+         * \param p_writer The output json writer
+         * \param p_entitiesMap The entity index to scene entity map
          * \return True on success. False otherwise.
          */
-        virtual bool ToJson(rapidjson::Writer<rapidjson::StringBuffer>& writer, const EntitiesMap& entitiesMap) const = 0;
+        virtual bool ToJson(Serialization::JsonWriter& p_writer, const EntitiesMap& p_entitiesMap) const = 0;
 
         /**
          * \brief Deserializes the component storage from json
-         * \param json The input json data
+         * \param p_json The input json data
          * \return True on success. False otherwise.
          */
-        virtual bool FromJson(const rapidjson::Value& json) = 0;
+        virtual bool FromJson(const Serialization::JsonValue& p_json) = 0;
 
     protected:
         /**
@@ -130,10 +135,10 @@ namespace SvCore::ECS
         using iterator = typename std::vector<ComponentT>::iterator;
         using const_iterator = typename std::vector<ComponentT>::const_iterator;
 
-        SvCore::Events::Event<EntityHandle, T&> m_onAdd;
-        SvCore::Events::Event<EntityHandle, T&> m_onRemove;
-        SvCore::Events::Event<EntityHandle, T&> m_onBeforeChange;
-        SvCore::Events::Event<EntityHandle, T&> m_onChange;
+        Events::Event<EntityHandle, T&> m_onAdd;
+        Events::Event<EntityHandle, T&> m_onRemove;
+        Events::Event<EntityHandle, T&> m_onBeforeChange;
+        Events::Event<EntityHandle, T&> m_onChange;
 
         /**
          * \brief Creates an empty component storage
@@ -232,7 +237,7 @@ namespace SvCore::ECS
          * \brief Gets the current number of entities
          * \return The current number of entities
          */
-        Entity::Id GetCount() const override;
+        Entity::Id size() const override;
 
         /**
          * \brief Checks if the given entity owns a component in the storage
@@ -240,6 +245,13 @@ namespace SvCore::ECS
          * \return True if the entity owns a component of in the storage. False otherwise
          */
         bool Has(Entity p_owner) const;
+
+        /**
+         * \brief Finds or assigns a default component instance to the given entity
+         * \param p_owner The component's owner
+         * \return True on success. False otherwise
+         */
+        void* GetOrCreateRaw(Entity p_owner) override;
 
         /**
          * \brief Finds the component owned by the given entity
@@ -306,14 +318,14 @@ namespace SvCore::ECS
          * \param p_entitiesMap The entity index to scene entity map
          * \return True on success. False otherwise.
          */
-        bool ToJson(rapidjson::Writer<rapidjson::StringBuffer>& p_writer, const EntitiesMap& p_entitiesMap) const override;
+        bool ToJson(Serialization::JsonWriter& p_writer, const EntitiesMap& p_entitiesMap) const override;
 
         /**
          * \brief Deserializes the component storage from json
          * \param p_json The input json data
          * \return True on success. False otherwise.
          */
-        bool FromJson(const rapidjson::Value& p_json) override;
+        bool FromJson(const Serialization::JsonValue& p_json) override;
 
     private:
         std::vector<ComponentT>                m_components;

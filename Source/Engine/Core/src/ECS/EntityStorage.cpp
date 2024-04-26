@@ -39,13 +39,23 @@ namespace SvCore::ECS
         return std::ranges::find(*this, p_entity) != end();
     }
 
+    Entity EntityStorage::Find(Entity::Index p_index) const
+    {
+        const auto it = std::ranges::find_if(*this, [p_index](const Entity p_entity)
+        {
+            return p_entity.GetIndex() == p_index;
+        });
+
+        return it != end() ? *it : NULL_ENTITY;
+    }
+
     void EntityStorage::Clear()
     {
         m_entities.clear();
         m_count = 0;
     }
 
-    void EntityStorage::Reserve(const size_t p_count)
+    void EntityStorage::Reserve(const Entity::Index p_count)
     {
         m_entities.reserve(p_count);
     }
@@ -70,7 +80,7 @@ namespace SvCore::ECS
         return m_entities.end() - static_cast<const_iterator::difference_type>(m_entities.size() - m_count);
     }
 
-    Entity::Id EntityStorage::GetCount() const
+    Entity::Index EntityStorage::size() const
     {
         return m_count;
     }

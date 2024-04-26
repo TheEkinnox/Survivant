@@ -384,19 +384,23 @@ namespace LibMath
     void TVector4<T>::rotate(const TQuaternion<U>& quaternion)
     {
         TQuaternion<U> tmp{ m_w, this->xyz() };
-        *this = quaternion * tmp * quaternion.inverse();
+        tmp = quaternion * tmp * quaternion.inverse();
+        m_x = tmp.m_x;
+        m_y = tmp.m_y;
+        m_z = tmp.m_z;
+        m_w = tmp.m_w;
     }
 
     template <class T>
     void TVector4<T>::scale(const TVector3<T>& other)
     {
-        *this *= other;
+        *this *= TVector4(other, 1.f);
     }
 
     template <class T>
     void TVector4<T>::translate(const TVector3<T>& other)
     {
-        *this += other;
+        *this += TVector4(other, 0.f);
     }
 
     template <class T>

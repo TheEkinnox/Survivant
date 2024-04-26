@@ -4,12 +4,12 @@
 
 namespace SvCore::Utility
 {
+    using TypeId = size_t;
+
     template <class TypeInfo>
     class TypeRegistry
     {
     public:
-        using TypeId = size_t;
-
         /**
          * \brief Creates an empty type registry
          */
@@ -61,7 +61,13 @@ namespace SvCore::Utility
          * \param p_info The registered type's info
          */
         template <typename T>
-        void RegisterType(const std::string& p_name, const TypeInfo& p_info);
+        TypeInfo& RegisterType(const std::string& p_name, const TypeInfo& p_info);
+
+        /**
+         * \brief Gets all the registered type names
+         * \return A list of all the registered type names
+         */
+        std::vector<std::string> GetRegisteredNames() const;
 
         /**
          * \brief Checks whether the given type has been registered or not

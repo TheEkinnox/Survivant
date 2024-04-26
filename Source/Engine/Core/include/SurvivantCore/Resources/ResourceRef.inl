@@ -110,6 +110,12 @@ namespace SvCore::Resources
     }
 
     template <class T>
+    bool ResourceRef<T>::operator==(const ResourceRef& p_other) const
+    {
+        return m_path == p_other.m_path;
+    }
+
+    template <class T>
     T& ResourceRef<T>::operator*() const
     {
         return *GetOrDefault();
@@ -167,7 +173,7 @@ namespace SvCore::Resources
     }
 
     template <class T>
-    bool ResourceRef<T>::ToJson(rapidjson::Writer<rapidjson::StringBuffer>& p_writer) const
+    bool ResourceRef<T>::ToJson(Serialization::JsonWriter& p_writer) const
     {
         p_writer.StartObject();
 
@@ -178,21 +184,24 @@ namespace SvCore::Resources
     }
 
     template <class T>
-    bool ResourceRef<T>::FromJson(const rapidjson::Value& p_json)
+    bool ResourceRef<T>::FromJson(const Serialization::JsonValue& p_json)
     {
         if (!CHECK(p_json.IsObject(), "Unable to deserialize resource ref - Json value should be an object"))
             return false;
 
-        auto it = p_json.FindMember("path");
+        const auto it = p_json.FindMember("path");
+
         if (!CHECK(it != p_json.MemberEnd() && it->value.IsString(), "Unable to deserialize resource ref - Invalid resource path"))
             return false;
 
-        m_path = it->value.GetString();
+        m_path = std::string(it->value.GetString(), it->value.GetStringLength());
+
+        const std::string basePath = m_path;
 
         if constexpr (!std::is_same_v<T, IResource>)
             (*this) = { m_path };
 
-        return true;
+        return CHECK(basePath == m_path, "Unable to deserialize resource ref - Failed to load resource");
     }
 
     inline GenericResourceRef::GenericResourceRef(std::string p_type, const std::string& p_path, IResource* p_resource)
@@ -245,7 +254,7 @@ namespace SvCore::Resources
         return m_type;
     }
 
-    inline bool GenericResourceRef::ToJson(rapidjson::Writer<rapidjson::StringBuffer>& p_writer) const
+    inline bool GenericResourceRef::ToJson(Serialization::JsonWriter& p_writer) const
     {
         p_writer.StartObject();
 
@@ -258,18 +267,20 @@ namespace SvCore::Resources
         return p_writer.EndObject();
     }
 
-    inline bool GenericResourceRef::FromJson(const rapidjson::Value& p_json)
+    inline bool GenericResourceRef::FromJson(const Serialization::JsonValue& p_json)
     {
         const auto it = p_json.FindMember("type");
         if (!CHECK(it != p_json.MemberEnd() && it->value.IsString(), "Unable to deserialize resource ref - Invalid resource type"))
             return false;
 
-        m_type = it->value.GetString();
+        m_type = std::string(it->value.GetString(), it->value.GetStringLength());
 
         if (!ResourceRef::FromJson(p_json))
             return false;
 
+        const std::string basePath = m_path;
+
         (*this) = { m_type, m_path };
-        return true;
+        return CHECK(basePath == m_path, "Unable to deserialize resource ref - Failed to load resource");
     }
 }

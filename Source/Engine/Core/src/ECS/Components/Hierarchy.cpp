@@ -4,6 +4,7 @@
 #include "SurvivantCore/ECS/SceneView.h"
 
 using namespace LibMath;
+using namespace SvCore::Serialization;
 
 namespace SvCore::ECS
 {
@@ -92,26 +93,26 @@ namespace SvCore::ECS
     }
 
     template <>
-    void ComponentTraits::OnAdd<HierarchyComponent>(EntityHandle& p_owner, HierarchyComponent& p_hierarchy)
+    void ComponentTraits::OnAdd(EntityHandle& p_entity, HierarchyComponent& p_component)
     {
-        ASSERT(p_hierarchy.m_firstChild == NULL_ENTITY, "Adding a pre-existing hierarchy is not supported");
-        ASSERT(p_hierarchy.m_previousSibling == NULL_ENTITY, "Adding a pre-existing hierarchy is not supported");
-        ASSERT(p_hierarchy.m_nextSibling == NULL_ENTITY, "Adding a pre-existing hierarchy is not supported");
-        ASSERT(p_hierarchy.m_childCount == 0, "Adding a pre-existing hierarchy is not supported");
+        ASSERT(p_component.m_firstChild == NULL_ENTITY, "Adding a pre-existing hierarchy is not supported");
+        ASSERT(p_component.m_previousSibling == NULL_ENTITY, "Adding a pre-existing hierarchy is not supported");
+        ASSERT(p_component.m_nextSibling == NULL_ENTITY, "Adding a pre-existing hierarchy is not supported");
+        ASSERT(p_component.m_childCount == 0, "Adding a pre-existing hierarchy is not supported");
 
-        OnChange(p_owner, p_hierarchy);
+        OnChange(p_entity, p_component);
     }
 
     template <>
-    void ComponentTraits::OnRemove<HierarchyComponent>(EntityHandle& p_entity, HierarchyComponent& p_hierarchy)
+    void ComponentTraits::OnRemove(EntityHandle& p_entity, HierarchyComponent& p_component)
     {
-        OnBeforeChange(p_entity, p_hierarchy);
+        OnBeforeChange(p_entity, p_component);
 
-        EntityHandle child(p_entity.GetScene(), p_hierarchy.m_firstChild);
+        EntityHandle child(p_entity.GetScene(), p_component.m_firstChild);
 
-        p_hierarchy.m_parent          = NULL_ENTITY;
-        p_hierarchy.m_nextSibling     = NULL_ENTITY;
-        p_hierarchy.m_previousSibling = NULL_ENTITY;
+        p_component.m_parent          = NULL_ENTITY;
+        p_component.m_nextSibling     = NULL_ENTITY;
+        p_component.m_previousSibling = NULL_ENTITY;
 
         while (child)
         {
@@ -120,19 +121,19 @@ namespace SvCore::ECS
             child = nextChild;
         }
 
-        p_hierarchy.m_childCount = 0;
+        p_component.m_childCount = 0;
         UnlinkTransforms(p_entity);
     }
 
     template <>
-    void ComponentTraits::OnBeforeChange<HierarchyComponent>(EntityHandle& p_entity, HierarchyComponent& p_hierarchy)
+    void ComponentTraits::OnBeforeChange(EntityHandle& p_entity, HierarchyComponent& p_component)
     {
         Scene* scene = p_entity.GetScene();
         ASSERT(scene);
 
-        EntityHandle parent(scene, p_hierarchy.m_parent);
-        EntityHandle nextSibling(scene, p_hierarchy.m_nextSibling);
-        EntityHandle prevSibling(scene, p_hierarchy.m_previousSibling);
+        EntityHandle parent(scene, p_component.m_parent);
+        EntityHandle nextSibling(scene, p_component.m_nextSibling);
+        EntityHandle prevSibling(scene, p_component.m_previousSibling);
 
         if (HierarchyComponent* parentHierarchy = parent.Get<HierarchyComponent>())
         {
@@ -148,20 +149,20 @@ namespace SvCore::ECS
         if (HierarchyComponent* nextHierarchy = nextSibling.Get<HierarchyComponent>())
             nextHierarchy->m_previousSibling = prevSibling;
 
-        p_hierarchy.m_parent          = NULL_ENTITY;
-        p_hierarchy.m_nextSibling     = NULL_ENTITY;
-        p_hierarchy.m_previousSibling = NULL_ENTITY;
+        p_component.m_parent          = NULL_ENTITY;
+        p_component.m_nextSibling     = NULL_ENTITY;
+        p_component.m_previousSibling = NULL_ENTITY;
     }
 
     template <>
-    void ComponentTraits::OnChange<HierarchyComponent>(EntityHandle& p_entity, HierarchyComponent& p_hierarchy)
+    void ComponentTraits::OnChange(EntityHandle& p_entity, HierarchyComponent& p_component)
     {
         Scene* scene = p_entity.GetScene();
         ASSERT(scene);
 
-        EntityHandle parent(scene, p_hierarchy.m_parent);
+        EntityHandle parent(scene, p_component.m_parent);
 
-        if (EntityHandle firstChild(scene, p_hierarchy.m_firstChild); firstChild && !firstChild.Has<HierarchyComponent>())
+        if (EntityHandle firstChild(scene, p_component.m_firstChild); firstChild && !firstChild.Has<HierarchyComponent>())
             firstChild.Make<HierarchyComponent>(p_entity);
 
         if (!parent)
@@ -169,7 +170,7 @@ namespace SvCore::ECS
 
         if (HierarchyComponent* parentHierarchy = parent.Get<HierarchyComponent>())
         {
-            EntityHandle nextSibling(scene, p_hierarchy.m_nextSibling = parentHierarchy->m_firstChild);
+            EntityHandle nextSibling(scene, p_component.m_nextSibling = parentHierarchy->m_firstChild);
 
             if (nextSibling)
                 nextSibling.Get<HierarchyComponent>()->m_previousSibling = p_entity;
@@ -206,11 +207,9 @@ namespace SvCore::ECS
     }
 
     template <>
-    bool ComponentRegistry::ToJson<HierarchyComponent>(
-        const HierarchyComponent& p_hierarchy, rapidjson::Writer<rapidjson::StringBuffer>& p_writer,
-        const EntitiesMap&        p_toSerialized)
+    bool ComponentRegistry::ToJson(const HierarchyComponent& p_value, JsonWriter& p_writer, const EntitiesMap& p_toSerialized)
     {
-        Entity parent = p_hierarchy.GetParent();
+        Entity parent = p_value.GetParent();
 
         if (parent != NULL_ENTITY)
         {
@@ -231,7 +230,7 @@ namespace SvCore::ECS
     }
 
     template <>
-    bool ComponentRegistry::FromJson<HierarchyComponent>(HierarchyComponent& p_out, const rapidjson::Value& p_json)
+    bool ComponentRegistry::FromJson(HierarchyComponent& p_out, const JsonValue& p_json, Scene*)
     {
         if (!CHECK(p_json.IsObject(), "Unable to deserialize hierarchy - Json value should be an object"))
             return false;
@@ -241,67 +240,6 @@ namespace SvCore::ECS
             return false;
 
         p_out.SetParent(Entity(it->value.Get<Entity::Id>()));
-        return true;
-    }
-
-    template <>
-    bool ComponentRegistry::ToJson<Transform>(
-        const Transform& p_transform, rapidjson::Writer<rapidjson::StringBuffer>& p_writer, const EntitiesMap&)
-    {
-        p_writer.StartObject();
-
-        p_writer.Key("position");
-        std::string str = p_transform.getPosition().string();
-        p_writer.String(str.c_str(), static_cast<rapidjson::SizeType>(str.size()));
-
-        p_writer.Key("rotation");
-        str = p_transform.getRotation().string();
-        p_writer.String(str.c_str(), static_cast<rapidjson::SizeType>(str.size()));
-
-        p_writer.Key("scale");
-        str = p_transform.getScale().string();
-        p_writer.String(str.c_str(), static_cast<rapidjson::SizeType>(str.size()));
-
-        return p_writer.EndObject();
-    }
-
-    template <>
-    bool ComponentRegistry::FromJson<Transform>(Transform& p_out, const rapidjson::Value& p_json)
-    {
-        if (!CHECK(p_json.IsObject(), "Unable to deserialize transform - Invalid json object"))
-            return false;
-
-        Vector3    position, scale;
-        Quaternion rotation;
-
-        auto it = p_json.FindMember("position");
-        if (!CHECK(it != p_json.MemberEnd() && it->value.IsString(), "Unable to deserialize transform position"))
-            return false;
-
-        {
-            std::istringstream iss(std::string(it->value.GetString(), it->value.GetStringLength()));
-            iss >> position;
-        }
-
-        it = p_json.FindMember("rotation");
-        if (!CHECK(it != p_json.MemberEnd() && it->value.IsString(), "Unable to deserialize transform rotation"))
-            return false;
-
-        {
-            std::istringstream iss(std::string(it->value.GetString(), it->value.GetStringLength()));
-            iss >> rotation;
-        }
-
-        it = p_json.FindMember("scale");
-        if (!CHECK(it != p_json.MemberEnd() && it->value.IsString(), "Unable to deserialize transform scale"))
-            return false;
-
-        {
-            std::istringstream iss(std::string(it->value.GetString(), it->value.GetStringLength()));
-            iss >> scale;
-        }
-
-        p_out.setAll(position, rotation, scale);
         return true;
     }
 }

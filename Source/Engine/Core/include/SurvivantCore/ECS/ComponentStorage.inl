@@ -109,7 +109,7 @@ namespace SvCore::ECS
         EntityHandle handle(m_scene, p_owner);
 
         ComponentTraits::OnRemove<ComponentT>(handle, component);
-        m_onRemove.Invoke({ m_scene, p_owner }, component);
+        m_onRemove.Invoke(handle, component);
 
         const size_t lastIndex = m_components.size() - 1;
 
@@ -131,6 +131,22 @@ namespace SvCore::ECS
     template <class T>
     void ComponentStorage<T>::Clear()
     {
+        for (size_t i = m_components.size(); i > 0; --i)
+        {
+            if (i > m_components.size())
+                continue;
+
+            EntityHandle handle(m_scene, m_componentToEntity[i - 1]);
+
+            if (!handle)
+                continue;
+
+            ComponentT& component = m_components[i - 1];
+
+            ComponentTraits::OnRemove<ComponentT>(handle, component);
+            m_onRemove.Invoke(handle, component);
+        }
+
         m_components.clear();
         m_componentToEntity.clear();
         m_entityToComponent.clear();
@@ -143,7 +159,7 @@ namespace SvCore::ECS
     }
 
     template <class T>
-    Entity::Id ComponentStorage<T>::GetCount() const
+    Entity::Id ComponentStorage<T>::size() const
     {
         return static_cast<Entity::Id>(m_components.size());
     }
@@ -152,6 +168,13 @@ namespace SvCore::ECS
     bool ComponentStorage<T>::Has(const Entity p_owner) const
     {
         return m_entityToComponent.contains(p_owner);
+    }
+
+    template <class T>
+    void* ComponentStorage<T>::GetOrCreateRaw(const Entity p_owner)
+    {
+        void* out = FindRaw(p_owner);
+        return out ? out : (void*)&Construct(p_owner);
     }
 
     template <class T>
@@ -222,7 +245,7 @@ namespace SvCore::ECS
     }
 
     template <class T>
-    bool ComponentStorage<T>::ToJson(rapidjson::Writer<rapidjson::StringBuffer>& p_writer, const EntitiesMap& p_entitiesMap) const
+    bool ComponentStorage<T>::ToJson(Serialization::JsonWriter& p_writer, const EntitiesMap& p_entitiesMap) const
     {
         p_writer.StartArray();
 
@@ -250,7 +273,7 @@ namespace SvCore::ECS
     }
 
     template <class T>
-    bool ComponentStorage<T>::FromJson(const rapidjson::Value& p_json)
+    bool ComponentStorage<T>::FromJson(const Serialization::JsonValue& p_json)
     {
         if (!CHECK(p_json.IsArray(), "Failed to deserialize component storage - Json value should be an array"))
             return false;
@@ -273,7 +296,7 @@ namespace SvCore::ECS
                 return false;
 
             ComponentT component;
-            if (!ComponentRegistry::FromJson(component, it->value))
+            if (!ComponentRegistry::FromJson(component, it->value, m_scene))
                 return false;
 
             Set(owner, component);

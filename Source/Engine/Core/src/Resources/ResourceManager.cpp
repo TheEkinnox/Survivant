@@ -46,7 +46,7 @@ namespace SvCore::Resources
         return instance;
     }
 
-    GenericResourceRef ResourceManager::Create(const std::string& p_type, const std::string& p_path, const bool p_shouldLoad)
+    GenericResourceRef ResourceManager::Create(const std::string& p_type, const std::string& p_path)
     {
         if (p_type.empty() || p_path.empty())
             return {};
@@ -70,7 +70,7 @@ namespace SvCore::Resources
         if (!resource)
             resource = ResourceRegistry::GetInstance().Create(p_type);
 
-        if (p_shouldLoad && !LoadResource(resource, p_path))
+        if (!LoadResource(resource, p_path))
         {
             m_resources.erase(it);
             return {};
@@ -100,7 +100,27 @@ namespace SvCore::Resources
     GenericResourceRef ResourceManager::GetOrCreate(const std::string& p_type, const std::string& p_path)
     {
         GenericResourceRef resource = Get(p_type, p_path);
-        return resource ? resource : Create(p_type, p_path, true);
+        return resource ? resource : Create(p_type, p_path);
+    }
+
+    std::vector<GenericResourceRef> ResourceManager::GetAll(const std::string& p_type) const
+    {
+        std::vector<GenericResourceRef> resources;
+
+        for (const auto& resource : m_resources | std::ranges::views::values)
+        {
+            if (!resource)
+                continue;
+
+            const GenericResourceRef* genericResource = dynamic_cast<GenericResourceRef*>(resource.get());
+
+            if (genericResource && genericResource->GetType() == p_type)
+                resources.push_back(*genericResource);
+            else if (*resource && (*resource)->GetTypeName() == p_type)
+                resources.emplace_back(*resource, p_type);
+        }
+
+        return resources;
     }
 
     std::vector<char> ResourceManager::ReadFile(const std::string& p_path) const
@@ -172,6 +192,31 @@ namespace SvCore::Resources
         }
 
         return p_path;
+    }
+
+    std::string ResourceManager::GetRelativePath(std::string p_path) const
+    {
+        if (p_path.empty())
+            return {};
+
+        p_path = Utility::GetAbsolutePath(GetFullPath(p_path));
+
+        size_t bestMatch = 0;
+
+        const char* appDir = Utility::GetApplicationDirectory();
+
+        if (p_path.starts_with(appDir))
+            bestMatch = strlen(appDir);
+
+        for (const auto& searchPath : m_searchPaths)
+        {
+            const std::string absSearchPath = Utility::GetAbsolutePath(searchPath);
+
+            if (absSearchPath.size() > bestMatch && p_path.starts_with(absSearchPath))
+                bestMatch = absSearchPath.size() + 1;
+        }
+
+        return p_path.substr(bestMatch);
     }
 
     bool ResourceManager::LoadResource(IResource* p_resource, const std::string& p_path) const
