@@ -1,5 +1,4 @@
 #pragma once
-#include "SurvivantCore/ECS/EntityHandle.h"
 
 namespace sol
 {
@@ -11,24 +10,6 @@ namespace SvScripting::Bindings
     class LuaECSBinder final
     {
     public:
-        struct ComponentHandle
-        {
-            SvCore::ECS::EntityHandle m_owner;
-            SvCore::Utility::TypeId   m_typeId;
-
-            /**
-             * \brief Checks whether the given handle references the same component as this one or not
-             * \param p_other The component handle to compare against
-             * \return True if the given handle references the same component. False otherwise
-             */
-            bool operator==(const ComponentHandle& p_other) const;
-
-            /**
-             * \brief Checks whether the component handle is valid or not
-             */
-            operator bool() const;
-        };
-
         /**
          * \brief Creates or updates the ECS bindings in the given lua state
          * \param p_luaState The target lua state

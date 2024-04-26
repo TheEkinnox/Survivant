@@ -1,9 +1,10 @@
 #include "SurvivantScripting/Bindings/LuaECSBinder.h"
 
-#include "SurvivantCore/ECS/Components/TagComponent.h"
-
-#include "SurvivantScripting/LuaContext.h"
+#include "SurvivantScripting/LuaComponentHandle.h"
+#include "SurvivantScripting/LuaScriptHandle.h"
 #include "SurvivantScripting/LuaTypeRegistry.h"
+
+#include <SurvivantCore/ECS/Components/TagComponent.h>
 
 #include <sol/state.hpp>
 
@@ -12,16 +13,6 @@ using namespace SvCore::Utility;
 
 namespace SvScripting::Bindings
 {
-    bool LuaECSBinder::ComponentHandle::operator==(const ComponentHandle& p_other) const
-    {
-        return m_typeId == p_other.m_typeId && m_owner == p_other.m_owner;
-    }
-
-    LuaECSBinder::ComponentHandle::operator bool() const
-    {
-        return m_owner && m_owner.GetScene()->GetStorage(m_typeId).Contains(m_owner);
-    }
-
     void LuaECSBinder::Bind(sol::state& p_luaState)
     {
         BindTag(p_luaState);
@@ -133,10 +124,10 @@ namespace SvScripting::Bindings
     {
         static constexpr const char* typeName = "Component";
 
-        sol::usertype componentType = p_luaState.new_usertype<ComponentHandle>(
+        sol::usertype componentType = p_luaState.new_usertype<LuaComponentHandle>(
             typeName,
-            "isValid", sol::readonly_property(&ComponentHandle::operator bool),
-            sol::meta_function::index, [&p_luaState](const ComponentHandle& p_self, const sol::object& p_index) -> sol::object
+            "isValid", sol::readonly_property(&LuaComponentHandle::operator bool),
+            sol::meta_function::index, [&p_luaState](const LuaComponentHandle& p_self, const sol::object& p_index) -> sol::object
             {
                 if (!p_self.m_owner)
                     return sol::nil;
@@ -145,7 +136,7 @@ namespace SvScripting::Bindings
                 return LuaTypeRegistry::GetInstance().GetTypeInfo(p_self.m_typeId).ToLua(component, p_luaState)[p_index];
             },
             sol::meta_function::new_index,
-            [&p_luaState](const ComponentHandle& p_self, const sol::object& p_key, sol::object p_value)
+            [&p_luaState](const LuaComponentHandle& p_self, const sol::object& p_key, sol::object p_value)
             {
                 if (!p_self.m_owner)
                     return;
@@ -162,7 +153,7 @@ namespace SvScripting::Bindings
                 data[p_key] = p_value;
                 typeInfo.FromLua(component, data);
             },
-            "Set", [](const ComponentHandle& p_self, const sol::userdata& p_value)
+            "Set", [](const LuaComponentHandle& p_self, const sol::userdata& p_value)
             {
                 if (!p_self.m_owner)
                     return;
@@ -179,7 +170,7 @@ namespace SvScripting::Bindings
 
         componentType["__type"]["name"] = typeName;
 
-        static const LuaTypeInfo& typeInfo = LuaTypeRegistry::GetInstance().RegisterType<ComponentHandle>(typeName);
+        static const LuaTypeInfo& typeInfo = LuaTypeRegistry::GetInstance().RegisterType<LuaComponentHandle>(typeName);
         return (void)typeInfo;
     }
 
@@ -187,10 +178,10 @@ namespace SvScripting::Bindings
     {
         static constexpr const char* typeName = "Script";
 
-        sol::usertype componentType = p_luaState.new_usertype<LuaContext::ScriptHandle>(
+        sol::usertype componentType = p_luaState.new_usertype<LuaScriptHandle>(
             typeName,
-            "isValid", sol::readonly_property(&LuaContext::ScriptHandle::operator bool),
-            sol::meta_function::index, [](LuaContext::ScriptHandle& p_self, const sol::object& p_index) -> sol::object
+            "isValid", sol::readonly_property(&LuaScriptHandle::operator bool),
+            sol::meta_function::index, [](LuaScriptHandle& p_self, const sol::object& p_index) -> sol::object
             {
                 if (!p_self)
                     return sol::nil;
@@ -198,7 +189,7 @@ namespace SvScripting::Bindings
                 const sol::optional<sol::object> out = p_self.m_table[p_index];
                 return out.value_or(sol::nil);
             },
-            sol::meta_function::new_index, [](LuaContext::ScriptHandle& p_self, const sol::object& p_key, sol::object p_value)
+            sol::meta_function::new_index, [](LuaScriptHandle& p_self, const sol::object& p_key, sol::object p_value)
             {
                 if (p_self)
                     p_self.m_table[p_key] = p_value;
@@ -207,7 +198,7 @@ namespace SvScripting::Bindings
 
         componentType["__type"]["name"] = typeName;
 
-        static const LuaTypeInfo& typeInfo = LuaTypeRegistry::GetInstance().RegisterType<LuaContext::ScriptHandle>(typeName);
+        static const LuaTypeInfo& typeInfo = LuaTypeRegistry::GetInstance().RegisterType<LuaScriptHandle>(typeName);
         return (void)typeInfo;
     }
 

@@ -5,6 +5,8 @@
 
 #include <ranges>
 
+using namespace SvCore::Serialization;
+
 namespace SvScripting
 {
     using namespace SvCore::ECS;
@@ -45,12 +47,12 @@ namespace SvScripting
         return m_scripts.contains(LuaContext::GetModuleName(p_script));
     }
 
-    LuaContext::ScriptHandle LuaScriptList::Get(const std::string& p_script) const
+    LuaScriptHandle LuaScriptList::Get(const std::string& p_script) const
     {
         return LuaContext::GetInstance().GetScript(p_script, m_owner);
     }
 
-    LuaContext::ScriptHandle LuaScriptList::Add(std::string p_script, const sol::table& p_hint)
+    LuaScriptHandle LuaScriptList::Add(std::string p_script, const sol::table& p_hint)
     {
         p_script = LuaContext::GetModuleName(p_script);
 
@@ -61,7 +63,7 @@ namespace SvScripting
                 p_script.c_str(), m_owner.GetEntity().GetIndex(), m_owner.GetEntity().GetVersion()))
             return {};
 
-        LuaContext::ScriptHandle handle = LuaContext::GetInstance().AddScript(p_script, m_owner, p_hint);
+        LuaScriptHandle handle = LuaContext::GetInstance().AddScript(p_script, m_owner, p_hint);
 
         if (!handle.m_table.valid())
             return {};
@@ -87,8 +89,7 @@ namespace SvScripting
         m_scripts.clear();
     }
 
-    sol::optional<sol::object> LuaObjectFromJson(lua_State* p_luaState, const SvCore::Serialization::JsonValue& p_json,
-                                                 Scene*     p_scene)
+    sol::optional<sol::object> LuaObjectFromJson(lua_State* p_luaState, const JsonValue& p_json, Scene* p_scene)
     {
         if (!CHECK(p_luaState, "Unable to deserialize lua object - No lua state"))
             return sol::nullopt;
@@ -217,12 +218,11 @@ namespace SvCore::ECS
     }
 
     template <>
-    bool ComponentRegistry::ToJson(
-        const LuaScriptList& p_component, Serialization::JsonWriter& p_writer, const EntitiesMap& p_toSerialized)
+    bool ComponentRegistry::ToJson(const LuaScriptList& p_value, JsonWriter& p_writer, const EntitiesMap& p_toSerialized)
     {
         p_writer.StartArray();
 
-        for (const auto& script : p_component.m_scripts | std::views::keys)
+        for (const auto& script : p_value.m_scripts | std::views::keys)
         {
             p_writer.StartObject();
 
@@ -234,7 +234,7 @@ namespace SvCore::ECS
 
             p_writer.Key("data");
 
-            if (!ToJson(p_component.Get(script).m_table, p_writer, p_toSerialized))
+            if (!ToJson(p_value.Get(script).m_table, p_writer, p_toSerialized))
                 return false;
 
             if (!CHECK(p_writer.EndObject(), "Failed to serialize lua script"))
@@ -245,7 +245,7 @@ namespace SvCore::ECS
     }
 
     template <>
-    bool ComponentRegistry::FromJson(LuaScriptList& p_out, const Serialization::JsonValue& p_json, Scene* p_scene)
+    bool ComponentRegistry::FromJson(LuaScriptList& p_out, const JsonValue& p_json, Scene* p_scene)
     {
         p_out.Clear();
 
@@ -286,15 +286,14 @@ namespace SvCore::ECS
     }
 
     template <>
-    bool ComponentRegistry::ToJson(
-        const sol::table& p_component, Serialization::JsonWriter& p_writer, const EntitiesMap& p_toSerialized)
+    bool ComponentRegistry::ToJson(const sol::table& p_value, JsonWriter& p_writer, const EntitiesMap& p_toSerialized)
     {
-        if (p_component == sol::nil)
+        if (p_value == sol::nil)
             return p_writer.Null();
 
         p_writer.StartArray();
 
-        for (const auto& [key, value] : p_component)
+        for (const auto& [key, value] : p_value)
         {
             const sol::type valType = value.get_type();
 
@@ -316,7 +315,7 @@ namespace SvCore::ECS
     }
 
     template <>
-    bool ComponentRegistry::FromJson(sol::table& p_out, const Serialization::JsonValue& p_json, Scene* p_scene)
+    bool ComponentRegistry::FromJson(sol::table& p_out, const JsonValue& p_json, Scene* p_scene)
     {
         if (!CHECK(p_json.IsArray(), "Unable to deserialize lua table - Json value should be an array"))
             return false;
@@ -353,13 +352,12 @@ namespace SvCore::ECS
     }
 
     template <>
-    bool ComponentRegistry::ToJson(
-        const sol::object& p_component, Serialization::JsonWriter& p_writer, const EntitiesMap& p_toSerialized)
+    bool ComponentRegistry::ToJson(const sol::object& p_value, JsonWriter& p_writer, const EntitiesMap& p_toSerialized)
     {
-        if (!CHECK(p_component.valid(), "Unable to seriliaze lua object - Invalid value"))
+        if (!CHECK(p_value.valid(), "Unable to seriliaze lua object - Invalid value"))
             return false;
 
-        const sol::type objectType = p_component.get_type();
+        const sol::type objectType = p_value.get_type();
 
         p_writer.StartObject();
         p_writer.Key("type");
@@ -375,24 +373,24 @@ namespace SvCore::ECS
             break;
         case sol::type::string:
         {
-            const std::string str = p_component.as<std::string>();
+            const std::string str = p_value.as<std::string>();
             result                = CHECK(p_writer.String(str.c_str(), static_cast<rapidjson::SizeType>(str.size())),
                     "Unable to write lua string");
             break;
         }
         case sol::type::number:
-            result = CHECK(p_writer.Double(p_component.as<double>()), "Unable to write lua number");
+            result = CHECK(p_writer.Double(p_value.as<double>()), "Unable to write lua number");
             break;
         case sol::type::boolean:
-            result = CHECK(p_writer.Bool(p_component.as<bool>()), "Unable to write lua bool");
+            result = CHECK(p_writer.Bool(p_value.as<bool>()), "Unable to write lua bool");
             break;
         case sol::type::table:
-            result = ToJson(p_component.as<sol::table>(), p_writer, p_toSerialized);
+            result = ToJson(p_value.as<sol::table>(), p_writer, p_toSerialized);
             break;
         case sol::type::userdata:
         case sol::type::lightuserdata:
         {
-            const auto&       userData   = p_component.as<sol::userdata&>();
+            const auto&       userData   = p_value.as<sol::userdata&>();
             const std::string typeString = userData["__type"]["name"];
 
             const auto& luaTypes = LuaTypeRegistry::GetInstance();

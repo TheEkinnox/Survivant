@@ -1,9 +1,8 @@
 #pragma once
-#include "SurvivantScripting/LuaContext.h"
+#include "SurvivantScripting/LuaScriptHandle.h"
 
 #include <SurvivantCore/ECS/ComponentRegistry.h>
 #include <SurvivantCore/ECS/ComponentTraits.h>
-#include <SurvivantCore/Resources/ResourceRef.h>
 
 #include <string>
 #include <unordered_map>
@@ -63,7 +62,7 @@ namespace SvScripting
          * \param p_script The script to get
          * \return A handle to the found script on success. An empty handle otherwise
          */
-        LuaContext::ScriptHandle Get(const std::string& p_script) const;
+        LuaScriptHandle Get(const std::string& p_script) const;
 
         /**
          * \brief Adds the given lua script to the list
@@ -71,7 +70,7 @@ namespace SvScripting
          * \param p_hint The added script's base table
          * \return A handle to the added script on success. An empty handle otherwise
          */
-        LuaContext::ScriptHandle Add(std::string p_script, const sol::table& p_hint = sol::nil);
+        LuaScriptHandle Add(std::string p_script, const sol::table& p_hint = sol::nil);
 
         /**
          * \brief Removes the given lua script from the list
@@ -139,14 +138,14 @@ namespace SvCore::ECS
 
     /**
      * \brief Serializes the given lua script component to json
-     * \param p_component The serialized script component instance
+     * \param p_value The serialized script component instance
      * \param p_writer The output json writer
      * \param p_toSerialized The entity to serialized entity map
      * \return True on success. False otherwise
      */
     template <>
-    bool ComponentRegistry::ToJson(const SvScripting::LuaScriptList& p_component,
-                                   Serialization::JsonWriter&        p_writer, const EntitiesMap& p_toSerialized);
+    bool ComponentRegistry::ToJson(
+        const SvScripting::LuaScriptList& p_value, Serialization::JsonWriter& p_writer, const EntitiesMap& p_toSerialized);
 
     /**
      * \brief Deserializes the lua script component from json
@@ -156,19 +155,18 @@ namespace SvCore::ECS
      * \return True on success. False otherwise
      */
     template <>
-    bool ComponentRegistry::FromJson(SvScripting::LuaScriptList& p_out, const Serialization::JsonValue& p_json,
-                                     Scene*                      p_scene);
+    bool ComponentRegistry::FromJson(SvScripting::LuaScriptList& p_out, const Serialization::JsonValue& p_json, Scene* p_scene);
 
     /**
      * \brief Serializes the given lua table to json
-     * \param p_component The serialized lua table
+     * \param p_value The serialized lua table
      * \param p_writer The output json writer
      * \param p_toSerialized The entity to serialized entity map
      * \return True on success. False otherwise
      */
     template <>
     bool ComponentRegistry::ToJson(
-        const sol::table& p_component, Serialization::JsonWriter& p_writer, const EntitiesMap& p_toSerialized);
+        const sol::table& p_value, Serialization::JsonWriter& p_writer, const EntitiesMap& p_toSerialized);
 
     /**
      * \brief Deserializes the lua table from json
@@ -182,12 +180,12 @@ namespace SvCore::ECS
 
     /**
      * \brief Serializes the given lua object to json
-     * \param p_component The serialized lua object
+     * \param p_value The serialized lua object
      * \param p_writer The output json writer
      * \param p_toSerialized The entity to serialized entity map
      * \return True on success. False otherwise
      */
     template <>
     bool ComponentRegistry::ToJson(
-        const sol::object& p_component, Serialization::JsonWriter& p_writer, const EntitiesMap& p_toSerialized);
+        const sol::object& p_value, Serialization::JsonWriter& p_writer, const EntitiesMap& p_toSerialized);
 }

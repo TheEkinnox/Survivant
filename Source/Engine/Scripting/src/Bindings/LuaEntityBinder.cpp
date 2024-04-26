@@ -1,3 +1,4 @@
+#include "SurvivantScripting/LuaComponentHandle.h"
 #include "SurvivantScripting/LuaScriptList.h"
 #include "SurvivantScripting/LuaTypeRegistry.h"
 #include "SurvivantScripting/Bindings/LuaECSBinder.h"
@@ -12,7 +13,7 @@ namespace SvScripting::Bindings
     {
         static constexpr const char* typeName = "Entity";
 
-        static const auto getComponent = [](const EntityHandle& p_self, const std::string& p_type) -> ComponentHandle
+        static const auto getComponent = [](const EntityHandle& p_self, const std::string& p_type) -> LuaComponentHandle
         {
             if (p_type.empty())
                 return {};
@@ -25,7 +26,7 @@ namespace SvScripting::Bindings
             return { p_self, components.GetTypeInfo(p_type).m_typeId };
         };
 
-        static const auto getInParent = [](const EntityHandle& p_self, const std::string& p_type) -> ComponentHandle
+        static const auto getInParent = [](const EntityHandle& p_self, const std::string& p_type) -> LuaComponentHandle
         {
             if (!p_self || p_type.empty())
                 return {};
@@ -37,7 +38,7 @@ namespace SvScripting::Bindings
 
             const auto typeId = components.GetTypeInfo(p_type).m_typeId;
 
-            ComponentHandle current{ p_self, typeId };
+            LuaComponentHandle current{ p_self, typeId };
 
             if (current)
                 return current;
@@ -55,7 +56,7 @@ namespace SvScripting::Bindings
             return {};
         };
 
-        static const auto getInChildren = [](const EntityHandle& p_self, const std::string& p_type) -> ComponentHandle
+        static const auto getInChildren = [](const EntityHandle& p_self, const std::string& p_type) -> LuaComponentHandle
         {
             if (!p_self || p_type.empty())
                 return {};
@@ -67,7 +68,7 @@ namespace SvScripting::Bindings
 
             const auto typeId = components.GetTypeInfo(p_type).m_typeId;
 
-            ComponentHandle current{ p_self, typeId };
+            LuaComponentHandle current{ p_self, typeId };
 
             if (current)
                 return current;
@@ -115,12 +116,12 @@ namespace SvScripting::Bindings
                 const LuaScriptList* script = p_self.Get<LuaScriptList>();
                 return script ? script->Contains(p_name) : false;
             },
-            "GetScript", [](const EntityHandle& p_self, const std::string& p_name) -> LuaContext::ScriptHandle
+            "GetScript", [](const EntityHandle& p_self, const std::string& p_name) -> LuaScriptHandle
             {
                 const LuaScriptList* script = p_self.Get<LuaScriptList>();
-                return script ? script->Get(p_name) : LuaContext::ScriptHandle{};
+                return script ? script->Get(p_name) : LuaScriptHandle{};
             },
-            "AddScript", [](EntityHandle& p_self, const std::string& p_name) -> LuaContext::ScriptHandle
+            "AddScript", [](EntityHandle& p_self, const std::string& p_name) -> LuaScriptHandle
             {
                 LuaScriptList* script = p_self.Get<LuaScriptList>();
 
@@ -150,7 +151,7 @@ namespace SvScripting::Bindings
                 return p_self.GetScene()->GetStorage(typeId).Contains(p_self.GetEntity());
             },
             "Get", getComponent,
-            "GetOrCreate", [](const EntityHandle& p_self, const std::string& p_type) -> ComponentHandle
+            "GetOrCreate", [](const EntityHandle& p_self, const std::string& p_type) -> LuaComponentHandle
             {
                 if (p_type.empty())
                     return {};
@@ -171,7 +172,7 @@ namespace SvScripting::Bindings
             "GetInChildren", getInChildren,
             "GetInHierarchy",
             [](const EntityHandle& p_self, const std::string& p_type, const EntityHandle::EComponentSearchOrigin p_searchOrigin)
-            -> ComponentHandle
+            -> LuaComponentHandle
             {
                 switch (p_searchOrigin)
                 {
@@ -181,14 +182,14 @@ namespace SvScripting::Bindings
                 }
                 case EntityHandle::EComponentSearchOrigin::PARENT:
                 {
-                    if (const ComponentHandle component = getInParent(p_self, p_type))
+                    if (const LuaComponentHandle component = getInParent(p_self, p_type))
                         return component;
 
                     return getInChildren(p_self, p_type);
                 }
                 case EntityHandle::EComponentSearchOrigin::CHILDREN:
                 {
-                    if (const ComponentHandle component = getInChildren(p_self, p_type))
+                    if (const LuaComponentHandle component = getInChildren(p_self, p_type))
                         return component;
 
                     return getInParent(p_self, p_type);
@@ -212,11 +213,11 @@ namespace SvScripting::Bindings
                 p_self.GetScene()->GetStorage(typeId).Remove(p_self);
             },
             "componentCount", sol::readonly_property(&EntityHandle::GetComponentCount),
-            "components", sol::readonly_property([](EntityHandle& p_self) -> std::vector<ComponentHandle>
+            "components", sol::readonly_property([](EntityHandle& p_self) -> std::vector<LuaComponentHandle>
             {
                 const auto ids = p_self.GetComponentIds();
 
-                std::vector<ComponentHandle> components;
+                std::vector<LuaComponentHandle> components;
 
                 for (auto id : ids)
                     components.emplace_back(p_self, id);

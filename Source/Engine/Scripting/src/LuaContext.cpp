@@ -17,29 +17,6 @@ using namespace SvCore::Utility;
 
 namespace SvScripting
 {
-    bool LuaContext::ScriptHandle::operator<(const ScriptHandle& p_other) const
-    {
-        return (m_script && p_other.m_script && m_script->GetExecutionOrder() < p_other.m_script->GetExecutionOrder())
-            || m_name.compare(p_other.m_name) < 0
-            || m_script.GetPath().compare(p_other.m_script.GetPath()) < 0
-            || m_owner.GetEntity() < p_other.m_owner.GetEntity()
-            || std::less<Scene*>{}(m_owner.GetScene(), p_other.m_owner.GetScene());
-    }
-
-    bool LuaContext::ScriptHandle::operator==(const ScriptHandle& p_other) const
-    {
-        return m_owner == p_other.m_owner && m_script == p_other.m_script;
-    }
-
-    LuaContext::ScriptHandle::operator bool() const
-    {
-        if (!m_owner || !m_script)
-            return false;
-
-        const LuaScriptList* scripts = m_owner.Get<LuaScriptList>();
-        return scripts->Contains(m_name);
-    }
-
     LuaContext::LuaContext()
         : m_isValid(false), m_hasStarted(false)
     {
@@ -102,7 +79,7 @@ namespace SvScripting
         return m_isValid;
     }
 
-    bool LuaContext::RegisterScript(ScriptHandle& p_handle)
+    bool LuaContext::RegisterScript(LuaScriptHandle& p_handle)
     {
         if (!CHECK(IsValid(), "Attempted to register script \"%s\" to invalid lua context", p_handle.m_script.GetPath().c_str()))
             return false;
@@ -146,39 +123,38 @@ namespace SvScripting
         return m_isValid;
     }
 
-    LuaContext::ScriptHandle LuaContext::AddScript(
-        const std::string& p_script, const EntityHandle& p_owner, const sol::table& p_hint)
+    LuaScriptHandle LuaContext::AddScript(const std::string& p_script, const EntityHandle& p_owner, const sol::table& p_hint)
     {
         const ResourceRef<LuaScript> scriptRef(GetModulePath(p_script));
 
-        ScriptHandle handle = { GetModuleName(p_script), scriptRef, p_owner, p_hint };
+        LuaScriptHandle handle = { GetModuleName(p_script), scriptRef, p_owner, p_hint };
 
         if (!RegisterScript(handle))
             return {};
 
-        const auto insertIt = std::ranges::find_if_not(m_scripts, [&handle](const ScriptHandle& p_other)
+        const auto insertIt = std::ranges::find_if_not(m_scripts, [&handle](const LuaScriptHandle& p_other)
         {
             return handle < p_other;
         });
 
         m_isValid = CHECK(m_scripts.insert(insertIt, handle) != m_scripts.end(), "Failed to add script \"%s\"", p_script.c_str());
 
-        return m_isValid ? handle : ScriptHandle{};
+        return m_isValid ? handle : LuaScriptHandle{};
     }
 
-    LuaContext::ScriptHandle LuaContext::GetScript(const std::string& p_script, const EntityHandle& p_owner) const
+    LuaScriptHandle LuaContext::GetScript(const std::string& p_script, const EntityHandle& p_owner) const
     {
         const auto& moduleName = GetModuleName(p_script);
         const auto& modulePath = GetModulePath(p_script);
 
-        const auto it = std::ranges::find_if(m_scripts, [&moduleName, &modulePath, &p_owner](const ScriptHandle& p_other)
+        const auto it = std::ranges::find_if(m_scripts, [&moduleName, &modulePath, &p_owner](const LuaScriptHandle& p_other)
         {
             return (p_other.m_name == moduleName || p_other.m_script.GetPath() == modulePath)
                 && p_other.m_owner.GetEntity() == p_owner.GetEntity()
                 && p_other.m_owner.GetScene() == p_owner.GetScene();
         });
 
-        return it != m_scripts.end() ? *it : ScriptHandle{};
+        return it != m_scripts.end() ? *it : LuaScriptHandle{};
     }
 
     void LuaContext::RemoveScript(const std::string& p_script, EntityHandle& p_owner)
@@ -186,7 +162,7 @@ namespace SvScripting
         const auto& moduleName = GetModuleName(p_script);
         const auto& modulePath = GetModulePath(p_script);
 
-        const auto it = std::ranges::find_if(m_scripts, [&moduleName, &modulePath, &p_owner](const ScriptHandle& p_other)
+        const auto it = std::ranges::find_if(m_scripts, [&moduleName, &modulePath, &p_owner](const LuaScriptHandle& p_other)
         {
             return (p_other.m_name == moduleName || p_other.m_script.GetPath() == modulePath)
                 && p_other.m_owner.GetEntity() == p_owner.GetEntity()

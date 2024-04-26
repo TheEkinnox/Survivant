@@ -1,7 +1,6 @@
 #pragma once
-#include "SurvivantScripting/LuaScript.h"
+#include "SurvivantScripting/LuaScriptHandle.h"
 
-#include <SurvivantCore/ECS/EntityHandle.h>
 #include <SurvivantCore/Resources/ResourceRef.h>
 
 #include <cstdint>
@@ -21,33 +20,6 @@ namespace SvScripting
     class LuaContext
     {
     public:
-        struct ScriptHandle
-        {
-            std::string                               m_name;
-            SvCore::Resources::ResourceRef<LuaScript> m_script;
-            SvCore::ECS::EntityHandle                 m_owner;
-            sol::table                                m_table = sol::nil;
-
-            /**
-             * \brief Checks whether this script handle should be ordered before the given one or not
-             * \param p_other The script handle to compare against
-             * \return True if this script handle should be ordered before the given one. False otherwise
-             */
-            bool operator<(const ScriptHandle& p_other) const;
-
-            /**
-             * \brief Checks whether the given script handle references the same script as this one or not
-             * \param p_other The script handle to compare against
-             * \return True if the given script handle references the same script as this one. False otherwise
-             */
-            bool operator==(const ScriptHandle& p_other) const;
-
-            /**
-             * \brief Checks whether the script handle is valid or not
-             */
-            operator bool() const;
-        };
-
         /**
          * \brief Creates a lua context
          */
@@ -108,7 +80,7 @@ namespace SvScripting
          * \param p_handle The script to register to the context
          * \return True on success. False otherwise
          */
-        bool RegisterScript(ScriptHandle& p_handle);
+        bool RegisterScript(LuaScriptHandle& p_handle);
 
         /**
          * \brief Adds the given script to the lua context
@@ -117,7 +89,7 @@ namespace SvScripting
          * \param p_hint The added script's base table
          * \return A handle to the added script on success. An empty handle otherwise
          */
-        ScriptHandle AddScript(const std::string& p_script, const SvCore::ECS::EntityHandle& p_owner, const sol::table& p_hint);
+        LuaScriptHandle AddScript(const std::string& p_script, const SvCore::ECS::EntityHandle& p_owner, const sol::table& p_hint);
 
         /**
          * \brief Gets a handle to the given script owned by the given entity
@@ -125,7 +97,7 @@ namespace SvScripting
          * \param p_owner The script's owner
          * \return A handle to the found script. An empty handle if the script wasn't found
          */
-        ScriptHandle GetScript(const std::string& p_script, const SvCore::ECS::EntityHandle& p_owner) const;
+        LuaScriptHandle GetScript(const std::string& p_script, const SvCore::ECS::EntityHandle& p_owner) const;
 
         /**
          * \brief Removes the given script from the lua context
@@ -187,8 +159,8 @@ namespace SvScripting
         inline static std::unordered_map<std::string, std::string> s_moduleNames;
         inline static std::unordered_map<std::string, std::string> s_modulePaths;
 
-        std::unique_ptr<sol::state> m_state;
-        std::vector<ScriptHandle>   m_scripts;
+        std::unique_ptr<sol::state>  m_state;
+        std::vector<LuaScriptHandle> m_scripts;
 
         bool m_isValid, m_hasStarted;
 
