@@ -150,24 +150,8 @@ namespace SvRendering::Components
 
     void CameraComponent::Recalculate(const Matrix4& p_view)
     {
-        if (!m_isDirty)
-            return;
-
-        if (m_projectionType == EProjectionType::PERSPECTIVE)
-        {
-            const Matrix4 projMat = perspectiveProjection(m_fovY, m_aspect, m_perspectiveNear, m_perspectiveFar);
-            m_camera.SetViewProjection(projMat * p_view);
-            m_isDirty = false;
-            return;
-        }
-
-        const float   halfHeight = m_orthographicSize * .5f;
-        const float   halfWidth  = halfHeight * m_aspect;
-        const Matrix4 projMat    = orthographicProjection(-halfWidth, halfWidth, -halfHeight, halfHeight,
-            m_orthographicNear, m_orthographicFar);
-
-        m_camera.SetViewProjection(projMat * p_view);
-        m_isDirty = false;
+        BuildProjection();
+        m_camera.SetViewProjection(m_projection * p_view);
     }
 
     EProjectionType CameraComponent::GetProjectionType() const
@@ -361,5 +345,26 @@ namespace SvRendering::Components
 
         m_isDirty = true;
         return *this;
+    }
+
+    void CameraComponent::BuildProjection()
+    {
+        if (!m_isDirty)
+            return;
+
+        if (m_projectionType == EProjectionType::PERSPECTIVE)
+        {
+            m_projection = perspectiveProjection(m_fovY, m_aspect, m_perspectiveNear, m_perspectiveFar);
+        }
+        else
+        {
+            const float halfHeight = m_orthographicSize * .5f;
+            const float halfWidth  = halfHeight * m_aspect;
+
+            m_projection = orthographicProjection(-halfWidth, halfWidth, -halfHeight, halfHeight, m_orthographicNear,
+                m_orthographicFar);
+        }
+
+        m_isDirty = false;
     }
 }
