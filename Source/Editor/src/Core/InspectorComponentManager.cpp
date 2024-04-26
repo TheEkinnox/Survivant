@@ -10,6 +10,10 @@
 
 #include "SurvivantEditor/PanelItems/PanelComponent.h"
 #include "SurvivantEditor/PanelItems/PanelTransformInput.h"
+#include "SurvivantEditor/PanelItems/PanelSelectionDisplay.h"
+#include "SurvivantEditor/PanelItems/PanelColorInput.h"
+#include "SurvivantEditor/PanelItems/PanelVec2Input.h"
+#include "SurvivantEditor/PanelItems/PanelVec3Input.h"
 
 #include "Transform.h"
 
@@ -17,6 +21,7 @@ using namespace LibMath;
 using namespace SvCore::ECS;
 using namespace SvEditor::PanelItems;
 using namespace SvRendering::Components;
+using namespace SvRendering::Enums;
 
 
 
@@ -25,23 +30,7 @@ namespace SvEditor::Core
 	void InspectorComponentManager::Init()
 	{
 		AddComponentToPanelable<Transform>(&AddComponentTransform);
-		//AddComponent(HierarchyComponent, &AddComponentTransform);
-	}
-
-	void InspectorComponentManager::TestImplementComponent()
-	{
-		const auto printHierarchy = [](const void* p_payload)
-			{
-				ASSERT(p_payload);
-
-				const HierarchyComponent& hierarchy = *static_cast<const HierarchyComponent*>(p_payload);
-				SV_LOG("Called injected func for child of {%u:%u}",
-					hierarchy.GetParent().GetIndex(), hierarchy.GetParent().GetVersion());
-
-				return true;
-			};
-
-		CHECK(ComponentRegistry::GetInstance().GetTypeInfo<HierarchyComponent>().Add("Print", printHierarchy));
+		AddComponentToPanelable<LightComponent>(&AddComponentLight);
 	}
 
 	InspectorComponentManager::PanelableEntity InspectorComponentManager::GetPanelableEntity(
@@ -76,15 +65,14 @@ namespace SvEditor::Core
 	InspectorComponentManager::PanelableComponent InspectorComponentManager::AddComponentTransform(
 		const SvCore::ECS::EntityHandle& p_entity)
 	{
-
 		auto component = PanelComponent("Transform",
 			PanelComponent::Items({
-					std::make_shared<PanelTransformInput>(
+					std::make_shared<PanelTransformInput>(PanelTransformInput(
 						PanelTransformInput::GetRefFunc(
 							[e = p_entity]() mutable -> Transform&
 							{
 								return *e.Get<Transform>();
-							})
+							}))
 						//does callback already in PanelTransformInput with ref
 						/*PanelTransformInput::Callback( 
 							[entity](PanelTransformInput::CallbackParams p_params) mutable
@@ -104,36 +92,101 @@ namespace SvEditor::Core
 		return PanelItems::PanelComponent(std::move(component));
 	}
 
-	//InspectorComponentManager::PanelableComponent InspectorComponentManager::AddComponentHierarchy(const SvCore::ECS::EntityHandle& p_entity)
-	//{
+	InspectorComponentManager::PanelableComponent InspectorComponentManager::AddComponentLight(
+		const SvCore::ECS::EntityHandle& p_entity)
+	{
+		using namespace SvRendering::Core;
 
 
-	//	//auto component = PanelComponent("",
-	//	//	PanelComponent::Items({
-	//	//			std::make_shared<Panel>(
-	//	//				PanelTransformInput::GetRefFunc(
-	//	//					[e = p_entity]() mutable -> HierarchyComponent&
-	//	//					{
-	//	//						return *e.Get<HierarchyComponent>();
-	//	//					})
-	//	//				//does callback already in PanelTransformInput with ref
-	//	//				/*PanelTransformInput::Callback(
-	//	//					[entity](PanelTransformInput::CallbackParams p_params) mutable
-	//	//					{
-	//	//						auto& trans = *entity.Get<Transform>();
-	//	//						auto& [pos, rot, scl] = p_params;
+		std::vector<std::string> enumNames;
+		for (int i = 0; i <= static_cast<int>(ELightType::SPOT); i++)
+			enumNames.emplace_back(std::string(LightTypeToString(ELightType(i))));
 
-	//	//						if (pos)
-	//	//							trans.setPosition(*pos);
-	//	//						if (rot)
-	//	//							trans.setRotation(*rot);
-	//	//						if (scl)
-	//	//							trans.setScale(*scl);
-	//	//					})*/
-	//	//		) }));
+		std::vector<PanelSelectionDisplay::SelectedDisplay> display;
 
-	//	//return PanelableComponent();
-	//}
+		//Core::Light            m_ambient;
+		display.emplace_back(PanelSelectionDisplay::SelectedDisplay({
+				std::make_shared<PanelColorInput>(PanelColorInput(
+					"Color", 
+					[entity = p_entity]() mutable -> Vector4& { return //cast from (float[4])[0] to &Vec4
+						*(Vector4*)&(entity.Get<LightComponent>()->m_ambient.m_color.m_r); }
+				))
+			}));
+
+		//Core::DirectionalLight m_directional;
+		display.emplace_back(PanelSelectionDisplay::SelectedDisplay({
+				std::make_shared<PanelColorInput>(PanelColorInput(
+					"Color",
+					[entity = p_entity]() mutable -> Vector4& { return //cast from (float[4])[0] to &Vec4
+						*(Vector4*)&(entity.Get<LightComponent>()->m_directional.m_color); }
+				)),
+				std::make_shared<PanelVec3Input>(PanelVec3Input(
+					"Direction",
+					[entity = p_entity]() mutable -> Vector3& { return
+						entity.Get<LightComponent>()->m_directional.m_direction; }
+				))
+		}));
+
+		//Core::PointLight       m_point;
+		display.emplace_back(PanelSelectionDisplay::SelectedDisplay({
+				std::make_shared<PanelColorInput>(PanelColorInput(
+					"Color",
+					[entity = p_entity]() mutable -> Vector4&{ return //cast from (float[4])[0] to &Vec4
+						*(Vector4*)&(entity.Get<LightComponent>()->m_point.m_color); }
+				)),
+				std::make_shared<PanelVec3Input>(PanelVec3Input(
+					"Position",
+					[entity = p_entity]() mutable -> Vector3& { return
+						entity.Get<LightComponent>()->m_point.m_position; }
+				)),
+				std::make_shared<PanelVec3Input>(PanelVec3Input(
+					"Attenuation (constant, linear, quadratic)",
+					[entity = p_entity]() mutable -> LibMath::Vector3& { return //cast from (float[3])[0] to &Vec3
+						*(Vector3*)&(entity.Get<LightComponent>()->m_point.m_attenuationData.m_constant); }
+				))
+			}));
+
+		//Core::SpotLight        m_spot;
+		display.emplace_back(PanelSelectionDisplay::SelectedDisplay({
+				std::make_shared<PanelColorInput>(PanelColorInput(
+					"Color",
+					[entity = p_entity]() mutable -> Vector4& { return //cast from (float[4])[0] to &Vec4
+						*(Vector4*)&(entity.Get<LightComponent>()->m_spot.m_color); }
+				)),
+				std::make_shared<PanelVec3Input>(PanelVec3Input(
+					"Position",
+					[entity = p_entity]() mutable -> Vector3& { return
+						entity.Get<LightComponent>()->m_spot.m_position; }
+				)),
+				std::make_shared<PanelVec3Input>(PanelVec3Input(
+					"Direction",
+					[entity = p_entity]() mutable -> Vector3& { return
+						entity.Get<LightComponent>()->m_spot.m_direction; }
+				)),
+				std::make_shared<PanelVec3Input>(PanelVec3Input(
+					"Attenuation (constant, linear, quadratic)",
+					[entity = p_entity]() mutable -> LibMath::Vector3& { return //cast from (float[3])[0] to &Vec3
+						*(Vector3*)&(entity.Get<LightComponent>()->m_spot.m_attenuationData.m_constant); }
+				)),
+				std::make_shared<PanelVec2Input>(PanelVec2Input(
+					"Cutoff (inner, outer)",
+					[entity = p_entity]() mutable -> LibMath::Vector2& { return //cast from (float[2])[0] to &Vec2
+						*(Vector2*)&(entity.Get<LightComponent>()->m_spot.m_cutoff.m_inner); }
+				))
+			}));
+
+		auto component = PanelComponent("Light",
+			PanelComponent::Items({
+					std::make_shared<PanelSelectionDisplay>(PanelSelectionDisplay(
+						"Type", enumNames, display, 
+						[p_entity]() -> int { return static_cast<int>( //copy enum to int
+							p_entity.Get<LightComponent>()->m_type); },
+						[entity = p_entity] (const int& p_val) mutable { //set enum
+							entity.Get<LightComponent>()->m_type = static_cast<ELightType>(p_val); })
+				) }));
+
+		return PanelItems::PanelComponent(std::move(component));
+	}
 
 	//InspectorComponentManager::PanelableComponent InspectorComponentManager::AddComponentTag(const SvCore::ECS::EntityHandle& p_entity)
 	//{

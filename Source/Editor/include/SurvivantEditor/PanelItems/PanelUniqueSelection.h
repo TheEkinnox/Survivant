@@ -1,17 +1,15 @@
 //PanelUniqueSelection.h
 #pragma once
 
-#include "SurvivantEditor/Interfaces/IPanelable.h"
+#include "SurvivantEditor/PanelItems/PanelInputBase.h"
 
 #include <functional>
 
 namespace SvEditor::PanelItems
 {
-	class PanelUniqueSelection : public Interfaces::IPanelable
+	class PanelUniqueSelection : public PanelInputBase<int>
 	{
 	public:
-		using Callback = std::function<void(int)>;
-
 		/// <summary>
 		/// 
 		/// </summary>
@@ -20,7 +18,19 @@ namespace SvEditor::PanelItems
 		PanelUniqueSelection(
 			const std::string& p_name,
 			const std::vector<std::string>& p_selectable,
+			int& p_currentSelection,
+			const Callback& p_callback = Callback());
+		PanelUniqueSelection(
+			const std::string& p_name,
+			const std::vector<std::string>& p_selectable,
+			const GetRefFunc& p_getRef,
+			const Callback& p_callback = Callback());
+		PanelUniqueSelection(
+			const std::string& p_name,
+			const std::vector<std::string>& p_selectable,
+			const GetCopyFunc& p_getCopy,
 			const Callback& p_callback);
+
 		~PanelUniqueSelection() = default;
 
 		virtual void DisplayAndUpdatePanel() override;
@@ -29,7 +39,5 @@ namespace SvEditor::PanelItems
 		std::string		m_name;
 		std::string		m_items;
 		int				m_count;
-		int				m_curentSelection;
-		Callback		m_callback;
 	};
 }

@@ -9,26 +9,40 @@
 namespace SvEditor::PanelItems
 {
 	PanelSelectionDisplay::PanelSelectionDisplay(
-		const std::string& p_name, 
-		const std::vector<std::string>& p_selectable, 
-		const std::vector<SelectedDisplay>& p_selectedDisplay,
-		int p_defaultSelection) :
-		m_selection(p_name, p_selectable, [this](int p_index) { SetSelection(p_index); }),
+		const std::string& p_name, const std::vector<std::string>& p_selectionNames, 
+		const std::vector<SelectedDisplay>& p_selectedDisplay, int& p_currentSelection, 
+		const Callback& p_callback) :
+		PanelSelectionDisplay(
+			p_name, p_selectionNames,
+			p_selectedDisplay, 
+			GetRefFunc([p_currentSelection]() mutable -> int& { return p_currentSelection; }),
+			p_callback)
+	{}
+
+	PanelSelectionDisplay::PanelSelectionDisplay(
+		const std::string& p_name, const std::vector<std::string>& p_selectionNames, 
+		const std::vector<SelectedDisplay>& p_selectedDisplay, const GetRefFunc& p_getRef, 
+		const Callback& p_callback) : 
+		PanelInputBase(p_getRef),
+		m_selection(p_name, p_selectionNames, p_getRef, p_callback),
+		m_selectedDisplay(p_selectedDisplay)
+	{}
+
+	PanelSelectionDisplay::PanelSelectionDisplay(
+		const std::string & p_name, const std::vector<std::string>&p_selectionNames,
+		const std::vector<SelectedDisplay>&p_selectedDisplay, const GetCopyFunc & p_getCopy, 
+		const Callback & p_callback) :
+		PanelInputBase(p_getCopy, Callback()),
+		m_selection(p_name, p_selectionNames, p_getCopy, p_callback),
 		m_selectedDisplay(p_selectedDisplay)
 	{
-		m_index = LibMath::clamp(p_defaultSelection, 0, static_cast<int>(m_selectedDisplay.size()));
 	}
 
 	void PanelSelectionDisplay::DisplayAndUpdatePanel()
 	{
 		m_selection.DisplayAndUpdatePanel();
 
-		for (auto& item : m_selectedDisplay[m_index])
+		for (auto& item : m_selectedDisplay[GetRef()])
 			item->DisplayAndUpdatePanel();
-	}
-
-	void PanelSelectionDisplay::SetSelection(int p_selection)
-	{
-		m_index = LibMath::clamp(p_selection, 0, static_cast<int>(m_selectedDisplay.size()));
 	}
 }

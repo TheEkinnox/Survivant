@@ -27,7 +27,7 @@ namespace SvEditor::PanelItems
         static int flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll;
 
         auto& value = GetRef();
-        if (ImGui::InputInt(m_name.c_str(), &value, 0, 0, flags))
+        if (ImGui::InputInt(m_name.c_str(), &value, 0, 0, flags) && m_callback)
             m_callback(value);
     }
 }

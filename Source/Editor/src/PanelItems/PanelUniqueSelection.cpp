@@ -10,11 +10,30 @@ namespace SvEditor::PanelItems
     PanelUniqueSelection::PanelUniqueSelection(
         const std::string& p_name,
         const std::vector<std::string>& p_selectable,
+        int& p_currentSelection,
         const Callback& p_callback) :
-        m_name(p_name),
-        m_callback(p_callback)
+        PanelUniqueSelection(p_name, p_selectable,
+            GetRefFunc([p_currentSelection]() mutable -> int& { return p_currentSelection; }), p_callback)
+    {}
+
+    PanelUniqueSelection::PanelUniqueSelection(
+        const std::string& p_name, const std::vector<std::string>& p_selectable, 
+        const GetRefFunc& p_getRef, const Callback& p_callback) : 
+        PanelInputBase(p_getRef, p_callback),
+        m_name(p_name)
     {
-        m_curentSelection = 0;
+        m_count = static_cast<int>(p_selectable.size());
+
+        for (auto& item : p_selectable)
+            m_items += (item + '\0');
+    }
+
+    PanelUniqueSelection::PanelUniqueSelection(
+        const std::string& p_name, const std::vector<std::string>& p_selectable,
+        const GetCopyFunc& p_getCopy, const Callback& p_callback) :
+        PanelInputBase(p_getCopy, p_callback),
+        m_name(p_name)
+    {
         m_count = static_cast<int>(p_selectable.size());
 
         for (auto& item : p_selectable)
@@ -23,7 +42,8 @@ namespace SvEditor::PanelItems
 
     void PanelUniqueSelection::DisplayAndUpdatePanel()
     {
-        if (ImGui::Combo(m_name.c_str(), &m_curentSelection, m_items.c_str()) && m_callback != nullptr)
-            m_callback(m_curentSelection);
+        auto& val = GetRef();
+        if (ImGui::Combo(m_name.c_str(), &val, m_items.c_str()) && m_callback)
+            m_callback(val);
     }
 }

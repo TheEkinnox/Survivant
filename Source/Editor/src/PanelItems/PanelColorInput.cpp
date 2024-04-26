@@ -29,14 +29,13 @@ namespace SvEditor::PanelItems
     void PanelColorInput::DisplayAndUpdatePanel()
     {
         //ImGuiColorEditFlags_
-
         auto& value = GetRef();
 
         ImGui::Text(m_name.c_str());
         ImGui::SameLine();
 
         ImGui::PushID(m_name.c_str());
-        if (ImGui::ColorEdit4("##", value.getArray()))
+        if (ImGui::ColorEdit4("##", value.getArray()) && m_callback)
             m_callback(value);
 
         ImGui::PopID();
