@@ -49,7 +49,7 @@ namespace SvEditor::Core
 		static PanelableComponent AddComponentHierarchy(const SvCore::ECS::EntityHandle& p_entity);
 		static PanelableComponent AddComponentTag(const SvCore::ECS::EntityHandle& p_entity);
 		static PanelableComponent AddComponentLight(const SvCore::ECS::EntityHandle& p_entity);
-		//static PanelableComponent AddComponentModel(const SvCore::ECS::EntityHandle& p_entity);
+		static PanelableComponent AddComponentModel(const SvCore::ECS::EntityHandle& p_entity);
 		//static PanelableComponent AddComponentRotator(const SvCore::ECS::EntityHandle& p_entity);
 		//static PanelableComponent AddComponentTemporary(const SvCore::ECS::EntityHandle& p_entity);
 		//static PanelableComponent AddComponentUserInput(const SvCore::ECS::EntityHandle& p_entity);

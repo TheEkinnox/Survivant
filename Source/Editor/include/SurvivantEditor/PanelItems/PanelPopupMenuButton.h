@@ -15,7 +15,9 @@ namespace SvEditor::PanelItems
 	class PanelPopupMenuButton : public IPanelable
 	{
 	public:
-		PanelPopupMenuButton(const std::string& p_name) : m_name(p_name) {}
+		using Callback = std::function<void()>;
+
+		PanelPopupMenuButton(const std::string& p_name, const Callback& p_callback);
 		~PanelPopupMenuButton() = default;
 		PanelPopupMenuButton(const PanelPopupMenuButton& p_other);
 		PanelPopupMenuButton(PanelPopupMenuButton&& p_other) noexcept;
@@ -32,5 +34,6 @@ namespace SvEditor::PanelItems
 
 	private:
 		std::string		m_name;
+		Callback		m_callback;
 	};
 }

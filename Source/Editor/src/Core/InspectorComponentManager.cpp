@@ -8,11 +8,13 @@
 #include "SurvivantRendering/Components/LightComponent.h"
 #include "SurvivantRendering/Components/ModelComponent.h"
 
+#include "SurvivantEditor/PanelItems/PanelButton.h"
 #include "SurvivantEditor/PanelItems/PanelColorInput.h"
 #include "SurvivantEditor/PanelItems/PanelComponent.h"
 #include "SurvivantEditor/PanelItems/PanelIntInput.h"
 #include "SurvivantEditor/PanelItems/PanelSelectionDisplay.h"
 #include "SurvivantEditor/PanelItems/PanelTextInput.h"
+#include "SurvivantEditor/PanelItems/PanelUInt32Input.h"
 #include "SurvivantEditor/PanelItems/PanelTransformInput.h"
 #include "SurvivantEditor/PanelItems/PanelVec2Input.h"
 #include "SurvivantEditor/PanelItems/PanelVec3Input.h"
@@ -71,7 +73,7 @@ namespace SvEditor::Core
 	{
 		static size_t Prio = 2;
 
-		auto component = PanelComponent("Transform",
+		auto component = PanelComponent(ComponentRegistry::GetInstance().GetRegisteredTypeName<Transform>(),
 			PanelComponent::Items({
 					std::make_shared<PanelTransformInput>(PanelTransformInput(
 						PanelTransformInput::GetRefFunc(
@@ -102,26 +104,39 @@ namespace SvEditor::Core
 	InspectorComponentManager::PanelableComponent InspectorComponentManager::AddComponentHierarchy(
 		const SvCore::ECS::EntityHandle& p_entity)
 	{
-		auto component = PanelComponent("Hierarchy",
+		auto component = PanelComponent(ComponentRegistry::GetInstance().GetRegisteredTypeName<HierarchyComponent>(),
 			PanelComponent::Items({
-					std::make_shared<PanelTextInput>(PanelTextInput(
+					std::make_shared<PanelUInt32Input>(PanelUInt32Input(
 						"Parent      ",
-						PanelTextInput::GetRefFunc([entity = p_entity]() mutable -> std::string& {
-							static std::string val;
+						PanelUInt32Input::GetCopyFunc([entity = p_entity]() mutable -> uint32_t { return
+							static_cast<uint32_t>(entity.Get<HierarchyComponent>()->GetParent().GetIndex()); }),
+						PanelUInt32Input::Callback([entity = p_entity](const uint32_t& /*p_index*/) mutable {
+							/*entity.GetScene().*/
+							/*entity.SetParent();*/ })
+					)),
+				//std::make_shared<PanelTextInput>(PanelTextInput(
+				//	"Parent        ",
+				//	PanelTextInput::GetRefFunc([entity = p_entity]() mutable -> std::string& {
+				//		static std::string val;
 
-							auto parent = entity.Get<HierarchyComponent>()->GetParent();
-							if (!parent || parent == NULL_ENTITY)
-								val = "None";
-							else
-								val = GetEntityName(EntityHandle(entity.GetScene(), parent));
-							return val; }),
-						PanelTextInput::Callback()
-						)),
-					std::make_shared<PanelIntInput>(PanelIntInput(
-						"Child Count ",
-						PanelIntInput::GetCopyFunc([entity = p_entity]() mutable -> int { return
-							static_cast<int>(entity.Get<HierarchyComponent>()->GetChildCount()); }),
-						PanelIntInput::Callback()
+				//		auto parent = entity.Get<HierarchyComponent>()->GetParent();
+				//		if (!parent || parent == NULL_ENTITY)
+				//			val = "None";
+				//		else
+				//			val = GetEntityName(EntityHandle(entity.GetScene(), parent));
+				//		return val; }),
+				//	PanelTextInput::Callback()
+				//	)),
+				std::make_shared<PanelUInt32Input>(PanelUInt32Input(
+					"Child Count ",
+					PanelIntInput::GetCopyFunc([entity = p_entity]() mutable -> uint32_t { return
+						static_cast<uint32_t>(entity.Get<HierarchyComponent>()->GetChildCount()); }),
+					PanelIntInput::Callback()
+				)),
+				std::make_shared<PanelButton>(PanelButton(
+					"Remove Parent",
+					PanelButton::OnButtonPressEvent::EventDelegate([entity = p_entity]() mutable {
+						entity.SetParent(EntityHandle()); })
 					))
 				}));
 
@@ -133,7 +148,7 @@ namespace SvEditor::Core
 	{
 		static size_t Prio = 3;
 
-		auto component = PanelComponent("Tag",
+		auto component = PanelComponent(ComponentRegistry::GetInstance().GetRegisteredTypeName<TagComponent>(),
 			PanelComponent::Items({
 					std::make_shared<PanelTextInput>(PanelTextInput(
 						"Name ",
@@ -228,7 +243,7 @@ namespace SvEditor::Core
 				))
 			}));
 
-		auto component = PanelComponent("Light",
+		auto component = PanelComponent(ComponentRegistry::GetInstance().GetRegisteredTypeName<LightComponent>(),
 			PanelComponent::Items({
 					std::make_shared<PanelSelectionDisplay>(PanelSelectionDisplay(
 						"Type ", enumNames, display, 
@@ -240,6 +255,22 @@ namespace SvEditor::Core
 
 		return component;
 	}
+
+	//InspectorComponentManager::PanelableComponent InspectorComponentManager::AddComponentModel(
+	//	const SvCore::ECS::EntityHandle& /*p_entity*/)
+	//{
+	//	//auto component = PanelComponent("Light",
+	//	//	PanelComponent::Items({
+	//	//			std::make_shared<PanelSelectionDisplay>(PanelSelectionDisplay(
+	//	//				"Type ", enumNames, display,
+	//	//				[p_entity]() -> int { return static_cast<int>( //copy enum to int
+	//	//					p_entity.Get<LightComponent>()->m_type); },
+	//	//				[entity = p_entity](const int& p_val) mutable { //set enum
+	//	//					entity.Get<LightComponent>()->m_type = static_cast<ELightType>(p_val); })
+	//	//		) }));
+
+	//	//return component;
+	//}
 
 	std::string InspectorComponentManager::GetEntityName(const SvCore::ECS::EntityHandle& p_entity)
 	{

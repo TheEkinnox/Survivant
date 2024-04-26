@@ -7,6 +7,11 @@
 
 namespace SvEditor::PanelItems
 {
+	PanelPopupMenuButton::PanelPopupMenuButton(const std::string& p_name, const Callback& p_callback) :
+		m_name(p_name),
+		m_callback(p_callback)
+	{}
+
 	PanelPopupMenuButton::PanelPopupMenuButton(const PanelPopupMenuButton& p_other)
 	{
 		*this = p_other;
@@ -48,7 +53,12 @@ namespace SvEditor::PanelItems
 			return;
 
 		if (ImGui::SmallButton(m_name.c_str()))
+		{
 			ImGui::OpenPopup(ImGui::GetItemID());
+
+			if (m_callback)
+				m_callback();
+		}
 
 		if (ImGui::BeginPopupContextItem(nullptr, flags))
 		{
