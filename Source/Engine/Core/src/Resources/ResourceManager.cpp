@@ -46,7 +46,7 @@ namespace SvCore::Resources
         return instance;
     }
 
-    GenericResourceRef ResourceManager::Create(const std::string& p_type, const std::string& p_path, const bool p_shouldLoad)
+    GenericResourceRef ResourceManager::Create(const std::string& p_type, const std::string& p_path)
     {
         if (p_type.empty() || p_path.empty())
             return {};
@@ -70,7 +70,7 @@ namespace SvCore::Resources
         if (!resource)
             resource = ResourceRegistry::GetInstance().Create(p_type);
 
-        if (p_shouldLoad && !LoadResource(resource, p_path))
+        if (!LoadResource(resource, p_path))
         {
             m_resources.erase(it);
             return {};
@@ -100,7 +100,7 @@ namespace SvCore::Resources
     GenericResourceRef ResourceManager::GetOrCreate(const std::string& p_type, const std::string& p_path)
     {
         GenericResourceRef resource = Get(p_type, p_path);
-        return resource ? resource : Create(p_type, p_path, true);
+        return resource ? resource : Create(p_type, p_path);
     }
 
     std::vector<char> ResourceManager::ReadFile(const std::string& p_path) const

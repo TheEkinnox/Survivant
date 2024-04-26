@@ -75,10 +75,9 @@ namespace SvCore::Resources
          * \brief Tries to create an empty resource of the given type
          * \param p_type The resource's type
          * \param p_path The resource's path
-         * \param p_shouldLoad Whether the resource should be loaded on creation
          * \return A pointer to the created resource on success, nullptr otherwise
          */
-        GenericResourceRef Create(const std::string& p_type, const std::string& p_path, bool p_shouldLoad = true);
+        GenericResourceRef Create(const std::string& p_type, const std::string& p_path);
 
         /**
          * \brief Tries to find the resource with the given path.
