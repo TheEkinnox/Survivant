@@ -64,6 +64,12 @@ namespace SvCore::Utility
         TypeInfo& RegisterType(const std::string& p_name, const TypeInfo& p_info);
 
         /**
+         * \brief Gets all the registered type names
+         * \return A list of all the registered type names
+         */
+        std::vector<std::string> GetRegisteredNames() const;
+
+        /**
          * \brief Checks whether the given type has been registered or not
          * \param p_name The searched type name
          * \return True if the given type has been registered. False otherwise

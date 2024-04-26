@@ -2,6 +2,9 @@
 #include "SurvivantCore/Debug/Assertion.h"
 #include "SurvivantCore/Utility/TypeRegistry.h"
 
+#include <ranges>
+#include <type_traits>
+
 namespace SvCore::Utility
 {
     template <class TypeInfo>
@@ -23,6 +26,13 @@ namespace SvCore::Utility
         m_typeNames[id]   = p_name;
         m_typeIds[p_name] = id;
         return (m_typeInfos[id] = p_info);
+    }
+
+    template <class TypeInfo>
+    std::vector<std::string> TypeRegistry<TypeInfo>::GetRegisteredNames() const
+    {
+        const auto& view = m_typeNames | std::ranges::views::values;
+        return { view.begin(), view.end() };
     }
 
     template <class TypeInfo>
