@@ -103,6 +103,26 @@ namespace SvCore::Resources
         return resource ? resource : Create(p_type, p_path);
     }
 
+    std::vector<GenericResourceRef> ResourceManager::GetAll(const std::string& p_type) const
+    {
+        std::vector<GenericResourceRef> resources;
+
+        for (const auto& resource : m_resources | std::ranges::views::values)
+        {
+            if (!resource)
+                continue;
+
+            const GenericResourceRef* genericResource = dynamic_cast<GenericResourceRef*>(resource.get());
+
+            if (genericResource && genericResource->GetType() == p_type)
+                resources.push_back(*genericResource);
+            else if (*resource && (*resource)->GetTypeName() == p_type)
+                resources.emplace_back(*resource, p_type);
+        }
+
+        return resources;
+    }
+
     std::vector<char> ResourceManager::ReadFile(const std::string& p_path) const
     {
         if (p_path.empty())

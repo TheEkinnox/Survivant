@@ -65,4 +65,21 @@ namespace SvCore::Resources
         ResourceRef<T> resource = Get<T>(p_path);
         return resource ? resource : Load<T>(p_path);
     }
+
+    template <typename T>
+    std::vector<ResourceRef<T>> ResourceManager::GetAll() const
+    {
+        std::vector<ResourceRef<T>> resources;
+
+        for (const auto& resource : m_resources | std::ranges::views::values)
+        {
+            if (!resource)
+                continue;
+
+            if (ResourceRef<T> castResource = *resource)
+                resources.push_back(castResource);
+        }
+
+        return resources;
+    }
 }

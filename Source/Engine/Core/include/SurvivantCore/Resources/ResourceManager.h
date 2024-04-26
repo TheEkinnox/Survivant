@@ -114,6 +114,21 @@ namespace SvCore::Resources
         GenericResourceRef GetOrCreate(const std::string& p_type, const std::string& p_path);
 
         /**
+         * \brief Gets all the loaded resources of the given type
+         * \tparam T The target resource type
+         * \return The list of all loaded resources of the given type
+         */
+        template <typename T>
+        std::vector<ResourceRef<T>> GetAll() const;
+
+        /**
+         * \brief Gets all the loaded resources of the given type
+         * \param p_type The target resource type
+         * \return The list of all loaded resources of the given type
+         */
+        std::vector<GenericResourceRef> GetAll(const std::string& p_type) const;
+
+        /**
          * \brief Reads the content of the resource at the given path
          * \param p_path The path of the resource file to read
          * \return The resource's file content
