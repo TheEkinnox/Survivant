@@ -63,7 +63,7 @@ namespace SvCore::Utility
          * \brief Resets the timer with the given time scale
          * \param p_timeScale The timer's new time scale
          */
-        void Reset(float p_timeScale);
+        void Reset(float p_timeScale = 1.f);
 
         /**
          * \brief Gets the scaled time since the creation of this timer
