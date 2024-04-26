@@ -8,10 +8,12 @@
 #include "SurvivantRendering/Components/LightComponent.h"
 #include "SurvivantRendering/Components/ModelComponent.h"
 
-#include "SurvivantEditor/PanelItems/PanelComponent.h"
-#include "SurvivantEditor/PanelItems/PanelTransformInput.h"
-#include "SurvivantEditor/PanelItems/PanelSelectionDisplay.h"
 #include "SurvivantEditor/PanelItems/PanelColorInput.h"
+#include "SurvivantEditor/PanelItems/PanelComponent.h"
+#include "SurvivantEditor/PanelItems/PanelIntInput.h"
+#include "SurvivantEditor/PanelItems/PanelSelectionDisplay.h"
+#include "SurvivantEditor/PanelItems/PanelTextInput.h"
+#include "SurvivantEditor/PanelItems/PanelTransformInput.h"
 #include "SurvivantEditor/PanelItems/PanelVec2Input.h"
 #include "SurvivantEditor/PanelItems/PanelVec3Input.h"
 
@@ -30,6 +32,8 @@ namespace SvEditor::Core
 	void InspectorComponentManager::Init()
 	{
 		AddComponentToPanelable<Transform>(&AddComponentTransform);
+		AddComponentToPanelable<HierarchyComponent>(&AddComponentHierarchy);
+		AddComponentToPanelable<TagComponent>(&AddComponentTag);
 		AddComponentToPanelable<LightComponent>(&AddComponentLight);
 	}
 
@@ -89,14 +93,57 @@ namespace SvEditor::Core
 							})*/	
 				)}));
 
-		return PanelItems::PanelComponent(std::move(component));
+		return component;
+	}
+
+	InspectorComponentManager::PanelableComponent InspectorComponentManager::AddComponentHierarchy(
+		const SvCore::ECS::EntityHandle& p_entity)
+	{
+		auto component = PanelComponent("Hierarchy",
+			PanelComponent::Items({
+					std::make_shared<PanelTextInput>(PanelTextInput(
+						"Parent",
+						PanelTextInput::GetRefFunc([entity = p_entity]() mutable -> std::string& {
+							static std::string val;
+
+							auto parent = entity.Get<HierarchyComponent>()->GetParent();
+							if (!parent)
+								val = "None";
+							else
+								val = GetEntityName(EntityHandle(entity.GetScene(), parent));
+							return val; }),
+						PanelTextInput::Callback()
+						)),
+					std::make_shared<PanelIntInput>(PanelIntInput(
+						"Number of Childreen",
+						PanelIntInput::GetCopyFunc([entity = p_entity]() mutable -> int { return
+							static_cast<int>(entity.Get<HierarchyComponent>()->GetChildCount()); }),
+						PanelIntInput::Callback()
+					))
+				}));
+
+		return component;
+	}
+
+	InspectorComponentManager::PanelableComponent InspectorComponentManager::AddComponentTag(
+		const SvCore::ECS::EntityHandle& p_entity)
+	{
+		auto component = PanelComponent("Tag",
+			PanelComponent::Items({
+					std::make_shared<PanelTextInput>(PanelTextInput(
+						"Name",
+						[entity = p_entity]() mutable -> std::string& { return 
+							entity.Get<TagComponent>()->m_tag; }
+					))
+				}));
+
+		return component;
 	}
 
 	InspectorComponentManager::PanelableComponent InspectorComponentManager::AddComponentLight(
 		const SvCore::ECS::EntityHandle& p_entity)
 	{
 		using namespace SvRendering::Core;
-
 
 		std::vector<std::string> enumNames;
 		for (int i = 0; i <= static_cast<int>(ELightType::SPOT); i++)
@@ -185,37 +232,16 @@ namespace SvEditor::Core
 							entity.Get<LightComponent>()->m_type = static_cast<ELightType>(p_val); })
 				) }));
 
-		return PanelItems::PanelComponent(std::move(component));
+		return component;
 	}
 
-	//InspectorComponentManager::PanelableComponent InspectorComponentManager::AddComponentTag(const SvCore::ECS::EntityHandle& p_entity)
-	//{
-	//	return PanelableComponent();
-	//}
+	std::string InspectorComponentManager::GetEntityName(const SvCore::ECS::EntityHandle& p_entity)
+	{
+		auto val = p_entity.Get<TagComponent>();
+		if (val)
+			return val->m_tag + ("(" + std::to_string(p_entity.GetEntity().GetIndex()) + ')');
 
-	//InspectorComponentManager::PanelableComponent InspectorComponentManager::AddComponentLight(const SvCore::ECS::EntityHandle& p_entity)
-	//{
-	//	return PanelableComponent();
-	//}
-
-	//InspectorComponentManager::PanelableComponent InspectorComponentManager::AddComponentModel(const SvCore::ECS::EntityHandle& p_entity)
-	//{
-	//	return PanelableComponent();
-	//}
-
-	//InspectorComponentManager::PanelableComponent InspectorComponentManager::AddComponentRotator(const SvCore::ECS::EntityHandle& p_entity)
-	//{
-	//	return PanelableComponent();
-	//}
-
-	//InspectorComponentManager::PanelableComponent InspectorComponentManager::AddComponentTemporary(const SvCore::ECS::EntityHandle& p_entity)
-	//{
-	//	return PanelableComponent();
-	//}
-
-	//InspectorComponentManager::PanelableComponent InspectorComponentManager::AddComponentUserInput(const SvCore::ECS::EntityHandle& p_entity)
-	//{
-	//	return PanelableComponent();
-	//}
+		return "(" + std::to_string(p_entity.GetEntity().GetIndex()) + ')';
+	}
 }
 

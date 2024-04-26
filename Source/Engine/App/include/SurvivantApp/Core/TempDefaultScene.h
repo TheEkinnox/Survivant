@@ -6,6 +6,7 @@
 #include <SurvivantCore/ECS/Scene.h>
 #include <SurvivantCore/ECS/SceneView.h>
 #include <SurvivantCore/ECS/Components/Hierarchy.h>
+#include <SurvivantCore/ECS/Components/TagComponent.h>
 #include "SurvivantCore/Resources/ResourceRef.h"
 #include <SurvivantCore/Utility/FileSystem.h>
 #include <SurvivantCore/Utility/Timer.h>
@@ -436,6 +437,7 @@ namespace ToRemove
         camEntity.Make<Transform>(camPos, Quaternion::identity(), Vector3::one());
 
         camEntity.Make<UserInput>(CAM_MOVE_SPEED, CAM_ROTATION_SPEED);
+        camEntity.Make<TagComponent>(TagComponent{ .m_tag = "Camera" });
 
         ResourceRef<Model> cube("models/cube.obj");
         ASSERT(cube, "Failed to load model at path \"%s\"", "models/cube.obj");
