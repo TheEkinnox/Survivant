@@ -69,6 +69,8 @@ namespace SvEditor::Core
 	InspectorComponentManager::PanelableComponent InspectorComponentManager::AddComponentTransform(
 		const SvCore::ECS::EntityHandle& p_entity)
 	{
+		static size_t Prio = 2;
+
 		auto component = PanelComponent("Transform",
 			PanelComponent::Items({
 					std::make_shared<PanelTransformInput>(PanelTransformInput(
@@ -91,7 +93,8 @@ namespace SvEditor::Core
 								if (scl)
 									trans.setScale(*scl);
 							})*/	
-				)}));
+				)}),
+			Prio);
 
 		return component;
 	}
@@ -128,6 +131,8 @@ namespace SvEditor::Core
 	InspectorComponentManager::PanelableComponent InspectorComponentManager::AddComponentTag(
 		const SvCore::ECS::EntityHandle& p_entity)
 	{
+		static size_t Prio = 3;
+
 		auto component = PanelComponent("Tag",
 			PanelComponent::Items({
 					std::make_shared<PanelTextInput>(PanelTextInput(
@@ -135,7 +140,8 @@ namespace SvEditor::Core
 						[entity = p_entity]() mutable -> std::string& { return 
 							entity.Get<TagComponent>()->m_tag; }
 					))
-				}));
+				}),
+			Prio);
 
 		return component;
 	}
