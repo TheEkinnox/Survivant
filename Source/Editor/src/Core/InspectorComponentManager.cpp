@@ -33,10 +33,14 @@ namespace SvEditor::Core
 {
 	void InspectorComponentManager::Init()
 	{
-		AddComponentToPanelable<Transform>(&AddComponentTransform);
-		AddComponentToPanelable<HierarchyComponent>(&AddComponentHierarchy);
-		AddComponentToPanelable<TagComponent>(&AddComponentTag);
-		AddComponentToPanelable<LightComponent>(&AddComponentLight);
+		ASSERT(AddComponentToPanelable<Transform>(&AddComponentTransform, "Transform"),
+			"Couldn't add ComponentToPanelable callback to type : Transform");
+		ASSERT(AddComponentToPanelable<HierarchyComponent>(&AddComponentHierarchy, "Hierarchy"),
+			"Couldn't add ComponentToPanelable callback to type : Hierarchy");
+		ASSERT(AddComponentToPanelable<TagComponent>(&AddComponentTag, "Tag"),
+			"Couldn't add ComponentToPanelable callback to type : Tag");
+		ASSERT(AddComponentToPanelable<LightComponent>(&AddComponentLight, "Light"),
+			"Couldn't add ComponentToPanelable callback to type : Light");
 	}
 
 	InspectorComponentManager::PanelableEntity InspectorComponentManager::GetPanelableEntity(
@@ -110,9 +114,8 @@ namespace SvEditor::Core
 						"Parent      ",
 						PanelUInt32Input::GetCopyFunc([entity = p_entity]() mutable -> uint32_t { return
 							static_cast<uint32_t>(entity.Get<HierarchyComponent>()->GetParent().GetIndex()); }),
-						PanelUInt32Input::Callback([entity = p_entity](const uint32_t& /*p_index*/) mutable {
-							/*entity.GetScene().*/
-							/*entity.SetParent();*/ })
+						PanelUInt32Input::Callback([entity = p_entity](const uint32_t& p_index) mutable {
+							entity.SetParent(entity.GetScene()->Find(static_cast<Entity::Index>(p_index)));  })
 					)),
 				//std::make_shared<PanelTextInput>(PanelTextInput(
 				//	"Parent        ",

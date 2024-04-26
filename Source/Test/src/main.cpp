@@ -685,7 +685,7 @@
 //
 //    //while (!window.ShouldClose())
 //    //{
-//    //    timer.tick();
+//    //    timer.Tick();
 //    //    window.StartRender();
 //
 //    //    UpdateTemporaries(temporariesView, timer.getDeltaTime());

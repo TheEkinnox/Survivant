@@ -70,8 +70,9 @@ namespace SvCore::ECS
             return;
         }
 
-        hierarchy->SetParent(p_parent);
-        Set<HierarchyComponent>(*hierarchy);
+        auto tmp = *hierarchy;
+        tmp.SetParent(p_parent);
+        Set<HierarchyComponent>(tmp);
     }
 
     EntityHandle EntityHandle::GetNextSibling() const

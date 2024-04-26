@@ -101,7 +101,7 @@ namespace SvCore::Utility
         void SetTimeScale(float p_timeScale);
 
         /**
-         * \brief Gets the number of time the "tick" function has been called
+         * \brief Gets the number of time the "Tick" function has been called
          * \return The elapsed number of frames since the timer's creation
          */
         uint64_t GetFrameCount() const;

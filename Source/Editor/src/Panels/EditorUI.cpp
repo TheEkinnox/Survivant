@@ -117,8 +117,9 @@ namespace SvEditor::Core
         ScenePanel::AddClickSceneListenner(
             [p_world](const LibMath::Vector2& p_uv)
             { 
+                auto scene = p_world.lock()->CurrentScene().get();
                 auto entity = p_world.lock()->
-                    m_renderingContext->GetEntityIdValue(p_uv);
+                    m_renderingContext->GetEntityIdValue(p_uv, scene);
 
                 SV_EVENT_MANAGER().Invoke<EditorUI::DebugEvent>(SvCore::Utility::FormatString("ID = %d", entity.GetIndex()).c_str());
 

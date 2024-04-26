@@ -73,7 +73,6 @@ namespace SvEditor::Core
 		{
 			m_editorEngine.Update();
 			m_window->Update();
-
 			SvApp::InputManager::GetInstance().Update();
 
 			if (!m_gameInstance.expired() && !m_gameIsPaused)

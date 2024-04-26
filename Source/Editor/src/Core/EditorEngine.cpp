@@ -14,7 +14,7 @@ namespace SvEditor::Core
 {
 	void EditorEngine::Update()
 	{
-		m_time.tick();
+		m_time.Tick();
 
 		m_editorWorld->m_renderingContext->UpdateCameraInput();
 
@@ -374,6 +374,6 @@ namespace SvEditor::Core
 
 	float EditorEngine::GetDeltaTime()
 	{
-		return m_time.getDeltaTime();
+		return m_time.GetDeltaTime();
 	}
 }

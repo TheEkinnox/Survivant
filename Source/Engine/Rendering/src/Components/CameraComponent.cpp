@@ -150,8 +150,8 @@ namespace SvRendering::Components
 
     void CameraComponent::Recalculate(const Matrix4& p_view)
     {
-        if (!m_isDirty)
-            return;
+        /*if (!m_isDirty)
+            return;*/
 
         if (m_projectionType == EProjectionType::PERSPECTIVE)
         {

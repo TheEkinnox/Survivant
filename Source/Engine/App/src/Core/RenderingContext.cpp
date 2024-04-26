@@ -51,7 +51,7 @@ namespace SvApp::Core
         return static_cast<intptr_t>(dynamic_cast<OpenGLTexture&>(*m_frameTextures[0]).GetId());
     }
 
-    SvCore::ECS::Entity RenderingContext::GetEntityIdValue(const Vec2& p_uv)
+    SvCore::ECS::Entity RenderingContext::GetEntityIdValue(const Vec2& p_uv, Scene* p_scene)
     {
         ASSERT(!m_frameTextures.empty(), "World has no textures");
 
@@ -75,8 +75,7 @@ namespace SvApp::Core
 
         idBuff->Unbind();
 
-        auto id = ToRemove::TextureValueToEntity(val);
-        return Entity(id);
+        return ToRemove::TextureValueToEntity(val, p_scene);
     }
 
     void RenderingContext::GameRender(Scene& p_scene)
@@ -88,7 +87,7 @@ namespace SvApp::Core
             return;
 
         IRenderAPI::GetCurrent().Clear(true, true, true);
-        DrawMainCameraScene(p_scene, *(camInfo.first), *camInfo.second);
+        DrawMainCameraScene(p_scene, *camInfo.first, *camInfo.second);
     }
 
     void RenderingContext::SceneRender(Scene& p_scene)

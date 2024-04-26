@@ -41,7 +41,10 @@ namespace SvApp::Core
         if (m_hasEntity)
             return;
 
-        //m_union.m_camInfo.m_cam;
+        m_union.m_camInfo.m_cam;
+        if (!(m_moveInput.m_x || m_moveInput.m_y || m_rotateInput.m_x || m_rotateInput.m_y))
+            return;
+
         m_union.m_camInfo.m_trans = MoveTransformInput(
             m_union.m_camInfo.m_trans, m_moveInput, m_rotateInput, SV_DELTA_TIME());
     }

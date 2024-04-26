@@ -24,7 +24,8 @@ namespace SvEditor::Core
 
 		template <class Component>
 		static bool AddComponentToPanelable(
-			PanelableComponent(*p_toPanelable)(const SvCore::ECS::EntityHandle& p_entity));
+			PanelableComponent(*p_toPanelable)(const SvCore::ECS::EntityHandle& p_entity), 
+			const std::string& p_name = std::string());
 
 		static PanelableEntity GetPanelableEntity(const SvCore::ECS::EntityHandle& p_entity);
 
@@ -64,12 +65,13 @@ namespace SvEditor::Core
 
 	template<class Component>
 	inline bool SvEditor::Core::InspectorComponentManager::AddComponentToPanelable(
-		PanelableComponent(*p_toPanelable)(const SvCore::ECS::EntityHandle& p_entity))
+		PanelableComponent(*p_toPanelable)(const SvCore::ECS::EntityHandle& p_entity),
+		const std::string& p_name)
 	{
 		using namespace SvCore::ECS;
 
 		auto& registry = ComponentRegistry::GetInstance();
-		registry.RegisterType<Component>(typeid(Component).name());
+		registry.RegisterType<Component>(p_name.empty() ? typeid(Component).name() : p_name);
 
 		auto func = [p_toPanelable](const void* p_payload) {
 				return p_toPanelable(*static_cast<const EntityHandle*>(p_payload));

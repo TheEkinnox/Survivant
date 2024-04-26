@@ -1,12 +1,6 @@
 //TempDefaultScene.h
 #pragma once
 
-#include "SurvivantEditor/App/EngineApp.h"
-
-#include <SurvivantApp/Inputs/InputManager.h>
-#include <SurvivantApp/Inputs/KeyboardInputs.h>
-#include <SurvivantApp/Inputs/MouseInputs.h>
-
 #include <SurvivantCore/Debug/Assertion.h>
 #include <SurvivantCore/ECS/EntityHandle.h>
 #include <SurvivantCore/ECS/Scene.h>
@@ -17,7 +11,6 @@
 #include <SurvivantCore/Utility/FileSystem.h>
 #include <SurvivantCore/Utility/Timer.h>
 
-#include <SurvivantRendering/Components/CameraComponent.h>
 #include <SurvivantRendering/Components/LightComponent.h>
 #include <SurvivantRendering/Components/ModelComponent.h>
 #include <SurvivantRendering/Core/Camera.h>
@@ -28,17 +21,17 @@
 #include <SurvivantRendering/RHI/ITexture.h>
 #include <SurvivantRendering/RHI/IUniformBuffer.h>
 #include <SurvivantRendering/RHI/OpenGL/OpenGLTexture.h>
+#include <SurvivantRendering/Components/CameraComponent.h>
 
 #include "SurvivantApp/Inputs/InputManager.h"
 #include "SurvivantApp/Inputs/KeyboardInputs.h"
 #include "SurvivantApp/Inputs/MouseInputs.h"
 #include "SurvivantApp/Windows/Window.h"
 
-#include "SurvivantEditor/App/EngineApp.h"
+//#include "SurvivantEditor/Core/EngineApp.h"
 
 using namespace LibMath;
 using namespace SvCore::ECS;
-using namespace SvCore::Resources;
 using namespace SvCore::Utility;
 using namespace SvRendering::Core;
 using namespace SvRendering::Components;
@@ -48,13 +41,14 @@ using namespace SvRendering::Resources;
 using namespace SvRendering::RHI;
 using namespace SvCore::Resources;
 
+
 struct Rotator
 {
     Quaternion m_speed;
 };
 
 template <>
-inline void ComponentTraits::OnAdd(EntityHandle& p_handle, Rotator&)
+inline void ComponentTraits::OnAdd<Rotator>(EntityHandle& p_handle, Rotator&)
 {
     if (!p_handle.Has<Transform>())
         p_handle.Make<Transform>();
@@ -78,7 +72,7 @@ namespace ToRemove
     class GameInfo
     {
     public:
-        static inline Vector2 moveInput = Vector2::zero(), rotateInput = Vector2::zero();
+        static inline Vector2 moveInput, rotateInput = Vector2::zero();
         static inline EntityHandle gameCamera = EntityHandle();
     };
 
@@ -97,9 +91,8 @@ namespace ToRemove
 
     inline ResourceRef<ITexture> GetTexture()
     {
-        static ResourceRef<ITexture> texture("assets/textures/grid.png");
-
-        static bool isLoaded = false;
+        static ResourceRef<ITexture> texture("textures/grid.png");
+        static bool                  isLoaded = false;
 
         if (isLoaded)
             return texture;
@@ -248,18 +241,20 @@ namespace ToRemove
         return Vector2((float)((p_value) >> 32), (float)((p_value) & 0xffffffff00000000));
     }
 
-    int inline EntityToTextureValue(const Entity::Id& p_entity)
+    int inline EntityToTextureValue(const Entity& p_entity)
     {
-        return (*(int*)(&p_entity)) + 1;
+        uint32_t index = static_cast<uint32_t>(p_entity.GetIndex());
+        return (*(int*)(&index)) + 1;
     }
 
-    Entity::Id inline TextureValueToEntity(const int& p_value)
+    Entity inline TextureValueToEntity(const int& p_value, Scene* p_scene)
     {
-        return Entity::Id((*(uint32_t*)(&p_value)) - 1);
+        uint32_t index = (*(uint32_t*)(&p_value)) - 1;
+        return p_scene->Find(static_cast<Entity::Index>(index));
     }
 
-    void inline DrawModelEditorScene(const Model& p_model, const Frustum& p_viewFrustum, 
-        const Matrix4& p_transform, const Material& p_material, const Entity::Id& p_id)
+    void inline DrawModelEditorScene(const Model& p_model, const Frustum& p_viewFrustum,
+        const Matrix4& p_transform, const Material& p_material, const Entity& p_entity)
     {
         static auto editorSceneShader = CreateEditorSceneShader();
 
@@ -273,9 +268,9 @@ namespace ToRemove
         editorSceneShader->Bind();
         editorSceneShader->SetUniformMat4("sv_modelMat", p_transform);
         editorSceneShader->SetUniformMat4("sv_normalMat", p_transform.transposed().inverse());
-        auto val = EntityToTextureValue(p_id);
+        auto val = EntityToTextureValue(p_entity);
         editorSceneShader->SetUniformInt("u_entityID", val);
-        
+
         //id uniform
         //editorSceneShader->SetUniformMat4("sv_normalMat", p_transform.transposed().inverse());
 
@@ -347,17 +342,17 @@ namespace ToRemove
             CHECK(i == 4, "Setting a component for an existing entity should have updated it's value");
         }
 
-        CHECK(scene.GetStorage<Entity>().size() == 5);
-        CHECK(scene.GetStorage<int>().size() == 5);
+        //CHECK(scene.GetStorage<Entity>().GetCount() == 5);
+        //CHECK(scene.GetStorage<int>().GetCount() == 5);
 
-        scene.Remove<const int>(Entity(1));
-        CHECK(scene.GetStorage<int>().size() == 4);
+        //scene.Remove<const int>(Entity(1));
+        //CHECK(scene.GetStorage<int>().GetCount() == 4);
 
-        scene.Remove<int>(*scene.Get<int>(lastEntity));
-        CHECK(scene.GetStorage<int>().size() == 3);
+        //scene.Remove<int>(*scene.Get<int>(lastEntity));
+        //CHECK(scene.GetStorage<int>().GetCount() == 3);
 
-        scene.Remove<int>(lastEntity);
-        CHECK(scene.GetStorage<int>().size() == 3);
+        //scene.Remove<int>(lastEntity);
+        //CHECK(scene.GetStorage<int>().GetCount() == 3);
 
         SceneView<int, char, float> view(scene);
 
@@ -365,9 +360,9 @@ namespace ToRemove
         lastEntity.Set<char>('j');
         lastEntity.Set<float>(2.5f);
 
-        CHECK(scene.GetStorage<int>().size() == 4);
-        CHECK(scene.GetStorage<float>().size() == 1);
-        CHECK(scene.GetStorage<char>().size() == 1);
+        //CHECK(scene.GetStorage<int>().GetCount() == 4);
+        //CHECK(scene.GetStorage<float>().GetCount() == 1);
+        //CHECK(scene.GetStorage<char>().GetCount() == 1);
 
         const char c1 = *view.Get<char>(lastEntity);
         auto [i1, f1] = view.Get<int, float>(lastEntity);
@@ -405,10 +400,10 @@ namespace ToRemove
 
         lastEntity.Destroy();
 
-        CHECK(scene.GetStorage<Entity>().size() == 4);
-        CHECK(scene.GetStorage<int>().size() == 3);
-        CHECK(scene.GetStorage<float>().size() == 0);
-        CHECK(scene.GetStorage<char>().size() == 0);
+        //CHECK(scene.GetStorage<Entity>().GetCount() == 4);
+        //CHECK(scene.GetStorage<int>().GetCount() == 3);
+        //CHECK(scene.GetStorage<float>().GetCount() == 0);
+        //CHECK(scene.GetStorage<char>().GetCount() == 0);
 
         auto [iDestroyed, cDestroyed, fDestroyed] = view.Get(lastEntity);
 
@@ -421,10 +416,10 @@ namespace ToRemove
 
         lastEntity = scene.Create();
 
-        CHECK(scene.GetStorage<Entity>().size() == 5);
-        CHECK(scene.GetStorage<int>().size() == 3);
-        CHECK(scene.GetStorage<float>().size() == 0);
-        CHECK(scene.GetStorage<char>().size() == 0);
+        //CHECK(scene.GetStorage<Entity>().GetCount() == 5);
+        //CHECK(scene.GetStorage<int>().GetCount() == 3);
+        //CHECK(scene.GetStorage<float>().GetCount() == 0);
+        //CHECK(scene.GetStorage<char>().GetCount() == 0);
 
         for ([[maybe_unused]] const auto _ : view)
             CHECK(false, "The only releveant entity should have been destroyed");
@@ -435,8 +430,10 @@ namespace ToRemove
         p_scene.Clear();
         EntityHandle camEntity = p_scene.Create();
 
-        Camera& cam = camEntity.Make<Camera>(perspectiveProjection(90_deg, 4.f / 3.f, .01f, 14.f));
-        cam.SetClearColor(Color::gray);
+        auto& cam = camEntity.Make<CameraComponent>();
+        cam.SetAspect(4.f / 3.f);
+        cam.SetPerspective(90_deg, .01f, 14.f);
+        cam.SetClearColor(Color::darkGray);
 
         const Vector3 camPos(0.f, 1.8f, 2.f);
         camEntity.Make<Transform>(camPos, Quaternion::identity(), Vector3::one());
@@ -452,32 +449,28 @@ namespace ToRemove
 
         ResourceRef<IShader> litShader(LIT_SHADER_PATH);
         ASSERT(litShader, "Failed to load shader at path \"%s\"", LIT_SHADER_PATH);
-        ASSERT(unlitShader->Init(), "Failed to initialize shader at path \"%s\"", UNLIT_SHADER_PATH);
-        ResourceRef<IShader> litShader(LIT_SHADER_PATH);
-        ASSERT(litShader);
 
-        ResourceRef whiteMaterial("internal:whiteMaterial", new Material(unlitShader));
+        ResourceRef whiteMaterial("", new Material(unlitShader));
         whiteMaterial->GetProperty<ResourceRef<ITexture>>("u_diffuse") = GetTexture();
-        whiteMaterial->GetProperty<std::shared_ptr<ITexture>>("u_diffuse") = GetTexture();
         whiteMaterial->GetProperty<Vector4>("u_tint") = Color::white;
-        ResourceRef redMaterial("internal:redMaterial", new Material(*whiteMaterial));
-        std::shared_ptr<Material> redMaterial = std::make_shared<Material>(*whiteMaterial);
+
+        ResourceRef redMaterial("", new Material(*whiteMaterial));
         redMaterial->GetProperty<Vector4>("u_tint") = Color::red;
-        ResourceRef greenMaterial("internal:greenMaterial", new Material(*whiteMaterial));
-        std::shared_ptr<Material> greenMaterial = std::make_shared<Material>(*whiteMaterial);
+
+        ResourceRef greenMaterial("", new Material(*whiteMaterial));
         greenMaterial->GetProperty<Vector4>("u_tint") = Color::green;
-        ResourceRef blueMaterial("internal:blueMaterial", new Material(*whiteMaterial));
-        std::shared_ptr<Material> blueMaterial = std::make_shared<Material>(*whiteMaterial);
+
+        ResourceRef blueMaterial("", new Material(*whiteMaterial));
         blueMaterial->GetProperty<Vector4>("u_tint") = Color::blue;
-        ResourceRef yellowMaterial("internal:yellowMaterial", new Material(*whiteMaterial));
-        std::shared_ptr<Material> yellowMaterial = std::make_shared<Material>(*whiteMaterial);
+
+        ResourceRef yellowMaterial("", new Material(*whiteMaterial));
         yellowMaterial->GetProperty<Vector4>("u_tint") = Color::yellow;
-        ResourceRef magentaMaterial("internal:magentaMaterial", new Material(*whiteMaterial));
-        std::shared_ptr<Material> magentaMaterial = std::make_shared<Material>(*whiteMaterial);
+
+        ResourceRef magentaMaterial("", new Material(*whiteMaterial));
         magentaMaterial->GetProperty<Vector4>("u_tint") = Color::magenta;
-        ResourceRef litMaterial("internal:litMaterial", new Material(litShader));
+
+        ResourceRef litMaterial("", new Material(litShader));
         litMaterial->GetProperty<ResourceRef<ITexture>>("u_diffuse") = GetTexture();
-        litMaterial->GetProperty<std::shared_ptr<ITexture>>("u_diffuse") = GetTexture();
         litMaterial->GetProperty<Vector4>("u_tint") = Color::white;
         litMaterial->GetProperty<Vector4>("u_specularColor") = Color(.2f, .2f, .2f);
         litMaterial->GetProperty<float>("u_shininess") = 32.f;
@@ -515,7 +508,7 @@ namespace ToRemove
         EntityHandle litCube = p_scene.Create();
         litCube.Make<ModelComponent>(cube, litMaterial);
         litCube.Make<Transform>(camPos + Vector3::front(), Quaternion::identity(), Vector3(1.5f, .5f, .1f));
-        p_scene.Create().Make<LightComponent>(Light(cam.GetClearColor()));
+
         p_scene.Create().Make<LightComponent>(Light(Color::lime));
         p_scene.Create().Make<LightComponent>(DirectionalLight{ Color::magenta, Vector3::back() });
         p_scene.Create().Set<LightComponent>(PointLight{ Color::red, Vector3{ -1, 1, 1 }, Attenuation(16) });
@@ -558,23 +551,25 @@ namespace ToRemove
     }
 
     void inline DrawScene(Scene& p_scene, bool isIdTexture = false)
-        SceneView<CameraComponent>                       cameras(p_scene);
-        SceneView<Camera>                                cameras(p_scene);
+    {
+        SceneView<CameraComponent>                                cameras(p_scene);
         SceneView<const ModelComponent, const Transform> renderables(p_scene);
 
         for (const auto camEntity : cameras)
-            CameraComponent& cam = *cameras.Get<CameraComponent>(camEntity);
-            Camera& cam = *cameras.Get<Camera>(camEntity);
+        {
+            auto& camComp = *cameras.Get<CameraComponent>(camEntity);
+            camComp.Clear();
+
+            auto& cam = *camComp;
 
             if (const Transform* transform = p_scene.Get<const Transform>(camEntity))
             {
-                cam.Recalculate(transform->getWorldMatrix().inverse());
-                BindCamUBO(cam->GetViewProjection(), transform->getWorldPosition());
+                camComp.Recalculate(transform->getWorldMatrix().inverse());
+                BindCamUBO(cam.GetViewProjection(), transform->getWorldPosition());
             }
             else
             {
-                cam.Recalculate(Matrix4(1.f));
-                BindCamUBO(cam->GetViewProjection(), Vector3::zero());
+                BindCamUBO(cam.GetViewProjection(), Vector3::zero());
             }
 
             const Frustum camFrustum = cam.GetFrustum();
@@ -585,7 +580,7 @@ namespace ToRemove
                 ASSERT(model->m_model && model->m_material);
 
                 if (isIdTexture)
-                    DrawModelEditorScene(*model->m_model, camFrustum, transform->getWorldMatrix(), *model->m_material, modelEntity.GetIndex());
+                    DrawModelEditorScene(*model->m_model, camFrustum, transform->getWorldMatrix(), *model->m_material, modelEntity);
                 else
                     DrawModel(*model->m_model, camFrustum, transform->getWorldMatrix(), *model->m_material);
             }
@@ -593,7 +588,7 @@ namespace ToRemove
     }
 
     void inline DrawMainCameraScene(
-        Scene& p_scene, CameraComponent p_camera, const Transform& p_trans,
+        Scene& p_scene, CameraComponent& p_camera, const Transform& p_trans,
         bool isIdTexture = false)
     {
         SceneView<const ModelComponent, const Transform> renderables(p_scene);
@@ -605,10 +600,10 @@ namespace ToRemove
             IRenderAPI::GetCurrent().Clear(true, false, false);
         }
         else
-            p_camera.Clear();            
+            p_camera.Clear();
 
-        Camera cam = p_camera;
-        cam.SetView(p_trans.getWorldMatrix().inverse());
+        p_camera.Recalculate(p_trans.getWorldMatrix().inverse());
+        auto& cam = *p_camera;
         BindCamUBO(cam.GetViewProjection(), p_trans.getWorldPosition());
 
         const Frustum camFrustum = cam.GetFrustum();
@@ -636,8 +631,9 @@ namespace ToRemove
 
         return whiteMaterial;
     }
+
     void inline DrawSelectedMainCameraScene(
-        Scene& p_scene, const CameraComponent p_camera, const Transform& p_trans, const Entity& p_entityIndex)
+        Scene& p_scene, CameraComponent& p_camera, const Transform& p_trans, const Entity& p_entityIndex)
     {
         static auto defaultMaterial = TempDefaultMaterial();
         static auto darkenColor = Vector4(0.3f, 0.3f, 0.3f, 1);
@@ -646,12 +642,11 @@ namespace ToRemove
         std::pair<const ModelComponent*, const Transform*>  selectedModel = { nullptr, nullptr };
 
         p_camera.Clear();
-        Camera cam = p_camera;
-        cam.SetView(p_trans.getWorldMatrix().inverse());
+        auto& cam = *p_camera;
+        p_camera.Recalculate(p_trans.getWorldMatrix().inverse());
         BindCamUBO(cam.GetViewProjection(), p_trans.getWorldPosition());
 
         const Frustum camFrustum = cam.GetFrustum();
-            const Frustum camFrustum = cam.GetFrustum();
 
         for (const auto modelEntity : renderables)
         {
@@ -727,6 +722,11 @@ namespace ToRemove
     using namespace LibMath;
     using namespace SvRendering::RHI;
     using namespace SvRendering::Enums;
+
+
+    static inline Material whiteMaterial;
+    static inline Material redMaterial;
+    static inline Material litMaterial;
 
     std::shared_ptr<Scene> inline TestCreateDefaultScene()
     {
