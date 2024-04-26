@@ -24,7 +24,11 @@ namespace SvEditor::PanelItems
     {
         auto oldSelection = m_curentSelection;
 
-        if (ImGui::BeginCombo(m_name.c_str(), m_displayString.c_str()))
+        ImGui::Text(m_name.c_str());
+        ImGui::SameLine();
+
+        ImGui::PushID(m_name.c_str());
+        if (ImGui::BeginCombo("##", m_displayString.c_str()))
         {
             for (int i = 0; i < m_items.size(); i++)
             {
@@ -43,6 +47,7 @@ namespace SvEditor::PanelItems
             }
             ImGui::EndCombo();
         }
+        ImGui::PopID();
 
         if (oldSelection != m_curentSelection)
         {

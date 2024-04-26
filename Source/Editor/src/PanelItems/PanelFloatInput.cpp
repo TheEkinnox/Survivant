@@ -31,7 +31,13 @@ namespace SvEditor::PanelItems
         static int flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll;
 
         auto value = GetRef();
-        if (ImGui::InputFloat(m_name.c_str(), &value, 0, 0, "%.3f", flags) && m_callback)
+        ImGui::Text(m_name.c_str());
+        ImGui::SameLine();
+
+        ImGui::PushID(m_name.c_str());
+        if (ImGui::InputFloat("##", &value, 0, 0, "%.3f", flags) && m_callback)
             m_callback(value);
+
+        ImGui::PopID();
     }
 }

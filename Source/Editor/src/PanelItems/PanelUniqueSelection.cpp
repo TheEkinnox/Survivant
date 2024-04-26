@@ -43,7 +43,13 @@ namespace SvEditor::PanelItems
     void PanelUniqueSelection::DisplayAndUpdatePanel()
     {
         auto& val = GetRef();
-        if (ImGui::Combo(m_name.c_str(), &val, m_items.c_str()) && m_callback)
+        ImGui::Text(m_name.c_str());
+        ImGui::SameLine();
+
+        ImGui::PushID(m_name.c_str());
+        if (ImGui::Combo("##", &val, m_items.c_str()) && m_callback)
             m_callback(val);
+
+        ImGui::PopID();
     }
 }
