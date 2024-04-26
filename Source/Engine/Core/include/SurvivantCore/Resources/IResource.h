@@ -39,5 +39,8 @@ namespace SvCore::Resources
          * \return True on success. False otherwise.
          */
         virtual bool Init() = 0;
+
+    private:
+        friend auto operator<=>(const IResource&, const IResource&) = default;
     };
 }
