@@ -28,7 +28,7 @@ namespace SvScripting
                 if (!p_object)
                     return make_object_userdata(p_luaState, sol::nil);
 
-                return sol::make_object_userdata(p_luaState, *static_cast<T*>(p_object));
+                return sol::make_object_userdata(p_luaState, static_cast<T*>(p_object));
             },
             .FromLua = [](void* p_out, const sol::userdata& p_object)
             {
