@@ -84,14 +84,17 @@ namespace SvTest
 
         LuaContext& luaContext = LuaContext::GetInstance();
         luaContext.Init();
-        luaContext.Start();
 
+        Timer::GetInstance().Reset();
         MakeScene();
 
-        Timer& timer = Timer::GetInstance();
+        Timer&        timer = Timer::GetInstance();
+        InputManager& input = InputManager::GetInstance();
 
         while (!m_window->ShouldClose())
         {
+            input.Update();
+
             timer.Tick();
             m_window->Update();
 
@@ -208,9 +211,8 @@ namespace SvTest
 
     void TestApp::MakeScene()
     {
-        Timer::GetInstance().Reset();
         LuaContext& luaContext = LuaContext::GetInstance();
-        luaContext.Stop();
+        luaContext.Reload();
         m_scene.Clear();
 
         EntityHandle camEntity = m_scene.Create();
