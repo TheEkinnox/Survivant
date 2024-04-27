@@ -109,6 +109,14 @@ namespace SvCore::Resources
         virtual operator bool() const;
 
         /**
+         * \brief Checks whether the resource can be converted to the given type
+         * \tparam U The target resource type
+         * \return True if the resource can be cast to the given type. False otherwise
+         */
+        template <typename U>
+        bool CanCastTo() const;
+
+        /**
          * \brief Gets a pointer to the referenced resource
          * \return A pointer to the referenced resource
          */
@@ -251,6 +259,21 @@ namespace SvCore::Resources
          * \return True if the resource ref is set. False otherwise.
          */
         operator bool() const override;
+
+        /**
+         * \brief Checks whether the resource can be converted to the given type
+         * \tparam U The target resource type
+         * \return True if the resource can be cast to the given type. False otherwise
+         */
+        template <typename U>
+        bool CanCastTo() const;
+
+        /**
+         * \brief Checks whether the resource can be converted to the given type
+         * \param p_type The target resource type
+         * \return True if the resource can be cast to the given type. False otherwise
+         */
+        bool CanCastTo(const std::string& p_type) const;
 
         /**
          * \brief Gets the referenced resource's type

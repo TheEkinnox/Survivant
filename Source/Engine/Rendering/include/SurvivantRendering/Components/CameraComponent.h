@@ -81,7 +81,7 @@ namespace SvRendering::Components
         bool FromJson(const SvCore::Serialization::JsonValue& p_json);
 
         /**
-         * \brief Recalculates the camera's projection matrix
+         * \brief Recalculates the camera's view-projection matrix
          * \param p_view The camera's view matrix
          */
         void Recalculate(const LibMath::Matrix4& p_view);
@@ -281,6 +281,7 @@ namespace SvRendering::Components
 
     private:
         Core::Camera           m_camera;
+        LibMath::Matrix4       m_projection;
         Enums::EProjectionType m_projectionType;
 
         uint8_t         m_clearMask   = SV_CLEAR_COLOR_BIT | SV_CLEAR_DEPTH_BIT | SV_CLEAR_STENCIL_BIT;
@@ -297,5 +298,10 @@ namespace SvRendering::Components
 
         float m_aspect;
         bool  m_isDirty;
+
+        /**
+         * \brief Recalculates the camera's projection matrix
+         */
+        void BuildProjection();
     };
 }

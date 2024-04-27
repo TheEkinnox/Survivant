@@ -134,6 +134,16 @@ namespace SvCore::Resources
     }
 
     template <class T>
+    template <typename U>
+    bool ResourceRef<T>::CanCastTo() const
+    {
+        if constexpr (std::is_same_v<T, U> || std::is_base_of_v<U, T>)
+            return true;
+        else
+            return (void*)dynamic_cast<U*>(m_resource) == (void*)m_resource;
+    }
+
+    template <class T>
     T* ResourceRef<T>::Get() const
     {
         return m_resource;
@@ -247,6 +257,21 @@ namespace SvCore::Resources
     inline GenericResourceRef::operator bool() const
     {
         return ResourceRef::operator bool() && !m_type.empty();
+    }
+
+    template <typename T>
+    bool GenericResourceRef::CanCastTo() const
+    {
+        if (!m_resource)
+            return true;
+
+        const ResourceRegistry& resourceReg = ResourceRegistry::GetInstance();
+        return (resourceReg.Contains<T>() && resourceReg.GetRegisteredTypeName<T>() == m_type) || ResourceRef().CanCastTo<T>();
+    }
+
+    inline bool GenericResourceRef::CanCastTo(const std::string& p_type) const
+    {
+        return !m_resource || m_resource->GetTypeName() == p_type;
     }
 
     inline std::string GenericResourceRef::GetType() const

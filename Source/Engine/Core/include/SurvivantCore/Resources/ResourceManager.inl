@@ -76,8 +76,8 @@ namespace SvCore::Resources
             if (!resource)
                 continue;
 
-            if (ResourceRef<T> castResource = *resource)
-                resources.push_back(castResource);
+            if (resource->CanCastTo<T>())
+                resources.emplace_back(*resource);
         }
 
         return resources;
