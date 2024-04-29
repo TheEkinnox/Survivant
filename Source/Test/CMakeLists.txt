@@ -7,6 +7,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin/${TARGET_NAME})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib/${TARGET_NAME})
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 
+# Setup options
+option(SURVIVANT_BUILD_TEST_AS_EDITOR "Enable to add SV_EDITOR to the test project's compile definitions" ON)
+
 
 ###############################
 #                             #
@@ -44,20 +47,26 @@ add_executable(${TARGET_NAME} ${HEADER_FILES} ${SOURCE_FILES})
 
 target_include_directories(${TARGET_NAME} PRIVATE ${TARGET_INCLUDE_DIR}
 	${LIBMATH_INCLUDE_DIR} ${ENGINE_INCLUDE_DIRS}
-	${GLAD_INCLUDE_DIR} ${GLFW_INCLUDE_DIR}
+	${GLFW_INCLUDE_DIR}
 )
 
 target_link_libraries(${TARGET_NAME}
 	PRIVATE
 	${LIBMATH_NAME}
 	${ENGINE_TARGETS}
-	${GLAD_NAME} ${GLFW_NAME}
+	${GLFW_NAME}
 )
+
+if (SURVIVANT_BUILD_TEST_AS_EDITOR)
+	target_compile_definitions(${TARGET_NAME} PRIVATE SV_EDITOR)
+endif()
 
 if(MSVC)
 	target_compile_options(${TARGET_NAME} PRIVATE /W4 /WX)
 else()
 	target_compile_options(${TARGET_NAME} PRIVATE -Wall -Wextra -Wpedantic -Werror)
 endif()
+
+copy_resources(${TARGET_NAME})
 
 set(TEST_NAME ${TARGET_NAME} PARENT_SCOPE)

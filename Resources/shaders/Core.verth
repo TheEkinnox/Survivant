@@ -1,0 +1,13 @@
+layout(location = 0) in vec3 _pos;
+layout(location = 1) in vec3 _normal;
+layout(location = 2) in vec2 _texCoords;
+layout(location = 3) in vec3 _tangent;
+layout(location = 4) in vec3 _bitangent;
+
+#include "assets/shaders/Camera.glslh"
+
+layout(std140, binding = 1) uniform ModelUBO
+{
+	mat4 sv_modelMat;
+	mat4 sv_normalMat;
+};

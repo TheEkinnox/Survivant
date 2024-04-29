@@ -20,8 +20,17 @@ add_subdirectory(IMGUI)
 # Add LibMath
 add_subdirectory(LibMath)
 
+# Add Lua
+add_subdirectory(Lua)
+
 # Add PhysX (TODO)
 # add_subdirectory(PhysX)
+
+# Add RapidJSON
+add_subdirectory(RapidJSON)
+
+# Add Sol
+add_subdirectory(Sol)
 
 # Add SoLoud
 add_subdirectory(SoLoud)
@@ -44,6 +53,11 @@ set(LIBMATH_INCLUDE_DIR ${LIBMATH_INCLUDE_DIR} PARENT_SCOPE)
 
 set(PHYSX_LIBS ${PHYSX_LIBRARIES} PARENT_SCOPE)
 set(PHYSX_INCLUDE_DIR ${PHYSX_INCLUDE_DIR} PARENT_SCOPE)
+
+set(RAPIDJSON_INCLUDE_DIR ${RAPIDJSON_INCLUDE_DIR} PARENT_SCOPE)
+
+set(SOL_TARGETS ${SOL_NAME} ${LUA_NAME} PARENT_SCOPE)
+set(SOL_INCLUDE_DIRS ${SOL_INCLUDE_DIR} ${LUA_INCLUDE_DIR} PARENT_SCOPE)
 
 set(SOLOUD_NAME ${SOLOUD_NAME} PARENT_SCOPE)
 set(SOLOUD_INCLUDE_DIR ${SOLOUD_INCLUDE_DIR} PARENT_SCOPE)

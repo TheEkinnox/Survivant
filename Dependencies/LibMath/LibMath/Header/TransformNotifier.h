@@ -2,6 +2,7 @@
 #define __LIBMATH__TRANSFORM_NOTIFIER_H__
 
 #include <functional>
+#include <unordered_map>
 #include <cstdint>
 
 namespace LibMath

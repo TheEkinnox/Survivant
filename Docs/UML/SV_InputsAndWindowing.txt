@@ -1,0 +1,133 @@
+@startuml
+
+'https://www.planttext.com
+
+
+skin rose
+title SURVIVANT: Inputs and Windowing
+
+object App
+object Window
+
+object EditorUI
+object EditorWindow
+object UIManager
+
+object IMenuable
+object IPanelable
+object ITextable
+object ISelectable
+object IUI
+
+object Menu
+object MenuBar
+object Panel
+
+object EventManager
+object Event
+
+object InputManager
+object InputType
+object Callback
+object KeyboardKeyType
+object MouseKeyType
+
+EditorWindow *-left- EditorUI
+App *-left-> Window
+Window <|-- EditorWindow
+IUI <|-- EditorUI
+
+UIManager *-left- IUI
+'EditorUI ..> IPanelable
+'EditorUI ..> IMenuable
+
+EditorUI o-- ISelectable
+EditorUI *--> "1..*" Panel
+
+MenuBar  *-- "0..*" Menu
+Menu *-- "0..*" IMenuable
+
+Panel *-- "0..*" IPanelable
+IPanelable *-- "0..*" MenuBar
+IPanelable *-- "0..*" ITextable
+IPanelable *-- "0..*" ISelectable
+
+'InputManager *-- "0..*" KeyboardKeyType
+'InputManager *-- "0..*" MouseKeyType
+InputType <|-- KeyboardKeyType
+InputType <|-- MouseKeyType
+InputManager -- InputType
+InputManager -- Callback
+
+InputManager o-left- Window
+
+EventManager *--"0..*" Event
+Callback .right. Event
+InputType -right- Callback
+
+
+UIManager : GetCurrentUI()
+
+IUI : GetDefaultFont()
+IUI : SetSelected()
+IUI : GetSelected(ISelectable)
+
+EditorUI : CreatePanel()
+
+
+InputManager : Init(Window)
+InputManager : CallInput(InputType)
+InputManager : AddInputEventBinding<Event>()
+InputManager : map <InputType, Callback> inputs
+
+EventManager : AddListener<Event>()
+EventManager : Invoke<Event>()
+
+Event : Invoke()
+
+Panel : Render()
+IPanelable : DisplayAndRender()
+IMenuable  : DisplayAndRender()
+
+Window : SetupUI
+Window : StartRender()
+Window : RenderUI()
+Window : EndRender()
+
+InputType : tuple<Params> params 
+Callback : callback(Params)
+
+KeyboardKeyType : key
+KeyboardKeyType : state
+KeyboardKeyType : modifier
+
+MouseKeyType : mouseButton
+MouseKeyType : state
+MouseKeyType : modifier
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@enduml

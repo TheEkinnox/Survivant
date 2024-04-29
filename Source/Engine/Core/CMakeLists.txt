@@ -39,6 +39,8 @@ add_library(${TARGET_NAME} ${HEADER_FILES} ${SOURCE_FILES})
 
 target_include_directories(${TARGET_NAME} PRIVATE ${TARGET_INCLUDE_DIR}
 	${LIBMATH_INCLUDE_DIR}
+PUBLIC
+	${RAPIDJSON_INCLUDE_DIR}
 )
 
 target_link_libraries(${TARGET_NAME}

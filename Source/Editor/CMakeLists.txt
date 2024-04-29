@@ -43,19 +43,23 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${HEADER_FILES} ${SOURCE_FIL
 add_executable(${TARGET_NAME} ${HEADER_FILES} ${SOURCE_FILES})
 
 target_include_directories(${TARGET_NAME} PRIVATE ${TARGET_INCLUDE_DIR}
-	${LIBMATH_INCLUDE_DIR} ${ENGINE_INCLUDE_DIRS}
+	${LIBMATH_INCLUDE_DIR} ${ENGINE_INCLUDE_DIRS}  ${IMGUI_INCLUDE_DIR}
 )
 
 target_link_libraries(${TARGET_NAME}
 	PRIVATE
-	${LIBMATH_NAME}
+	${LIBMATH_NAME} ${IMGUI_NAME}
 	${ENGINE_TARGETS}
 )
+
+target_compile_definitions(${TARGET_NAME} PUBLIC SV_EDITOR SV_VERBOSE_LOG)
 
 if(MSVC)
 	target_compile_options(${TARGET_NAME} PRIVATE /W4 /WX)
 else()
 	target_compile_options(${TARGET_NAME} PRIVATE -Wall -Wextra -Wpedantic -Werror)
 endif()
+
+copy_resources(${TARGET_NAME})
 
 set(EDITOR_NAME ${TARGET_NAME} PARENT_SCOPE)
