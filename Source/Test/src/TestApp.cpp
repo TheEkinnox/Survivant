@@ -1,5 +1,6 @@
 #include "SurvivantTest/TestApp.h"
 
+#include "SurvivantTest/ResourceRegistrations.h"
 #include "SurvivantTest/RotatorComponent.h"
 #include "SurvivantTest/SceneTest.h"
 #include "SurvivantTest/TemporaryComponent.h"

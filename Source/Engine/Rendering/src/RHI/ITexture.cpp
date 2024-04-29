@@ -5,12 +5,14 @@
 
 #include <SurvivantCore/Debug/Assertion.h>
 #include <SurvivantCore/Debug/Logger.h>
+#include <SurvivantCore/Utility/FileSystem.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_ASSERT(x) ASSERT(x)
 #include <stb_image.h>
 
 using namespace SvCore::Utility;
+using namespace SvCore::Serialization;
 using namespace SvRendering::Enums;
 using namespace SvRendering::RHI;
 
@@ -73,6 +75,7 @@ namespace SvRendering::RHI
         m_width    = p_other.m_width;
         m_height   = p_other.m_height;
         m_channels = p_other.m_channels;
+        m_loadInfo = p_other.m_loadInfo;
 
         if (m_data != nullptr)
             stbi_image_free(m_data);
@@ -101,11 +104,7 @@ namespace SvRendering::RHI
         m_height   = p_other.m_height;
         m_channels = p_other.m_channels;
         m_data     = p_other.m_data;
-
-        m_minFilter = p_other.m_minFilter;
-        m_magFilter = p_other.m_magFilter;
-        m_wrapModeU = p_other.m_wrapModeU;
-        m_wrapModeV = p_other.m_wrapModeV;
+        m_loadInfo = p_other.m_loadInfo;
 
         p_other.m_data = nullptr;
 
@@ -134,13 +133,34 @@ namespace SvRendering::RHI
         stbi_set_flip_vertically_on_load(true);
         m_data = stbi_load(p_path.c_str(), &m_width, &m_height, reinterpret_cast<int*>(&m_channels), 0);
 
-        if (m_data == nullptr)
-        {
-            SV_LOG_ERROR("Unable to load texture from path \"%s\"", p_path.c_str());
+        if (!CHECK(m_data != nullptr, "Unable to load texture from path \"%s\"", p_path.c_str()))
             return false;
-        }
 
-        return true;
+        const std::string metaPath = GetMetaPath(p_path);
+
+        if (!PathExists(metaPath))
+            return true;
+
+        return m_loadInfo.FromJson(LoadJsonFile(metaPath));
+    }
+
+    bool ITexture::Save(const std::string& p_fileName)
+    {
+        JsonStringBuffer buffer;
+        JsonWriter       writer(buffer);
+
+        if (!m_loadInfo.ToJson(writer) || !ASSUME(writer.IsComplete(), "Failed to save texture data - Produced json is incomplete"))
+            return false;
+
+        const std::string metaPath = GetMetaPath(p_fileName);
+        std::ofstream     fs(metaPath);
+
+        if (!CHECK(fs.is_open(), "Unable to open texture meta file at path \"%s\"", metaPath.c_str()))
+            return false;
+
+        fs << std::string_view(buffer.GetString(), buffer.GetLength());
+
+        return CHECK(!fs.bad(), "Failed to write texture meta data to \"%s\"", metaPath.c_str());
     }
 
     LibMath::Vector2I ITexture::GetSize() const
@@ -155,14 +175,14 @@ namespace SvRendering::RHI
 
     void ITexture::SetFilters(const ETextureFilter p_minFilter, const ETextureFilter p_magFilter)
     {
-        m_minFilter = p_minFilter;
-        m_magFilter = p_magFilter;
+        m_loadInfo.m_minFilter = p_minFilter;
+        m_loadInfo.m_magFilter = p_magFilter;
     }
 
     void ITexture::SetWrapModes(const ETextureWrapMode p_wrapModeU, const ETextureWrapMode p_wrapModeV)
     {
-        m_wrapModeU = p_wrapModeU;
-        m_wrapModeV = p_wrapModeV;
+        m_loadInfo.m_wrapModeU = p_wrapModeU;
+        m_loadInfo.m_wrapModeV = p_wrapModeV;
     }
 
     uint8_t ITexture::ToChannelCount(const EPixelDataFormat p_format)
@@ -170,6 +190,9 @@ namespace SvRendering::RHI
         switch (p_format)
         {
         case EPixelDataFormat::RED:
+        case EPixelDataFormat::RED_INT:
+        case EPixelDataFormat::RED_INT_32:
+        case EPixelDataFormat::RED_UINT_32:
         case EPixelDataFormat::GREEN:
         case EPixelDataFormat::BLUE:
         case EPixelDataFormat::ALPHA:
@@ -216,7 +239,7 @@ namespace SvRendering::RHI
         }
     }
 
-    std::shared_ptr<ITexture> ITexture::Create(int p_width, int p_height, Enums::EPixelDataFormat p_format, Enums::EPixelDataType p_dataType)
+    std::shared_ptr<ITexture> ITexture::Create(int p_width, int p_height, EPixelDataFormat p_format, EPixelDataType p_dataType)
     {
         switch (IRenderAPI::GetCurrent().GetBackend())
         {
@@ -229,7 +252,8 @@ namespace SvRendering::RHI
         }
     }
 
-    std::shared_ptr<ITexture> ITexture::Create(int p_width, int p_height, Enums::EPixelDataFormat p_internalFormat, Enums::EPixelDataFormat p_format, Enums::EPixelDataType p_dataType)
+    std::shared_ptr<ITexture> ITexture::Create(
+        int p_width, int p_height, EPixelDataFormat p_internalFormat, EPixelDataFormat p_format, EPixelDataType p_dataType)
     {
         switch (IRenderAPI::GetCurrent().GetBackend())
         {

@@ -13,8 +13,10 @@ namespace SvCore::Resources
         if (p_path.empty())
             return {};
 
+        const std::string key = GetFullPath(p_path);
+
         T*         resource = nullptr;
-        const auto it       = m_resources.find(p_path);
+        const auto it       = m_resources.find(key);
 
         if (it != m_resources.end() && it->second)
         {
@@ -40,7 +42,7 @@ namespace SvCore::Resources
             return {};
         }
 
-        return canReuse ? *it->second : *(m_resources[p_path] = std::make_unique<ResourceRef<IResource>>(p_path, resource));
+        return canReuse ? *it->second : *(m_resources[key] = std::make_unique<ResourceRef<IResource>>(p_path, resource));
     }
 
     template <typename T>
@@ -51,7 +53,7 @@ namespace SvCore::Resources
         if (p_path.empty())
             return {};
 
-        const auto it = m_resources.find(p_path);
+        const auto it = m_resources.find(GetFullPath(p_path));
 
         if (it != m_resources.end())
             return *it->second;

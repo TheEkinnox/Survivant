@@ -148,8 +148,10 @@ namespace SvRendering::RHI
             return GL_RED;
         case EPixelDataFormat::RED_INT:
             return GL_RED_INTEGER;
-        case EPixelDataFormat::RED_32I:
+        case EPixelDataFormat::RED_INT_32:
             return GL_R32I;
+        case EPixelDataFormat::RED_UINT_32:
+            return GL_R32UI;
         case EPixelDataFormat::GREEN:
             return GL_GREEN;
         case EPixelDataFormat::BLUE:
@@ -166,9 +168,10 @@ namespace SvRendering::RHI
             return GL_RGBA;
         case EPixelDataFormat::BGRA:
             return GL_BGRA;
+        default:
+            ASSERT(false, "Invalid pixel data format");
+            return GL_INVALID_ENUM;
         }
-
-        return GL_INVALID_ENUM;
     }
 
     GLenum OpenGLAPI::ToGLEnum(const EPixelDataType p_dataType)
@@ -213,9 +216,10 @@ namespace SvRendering::RHI
             return GL_UNSIGNED_INT_10_10_10_2;
         case EPixelDataType::UNSIGNED_INT_2_10_10_10_REV:
             return GL_UNSIGNED_INT_2_10_10_10_REV;
+        default:
+            ASSERT(false, "Invalid pixel data type");
+            return GL_INVALID_ENUM;
         }
-
-        return GL_INVALID_ENUM;
     }
 
     GLenum OpenGLAPI::ToGLEnum(const EPrimitiveType p_primitiveType)
@@ -246,9 +250,10 @@ namespace SvRendering::RHI
             return GL_TRIANGLE_STRIP_ADJACENCY;
         case EPrimitiveType::PATCHES:
             return GL_PATCHES;
+        default:
+            ASSERT(false, "Invalid primitive type");
+            return GL_INVALID_ENUM;
         }
-
-        return GL_INVALID_ENUM;
     }
 
     GLenum OpenGLAPI::ToGLEnum(const ERenderingCapability p_capability)
@@ -275,9 +280,10 @@ namespace SvRendering::RHI
             return GL_STENCIL_TEST;
         case ERenderingCapability::MULTISAMPLE:
             return GL_MULTISAMPLE;
+        default:
+            ASSERT(false, "Invalid rendering capability");
+            return GL_INVALID_ENUM;
         }
-
-        return GL_INVALID_ENUM;
     }
 
     GLenum OpenGLAPI::ToGLEnum(const ECompareAlgorithm p_algorithm)
@@ -300,9 +306,10 @@ namespace SvRendering::RHI
             return GL_GEQUAL;
         case ECompareAlgorithm::ALWAYS:
             return GL_ALWAYS;
+        default:
+            ASSERT(false, "Invalid compare algorithm");
+            return GL_INVALID_ENUM;
         }
-
-        return GL_INVALID_ENUM;
     }
 
     GLenum OpenGLAPI::ToGLEnum(const ECullFace p_cullFace)
@@ -315,9 +322,10 @@ namespace SvRendering::RHI
             return GL_BACK;
         case ECullFace::FRONT_AND_BACK:
             return GL_FRONT_AND_BACK;
+        default:
+            ASSERT(false, "Invalid cull face");
+            return GL_INVALID_ENUM;
         }
-
-        return GL_INVALID_ENUM;
     }
 
     GLenum OpenGLAPI::ToGLEnum(const EBlendFactor p_blendFactor)
@@ -352,9 +360,10 @@ namespace SvRendering::RHI
             return GL_CONSTANT_ALPHA;
         case EBlendFactor::ONE_MINUS_CONSTANT_ALPHA:
             return GL_ONE_MINUS_CONSTANT_ALPHA;
+        default:
+            ASSERT(false, "Invalid blend factor");
+            return GL_INVALID_ENUM;
         }
-
-        return GL_INVALID_ENUM;
     }
 
     GLenum OpenGLAPI::ToGLEnum(const EAccessMode p_accessMode)

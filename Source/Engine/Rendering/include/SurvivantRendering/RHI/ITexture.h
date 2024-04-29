@@ -3,6 +3,7 @@
 #include "SurvivantRendering/Enums/ETextureFilter.h"
 #include "SurvivantRendering/Enums/ETextureWrapMode.h"
 #include "SurvivantRendering/Enums/EPixelDataType.h"
+#include "SurvivantRendering/Resources/TextureMetaData.h"
 
 #include <SurvivantCore/Resources/IResource.h>
 
@@ -62,16 +63,23 @@ namespace SvRendering::RHI
         bool Load(const std::string& p_path) override;
 
         /**
-         * \brief Binds the texture to the current context
-         * \param slot The slot the texture should be bound to
+         * \brief Saves the meta data of the texture at the given path
+         * \param p_fileName The texture file's path
+         * \return True on success. False otherwise
          */
-        virtual void Bind(uint8_t slot) = 0;
+        bool Save(const std::string& p_fileName) override;
+
+        /**
+         * \brief Binds the texture to the current context
+         * \param p_slot The slot the texture should be bound to
+         */
+        virtual void Bind(uint8_t p_slot) = 0;
 
         /**
          * \brief Unbinds the current texture from the current context
-         * \param slot The slot the texture is bound to
+         * \param p_slot The slot the texture is bound to
          */
-        virtual void Unbind(uint8_t slot) = 0;
+        virtual void Unbind(uint8_t p_slot) = 0;
 
         /**
          * \brief Generates mipmaps for the texture
@@ -121,6 +129,7 @@ namespace SvRendering::RHI
          * \param p_width The texture's width
          * \param p_height The texture's height
          * \param p_format The texture's pixel format
+         * \return The created texture
          */
         static std::shared_ptr<ITexture> Create(int p_width, int p_height, Enums::EPixelDataFormat p_format);
 
@@ -130,21 +139,29 @@ namespace SvRendering::RHI
          * \param p_height The texture's height
          * \param p_format The texture's pixel format
          * \param p_dataType The texture's data type
+         * \return The created texture
          */
-        static std::shared_ptr<ITexture> Create(int p_width, int p_height, Enums::EPixelDataFormat p_format, Enums::EPixelDataType p_dataType);
+        static std::shared_ptr<ITexture> Create(
+            int p_width, int p_height, Enums::EPixelDataFormat p_format, Enums::EPixelDataType p_dataType);
 
-
-        static std::shared_ptr<ITexture> Create(int p_width, int p_height, Enums::EPixelDataFormat p_internalFormat, Enums::EPixelDataFormat p_format, Enums::EPixelDataType p_dataType);
+        /**
+         * \brief Creates a texture with the given width, height, internal data format, pixel format and data type
+         * \param p_width The texture's width
+         * \param p_height The texture's height
+         * \param p_internalFormat The texture's internal data format
+         * \param p_format The texture's pixel format
+         * \param p_dataType The texture's data type
+         * \return The created texture
+         */
+        static std::shared_ptr<ITexture> Create(int p_width, int p_height, Enums::EPixelDataFormat p_internalFormat,
+                                                Enums::EPixelDataFormat p_format, Enums::EPixelDataType p_dataType);
 
     protected:
-        unsigned char*          m_data      = nullptr;
-        int                     m_width     = 0;
-        int                     m_height    = 0;
-        uint8_t                 m_channels  = 0;
-        Enums::ETextureFilter   m_minFilter = Enums::ETextureFilter::LINEAR;
-        Enums::ETextureFilter   m_magFilter = Enums::ETextureFilter::LINEAR;
-        Enums::ETextureWrapMode m_wrapModeU = Enums::ETextureWrapMode::REPEAT;
-        Enums::ETextureWrapMode m_wrapModeV = Enums::ETextureWrapMode::REPEAT;
+        unsigned char*             m_data     = nullptr;
+        int                        m_width    = 0;
+        int                        m_height   = 0;
+        uint8_t                    m_channels = 0;
+        Resources::TextureMetaData m_loadInfo;
 
         /**
          * \brief Creates a default texture

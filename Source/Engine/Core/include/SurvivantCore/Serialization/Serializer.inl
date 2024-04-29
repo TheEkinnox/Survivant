@@ -5,46 +5,46 @@
 namespace SvCore::Serialization
 {
     template <typename T>
-    bool ToJson(const T& value, JsonWriter& writer) requires (!std::is_enum_v<T>)
+    bool ToJson(const T& p_value, JsonWriter& p_writer) requires (!std::is_enum_v<T>)
     {
         constexpr bool hasToJson = requires
         {
-            value.ToJson(writer);
+            p_value.ToJson(p_writer);
         };
 
         if constexpr (hasToJson)
-            return value.ToJson(writer);
+            return p_value.ToJson(p_writer);
         else
             return ASSUME(false, "Json serialization is not defined for \"%s\"", typeid(T).name()) && false;
     }
 
     template <typename T>
-    bool FromJson(T& out, const JsonValue& json) requires (!std::is_enum_v<T>)
+    bool FromJson(T& p_out, const JsonValue& p_json) requires (!std::is_enum_v<T>)
     {
         constexpr bool hasFromJson = requires
         {
-            out.FromJson(json);
+            p_out.FromJson(p_json);
         };
 
         if constexpr (hasFromJson)
-            return out.FromJson(json);
+            return p_out.FromJson(p_json);
         else
             return ASSUME(false, "Json deserialization is not defined for \"%s\"", typeid(T).name()) && false;
     }
 
     template <typename T>
-    bool ToJson(const T value, JsonWriter& writer) requires std::is_enum_v<T>
+    bool ToJson(const T p_value, JsonWriter& p_writer) requires std::is_enum_v<T>
     {
-        return CHECK(writer.Uint64(static_cast<uint64_t>(value)), "Failed to write \"%s\"", typeid(T).name());
+        return CHECK(p_writer.Uint64(static_cast<uint64_t>(p_value)), "Failed to write \"%s\"", typeid(T).name());
     }
 
     template <typename T>
-    bool FromJson(T& out, const JsonValue& json) requires std::is_enum_v<T>
+    bool FromJson(T& p_out, const JsonValue& p_json) requires std::is_enum_v<T>
     {
-        if (!CHECK(json.IsUint64(), "Failed to read \"%s\"", typeid(T).name()))
+        if (!CHECK(p_json.IsUint64(), "Failed to read \"%s\"", typeid(T).name()))
             return false;
 
-        out = static_cast<T>(json.GetUint64());
+        p_out = static_cast<T>(p_json.GetUint64());
         return true;
     }
 }

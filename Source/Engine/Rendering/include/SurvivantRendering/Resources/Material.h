@@ -74,6 +74,27 @@ namespace SvRendering::Resources
         }
 
         /**
+         * \brief Saves the material at the given path
+         * \param p_fileName The material's path
+         * \return True on success. False otherwise
+         */
+        bool Save(const std::string& p_fileName) override;
+
+        /**
+         * \brief Serializes the material to json
+         * \param p_writer The output json writer
+         * \return True on success. False otherwise.
+         */
+        bool ToJson(SvCore::Serialization::JsonWriter& p_writer) const;
+
+        /**
+         * \brief Deserializes the material from json
+         * \param p_json The input json data
+         * \return True on success. False otherwise.
+         */
+        bool FromJson(const SvCore::Serialization::JsonValue& p_json);
+
+        /**
          * \brief Gets the material's shader
          * \return A reference to the material's shader
          */
@@ -151,6 +172,29 @@ namespace SvRendering::Resources
          * \param p_property The target property
          */
         void BindProperty(const std::string& p_name, const Property& p_property) const;
+
+        /**
+         * \brief Serializes the material to json
+         * \param p_writer The output json writer
+         * \param p_property The property to serialize
+         * \return True on success. False otherwise.
+         */
+        static bool SerializePropertyValue(SvCore::Serialization::JsonWriter& p_writer, const Property& p_property);
+
+        /**
+         * \brief Deserializes the material's properties from json
+         * \param p_json The input json data
+         * \return True on success. False otherwise.
+         */
+        bool DeserializeProperties(const SvCore::Serialization::JsonValue& p_json);
+
+        /**
+         * \brief Deserializes the material property from json
+         * \param p_json The input json data
+         * \param p_out The output property
+         * \return True on success. False otherwise.
+         */
+        static bool DeserializePropertyValue(const SvCore::Serialization::JsonValue& p_json, Property& p_out);
     };
 
     template <typename T>

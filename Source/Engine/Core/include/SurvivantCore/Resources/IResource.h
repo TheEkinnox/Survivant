@@ -40,7 +40,27 @@ namespace SvCore::Resources
          */
         virtual bool Init() = 0;
 
+        /**
+         * \brief Saves the necessary info to load the resource at the given path
+         * \param p_fileName The resource file's path
+         * \return True on success. False otherwise
+         */
+        virtual bool Save(const std::string& p_fileName) = 0;
+
+    protected:
+        /**
+         * \brief Gets the path to the meta file associated with the given resource
+         * \param p_fileName The resource file's path
+         * \return The path to the meta file associated with the given resource
+         */
+        static std::string GetMetaPath(const std::string& p_fileName)
+        {
+            return !p_fileName.empty() ? p_fileName + META_EXTENSION : p_fileName;
+        }
+
     private:
+        static constexpr const char* META_EXTENSION = ".meta";
+
         friend auto operator<=>(const IResource&, const IResource&) = default;
     };
 }

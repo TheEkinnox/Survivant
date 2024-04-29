@@ -51,8 +51,10 @@ namespace SvCore::Resources
         if (p_type.empty() || p_path.empty())
             return {};
 
+        const std::string key = GetFullPath(p_path);
+
         IResource* resource = nullptr;
-        const auto it       = m_resources.find(p_path);
+        const auto it       = m_resources.find(key);
 
         if (it != m_resources.end() && it->second)
         {
@@ -76,13 +78,7 @@ namespace SvCore::Resources
             return {};
         }
 
-        auto val = std::make_unique<GenericResourceRef>(p_type, p_path, resource);
-        if (canReuse)
-            return *it->second;
-        
-        m_resources[p_path] = nullptr;
-        m_resources[p_path] = std::move(val);
-        return *m_resources[p_path];
+        return canReuse ? *it->second : *(m_resources[key] = std::make_unique<GenericResourceRef>(p_type, p_path, resource));
     }
 
     GenericResourceRef ResourceManager::Get(const std::string& p_type, const std::string& p_path) const
@@ -90,7 +86,7 @@ namespace SvCore::Resources
         if (p_type.empty() || p_path.empty())
             return {};
 
-        const auto it = m_resources.find(p_path);
+        const auto it = m_resources.find(GetFullPath(p_path));
 
         if (it == m_resources.end())
             return {};
@@ -153,7 +149,7 @@ namespace SvCore::Resources
 
     void ResourceManager::Remove(const std::string& p_path)
     {
-        m_resources.erase(p_path);
+        m_resources.erase(GetFullPath(p_path));
     }
 
     void ResourceManager::Clear()
@@ -187,7 +183,7 @@ namespace SvCore::Resources
     std::string ResourceManager::GetFullPath(const std::string& p_path) const
     {
         if (Utility::PathExists(p_path))
-            return p_path;
+            return Utility::MakePreferred(p_path);
 
         for (const auto& searchPath : m_searchPaths)
         {

@@ -63,6 +63,13 @@ namespace SvScripting
         }
 
         /**
+         * \brief Saves the meta data of the script at the given path
+         * \param p_fileName The script's path
+         * \return True on success. False otherwise
+         */
+        bool Save(const std::string& p_fileName) override;
+
+        /**
          * \brief Gets the lua script's source code
          * \return The script's source
          */
@@ -74,8 +81,28 @@ namespace SvScripting
          */
         OrderT GetExecutionOrder() const;
 
+        /**
+         * \brief Sets the lua script's execution order
+         * \param p_executionOrder The script's new execution order
+         */
+        void SetExecutionOrder(OrderT p_executionOrder);
+
     private:
         std::string m_source;
         OrderT      m_executionOrder;
+
+        /**
+         * \brief Loads the lua script's meta data from the given path
+         * \param p_path The lua script's meta path
+         * \return True on success. False otherwise
+         */
+        bool LoadMeta(const std::string& p_path);
+
+        /**
+         * \brief Saves the lua script's meta data to the given path
+         * \param p_path The lua script's meta path
+         * \return True on success. False otherwise
+         */
+        bool SaveMeta(const std::string& p_path) const;
     };
 }

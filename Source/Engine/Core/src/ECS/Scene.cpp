@@ -4,8 +4,6 @@
 
 #include <ranges>
 
-#include <rapidjson/istreamwrapper.h>
-
 using namespace SvCore::Serialization;
 using namespace SvCore::Utility;
 
@@ -18,26 +16,25 @@ namespace SvCore::ECS
 
     bool Scene::Load(const std::string& p_fileName)
     {
-        std::ifstream fs(p_fileName);
+        return FromJson(LoadJsonFile(p_fileName));
+    }
 
-        if (!fs.is_open())
-        {
-            SV_LOG_ERROR("Unable to open scene file at path \"%s\"", p_fileName.c_str());
+    bool Scene::Save(const std::string& p_fileName)
+    {
+        JsonStringBuffer buffer;
+        JsonWriter              writer(buffer);
+
+        if (!ToJson(writer) || !ASSUME(writer.IsComplete(), "Failed to save scene - Generated json is incomplete"))
             return false;
-        }
 
-        rapidjson::IStreamWrapper isw(fs);
+        std::ofstream fs(p_fileName);
 
-        rapidjson::Document json;
-        json.ParseStream(isw);
-
-        if (json.HasParseError())
-        {
-            SV_LOG_ERROR("Unable to parse scene from file - Parse error %d", json.GetParseError());
+        if (!CHECK(fs.is_open(), "Unable to open scene file at path \"%s\"", p_fileName.c_str()))
             return false;
-        }
 
-        return FromJson(json);
+        fs << std::string_view(buffer.GetString(), buffer.GetLength());
+
+        return CHECK(!fs.bad(), "Failed to write scene to \"%s\"", p_fileName.c_str());
     }
 
     bool Scene::ToJson(JsonWriter& p_writer) const

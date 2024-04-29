@@ -201,7 +201,7 @@ namespace SvApp::Core
         case ETextureType::DEPTH:   return ITexture::Create(m_viewport.m_x, m_viewport.m_y, 
                                                             EPixelDataFormat::DEPTH_COMPONENT);
         case ETextureType::ID:      return ITexture::Create(m_viewport.m_x, m_viewport.m_y, 
-                                                            EPixelDataFormat::RED_32I, EPixelDataFormat::RED_INT, 
+                                                            EPixelDataFormat::RED_INT_32, EPixelDataFormat::RED_INT, 
                                                             EPixelDataType::UNSIGNED_INT);
         default: return nullptr;
         }
