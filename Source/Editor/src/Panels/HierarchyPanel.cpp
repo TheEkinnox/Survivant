@@ -45,7 +45,7 @@ namespace SvEditor::Panels
             { 
                 using namespace Core;
 
-                auto entityPanel = InspectorComponentManager::GetPanelableEntity(
+                auto entityPanel = InspectorItemManager::GetPanelableEntity(
                     EntityHandle(s_getCurrentScene().lock().get()->get(), Entity(p_branch.GetValue())));
 
                 InspectorPanel::SetInpectorInfo(entityPanel, "Entity");

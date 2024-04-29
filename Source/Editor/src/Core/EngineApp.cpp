@@ -31,7 +31,7 @@ namespace SvEditor::Core
 		m_window = std::make_unique<Core::EditorWindow>();
 
 		ASSERT(SetWorkingDirectory(GetApplicationDirectory()), "Failed to update working directory");
-		SV_LOG("Current working directory: \"%s\"", GetWorkingDirectory().c_str());
+		//SV_LOG("Current working directory: \"%s\"", GetWorkingDirectory().c_str());
 
 		IRenderAPI& renderAPI = IRenderAPI::SetCurrent(EGraphicsAPI::OPENGL);
 		renderAPI.Init(true)

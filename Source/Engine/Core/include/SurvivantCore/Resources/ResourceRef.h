@@ -138,7 +138,7 @@ namespace SvCore::Resources
          * \brief Gets the referenced resource's path
          * \return The referenced resource's path
          */
-        std::string GetPath() const;
+        const std::string& GetPath() const;
 
         /**
          * \brief Resets the resource reference

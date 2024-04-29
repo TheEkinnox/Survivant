@@ -162,7 +162,7 @@ namespace SvCore::Resources
     }
 
     template <class T>
-    std::string ResourceRef<T>::GetPath() const
+    const std::string& ResourceRef<T>::GetPath() const
     {
         return m_path;
     }

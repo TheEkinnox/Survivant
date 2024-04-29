@@ -159,4 +159,46 @@ namespace SvEditor::PanelItems
         }
 
     }
+
+    PanelTextDisplay::PanelTextDisplay(const std::shared_ptr<ITextable>& p_item) :
+        m_item(p_item)
+    {}
+
+    void PanelTextDisplay::DisplayAndUpdatePanel()
+    {
+        if (ImGui::BeginChild("ScrollingRegion", ImVec2(0, 0 /*-footer_height_to_reserve*/), ImGuiChildFlags_None))
+        {
+            //ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 1)); // Tighten spacing
+            m_item->DisplayAndUpdatePanel();
+            //ImGui::PopStyleVar();
+        }
+        ImGui::EndChild();
+    }
+
+    PanelTextDisplay::DefaultText::DefaultText(const std::string& p_string) : 
+        m_string(p_string)
+    {}
+
+    void PanelTextDisplay::DefaultText::DisplayAndUpdatePanel()
+    {
+        ImGui::TextWrapped(m_string.c_str());
+    }
+
+    std::string PanelTextDisplay::DefaultText::GetString(size_t p_len) const
+    {
+        if (p_len == 0)
+            return m_string;
+
+        return std::string(m_string, 0, p_len);
+    }
+
+    size_t PanelTextDisplay::DefaultText::GetLength() const
+    {
+        return m_string.size();
+    }
+
+    const std::string& PanelTextDisplay::DefaultText::GetString()
+    {
+        return m_string;
+    }
 }

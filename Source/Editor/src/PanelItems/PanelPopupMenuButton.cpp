@@ -7,18 +7,24 @@
 
 namespace SvEditor::PanelItems
 {
-	PanelPopupMenuButton::PanelPopupMenuButton(const std::string& p_name, const Callback& p_callback) :
+	PanelPopupMenuButton::PanelPopupMenuButton(const std::string& p_name,
+		Callback p_onOpen, Callback p_onClose) :
 		m_name(p_name),
-		m_callback(p_callback)
-	{}
+		m_onOpen(p_onOpen),
+		m_onClose(p_onClose)
+	{
+		m_onOpen;
+	}
 
-	PanelPopupMenuButton::PanelPopupMenuButton(const PanelPopupMenuButton& p_other)
+	/*PanelPopupMenuButton::PanelPopupMenuButton(const PanelPopupMenuButton& p_other)
 	{
 		*this = p_other;
 	}
 
 	PanelPopupMenuButton::PanelPopupMenuButton(PanelPopupMenuButton&& p_other) noexcept
 	{
+		this->m_onOpen = std::move(p_other.m_onOpen);
+		this->m_onClose = std::move(p_other.m_onClose);
 		this->m_name = std::move(p_other.m_name);
 		this->m_items = std::move(p_other.m_items);
 	}
@@ -26,6 +32,8 @@ namespace SvEditor::PanelItems
 	PanelPopupMenuButton& PanelPopupMenuButton::operator=(const PanelPopupMenuButton& p_other)
 	{
 		this->m_name = p_other.m_name;
+		this->m_onOpen = p_other.m_onOpen;
+		this->m_onClose = p_other.m_onClose;
 
 		this->m_items.clear();
 		this->m_items.reserve(p_other.m_items.size());
@@ -43,22 +51,23 @@ namespace SvEditor::PanelItems
 	PanelPopupMenuButton* PanelPopupMenuButton::Clone() const
 	{
 		return new PanelPopupMenuButton(*this);
-	}
+	}*/
 
 	void PanelPopupMenuButton::DisplayAndUpdatePanel()
 	{
 		static auto flags = ImGuiPopupFlags_None;
-
-		if (IsEmpty())
-			return;
+		static bool isOpen = false;
 
 		if (ImGui::SmallButton(m_name.c_str()))
 		{
 			ImGui::OpenPopup(ImGui::GetItemID());
 
-			if (m_callback)
-				m_callback();
+			if (!isOpen && m_onOpen)
+				m_onOpen();
 		}
+
+		if (IsEmpty())
+			return;
 
 		if (ImGui::BeginPopupContextItem(nullptr, flags))
 		{
@@ -66,6 +75,14 @@ namespace SvEditor::PanelItems
 				menu->DisplayAndUpdateMenu();
 
 			ImGui::EndPopup();
+			isOpen = true;
+		}
+		else
+		{
+			if (isOpen && m_onClose)
+				m_onClose();
+
+			isOpen = false;
 		}
 
 	}

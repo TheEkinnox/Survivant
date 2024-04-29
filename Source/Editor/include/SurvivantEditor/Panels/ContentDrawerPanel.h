@@ -3,6 +3,7 @@
 
 #include "SurvivantCore/Utility/UnusedIdGenerator.h"
 #include "SurvivantCore/Resources/IResource.h"
+#include "SurvivantCore/Resources/ResourceRef.h"
 #include "SurvivantEditor/Interfaces/IPanelable.h"
 #include "SurvivantEditor/Panels/Panel.h"
 #include "SurvivantEditor/PanelItems/PanelSelectionBox.h"
@@ -11,6 +12,8 @@
 #include <filesystem>
 #include <functional>
 #include <string>
+#include <unordered_map>
+#include <set>
 
 
 namespace SvEditor::Panels
@@ -20,7 +23,7 @@ namespace SvEditor::Panels
 	class ContentDrawerPanel : public Panel
 	{
 	public:
-		using ResourceBranch = PanelTreeBranch<std::string>;
+		using ResourceBranch = PanelTreeBranch<SvCore::Resources::GenericResourceRef>;
 
 		ContentDrawerPanel();
 		~ContentDrawerPanel();
@@ -37,8 +40,14 @@ namespace SvEditor::Panels
 		void SetupTree();
 		void SetupBranches(std::shared_ptr<ResourceBranch> p_parent, const std::filesystem::path& p_filePath);
 
-		static constexpr char DIRECTORY_PATH[] = "Source";
-		static constexpr char BACKSLASH[] = "/";
+		static constexpr char DIRECTORY_PATH[] = "assets";
+		static inline const std::string DOUBLE_SLASH = "\\";
+		static inline const std::string SLASH = "/";
+
+		static std::unordered_map<std::string, std::set<std::string>> CreateExtensions();
+		static const inline std::unordered_map<std::string, std::set<std::string>> FileExtensions = CreateExtensions();
+
+		static SvCore::Resources::GenericResourceRef CreateResourceRef(const std::filesystem::path& p_filePath);
 
 
 		std::shared_ptr<ResourceBranch>	m_tree;

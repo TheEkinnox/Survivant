@@ -53,7 +53,7 @@ namespace SvEditor::Core
         m_main->ChangePanelLayout(l);
 
         //setup InspectorComponents
-        InspectorComponentManager::Init();
+        InspectorItemManager::Init();
 
         //TODO : add spawn save m_panel on event close request
         SvCore::Events::EventManager::GetInstance().AddListenner<SvApp::Window::WindowCloseRequest>(
@@ -126,7 +126,7 @@ namespace SvEditor::Core
                 p_world.lock()->m_renderingContext->s_editorSelectedEntity = entity;
                 HierarchyPanel::SelectSelectable(entity);
 
-                auto entityPanel = InspectorComponentManager::GetPanelableEntity(
+                auto entityPanel = InspectorItemManager::GetPanelableEntity(
                     SvCore::ECS::EntityHandle(p_world.lock()->CurrentScene().get(), entity)); 
                 InspectorPanel::SetInpectorInfo(entityPanel, "Entity");
             });

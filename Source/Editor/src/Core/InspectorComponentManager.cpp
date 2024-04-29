@@ -1,4 +1,4 @@
-//InspectorComponentManager.cpp
+//InspectorItemManager.cpp
 #include "SurvivantEditor/Core/InspectorComponentManager.h"
 
 #include "SurvivantCore/Debug/Assertion.h"
@@ -7,15 +7,23 @@
 #include "SurvivantRendering/Components/CameraComponent.h"
 #include "SurvivantRendering/Components/LightComponent.h"
 #include "SurvivantRendering/Components/ModelComponent.h"
+#include "SurvivantRendering/Resources/Material.h"
+#include "SurvivantRendering/Resources/Mesh.h"
+#include "SurvivantRendering/Resources/Model.h"
+#include "SurvivantRendering/RHI/IShader.h"
+#include "SurvivantRendering/RHI/ITexture.h"
+#include "SurvivantScripting/LuaScript.h"
 
 #include "SurvivantEditor/PanelItems/PanelButton.h"
 #include "SurvivantEditor/PanelItems/PanelColorInput.h"
 #include "SurvivantEditor/PanelItems/PanelComponent.h"
 #include "SurvivantEditor/PanelItems/PanelIntInput.h"
+#include "SurvivantEditor/PanelItems/PanelResourceSelector.h"
 #include "SurvivantEditor/PanelItems/PanelSelectionDisplay.h"
+#include "SurvivantEditor/PanelItems/PanelTextBox.h"
 #include "SurvivantEditor/PanelItems/PanelTextInput.h"
-#include "SurvivantEditor/PanelItems/PanelUInt32Input.h"
 #include "SurvivantEditor/PanelItems/PanelTransformInput.h"
+#include "SurvivantEditor/PanelItems/PanelUInt32Input.h"
 #include "SurvivantEditor/PanelItems/PanelVec2Input.h"
 #include "SurvivantEditor/PanelItems/PanelVec3Input.h"
 
@@ -26,13 +34,15 @@ using namespace SvCore::ECS;
 using namespace SvEditor::PanelItems;
 using namespace SvRendering::Components;
 using namespace SvRendering::Enums;
-
-
+using namespace SvRendering::Resources;
+using namespace SvRendering::RHI;
+using namespace SvScripting;
 
 namespace SvEditor::Core
 {
-	void InspectorComponentManager::Init()
+	void InspectorItemManager::Init()
 	{
+		//components
 		ASSERT(AddComponentToPanelable<Transform>(&AddComponentTransform, "Transform"),
 			"Couldn't add ComponentToPanelable callback to type : Transform");
 		ASSERT(AddComponentToPanelable<HierarchyComponent>(&AddComponentHierarchy, "Hierarchy"),
@@ -41,9 +51,22 @@ namespace SvEditor::Core
 			"Couldn't add ComponentToPanelable callback to type : Tag");
 		ASSERT(AddComponentToPanelable<LightComponent>(&AddComponentLight, "Light"),
 			"Couldn't add ComponentToPanelable callback to type : Light");
+		ASSERT(AddComponentToPanelable<ModelComponent>(&AddComponentModel, "Model"),
+			"Couldn't add ComponentToPanelable callback to type : Model");
+	
+		ASSERT(AddResourceToPanelable<Model>(&AddResourceDefault, "Model"),
+			"Couldn't add ResourceToPanelable callback to type : Model");
+		ASSERT(AddResourceToPanelable<Material>(&AddResourceDefault, "Material"),
+			"Couldn't add ResourceToPanelable callback to type : Material");
+		ASSERT(AddResourceToPanelable<LuaScript>(&AddResourceDefault, "Script"),
+			"Couldn't add ResourceToPanelable callback to type : Script");
+		ASSERT(AddResourceToPanelable<IShader>(&AddResourceDefault, "Shader"),
+			"Couldn't add ResourceToPanelable callback to type : Shader");
+		ASSERT(AddResourceToPanelable<ITexture>(&AddResourceDefault, "Texture"),
+			"Couldn't add ResourceToPanelable callback to type : Texture");
 	}
 
-	InspectorComponentManager::PanelableEntity InspectorComponentManager::GetPanelableEntity(
+	InspectorItemManager::PanelableEntity InspectorItemManager::GetPanelableEntity(
 		const SvCore::ECS::EntityHandle& p_entity)
 	{
 		auto& registry = ComponentRegistry::GetInstance();
@@ -59,12 +82,12 @@ namespace SvEditor::Core
 
 			auto& info = registry.GetTypeInfo(type);
 
-			if (info.Has(CREATE_PANELABLE))
+			if (info.Has(CREATE_COMPONENT))
 			{
-				auto val = info.Call<PanelableComponent>(CREATE_PANELABLE, (void*)&p_entity);
+				auto val = info.Call<PanelableComponent>(CREATE_COMPONENT, (void*)&p_entity);
 				
 				if (val.has_value())
-					panelables.emplace_back(PanelableComponent(val.value()));
+					panelables.emplace_back(val.value());
 			}
 		}
 
@@ -72,7 +95,26 @@ namespace SvEditor::Core
 			p_entity, panelables)));
 	}
 
-	InspectorComponentManager::PanelableComponent InspectorComponentManager::AddComponentTransform(
+	InspectorItemManager::PanelableResource InspectorItemManager::GetPanelableResource(
+		const SvCore::Resources::GenericResourceRef& p_resource)
+	{
+		using namespace SvCore::Resources;
+		auto& registry = ResourceRegistry::GetInstance();
+		//auto& rm = ResourceManager::GetInstance();
+
+		if (!registry.Contains(p_resource.GetType()))
+			return AddResourceDefault(p_resource);
+
+		auto& info = registry.GetTypeInfo(p_resource.GetType());
+		PanelableResource panel = nullptr;
+
+		if (info.Has(CREATE_RESOURCE))
+			panel = info.Call<PanelableResource>(CREATE_COMPONENT, (void*)&p_resource).value_or(nullptr);
+
+		return panel;
+	}
+
+	InspectorItemManager::PanelableComponent InspectorItemManager::AddComponentTransform(
 		const SvCore::ECS::EntityHandle& p_entity)
 	{
 		static size_t Prio = 2;
@@ -102,10 +144,10 @@ namespace SvEditor::Core
 				)}),
 			Prio);
 
-		return component;
+		return std::make_shared<PanelComponent>(std::move(component));
 	}
 
-	InspectorComponentManager::PanelableComponent InspectorComponentManager::AddComponentHierarchy(
+	InspectorItemManager::PanelableComponent InspectorItemManager::AddComponentHierarchy(
 		const SvCore::ECS::EntityHandle& p_entity)
 	{
 		auto component = PanelComponent(ComponentRegistry::GetInstance().GetRegisteredTypeName<HierarchyComponent>(),
@@ -143,10 +185,10 @@ namespace SvEditor::Core
 					))
 				}));
 
-		return component;
+		return std::make_shared<PanelComponent>(std::move(component));
 	}
 
-	InspectorComponentManager::PanelableComponent InspectorComponentManager::AddComponentTag(
+	InspectorItemManager::PanelableComponent InspectorItemManager::AddComponentTag(
 		const SvCore::ECS::EntityHandle& p_entity)
 	{
 		static size_t Prio = 3;
@@ -161,10 +203,10 @@ namespace SvEditor::Core
 				}),
 			Prio);
 
-		return component;
+		return std::make_shared<PanelComponent>(std::move(component));
 	}
 
-	InspectorComponentManager::PanelableComponent InspectorComponentManager::AddComponentLight(
+	InspectorItemManager::PanelableComponent InspectorItemManager::AddComponentLight(
 		const SvCore::ECS::EntityHandle& p_entity)
 	{
 		using namespace SvRendering::Core;
@@ -256,26 +298,84 @@ namespace SvEditor::Core
 							entity.Get<LightComponent>()->m_type = static_cast<ELightType>(p_val); })
 				) }));
 
-		return component;
+		return std::make_shared<PanelComponent>(std::move(component));
 	}
 
-	//InspectorComponentManager::PanelableComponent InspectorComponentManager::AddComponentModel(
-	//	const SvCore::ECS::EntityHandle& /*p_entity*/)
-	//{
-	//	//auto component = PanelComponent("Light",
-	//	//	PanelComponent::Items({
-	//	//			std::make_shared<PanelSelectionDisplay>(PanelSelectionDisplay(
-	//	//				"Type ", enumNames, display,
-	//	//				[p_entity]() -> int { return static_cast<int>( //copy enum to int
-	//	//					p_entity.Get<LightComponent>()->m_type); },
-	//	//				[entity = p_entity](const int& p_val) mutable { //set enum
-	//	//					entity.Get<LightComponent>()->m_type = static_cast<ELightType>(p_val); })
-	//	//		) }));
+	InspectorItemManager::PanelableComponent InspectorItemManager::AddComponentModel(
+		const SvCore::ECS::EntityHandle& p_entity)
+	{
+		using namespace SvRendering::Resources;
+		using namespace SvCore::Resources;
 
-	//	//return component;
-	//}
+		//auto& ref = *p_entity.Get<ModelComponent>();
 
-	std::string InspectorComponentManager::GetEntityName(const SvCore::ECS::EntityHandle& p_entity)
+		auto component = PanelComponent("Model",
+			PanelComponent::Items({
+					std::make_shared<PanelResourceSelector<Model>>(PanelResourceSelector<Model>(
+						"Model    ", [entity = p_entity]() mutable -> ResourceRef<Model>& { return
+							entity.Get<ModelComponent>()->m_model; }
+					)),
+					std::make_shared<PanelResourceSelector<Material>>(PanelResourceSelector<Material>(
+						"Material ", [entity = p_entity]() mutable -> ResourceRef<Material>&{ return
+							entity.Get<ModelComponent>()->m_material; }
+					))
+				}));
+
+		return std::make_shared<PanelComponent>(std::move(component));
+	}
+
+	InspectorItemManager::PanelableResource InspectorItemManager::AddResourceMaterial(
+		const SvCore::Resources::GenericResourceRef& p_resource)
+	{
+		using namespace SvRendering::Resources;
+		using namespace SvRendering::RHI;
+		using namespace SvCore::Resources;
+
+		ResourceRef<Material> resource = p_resource;
+
+		auto component = PanelResourceDisplay(p_resource, "Ma",
+			PanelResourceDisplay::Items({
+					std::make_shared<PanelResourceSelector<IShader>>(PanelResourceSelector<IShader>(
+						"Material ", [resource]() mutable -> ResourceRef<IShader>&{
+							static ResourceRef<IShader> ref;
+							*ref = resource->GetShader();
+							return ref; },
+						[resource](PanelResourceSelector<IShader>::CallbackParams p_params) {
+							resource->SetShader(p_params);
+						}
+					))
+				}));
+
+		return std::make_shared<PanelResourceDisplay>(std::move(component));
+	}
+
+	InspectorItemManager::PanelableResource InspectorItemManager::AddResourceDefault(
+		const SvCore::Resources::GenericResourceRef& p_resource)
+	{
+		using namespace SvRendering::Resources;
+		using namespace SvRendering::RHI;
+		using namespace SvCore::Resources;
+		using namespace SvCore::Serialization;
+
+		rapidjson::StringBuffer buffer;
+		JsonWriter writer(buffer);
+		p_resource.ToJson(writer);
+
+		std::string rawJson = buffer.GetString();
+
+		auto component = PanelResourceDisplay(p_resource, "Re",
+			PanelResourceDisplay::Items({
+					std::make_shared<PanelTextDisplay>(PanelTextDisplay(
+						std::make_shared<PanelTextDisplay::DefaultText>(PanelTextDisplay::DefaultText(
+							rawJson
+						))
+					))
+				}));
+
+		return std::make_shared<PanelResourceDisplay>(std::move(component));
+	}
+
+	std::string InspectorItemManager::GetEntityName(const SvCore::ECS::EntityHandle& p_entity)
 	{
 		auto val = p_entity.Get<TagComponent>();
 		if (val)

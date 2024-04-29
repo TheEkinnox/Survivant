@@ -41,9 +41,11 @@ namespace SvEditor::Panels
 			LogText(const LogInfo& p_logInfo);
 			~LogText() = default;
 
-			void DisplayAndUpdatePanel()override;
-			std::string GetString(size_t p_len = 0)const override;
-			size_t GetLength()const override;
+			// Inherited via ITextable
+			void	DisplayAndUpdatePanel()override;
+			std::string			GetString(size_t p_len = 0)const override;
+			const std::string&	GetString() override;
+			size_t				GetLength()const override;
 
 		private:
 			static constexpr char SPACER[] = "";

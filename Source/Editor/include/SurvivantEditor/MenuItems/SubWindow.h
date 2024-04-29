@@ -499,7 +499,7 @@
 //
 //		static constexpr char NAME[] =				"ContentDrawer";
 //		static constexpr char DIRECTORY_PATH[] =	"Source";
-//		static constexpr char BACKSLASH[] =			"/";
+//		static constexpr char SLASH[] =			"/";
 //
 //		static inline SvCore::Utility::UnusedIdGenerator s_idGenerator;
 //

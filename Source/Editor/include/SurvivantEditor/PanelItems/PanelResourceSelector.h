@@ -16,21 +16,26 @@ namespace SvEditor::PanelItems
 	class PanelResourceSelector : public PanelInputBase<SvCore::Resources::ResourceRef<T>>
 	{
 	public:
-		using Ref = PanelInputBase<SvCore::Resources::ResourceRef<T>>::Value;
+		using Ref = PanelInputBase<SvCore::Resources::ResourceRef<T>>::GetRefFunc;
 		using Callback = PanelInputBase<SvCore::Resources::ResourceRef<T>>::Callback;
 
 		PanelResourceSelector(
 			const std::string& p_name,
-			Ref p_resourceRef,
+			const Ref& p_resourceRef,
 			const Callback& p_callback = Callback());
+		~PanelResourceSelector() = default;
+
+		PanelResourceSelector(const PanelResourceSelector& p_other);
+		PanelResourceSelector(PanelResourceSelector&& p_other);
+		PanelResourceSelector<T>& operator=(const PanelResourceSelector& p_other);
 
 		virtual void DisplayAndUpdatePanel() override;
 
 	private:
-		void UpdatePopup();
+		void GetAllResources();
 
-		std::string				m_items;
-		PanelPopupMenuButton	m_allResources;
+		std::string								m_name;
+		std::shared_ptr<PanelPopupMenuButton>	m_allResources;
 	};
 }
 

@@ -175,7 +175,7 @@ namespace SvEditor::Panels
     std::string ConsolePanel::LogText::GetString(size_t p_len)const
     {
         if (p_len == 0)
-            return  std::string((LogTypeToString(m_logInfo.m_type) + SPACER + m_logInfo.m_message));
+            return std::string((LogTypeToString(m_logInfo.m_type) + SPACER + m_logInfo.m_message));
 
         auto tmp = std::string((LogTypeToString(m_logInfo.m_type) + SPACER + m_logInfo.m_message), 0, p_len);
         return tmp;
@@ -184,6 +184,12 @@ namespace SvEditor::Panels
     size_t ConsolePanel::LogText::GetLength()const
     {
         return m_length;
+    }
 
+    const std::string& ConsolePanel::LogText::GetString()
+    {
+        static std::string tmp;
+        tmp = std::string((LogTypeToString(m_logInfo.m_type) + SPACER + m_logInfo.m_message));
+        return tmp;
     }
 }

@@ -15,8 +15,11 @@ namespace SvEditor::PanelItems
         m_index = "(" + std::to_string(p_entity.GetEntity().GetIndex()) + ')';
 
         m_components.reserve(p_component.size());
+
         for (auto& component : p_component)
+        {
             AddAndSortComponent(component);
+        }
     }
 
     void PanelEntity::DisplayAndUpdatePanel()
@@ -31,9 +34,9 @@ namespace SvEditor::PanelItems
         {
             ImGui::Separator();
 
-            it->DisplayAndUpdatePanel();
+            (*it)->DisplayAndUpdatePanel();
 
-            if (it->NeedToRemove())
+            if ((*it)->NeedToRemove())
                 it = m_components.erase(it);
             else
                 ++it;
@@ -59,21 +62,22 @@ namespace SvEditor::PanelItems
         return m_index;
     }
 
-    void PanelEntity::AddAndSortComponent(const PanelComponent& p_component)
+    void PanelEntity::AddAndSortComponent(std::shared_ptr<PanelComponent> p_component)
     {
-        static auto prioFunc = [](const PanelComponent& p_a, const PanelComponent& p_b)
+        static auto prioFunc = 
+            [](const std::shared_ptr<PanelComponent>& p_a, const std::shared_ptr<PanelComponent>& p_b)
             {
-                return p_a.GetPrio() > p_b.GetPrio();
+                return p_a->GetPrio() > p_b->GetPrio();
             };
 
         auto first = m_components.begin();
         auto last = m_components.end();
-        auto newPrio = p_component.GetPrio();
+        auto newPrio = p_component->GetPrio();
 
         if (first == last || newPrio == 0)
             m_components.push_back(p_component);
 
-        else if (first->GetPrio() < newPrio)
+        else if ((*first)->GetPrio() < newPrio)
             m_components.insert(first, p_component);
 
         else

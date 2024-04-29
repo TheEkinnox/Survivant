@@ -33,8 +33,6 @@ namespace SvEditor::PanelItems
 		const Value&		GetRef()const;
 
 		Callback	m_callback;
-
-	private:
 		GetRefFunc	m_getRef;
 	};
 

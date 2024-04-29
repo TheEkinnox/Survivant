@@ -76,7 +76,13 @@ namespace SvCore::Resources
             return {};
         }
 
-        return canReuse ? *it->second : *(m_resources[p_path] = std::make_unique<GenericResourceRef>(p_type, p_path, resource));
+        auto val = std::make_unique<GenericResourceRef>(p_type, p_path, resource);
+        if (canReuse)
+            return *it->second;
+        
+        m_resources[p_path] = nullptr;
+        m_resources[p_path] = std::move(val);
+        return *m_resources[p_path];
     }
 
     GenericResourceRef ResourceManager::Get(const std::string& p_type, const std::string& p_path) const

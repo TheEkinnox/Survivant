@@ -17,7 +17,7 @@ namespace SvEditor::PanelItems
 	class PanelEntity : public Interfaces::IInspectorable
 	{
 	public:
-		using Components = std::vector<PanelComponent>;
+		using Components = std::vector<std::shared_ptr<PanelComponent>>;
 
 		PanelEntity(const SvCore::ECS::EntityHandle& p_entity, const Components& p_component);
 		~PanelEntity() = default;
@@ -32,13 +32,12 @@ namespace SvEditor::PanelItems
 	private:
 		static inline const std::string LOGO = "En";
 
-		void AddAndSortComponent(const PanelComponent& p_component);
+		void AddAndSortComponent(std::shared_ptr<PanelComponent> p_component);
 
 
 		std::string					m_index;
 		std::string					m_name;
 		SvCore::ECS::EntityHandle	m_entity;
 		Components					m_components;
-		//PanelButton					m_addComponentButton;
 	};
 }

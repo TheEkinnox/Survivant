@@ -52,4 +52,33 @@ namespace SvEditor::PanelItems
 		bool										m_scrollToBottom = false;
 		bool										m_copy = false;
 	};
+
+	class PanelTextDisplay : public IPanelable
+	{
+	public:
+		class DefaultText : public ITextable
+		{
+		public:
+			DefaultText(const std::string& p_string);
+			~DefaultText() = default;
+
+			// Inherited via ITextable
+			void DisplayAndUpdatePanel() override;
+
+			std::string			GetString(size_t p_len) const override;
+			const std::string&	GetString() override;
+			size_t				GetLength() const override;
+
+		private:
+			std::string m_string;
+		};
+
+		PanelTextDisplay(const std::shared_ptr<ITextable>& p_item);
+		~PanelTextDisplay() = default;
+
+		void DisplayAndUpdatePanel()override;
+
+	private:
+		std::shared_ptr<ITextable> m_item;
+	};
 }
