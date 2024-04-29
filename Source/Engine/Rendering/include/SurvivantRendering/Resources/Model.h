@@ -69,6 +69,11 @@ namespace SvRendering::Resources
          */
         bool Init() override;
 
+        bool Save(const std::string&) override
+        {
+            return true;
+        }
+
         /**
          * \brief Gets the model's mesh at the given index
          * \return The model's mesh at the given index

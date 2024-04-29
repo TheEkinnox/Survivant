@@ -71,6 +71,13 @@ namespace SvCore::ECS
         }
 
         /**
+         * \brief Saves the scene to the given path
+         * \param p_fileName The scene's path
+         * \return True on success. False otherwise
+         */
+        bool Save(const std::string& p_fileName) override;
+
+        /**
          * \brief Serializes the scene to json
          * \param p_writer The output json writer
          * \return True on success. False otherwise.

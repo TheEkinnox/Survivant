@@ -198,10 +198,10 @@ namespace SvRendering::RHI
     {
         glBindTextureUnit(p_slot, m_id);
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, ToGLInt(m_wrapModeU));
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, ToGLInt(m_wrapModeV));
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, ToGLInt(m_minFilter));
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, ToGLInt(m_magFilter));
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, ToGLInt(m_loadInfo.m_wrapModeU));
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, ToGLInt(m_loadInfo.m_wrapModeV));
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, ToGLInt(m_loadInfo.m_minFilter));
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, ToGLInt(m_loadInfo.m_magFilter));
     }
 
     void OpenGLTexture::Unbind(const uint8_t p_slot)

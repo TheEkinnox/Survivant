@@ -56,6 +56,11 @@ namespace SvRendering::RHI
          */
         IShader& operator=(IShader&& p_other) noexcept = default;
 
+        bool Save(const std::string&) override
+        {
+            return true;
+        }
+
         /**
          * \brief Binds the shader to the context.
          */

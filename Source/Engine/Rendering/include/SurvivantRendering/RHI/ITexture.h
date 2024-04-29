@@ -2,6 +2,7 @@
 #include "SurvivantRendering/Enums/EPixelDataFormat.h"
 #include "SurvivantRendering/Enums/ETextureFilter.h"
 #include "SurvivantRendering/Enums/ETextureWrapMode.h"
+#include "SurvivantRendering/Resources/TextureMetaData.h"
 
 #include <SurvivantCore/Resources/IResource.h>
 
@@ -59,6 +60,13 @@ namespace SvRendering::RHI
          * \return True if the texture was successfully loaded. False otherwise.
          */
         bool Load(const std::string& p_path) override;
+
+        /**
+         * \brief Saves the meta data of the texture at the given path
+         * \param p_fileName The texture file's path
+         * \return True on success. False otherwise
+         */
+        bool Save(const std::string& p_fileName) override;
 
         /**
          * \brief Binds the texture to the current context
@@ -124,14 +132,11 @@ namespace SvRendering::RHI
         static std::shared_ptr<ITexture> Create(int p_width, int p_height, Enums::EPixelDataFormat p_format);
 
     protected:
-        unsigned char*          m_data      = nullptr;
-        int                     m_width     = 0;
-        int                     m_height    = 0;
-        uint8_t                 m_channels  = 0;
-        Enums::ETextureFilter   m_minFilter = Enums::ETextureFilter::LINEAR;
-        Enums::ETextureFilter   m_magFilter = Enums::ETextureFilter::LINEAR;
-        Enums::ETextureWrapMode m_wrapModeU = Enums::ETextureWrapMode::REPEAT;
-        Enums::ETextureWrapMode m_wrapModeV = Enums::ETextureWrapMode::REPEAT;
+        unsigned char*             m_data     = nullptr;
+        int                        m_width    = 0;
+        int                        m_height   = 0;
+        uint8_t                    m_channels = 0;
+        Resources::TextureMetaData m_loadInfo;
 
         /**
          * \brief Creates a default texture

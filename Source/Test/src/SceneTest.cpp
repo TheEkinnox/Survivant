@@ -8,6 +8,7 @@ using namespace LibMath;
 
 using namespace SvCore::ECS;
 using namespace SvCore::Resources;
+using namespace SvCore::Serialization;
 
 using namespace SvRendering::Components;
 using namespace SvRendering::Resources;
@@ -196,16 +197,16 @@ namespace SvTest
         entity8.Make<TagComponent>("Entity 8");
         entity8.Make<Transform>(Vector3::front(), Quaternion::identity(), Vector3(1.5f, .5f, .1f));
 
-        rapidjson::StringBuffer buffer;
-        rapidjson::Writer       writer(buffer);
+        JsonStringBuffer buffer;
+        JsonWriter       writer(buffer);
         CHECK(scene.ToJson(writer), "Scene json serialization failed");
         CHECK(writer.IsComplete(), "Scene json serialization failed - Produced json is incomplete");
 
         const std::string validJsonStr(buffer.GetString(), buffer.GetSize());
         SV_LOG("Scene json:\n%s", validJsonStr.c_str());
 
-        Scene               tmp;
-        rapidjson::Document document;
+        Scene        tmp;
+        JsonDocument document;
         document.Parse(validJsonStr.c_str(), validJsonStr.size());
         CHECK(tmp.FromJson(document));
 

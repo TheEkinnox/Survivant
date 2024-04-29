@@ -7,7 +7,8 @@
 
 namespace SvCore::Serialization
 {
-    using JsonWriter = rapidjson::Writer<rapidjson::StringBuffer>;
+    using JsonStringBuffer = rapidjson::StringBuffer;
+    using JsonWriter = rapidjson::Writer<JsonStringBuffer>;
     using JsonOStream = rapidjson::OStreamWrapper;
     using JsonFileWriter = rapidjson::Writer<JsonOStream>;
     using JsonDocument = rapidjson::Document;
