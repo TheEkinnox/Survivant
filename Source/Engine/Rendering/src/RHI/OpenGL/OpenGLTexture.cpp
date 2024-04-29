@@ -67,13 +67,22 @@ namespace SvRendering::RHI
     }
 
     OpenGLTexture::OpenGLTexture(const int p_width, const int p_height, const EPixelDataFormat p_format)
+        : OpenGLTexture(p_width, p_height, p_format, Enums::EPixelDataType::FLOAT)
+    {}
+
+    OpenGLTexture::OpenGLTexture(int p_width, int p_height, Enums::EPixelDataFormat p_format, Enums::EPixelDataType p_dataType)
+        : OpenGLTexture(p_width, p_height, p_format, p_format, p_dataType)
+    {}
+
+    OpenGLTexture::OpenGLTexture(int p_width, int p_height, Enums::EPixelDataFormat p_internalFormat, Enums::EPixelDataFormat p_format, Enums::EPixelDataType p_dataType)
         : ITexture(p_width, p_height, p_format)
     {
         glGenTextures(1, &m_id);
         glBindTexture(GL_TEXTURE_2D, m_id);
 
         const GLenum texFormat = OpenGLAPI::ToGLEnum(p_format);
-        glTexImage2D(GL_TEXTURE_2D, 0, static_cast<GLint>(texFormat), m_width, m_height, 0, texFormat, GL_FLOAT, nullptr);
+        const GLenum intFormat = OpenGLAPI::ToGLEnum(p_internalFormat);
+        glTexImage2D(GL_TEXTURE_2D, 0, static_cast<GLint>(intFormat), m_width, m_height, 0, texFormat, OpenGLAPI::ToGLEnum(p_dataType), nullptr);
     }
 
     OpenGLTexture::OpenGLTexture(const OpenGLTexture& p_other)

@@ -1,8 +1,8 @@
-#include "SurvivantEditor/App/EngineApp.h"
+#include "SurvivantEditor/Core/EngineApp.h"
 
 int main()
 {
-    SvEditor::App::EngineApp app;
+    SvEditor::Core::EngineApp app;
 
     app.Init();
     app.Run();

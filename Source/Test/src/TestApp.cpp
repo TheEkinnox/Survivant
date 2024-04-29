@@ -297,7 +297,7 @@ namespace SvTest
         litCube.Make<ModelComponent>(cube, litMaterial);
         litCube.Make<Transform>(camPos + Vector3::front(), Quaternion::identity(), Vector3(1.5f, .5f, .1f));
 
-        m_scene.Create().Make<LightComponent>(Light(cam.GetClearColor()));
+        m_scene.Create().Make<LightComponent>(Light(Color::lime));
         m_scene.Create().Make<LightComponent>(DirectionalLight{ Color::magenta, Vector3::back() });
         m_scene.Create().Set<LightComponent>(PointLight{ Color::red, Vector3{ -1, 1, 1 }, Attenuation(16) });
 

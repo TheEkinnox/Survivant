@@ -6,15 +6,6 @@ namespace SvApp::Core
 	class IApp
 	{
 	public:
-		struct WorldContext
-		{
-			int WorldType;
-
-		};
-
-
-
-
 		IApp();
 		virtual ~IApp();
 

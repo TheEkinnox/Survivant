@@ -12,7 +12,11 @@ namespace SvCore::ECS
     Entity EntityStorage::Add()
     {
         if (m_entities.size() == m_count)
-            return m_entities.emplace_back(m_count++, Entity::Version{});
+        {
+            auto& e = m_entities.emplace_back(m_count++, Entity::Version{});
+            m_onAdd.Invoke({ m_scene, e });
+            return e;
+        }
 
         Entity& entity = m_entities[m_count++];
         entity.BumpVersion();

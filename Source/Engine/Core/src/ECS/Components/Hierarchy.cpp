@@ -166,7 +166,10 @@ namespace SvCore::ECS
             firstChild.Make<HierarchyComponent>(p_entity);
 
         if (!parent)
+        {
+            LinkTransforms(p_entity);
             return;
+        }
 
         if (HierarchyComponent* parentHierarchy = parent.Get<HierarchyComponent>())
         {
