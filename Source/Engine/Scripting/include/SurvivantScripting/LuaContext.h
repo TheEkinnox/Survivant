@@ -65,9 +65,19 @@ namespace SvScripting
         void Init();
 
         /**
+         * \brief Removes all loaded scripts from the lua context
+         */
+        void Clear();
+
+        /**
          * \brief Resets the lua context
          */
         void Reset();
+
+        /**
+         * \brief Reloads the lua context
+         */
+        void Reload();
 
         /**
          * \brief Checks whether the context is in a valid state or not

@@ -24,7 +24,10 @@ namespace SvScripting
 
     LuaContext::~LuaContext()
     {
-        Reset();
+        if (m_hasStarted)
+            Stop();
+
+        Clear();
     }
 
     LuaContext& LuaContext::GetInstance()
@@ -44,18 +47,9 @@ namespace SvScripting
         m_isValid = true;
 
         BindUserTypes(*m_state);
-
-        for (size_t i = m_scripts.size(); i > 0; --i)
-        {
-            if (i > m_scripts.size())
-                continue;
-
-            if (!RegisterScript(m_scripts[i - 1]))
-                return;
-        }
     }
 
-    void LuaContext::Reset()
+    void LuaContext::Clear()
     {
         for (size_t i = m_scripts.size(); i > 0 && m_isValid; --i)
         {
@@ -68,10 +62,24 @@ namespace SvScripting
             m_scripts[i - 1].m_table = sol::nil;
         }
 
+        m_scripts.clear();
+    }
+
+    void LuaContext::Reset()
+    {
+        Clear();
+
         if (m_state)
             m_state.reset();
 
-        m_isValid = false;
+        m_hasStarted = false;
+        m_isValid    = false;
+    }
+
+    void LuaContext::Reload()
+    {
+        Reset();
+        Init();
     }
 
     bool LuaContext::IsValid() const
