@@ -21,16 +21,16 @@ namespace SvCore::Serialization
     JsonDocument LoadJsonFile(const std::string& p_path);
 
     template <typename T>
-    bool ToJson(const T& value, JsonWriter& writer) requires (!std::is_enum_v<T>);
+    bool ToJson(const T& p_value, JsonWriter& p_writer) requires (!std::is_enum_v<T>);
 
     template <typename T>
-    bool FromJson(T& value, const JsonValue& json) requires (!std::is_enum_v<T>);
+    bool FromJson(T& p_out, const JsonValue& p_json) requires (!std::is_enum_v<T>);
 
     template <typename T>
-    bool ToJson(T value, JsonWriter& writer) requires std::is_enum_v<T>;
+    bool ToJson(T p_value, JsonWriter& p_writer) requires std::is_enum_v<T>;
 
     template <typename T>
-    bool FromJson(T& out, const JsonValue& json) requires std::is_enum_v<T>;
+    bool FromJson(T& p_out, const JsonValue& p_json) requires std::is_enum_v<T>;
 }
 
 #include "SurvivantCore/Serialization/Serializer.inl"
