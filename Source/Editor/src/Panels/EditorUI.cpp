@@ -82,10 +82,6 @@ namespace SvEditor::Core
         ISelectable::m_onClearSelected.AddListener([this]() { m_selected = nullptr; });
     }
 
-    EditorUI::~EditorUI()
-    {
-    }
-
     void EditorUI::InitWindow(SvApp::Window* p_window)
     {
         ImGui_ImplGlfw_InitForOpenGL(p_window->GetWindow(), true);
@@ -121,7 +117,7 @@ namespace SvEditor::Core
                 auto entity = p_world.lock()->
                     m_renderingContext->GetEntityIdValue(p_uv, scene);
 
-                SV_EVENT_MANAGER().Invoke<EditorUI::DebugEvent>(SvCore::Utility::FormatString("ID = %d", entity.GetIndex()).c_str());
+                SV_LOG(SvCore::Utility::FormatString("ID = %d", entity.GetIndex()).c_str());
 
                 p_world.lock()->m_renderingContext->s_editorSelectedEntity = entity;
                 HierarchyPanel::SelectSelectable(entity);
@@ -135,14 +131,14 @@ namespace SvEditor::Core
             [p_world](const LibMath::Vector2& p_size)
             { 
                 p_world.lock()->m_renderingContext->Resize(p_size);
-                SV_EVENT_MANAGER().Invoke<EditorUI::DebugEvent>(SvCore::Utility::FormatString("Size = %f, %f", p_size.m_x, p_size.m_y).c_str()); 
+                SV_LOG(SvCore::Utility::FormatString("Size = %f, %f", p_size.m_x, p_size.m_y).c_str());
             });
 
         m_inputs = p_world.lock()->m_inputs;
         m_main->SetMenuBar(CreateMenuBar());
     }
 
-    void EditorUI::InitHierchyPanel(std::weak_ptr<WorldContext> p_world)
+    void EditorUI::InitHierarchyPanel(std::weak_ptr<WorldContext> p_world)
     {
         HierarchyPanel::SetCurrentSceneGetter(
             [p_world]() { return p_world.lock()->CurrentSceneRef(); });
@@ -318,8 +314,6 @@ namespace SvEditor::Core
     {
         static int i = 0;
 
-        //TODO: remove debug message "Created Test Panel"
-        SvCore::Events::EventManager::GetInstance().Invoke<EditorUI::DebugEvent>("Created Test Panel");
         auto name = std::string("test-") + std::to_string(i++);
 
         return m_currentPanels.insert({ name, std::make_shared<TestPanel>(name) }).first->second;

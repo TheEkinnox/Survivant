@@ -54,8 +54,6 @@ namespace SvEditor::Core
 
 		void PauseGameInstance();
 
-		void RenderWorlds();
-
 		//class GameLoopEvent : public SvCore::Events::Event<> {};
 
 		std::unique_ptr<Core::EditorWindow>			m_window;

@@ -3,6 +3,7 @@
 #include "SurvivantEditor/Panels/ConsolePanel.h"
 
 #include "SurvivantCore/Events/EventManager.h"
+#include "SurvivantCore/Debug/Logger.h"
 #include "SurvivantEditor/MenuItems/MenuCheckBox.h"
 
 #include "backends/imgui_impl_glfw.h"
@@ -18,7 +19,6 @@ namespace SvEditor::Panels
         m_name = GetUniqueName(NAME, s_panelCount);
         s_panelCount++;
 
-        m_textBox;
         m_buttons.m_buttons.emplace_back("Clear", [this]() { m_textBox.Clear(); });
         m_buttons.m_buttons.emplace_back("Copy", [this]() { m_textBox.Copy(); });
 
@@ -34,24 +34,23 @@ namespace SvEditor::Panels
         }
 
         //debug event
-        //m_eventHandle = 
+        //
 
-        m_eventHandle = SvCore::Events::EventManager::GetInstance().AddListenner<Core::IUI::DebugEvent>(
-            [this](const char* m_message)
+        m_eventHandle = SvCore::Debug::Logger::GetInstance().m_onPrint.AddListener(
+            [this](const LogInfo& m_message)
             {
                 if (this == nullptr)
                     return;
 
                 m_textBox.AddItem(
-                    std::make_shared<ConsolePanel::LogText>(LogInfo{ ELogType::DEBUG_LOG, m_message }));
-            }
-        );
+                    std::make_shared<ConsolePanel::LogText>(m_message));
+            });
     }
 
     ConsolePanel::~ConsolePanel()
     {
         s_panelCount--;
-        SvCore::Events::EventManager::GetInstance().RemoveListenner<Core::IUI::DebugEvent>(m_eventHandle);
+        SvCore::Debug::Logger::GetInstance().m_onPrint.RemoveListener(m_eventHandle);
     }
 
     Panel::ERenderFlags ConsolePanel::Render()

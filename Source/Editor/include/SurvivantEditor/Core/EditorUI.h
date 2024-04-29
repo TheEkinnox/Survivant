@@ -28,20 +28,20 @@ namespace SvEditor::Core
 	using namespace MenuItems;
 	using namespace Interfaces;
 
-	class EditorUI : public IUI
+	class EditorUI: public IUI
 	{
 	public:
 		using Panels = std::unordered_map<std::string, std::shared_ptr<Panel>>;
 		using WorldContext = SvApp::Core::WorldContext;
 
 		EditorUI();
-		~EditorUI(); 
+		~EditorUI() = default; 
 
 		void InitWindow(SvApp::Window* p_window);
 
 		void InitGamePanel(const WorldContext::WorldCreator& p_worldCreator, const std::array<std::function<void()>, 3> p_playPauseFrameCallbacks);
 		void InitScenePanel(std::weak_ptr<WorldContext> p_world);
-		void InitHierchyPanel(std::weak_ptr<WorldContext> p_world);
+		void InitHierarchyPanel(std::weak_ptr<WorldContext> p_world);
 
 		void StartFrameUpdate() override;
 		void RenderPanels();
@@ -79,10 +79,6 @@ namespace SvEditor::Core
 		//TODO : add ratio vfont sizes
 		static constexpr int DEFAULT_FONT_SIZE = 16;
 		static constexpr int ICON_FONT_SIZE = 64;
-
-
-		void TempTest();
-
 
 		std::vector<ImFont*> m_fonts;
 

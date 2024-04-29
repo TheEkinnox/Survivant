@@ -242,7 +242,7 @@ namespace SvEditor::Panels
     bool ContentDrawerPanel::TryOpenFile(ResourceBranch& p_branch)
     {
         std::string message = "Try to open file, path : " + p_branch.GetPathName();
-        SvCore::Events::EventManager::GetInstance().Invoke<Core::EditorUI::DebugEvent>(message.c_str());
+        SV_LOG(message.c_str());
 
         //can display other items
         return false;

@@ -295,7 +295,7 @@ namespace SvEditor::Core
 
 	void EditorEngine::Init()
 	{
-		g_engine = this;
+		s_engine = this;
 
 		//TODO: load all ressources here
 

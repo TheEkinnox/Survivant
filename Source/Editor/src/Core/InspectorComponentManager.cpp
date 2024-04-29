@@ -43,26 +43,26 @@ namespace SvEditor::Core
 	void InspectorItemManager::Init()
 	{
 		//components
-		ASSERT(AddComponentToPanelable<Transform>(&AddComponentTransform, "Transform"),
+		CHECK(AddComponentToPanelable<Transform>(&AddComponentTransform, "Transform"),
 			"Couldn't add ComponentToPanelable callback to type : Transform");
-		ASSERT(AddComponentToPanelable<HierarchyComponent>(&AddComponentHierarchy, "Hierarchy"),
+		CHECK(AddComponentToPanelable<HierarchyComponent>(&AddComponentHierarchy, "Hierarchy"),
 			"Couldn't add ComponentToPanelable callback to type : Hierarchy");
-		ASSERT(AddComponentToPanelable<TagComponent>(&AddComponentTag, "Tag"),
+		CHECK(AddComponentToPanelable<TagComponent>(&AddComponentTag, "Tag"),
 			"Couldn't add ComponentToPanelable callback to type : Tag");
-		ASSERT(AddComponentToPanelable<LightComponent>(&AddComponentLight, "Light"),
+		CHECK(AddComponentToPanelable<LightComponent>(&AddComponentLight, "Light"),
 			"Couldn't add ComponentToPanelable callback to type : Light");
-		ASSERT(AddComponentToPanelable<ModelComponent>(&AddComponentModel, "Model"),
+		CHECK(AddComponentToPanelable<ModelComponent>(&AddComponentModel, "Model"),
 			"Couldn't add ComponentToPanelable callback to type : Model");
 	
-		ASSERT(AddResourceToPanelable<Model>(&AddResourceDefault, "Model"),
+		CHECK(AddResourceToPanelable<Model>(&AddResourceDefault, "Model"),
 			"Couldn't add ResourceToPanelable callback to type : Model");
-		ASSERT(AddResourceToPanelable<Material>(&AddResourceDefault, "Material"),
+		CHECK(AddResourceToPanelable<Material>(&AddResourceDefault, "Material"),
 			"Couldn't add ResourceToPanelable callback to type : Material");
-		ASSERT(AddResourceToPanelable<LuaScript>(&AddResourceDefault, "Script"),
+		CHECK(AddResourceToPanelable<LuaScript>(&AddResourceDefault, "Script"),
 			"Couldn't add ResourceToPanelable callback to type : Script");
-		ASSERT(AddResourceToPanelable<IShader>(&AddResourceDefault, "Shader"),
+		CHECK(AddResourceToPanelable<IShader>(&AddResourceDefault, "Shader"),
 			"Couldn't add ResourceToPanelable callback to type : Shader");
-		ASSERT(AddResourceToPanelable<ITexture>(&AddResourceDefault, "Texture"),
+		CHECK(AddResourceToPanelable<ITexture>(&AddResourceDefault, "Texture"),
 			"Couldn't add ResourceToPanelable callback to type : Texture");
 	}
 
@@ -127,20 +127,6 @@ namespace SvEditor::Core
 							{
 								return *e.Get<Transform>();
 							}))
-						//does callback already in PanelTransformInput with ref
-						/*PanelTransformInput::Callback( 
-							[entity](PanelTransformInput::CallbackParams p_params) mutable
-							{
-								auto& trans = *entity.Get<Transform>();
-								auto& [pos, rot, scl] = p_params;
-
-								if (pos)
-									trans.setPosition(*pos);
-								if (rot)
-									trans.setRotation(*rot);
-								if (scl)
-									trans.setScale(*scl);
-							})*/	
 				)}),
 			Prio);
 
@@ -159,19 +145,6 @@ namespace SvEditor::Core
 						PanelUInt32Input::Callback([entity = p_entity](const uint32_t& p_index) mutable {
 							entity.SetParent(entity.GetScene()->Find(static_cast<Entity::Index>(p_index)));  })
 					)),
-				//std::make_shared<PanelTextInput>(PanelTextInput(
-				//	"Parent        ",
-				//	PanelTextInput::GetRefFunc([entity = p_entity]() mutable -> std::string& {
-				//		static std::string val;
-
-				//		auto parent = entity.Get<HierarchyComponent>()->GetParent();
-				//		if (!parent || parent == NULL_ENTITY)
-				//			val = "None";
-				//		else
-				//			val = GetEntityName(EntityHandle(entity.GetScene(), parent));
-				//		return val; }),
-				//	PanelTextInput::Callback()
-				//	)),
 				std::make_shared<PanelUInt32Input>(PanelUInt32Input(
 					"Child Count ",
 					PanelIntInput::GetCopyFunc([entity = p_entity]() mutable -> uint32_t { return

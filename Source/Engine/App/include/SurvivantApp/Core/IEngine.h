@@ -9,7 +9,7 @@
 #include <memory>
 #include <vector>
 
-#define SV_DELTA_TIME() SvApp::Core::Engine::g_engine->GetDeltaTime()
+#define SV_DELTA_TIME() SvApp::Core::Engine::s_engine->GetDeltaTime()
 
 namespace SvApp::Core
 {
@@ -37,14 +37,14 @@ namespace SvApp::Core
 		static std::shared_ptr<WorldContext>	CreateNewWorldContext(WorldContext::EWorldType p_worldType);
 		Scene&									GetCurrentScene();
 
-		static inline Engine* g_engine = nullptr;
+		static inline Engine* s_engine = nullptr;
 
 	protected:
 		bool PrepareSceneChange(WorldContext& p_context, const std::shared_ptr<Scene>& p_newLevel);
 		bool CommitSceneChange(WorldContext& m_context, const std::shared_ptr<Scene>& p_newLevel);
 
 		//acces GameInstace members
-		std::weak_ptr<WorldContext>& GetWorldContextRef(GameInstance& p_instance);
+		std::weak_ptr<WorldContext>&	GetWorldContextRef(GameInstance& p_instance);
 
 		std::shared_ptr<Scene>				m_currentScene;
 		LevelMap							m_allLevels;

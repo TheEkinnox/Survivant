@@ -20,8 +20,6 @@ namespace SvEditor::Core
 	class IUI
 	{
 	public:
-		class DebugEvent : public SvCore::Events::Event<const char*> {};
-
 		virtual ImFont* GetFontDefault() = 0;
 		virtual ImFont* GetIconFont() = 0;
 

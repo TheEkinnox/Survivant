@@ -30,7 +30,6 @@ namespace SvEditor::Core
 		// Inherited via Engine
 		void Update() override;
 		void Init() override;
-
 		void RenderWorlds();
 
 		bool IsRunning();
@@ -41,6 +40,7 @@ namespace SvEditor::Core
 		bool ChangeScene(const std::string& p_sceneName) override;
 		void RedrawViewports() override;
 		float GetDeltaTime() override;
+
 
 		////scene panel, where you mofi
 		//void CreateEditorWorld();
@@ -76,6 +76,8 @@ namespace SvEditor::Core
 
 		SvCore::Utility::Timer			m_time;
 		bool							m_isRunning = true;
+
+
 
 		//always exists
 		std::shared_ptr<WorldContext>			m_editorWorld;

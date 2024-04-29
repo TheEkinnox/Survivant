@@ -45,7 +45,7 @@ namespace SvApp::Core
     Engine* GameInstance::GetEngine()
     {
         //an engine will exist before any GameInstances
-        ASSERT(Engine::g_engine != nullptr, "Global engine not defined before GameInstance");
-        return Engine::g_engine;
+        ASSERT(Engine::s_engine != nullptr, "Global engine not defined before GameInstance");
+        return Engine::s_engine;
     }
 }

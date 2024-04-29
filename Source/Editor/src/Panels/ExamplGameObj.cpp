@@ -46,7 +46,6 @@ namespace SvEditor::Panels
     {
         ISelectable::Open();
 
-        SV_EVENT_MANAGER().Invoke<Core::IUI::DebugEvent>("Clicked Resource");
         return false;
     }
 
@@ -58,7 +57,6 @@ namespace SvEditor::Panels
 
     void ExamplResource::DisplayAndUpdatePopupMenu()
     {
-        SV_EVENT_MANAGER().Invoke<Core::IUI::DebugEvent>("No PopupMenu");
     }
 
     bool ExamplResource::GetSelectedState()

@@ -50,21 +50,6 @@ namespace SvEditor::Core
 			[this]() { TogglePausePIE(); },
 			[this]() { PressFramePIE(); }
 			});
-
-		//using namespace SvEditor;
-		//Panels::4Panel::AddClickSceneListenner(
-		//	[](const LibMath::Vector2& p_uv)
-		//	{
-		//		ToRemove::g_idFrameBuffer->Bind();
-		//		uint32_t val;
-		//		IRenderAPI::GetCurrent().ReadPixels(
-		//			p_uv * LibMath::Vector2(800, 600), DimensionsT(1, 1), EPixelDataFormat::RED_INT, EPixelDataType::INT, &val);
-		//		ToRemove::g_idFrameBuffer->Unbind();
-
-		//		SV_EVENT_MANAGER().Invoke<Core::EditorUI::DebugEvent>(SvCore::Utility::FormatString("Val = %u", val).c_str());
-		//		//SV_EVENT_MANAGER().Invoke<Core::EditorUI::DebugEvent>(SvCore::Utility::FormatString("UV = %f, %f", p_uv.m_x, p_uv.m_y).c_str());
-		//	}
-		//);
 	}
 
 	void EngineApp::Run()

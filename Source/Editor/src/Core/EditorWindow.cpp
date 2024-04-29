@@ -50,7 +50,7 @@ namespace SvEditor::Core
 		const std::array<std::function<void()>, 3>	p_playPauseFrameCallbacks)
 	{
 		m_ui->InitScenePanel(p_sceneWorld);
-		m_ui->InitHierchyPanel(p_sceneWorld);
+		m_ui->InitHierarchyPanel(p_sceneWorld);
 		m_ui->InitGamePanel(p_gameWorld, p_playPauseFrameCallbacks);
 	}
 
