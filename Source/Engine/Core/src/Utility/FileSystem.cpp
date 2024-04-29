@@ -39,6 +39,11 @@ namespace SvCore::Utility
         return _chdir(p_directory.c_str()) == 0;
     }
 
+    std::string MakePreferred(const std::string& p_path)
+    {
+        return std::filesystem::path(p_path).make_preferred().string();
+    }
+
     std::string AppendPath(const std::string& p_root, const std::string& p_path)
     {
         return std::filesystem::path(p_root).append(p_path).make_preferred().string();

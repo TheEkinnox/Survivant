@@ -23,6 +23,13 @@ namespace SvCore::Utility
     bool SetWorkingDirectory(const std::string& p_directory);
 
     /**
+     * \brief Converts the given path's separator to the system's preferred one
+     * \param p_path The path to convert
+     * \return The converted path
+     */
+    std::string MakePreferred(const std::string& p_path);
+
+    /**
      * \brief Appends the given path to the given root
      * \param p_root The root search path
      * \param p_path The path to append to the root
