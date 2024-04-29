@@ -53,7 +53,7 @@ namespace SvEditor::Core
 			"Couldn't add ComponentToPanelable callback to type : Light");
 		CHECK(AddComponentToPanelable<ModelComponent>(&AddComponentModel, "Model"),
 			"Couldn't add ComponentToPanelable callback to type : Model");
-	
+
 		CHECK(AddResourceToPanelable<Model>(&AddResourceDefault, "Model"),
 			"Couldn't add ResourceToPanelable callback to type : Model");
 		CHECK(AddResourceToPanelable<Material>(&AddResourceDefault, "Material"),
@@ -85,7 +85,7 @@ namespace SvEditor::Core
 			if (info.Has(CREATE_COMPONENT))
 			{
 				auto val = info.Call<PanelableComponent>(CREATE_COMPONENT, (void*)&p_entity);
-				
+
 				if (val.has_value())
 					panelables.emplace_back(val.value());
 			}
@@ -170,7 +170,7 @@ namespace SvEditor::Core
 			PanelComponent::Items({
 					std::make_shared<PanelTextInput>(PanelTextInput(
 						"Name ",
-						[entity = p_entity]() mutable -> std::string& { return 
+						[entity = p_entity]() mutable -> std::string& { return
 							entity.Get<TagComponent>()->m_tag; }
 					))
 				}),
@@ -193,7 +193,7 @@ namespace SvEditor::Core
 		//Core::Light            m_ambient;
 		display.emplace_back(PanelSelectionDisplay::SelectedDisplay({
 				std::make_shared<PanelColorInput>(PanelColorInput(
-					"Color ", 
+					"Color ",
 					[entity = p_entity]() mutable -> Vector4& { return //cast from (float[4])[0] to &Vec4
 						*(Vector4*)&(entity.Get<LightComponent>()->m_ambient.m_color.m_r); }
 				))
@@ -264,7 +264,7 @@ namespace SvEditor::Core
 		auto component = PanelComponent(ComponentRegistry::GetInstance().GetRegisteredTypeName<LightComponent>(),
 			PanelComponent::Items({
 					std::make_shared<PanelSelectionDisplay>(PanelSelectionDisplay(
-						"Type ", enumNames, display, 
+						"Type ", enumNames, display,
 						[p_entity]() -> int { return static_cast<int>( //copy enum to int
 							p_entity.Get<LightComponent>()->m_type); },
 						[entity = p_entity] (const int& p_val) mutable { //set enum
@@ -330,7 +330,7 @@ namespace SvEditor::Core
 		using namespace SvCore::Resources;
 		using namespace SvCore::Serialization;
 
-		rapidjson::StringBuffer buffer;
+		JsonStringBuffer buffer;
 		JsonWriter writer(buffer);
 		p_resource.ToJson(writer);
 

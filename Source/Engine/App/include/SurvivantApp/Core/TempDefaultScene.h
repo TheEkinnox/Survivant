@@ -133,7 +133,7 @@ namespace ToRemove
 
     inline ITexture& GetIdFrameBuffer()
     {
-        static std::shared_ptr<ITexture> id = ITexture::Create(800, 600, EPixelDataFormat::RED_32I, EPixelDataFormat::RED_INT, EPixelDataType::UNSIGNED_INT);
+        static std::shared_ptr<ITexture> id = ITexture::Create(800, 600, EPixelDataFormat::RED_INT_32, EPixelDataFormat::RED_INT, EPixelDataType::UNSIGNED_INT);
         static std::shared_ptr<ITexture> depth = ITexture::Create(800, 600, EPixelDataFormat::DEPTH_COMPONENT);
 
         static bool isInitialized = false;

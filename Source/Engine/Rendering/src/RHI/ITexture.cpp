@@ -147,7 +147,7 @@ namespace SvRendering::RHI
     bool ITexture::Save(const std::string& p_fileName)
     {
         JsonStringBuffer buffer;
-        JsonWriter              writer(buffer);
+        JsonWriter       writer(buffer);
 
         if (!m_loadInfo.ToJson(writer) || !ASSUME(writer.IsComplete(), "Failed to save texture data - Produced json is incomplete"))
             return false;
@@ -190,6 +190,9 @@ namespace SvRendering::RHI
         switch (p_format)
         {
         case EPixelDataFormat::RED:
+        case EPixelDataFormat::RED_INT:
+        case EPixelDataFormat::RED_INT_32:
+        case EPixelDataFormat::RED_UINT_32:
         case EPixelDataFormat::GREEN:
         case EPixelDataFormat::BLUE:
         case EPixelDataFormat::ALPHA:
@@ -236,7 +239,7 @@ namespace SvRendering::RHI
         }
     }
 
-    std::shared_ptr<ITexture> ITexture::Create(int p_width, int p_height, Enums::EPixelDataFormat p_format, Enums::EPixelDataType p_dataType)
+    std::shared_ptr<ITexture> ITexture::Create(int p_width, int p_height, EPixelDataFormat p_format, EPixelDataType p_dataType)
     {
         switch (IRenderAPI::GetCurrent().GetBackend())
         {
@@ -249,7 +252,8 @@ namespace SvRendering::RHI
         }
     }
 
-    std::shared_ptr<ITexture> ITexture::Create(int p_width, int p_height, Enums::EPixelDataFormat p_internalFormat, Enums::EPixelDataFormat p_format, Enums::EPixelDataType p_dataType)
+    std::shared_ptr<ITexture> ITexture::Create(
+        int p_width, int p_height, EPixelDataFormat p_internalFormat, EPixelDataFormat p_format, EPixelDataType p_dataType)
     {
         switch (IRenderAPI::GetCurrent().GetBackend())
         {

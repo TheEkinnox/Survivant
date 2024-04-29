@@ -28,8 +28,16 @@ namespace SvRendering::RHI
          */
         OpenGLTexture(int p_width, int p_height, Enums::EPixelDataFormat p_format, Enums::EPixelDataType p_dataType);
 
-
-        OpenGLTexture(int p_width, int p_height, Enums::EPixelDataFormat p_internalFormat, Enums::EPixelDataFormat p_format, Enums::EPixelDataType p_dataType);
+        /**
+         * \brief Creates a texture with the given width, height, internal data format, pixel format and data type
+         * \param p_width The texture's width
+         * \param p_height The texture's height
+         * \param p_internalFormat The texture's internal data format
+         * \param p_format The texture's pixel format
+         * \param p_dataType The texture's data type
+         */
+        OpenGLTexture(int p_width, int p_height, Enums::EPixelDataFormat p_internalFormat, Enums::EPixelDataFormat p_format,
+                      Enums::EPixelDataType p_dataType);
 
         /**
          * \brief Creates a copy of the given texture
