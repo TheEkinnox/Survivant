@@ -6,6 +6,7 @@
 #include "SurvivantCore/Utility/UnusedIdGenerator.h"
 #include "SurvivantEditor/Panels/Panel.h"
 #include "SurvivantEditor/PanelItems/PanelTreeBranch.h"
+#include "SurvivantEditor/PanelItems/PanelButton.h"
 
 
 
@@ -48,6 +49,7 @@ namespace SvEditor::Panels
 		
 		HierarchyBranch		m_tree;
 		SceneRef			m_scene;
+		PanelButton			m_addEntity;
 
 		std::weak_ptr<HierarchyBranch> m_currentSelected;
 	};

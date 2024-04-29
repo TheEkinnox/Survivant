@@ -20,7 +20,9 @@ using namespace SvCore::Utility;
 namespace SvEditor::Panels
 {
     HierarchyPanel::HierarchyPanel() :
-        m_tree("All", HierarchyBranch::Childreen(), false)
+        m_tree("All", HierarchyBranch::Childreen(), false),
+        m_addEntity("Add Entity", []() { 
+        s_getCurrentScene().lock().get()->get()->Create(); })
     {
         m_name = NAME;
 
@@ -178,6 +180,8 @@ namespace SvEditor::Panels
 
         for (auto& branch : m_tree.GetChildreen())
             branch.second->DisplayAndUpdatePanel();
+
+        m_addEntity.DisplayAndUpdatePanel();
 
         ImGui::End();
 
