@@ -34,9 +34,9 @@ namespace SvEditor::PanelItems
 
 		virtual void DisplayAndUpdatePanel() override;
 
+		static Vector3 								ToVector3Degree(const LibMath::TVector3<LibMath::Radian>& p_radians);
+		static LibMath::TVector3<LibMath::Radian>	ToVector3Radian(const LibMath::Vector3& p_degrees);
 	private:
-		Vector3 							ToVector3Degree(const LibMath::TVector3<LibMath::Radian>& p_radians);
-		LibMath::TVector3<LibMath::Radian>	ToVector3Radian(const LibMath::Vector3& p_degrees);
 		//void								ResetVector3ValIfNan(LibMath::Vector3& p_value);
 
 		TransformCallback					m_callback;

@@ -17,7 +17,9 @@
 #include "SurvivantEditor/PanelItems/PanelButton.h"
 #include "SurvivantEditor/PanelItems/PanelColorInput.h"
 #include "SurvivantEditor/PanelItems/PanelComponent.h"
+#include "SurvivantEditor/PanelItems/PanelFloatInput.h"
 #include "SurvivantEditor/PanelItems/PanelIntInput.h"
+#include "SurvivantEditor/PanelItems/PanelMultipleSelection.h"
 #include "SurvivantEditor/PanelItems/PanelResourceSelector.h"
 #include "SurvivantEditor/PanelItems/PanelSelectionDisplay.h"
 #include "SurvivantEditor/PanelItems/PanelTextBox.h"
@@ -53,7 +55,11 @@ namespace SvEditor::Core
 			"Couldn't add ComponentToPanelable callback to type : Light");
 		CHECK(AddComponentToPanelable<ModelComponent>(&AddComponentModel, "Model"),
 			"Couldn't add ComponentToPanelable callback to type : Model");
+		CHECK(AddComponentToPanelable<CameraComponent>(&AddComponentCamera, "Camera"),
+			"Couldn't add ComponentToPanelable callback to type : Camera");
 
+
+		//resources
 		CHECK(AddResourceToPanelable<Model>(&AddResourceDefault, "Model"),
 			"Couldn't add ResourceToPanelable callback to type : Model");
 		CHECK(AddResourceToPanelable<Material>(&AddResourceDefault, "Material"),
@@ -157,6 +163,92 @@ namespace SvEditor::Core
 						entity.SetParent(EntityHandle()); })
 					))
 				}));
+
+		return std::make_shared<PanelComponent>(std::move(component));
+	}
+
+	InspectorItemManager::PanelableComponent InspectorItemManager::AddComponentCamera(
+		const SvCore::ECS::EntityHandle& p_entity)
+	{
+		std::vector<std::string> enumNames;
+		for (int i = 0; i <= static_cast<int>(EProjectionType::ORTHOGRAPHIC); i++)
+			enumNames.emplace_back(std::string(ProjectionTypeToString(EProjectionType(i))));
+
+		std::vector<PanelSelectionDisplay::SelectedDisplay> display;
+
+		//Perspective
+		display.emplace_back(PanelSelectionDisplay::SelectedDisplay({
+				std::make_shared<PanelFloatInput>(PanelFloatInput(
+					"FovY     ",
+					[entity = p_entity]() mutable -> float { return
+						entity.Get<CameraComponent>()->GetFovY().degree(true); },
+					[entity = p_entity](const float& p_val) mutable {
+						entity.Get<CameraComponent>()->SetFovY(LibMath::Degree(std::fmodf(p_val, 360))); }
+				)),
+				std::make_shared<PanelVec2Input>(PanelVec2Input(
+					"Near/Far ",
+					[entity = p_entity]() mutable -> Vector2 { return Vector2(
+						entity.Get<CameraComponent>()->GetPerspectiveNear(),
+						entity.Get<CameraComponent>()->GetPerspectiveFar()); },
+					[entity = p_entity](const Vector2& p_val) mutable {
+						entity.Get<CameraComponent>()->SetPerspectiveNear(p_val.m_x);
+						entity.Get<CameraComponent>()->SetPerspectiveFar(p_val.m_y); }
+				))
+			}));
+
+		//Orthographic
+		display.emplace_back(PanelSelectionDisplay::SelectedDisplay({
+		std::make_shared<PanelFloatInput>(PanelFloatInput(
+			"Size     ",
+			[entity = p_entity]() mutable -> float { return
+				entity.Get<CameraComponent>()->GetOrthographicSize(); },
+			[entity = p_entity](const float& p_val) mutable {
+				entity.Get<CameraComponent>()->SetOrthographicSize(p_val); }
+		)),
+		std::make_shared<PanelVec2Input>(PanelVec2Input(
+			"Near/Far ",
+			[entity = p_entity]() mutable -> Vector2 { return Vector2(
+				entity.Get<CameraComponent>()->GetOrthographicNear(),
+				entity.Get<CameraComponent>()->GetOrthographicFar()); },
+			[entity = p_entity](const Vector2& p_val) mutable {
+				entity.Get<CameraComponent>()->SetOrthographicNear(p_val.m_x);
+				entity.Get<CameraComponent>()->SetOrthographicFar(p_val.m_y); }
+		))
+			}));
+
+		auto component = PanelComponent(ComponentRegistry::GetInstance().GetRegisteredTypeName<CameraComponent>(),
+			PanelComponent::Items({
+				std::make_shared<PanelMultipleSelection>(PanelMultipleSelection(
+					"Clear Mask   ", { "Color", "Depth", "Stencil" }, 
+					[entity = p_entity]() -> int {
+							return static_cast<int>(entity.Get<CameraComponent>()->GetClearMask());
+					},
+					[entity = p_entity](const int& p_val) mutable {
+							entity.Get<CameraComponent>()->SetClearMask(static_cast<uint8_t>(p_val));
+					}
+				)),
+				std::make_shared<PanelColorInput>(PanelColorInput(
+					"Color        ",
+					[entity = p_entity]() mutable -> Vector4 { return static_cast<Vector4>(
+						entity.Get<CameraComponent>()->GetClearColor()); },
+					[entity = p_entity](const Vector4& p_value) mutable { 
+						entity.Get<CameraComponent>()->SetClearColor(p_value); }
+				)),
+				std::make_shared<PanelUInt32Input>(PanelUInt32Input(
+					"Culling Mask ",
+					[entity = p_entity]() mutable -> uint32_t { return static_cast<uint32_t>(
+						entity.Get<CameraComponent>()->GetCullingMask()); },
+					[entity = p_entity](const uint32_t& p_value) mutable {
+						entity.Get<CameraComponent>()->SetCullingMask(p_value); }
+				)),
+				std::make_shared<PanelSelectionDisplay>(PanelSelectionDisplay(
+					"Type         ", enumNames, display,
+					[p_entity]() -> int { return static_cast<int>( //copy enum to int
+							p_entity.Get<CameraComponent>()->GetProjectionType()); },
+					[entity = p_entity](const int& p_val) mutable { //set enum
+						entity.Get<CameraComponent>()->SetProjectionType(static_cast<EProjectionType>(p_val)); }
+				))
+			}));
 
 		return std::make_shared<PanelComponent>(std::move(component));
 	}

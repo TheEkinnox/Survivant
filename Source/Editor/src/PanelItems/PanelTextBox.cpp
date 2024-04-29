@@ -14,7 +14,7 @@ namespace SvEditor::PanelItems
         auto& textList = m_filters.empty() ? m_items : m_filteredItems;
 
         //const float footer_height_to_reserve = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
-        if (ImGui::BeginChild("ScrollingRegion", ImVec2(0, 0 /*-footer_height_to_reserve*/), ImGuiChildFlags_None, ImGuiWindowFlags_HorizontalScrollbar))
+        if (ImGui::BeginChild("ScrollingRegion", ImVec2(0, 0 /*-footer_height_to_reserve*/), ImGuiChildFlags_Border))
         {
             ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 1)); // Tighten spacing
 
@@ -23,9 +23,7 @@ namespace SvEditor::PanelItems
                 ImGui::LogToClipboard();
 
             for (auto& text : textList)
-            {
                 text->DisplayAndUpdatePanel();
-            }
 
             if (m_copy)
                 ImGui::LogFinish();
@@ -166,7 +164,7 @@ namespace SvEditor::PanelItems
 
     void PanelTextDisplay::DisplayAndUpdatePanel()
     {
-        if (ImGui::BeginChild("ScrollingRegion", ImVec2(0, 0 /*-footer_height_to_reserve*/), ImGuiChildFlags_None))
+        if (ImGui::BeginChild("ScrollingRegion", ImVec2(0, 0 /*-footer_height_to_reserve*/), ImGuiChildFlags_Border))
         {
             //ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 1)); // Tighten spacing
             m_item->DisplayAndUpdatePanel();

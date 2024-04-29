@@ -62,7 +62,7 @@ namespace SvCore::Debug
         std::string message = Utility::FormatString(p_format, p_args...);
 
 #if defined(_DEBUG) || defined(SV_VERBOSE_LOG)
-        message = Utility::FormatString("%s(%d): %s\n", p_file, p_line, message.c_str());
+        message = Utility::FormatString("%s\n%s(%d)\n ", message.c_str(), p_file, p_line);
 #else
         message += '\n';
 #endif // _DEBUG || SV_VERBOSE_LOG

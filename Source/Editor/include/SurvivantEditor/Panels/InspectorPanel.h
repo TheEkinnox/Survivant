@@ -11,23 +11,22 @@
 
 namespace SvEditor::Panels
 {
-	using namespace Interfaces;
-
 	class InspectorPanel : public Panel
 	{
 	public:
 		InspectorPanel();
 		~InspectorPanel();
 
-		static void SetInpectorInfo(const std::shared_ptr<IInspectorable>& p_selected, const std::string& p_resourceName);
+		static void SetInpectorInfo(const std::shared_ptr<Interfaces::IInspectorable>& p_selected,
+			const std::string& p_resourceName);
 		static void ClearInfo();
 
 		virtual ERenderFlags Render()override;
 
 		static constexpr char NAME[] = "Inspector";
-	private:
 
-		static inline std::shared_ptr<IInspectorable>	s_selected;
-		static inline std::string						s_resourceName;
+	private:
+		static inline std::shared_ptr<Interfaces::IInspectorable>	s_selected;
+		static inline std::string									s_resourceName;
 	};
 }

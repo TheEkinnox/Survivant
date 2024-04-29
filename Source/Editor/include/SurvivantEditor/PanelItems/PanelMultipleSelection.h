@@ -1,17 +1,15 @@
 //PanelMultipleSelection.h
 #pragma once
 
-#include "SurvivantEditor/Interfaces/IPanelable.h"
+#include "SurvivantEditor/PanelItems/PanelInputBase.h"
 
 #include <functional>
 
 namespace SvEditor::PanelItems
 {
-	class PanelMultipleSelection : public Interfaces::IPanelable
+	class PanelMultipleSelection : public PanelInputBase<int>
 	{
 	public:
-		using Callback = std::function<void(size_t)>;
-
 		/// <summary>
 		/// 
 		/// </summary>
@@ -20,19 +18,27 @@ namespace SvEditor::PanelItems
 		PanelMultipleSelection(
 			const std::string& p_name,
 			const std::vector<std::string>& p_selectable,
+			int& p_currentSelection,
+			const Callback& p_callback = Callback());
+		PanelMultipleSelection(
+			const std::string& p_name,
+			const std::vector<std::string>& p_selectable,
+			const GetRefFunc& p_getRef,
+			const Callback& p_callback = Callback());
+		PanelMultipleSelection(
+			const std::string& p_name,
+			const std::vector<std::string>& p_selectable,
+			const GetCopyFunc& p_getCopy,
 			const Callback& p_callback);
-		~PanelMultipleSelection() = default;
 
 		virtual void DisplayAndUpdatePanel() override;
 
 	private:
-		std::string GetDisplayString();
+		std::string GetDisplayString(int p_selection);
 
 		std::string					m_name;
 		std::vector<std::string>	m_items;
 		std::string					m_displayString;
 		size_t						m_count;
-		size_t						m_curentSelection;
-		Callback					m_callback;
 	};
 }

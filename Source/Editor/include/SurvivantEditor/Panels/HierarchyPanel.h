@@ -37,15 +37,14 @@ namespace SvEditor::Panels
 		void	SetupTree();
 		void	SetupEntityBranch(HierarchyBranch& p_parent, const SvCore::ECS::EntityHandle& p_entity);
 
-		void	AddEntityBranch(HierarchyBranch& p_parent, std::shared_ptr<HierarchyBranch> p_childBranch);
-		void	RemoveEntity(const SvCore::ECS::EntityHandle& p_entity);
+		void				AddEntityBranch(HierarchyBranch& p_parent, std::shared_ptr<HierarchyBranch> p_childBranch);
+		void				RemoveEntity(const SvCore::ECS::EntityHandle& p_entity);
+		SvCore::ECS::Scene& GetScene();
 
 		static std::shared_ptr<HierarchyBranch> CreateEntityBranch(const SvCore::ECS::EntityHandle& p_childEntity);
 
 		static inline CurrentSceneGetter	s_getCurrentScene = nullptr;
 		static inline EntityBranchMap		s_entities;
-
-		SvCore::ECS::Scene& GetScene();
 		
 		HierarchyBranch		m_tree;
 		SceneRef			m_scene;

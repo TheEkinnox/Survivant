@@ -47,25 +47,25 @@ namespace SvEditor::PanelItems
     template <typename T>
     inline PanelTreeBranch<T>::Childreen& PanelTreeBranch<T>::SetBranches(const Childreen& p_branches)
     {
-        m_childreen = p_branches;
+        m_children = p_branches;
 
         for (auto& child : p_branches)
             child.second->m_parent = this;
 
-        return m_childreen;
+        return m_children;
     }
 
     template <typename T>
     inline PanelTreeBranch<T>::Childreen& PanelTreeBranch<T>::SetBranches(const std::vector<std::shared_ptr<PanelTreeBranch>>& p_branches)
     {
-        m_childreen.clear();
+        m_children.clear();
         for (auto& child : p_branches)
         {
             child->m_parent = this;
-            m_childreen.insert({ { child.get()->GetName(), 0 }, child });
+            m_children.insert({ { child.get()->GetName(), 0 }, child });
         }
 
-        return m_childreen;
+        return m_children;
     }
 
     template <typename T>
@@ -77,7 +77,7 @@ namespace SvEditor::PanelItems
     template<typename T>
     inline void PanelTreeBranch<T>::AddBranch(const std::shared_ptr<PanelTreeBranch>& p_branch, size_t p_prio)
     {
-        auto it = m_childreen.insert(
+        auto it = m_children.insert(
             { { p_branch.get()->GetName(), p_prio }, p_branch });
 
         it.first->second->m_parent = this;
@@ -86,14 +86,28 @@ namespace SvEditor::PanelItems
     template <typename T>
     inline void PanelTreeBranch<T>::RemoveBranch(const std::string& p_name)
     {
-        for (auto it = m_childreen.begin(); it != m_childreen.end(); it++)
+        for (auto it = m_children.begin(); it != m_children.end(); it++)
         {
             if (it->second.get()->m_name == p_name)
             {
-                m_childreen.erase(it);
+                m_children.erase(it);
                 break;
             }
         }
+    }
+
+    template<typename T>
+    inline void PanelTreeBranch<T>::DeleteBranch(std::set<T>* p_deletedElements)
+    {
+        for (auto& [prio, child] : m_children)
+        {
+            child->DeleteBranch(p_deletedElements);
+
+            if (p_deletedElements)
+                p_deletedElements->insert(child->GetValue());
+        }
+
+        p_deletedElements->insert(GetValue());
     }
 
     template <typename T>
@@ -112,7 +126,7 @@ namespace SvEditor::PanelItems
         if (p_closeSelf)
             m_forceState = EForceState::FORCE_CLOSE;
 
-        for (auto& child : m_childreen)
+        for (auto& child : m_children)
             child.second->ForceCloseChildreen(true);
     }
 
@@ -121,7 +135,7 @@ namespace SvEditor::PanelItems
     {
         m_forceState = EForceState::FORCE_OPEN;
 
-        for (auto& child : m_childreen)
+        for (auto& child : m_children)
             child.second->ForceOpenAll();
     }
 
@@ -130,17 +144,17 @@ namespace SvEditor::PanelItems
     {
         std::vector<Childreen::node_type> extracted;
 
-        for (auto it = m_childreen.begin(); it != m_childreen.end();)
+        for (auto it = m_children.begin(); it != m_children.end();)
         {
             size_t prio = p_prioFunc(*it->second);
 
             if (it->first.m_priority != prio)
             {
                 auto out = it++;
-                auto nodeHandler = m_childreen.extract(out);
+                auto nodeHandler = m_children.extract(out);
                 nodeHandler.key().m_priority = prio;
                 extracted.push_back(std::move(nodeHandler));
-                //m_childreen.insert(std::move(nodeHandler));
+                //m_children.insert(std::move(nodeHandler));
             }
             else
                 ++it;
@@ -149,10 +163,10 @@ namespace SvEditor::PanelItems
         for (auto it = extracted.begin(); it != extracted.end();)
         {
             auto out = it++;
-            auto val = m_childreen.insert(std::move(*out));
+            auto val = m_children.insert(std::move(*out));
         }
 
-        for (auto& child : m_childreen)
+        for (auto& child : m_children)
             child.second->SetAllPriority(p_prioFunc);
     }
 
@@ -286,7 +300,7 @@ namespace SvEditor::PanelItems
 
         if (open)
         {
-            for (auto& node : m_childreen)
+            for (auto& node : m_children)
             {
                 if (!(m_hideLeafs && !node.second.get()->IsBranch()))
                     node.second->DisplayAndUpdatePanel();
@@ -299,13 +313,13 @@ namespace SvEditor::PanelItems
     template <typename T>
     inline bool PanelTreeBranch<T>::IsBranch() const
     {
-        return !m_childreen.empty();
+        return !m_children.empty();
     }
 
     template <typename T>
     inline const PanelTreeBranch<T>::Childreen& PanelTreeBranch<T>::GetChildreen() const
     {
-        return m_childreen;
+        return m_children;
     }
 
     template<typename T>

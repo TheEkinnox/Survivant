@@ -151,8 +151,8 @@ namespace SvEditor::Core
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        bool b = true;
-        ImGui::ShowDemoWindow(&b);
+        //bool b = true;
+        //ImGui::ShowDemoWindow(&b);
     }
 
     void EditorUI::RenderPanels()

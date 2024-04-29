@@ -21,8 +21,8 @@ namespace SvEditor::Panels
 {
     HierarchyPanel::HierarchyPanel() :
         m_tree("All", HierarchyBranch::Childreen(), false),
-        m_addEntity("Add Entity", []() { 
-        s_getCurrentScene().lock().get()->get()->Create(); })
+        m_addEntity( "Add Entity", []() {
+        s_getCurrentScene().lock().get()->get()->Create(); } )
     {
         m_name = NAME;
 
@@ -47,11 +47,13 @@ namespace SvEditor::Panels
             { 
                 using namespace Core;
 
+                auto val = p_branch.GetValue();
                 auto entityPanel = InspectorItemManager::GetPanelableEntity(
-                    EntityHandle(s_getCurrentScene().lock().get()->get(), Entity(p_branch.GetValue())));
+                    EntityHandle(s_getCurrentScene().lock().get()->get(), Entity(val)));
 
                 InspectorPanel::SetInpectorInfo(entityPanel, "Entity");
-                ScenePanel::SelectEntity(p_branch.GetValue());
+                ScenePanel::SelectEntity(val);
+                p_branch.ForceOpenParents();
                 return false; 
             };
 
@@ -124,9 +126,9 @@ namespace SvEditor::Panels
         auto prio = SIZE_MAX - p_parent.GetChildreen().size();
 
         p_parent.AddBranch(p_childBranch, prio);
-        auto ins = s_entities.insert({ p_childBranch->GetValue(), p_childBranch}).second;
+        /*auto ins = */s_entities.insert({ p_childBranch->GetValue(), p_childBranch}).second;
 
-        ASSERT(ins, "Entity cant be added");
+        //ASSERT(ins, "Entity cant be added");
     }
 
     void HierarchyPanel::RemoveEntity(const SvCore::ECS::EntityHandle& p_entity)
@@ -138,11 +140,14 @@ namespace SvEditor::Panels
 
         auto& childBranch = it->second;
 
-        //always have parrent bcs tree is root
-        childBranch->GetParent()->RemoveBranch(childBranch->GetName());
+        std::set<SvCore::ECS::Entity::Id> deleted;
+        childBranch->DeleteBranch(&deleted);
 
-        auto val = childBranch.use_count();
-        ASSERT(val == 1, "HELP HERE");
+        //unless parent is already removed
+        m_tree.RemoveBranch(childBranch->GetName());
+
+        for (auto& item : deleted)
+            s_entities.erase(item);
     }
 
     /*void HierarchyPanel::SetupChildsEntityValue(const HierarchyBranch::Childreen& p_childreen)

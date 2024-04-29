@@ -340,7 +340,7 @@
 //		bool								m_hideLeafs;
 //		std::string							m_name;
 //		PanelTreeBranch*					m_parent;
-//		Childreen							m_childreen;
+//		Childreen							m_children;
 //		EForceState							m_forceState;
 //		std::shared_ptr<OnOpenCallback>		m_callback;
 //	};
