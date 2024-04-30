@@ -283,7 +283,7 @@ namespace SvEditor::PanelItems
     inline void PanelTreeBranch<T>::DisplayTreePanel()
     {
         ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnDoubleClick;
-        flags |= IsBranch() ? ImGuiTreeNodeFlags_OpenOnArrow : ImGuiTreeNodeFlags_Bullet;
+        flags |= IsBranch() ? ImGuiTreeNodeFlags_OpenOnArrow : ImGuiTreeNodeFlags_Leaf;
         flags |= m_isSelected ? ImGuiTreeNodeFlags_Selected : ImGuiTreeNodeFlags_None;
 
         bool open = ImGui::TreeNodeEx(m_name.c_str(), flags);
