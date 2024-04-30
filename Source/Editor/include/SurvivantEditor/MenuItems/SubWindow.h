@@ -248,8 +248,8 @@
 //		virtual void DisplayAndUpdatePanel() override;
 //
 //	private:
-//		LibMath::Vector3 					ToVector3Degree(const LibMath::TVector3<LibMath::Radian>& p_radians);
-//		LibMath::TVector3<LibMath::Radian>	ToVector3Radian(const LibMath::Vector3& p_degrees);
+//		LibMath::Vector3 					YPRToDegree(const LibMath::TVector3<LibMath::Radian>& p_radians);
+//		LibMath::TVector3<LibMath::Radian>	DegreeToYPR(const LibMath::Vector3& p_degrees);
 //
 //		TransformCallback							m_callback;
 //		LibMath::Vector3					m_position;

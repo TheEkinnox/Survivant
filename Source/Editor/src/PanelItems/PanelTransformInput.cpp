@@ -44,20 +44,19 @@ namespace SvEditor::PanelItems
         ImGui::PopID();
 
 
-        LibMath::Vector3 asDegree = ToVector3Degree(m_yawPitchRoll);
+        LibMath::Vector3 asDegree = YPRToDegree(m_yawPitchRoll);
 
         ImGui::Text("Rotation");
         ImGui::SameLine();
         ImGui::PushID(1);
         if (ImGui::DragFloat3("##", asDegree.getArray(), speedSlider, minSlider, maxSlider))
         {
-            LibMath::Vector3 currentDeg = asDegree;// - ToVector3Degree(m_yawPitchRoll); //m_yawPitchRoll hasnt been modified so still prev
-            //LibMath::Vector3 diffDegree = asDegree - ToVector3Degree(m_yawPitchRoll); //m_yawPitchRoll hasnt been modified so still prev
+            //LibMath::Vector3 diffDegree = asDegree - YPRToDegree(m_yawPitchRoll); //m_yawPitchRoll hasnt been modified so still prev
 
             //add diff to current quat
-            auto currentRad = ToVector3Radian(currentDeg);
+            auto currentRad = DegreeToYPR(asDegree);
             rotation = LibMath::Quaternion(currentRad);
-            m_yawPitchRoll = currentRad; // m_yawPitchRoll += ToVector3Radian(diffDegree);
+            m_yawPitchRoll = currentRad; // m_yawPitchRoll += DegreeToYPR(diffDegree);
 
             trans.setRotation(rotation);
 
@@ -87,16 +86,16 @@ namespace SvEditor::PanelItems
         ImGui::PopID();
     }
 
-    LibMath::Vector3 PanelTransformInput::ToVector3Degree(const LibMath::TVector3<LibMath::Radian>& p_radians)
+    LibMath::Vector3 PanelTransformInput::YPRToDegree(const LibMath::TVector3<LibMath::Radian>& p_radians)
     {
-        return LibMath::Vector3(p_radians[0].degree(true), p_radians[1].degree(true), p_radians[2].degree(true));
+        return LibMath::Vector3(p_radians[1].degree(true), p_radians[0].degree(true), p_radians[2].degree(true));
     }
 
-    LibMath::TVector3<LibMath::Radian> PanelTransformInput::ToVector3Radian(const LibMath::Vector3& p_degrees)
+    LibMath::TVector3<LibMath::Radian> PanelTransformInput::DegreeToYPR(const LibMath::Vector3& p_degrees)
     {
         auto tmp = LibMath::TVector3<LibMath::Radian>(
-            LibMath::Degree(std::fmodf(p_degrees[0], 360)),
             LibMath::Degree(std::fmodf(p_degrees[1], 360)),
+            LibMath::Degree(std::fmodf(p_degrees[0], 360)),
             LibMath::Degree(std::fmodf(p_degrees[2], 360)));
 
         return tmp;
