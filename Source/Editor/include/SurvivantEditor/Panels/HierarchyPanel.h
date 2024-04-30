@@ -31,6 +31,7 @@ namespace SvEditor::Panels
 		static void SetCurrentSceneGetter(CurrentSceneGetter p_getCurrentScene);
 		static void SelectSelectable(const SvCore::ECS::Entity::Id& p_entity);
 
+		static inline bool s_isDirty = false;
 		static constexpr char NAME[] = "Hierarchy";
 	private:
 		void	UpdateScene();

@@ -86,8 +86,9 @@ namespace SvEditor::Panels
             if (handle.GetParent().GetEntity() != NULL_ENTITY)
                 continue;
 
-            AddEntityBranch(m_tree, CreateEntityBranch(handle));
-            SetupEntityBranch(m_tree, handle);
+            auto newBranch = CreateEntityBranch(handle);
+            AddEntityBranch(m_tree, newBranch);
+            SetupEntityBranch(*newBranch, handle);
         }
     }
 
@@ -174,8 +175,11 @@ namespace SvEditor::Panels
     {
         bool open = true;
 
-        if (m_scene.expired())
+        if (m_scene.expired() || s_isDirty)
+        {
             UpdateScene();
+            s_isDirty = false;
+        }
 
         if (!ImGui::Begin(m_name.c_str(), &open))
         {

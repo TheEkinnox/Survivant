@@ -14,6 +14,7 @@
 #include "SurvivantRendering/RHI/ITexture.h"
 #include "SurvivantScripting/LuaScript.h"
 
+#include "SurvivantEditor/Panels/HierarchyPanel.h"
 #include "SurvivantEditor/PanelItems/PanelButton.h"
 #include "SurvivantEditor/PanelItems/PanelColorInput.h"
 #include "SurvivantEditor/PanelItems/PanelComponent.h"
@@ -160,6 +161,8 @@ namespace SvEditor::Core
 	InspectorItemManager::PanelableComponent InspectorItemManager::AddComponentHierarchy(
 		const SvCore::ECS::EntityHandle& p_entity)
 	{
+		using namespace SvEditor::Panels;
+
 		auto component = PanelComponent(ComponentRegistry::GetInstance().GetRegisteredTypeName<HierarchyComponent>(),
 			PanelComponent::Items({
 				std::make_shared<PanelUInt32Input>(PanelUInt32Input(
@@ -167,7 +170,9 @@ namespace SvEditor::Core
 					PanelUInt32Input::GetCopyFunc([entity = p_entity]() mutable -> uint32_t { return
 						static_cast<uint32_t>(entity.Get<HierarchyComponent>()->GetParent().GetIndex()); }),
 					PanelUInt32Input::Callback([entity = p_entity](const uint32_t& p_index) mutable {
-						entity.SetParent(entity.GetScene()->Find(static_cast<Entity::Index>(p_index)));  })
+						entity.SetParent(entity.GetScene()->Find(static_cast<Entity::Index>(p_index)));  
+						HierarchyPanel::s_isDirty = true;
+						})
 				)),
 				//std::make_shared<PanelUInt32Input>(PanelUInt32Input(
 				//	"Child Count ",
@@ -178,7 +183,9 @@ namespace SvEditor::Core
 				std::make_shared<PanelButton>(PanelButton(
 					"Remove Parent",
 					PanelButton::OnButtonPressEvent::EventDelegate([entity = p_entity]() mutable {
-						entity.SetParent(EntityHandle()); })
+						entity.SetParent(EntityHandle()); 
+						HierarchyPanel::s_isDirty = true;
+						})
 					))
 				}));
 
