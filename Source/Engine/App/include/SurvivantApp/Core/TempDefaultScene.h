@@ -577,7 +577,8 @@ namespace ToRemove
             for (const auto modelEntity : renderables)
             {
                 const auto [model, transform] = renderables.Get(modelEntity);
-                ASSERT(model->m_model && model->m_material);
+                if (!(model->m_model && model->m_material))
+                    continue;
 
                 if (isIdTexture)
                     DrawModelEditorScene(*model->m_model, camFrustum, transform->getWorldMatrix(), *model->m_material, modelEntity);
@@ -611,7 +612,8 @@ namespace ToRemove
         for (const auto modelEntity : renderables)
         {
             const auto [model, transform] = renderables.Get(modelEntity);
-            ASSERT(model->m_model && model->m_material);
+            if (!(model->m_model && model->m_material))
+                continue;
 
             if (isIdTexture)
                 DrawModelEditorScene(*model->m_model, camFrustum, transform->getWorldMatrix(), *model->m_material, modelEntity);
@@ -651,7 +653,8 @@ namespace ToRemove
         for (const auto modelEntity : renderables)
         {
             const auto [model, transform] = renderables.Get(modelEntity);
-            ASSERT(model->m_model && model->m_material);
+            if (!(model->m_model && model->m_material))
+                continue;
 
             if (p_entityIndex && (modelEntity == p_entityIndex))
             {

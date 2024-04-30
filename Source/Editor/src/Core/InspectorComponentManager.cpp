@@ -75,7 +75,7 @@ namespace SvEditor::Core
 	InspectorItemManager::PanelableEntity InspectorItemManager::GetPanelableEntity(
 		const SvCore::ECS::EntityHandle& p_entity)
 	{
-		auto& registry = ComponentRegistry::GetInstance();
+		//auto& registry = ComponentRegistry::GetInstance();
 		auto components = p_entity.GetComponents();
 
 		std::vector<PanelableComponent> panelables;
@@ -83,18 +83,9 @@ namespace SvEditor::Core
 
 		for (auto& [type, component] : components)
 		{
-			if (!registry.Contains(type))
-				continue;
-
-			auto& info = registry.GetTypeInfo(type);
-
-			if (info.Has(CREATE_COMPONENT))
-			{
-				auto val = info.Call<PanelableComponent>(CREATE_COMPONENT, (void*)&p_entity);
-
-				if (val.has_value())
-					panelables.emplace_back(val.value());
-			}
+			auto panel = GetPanelableComponent(type, p_entity);
+			if (panel)
+				panelables.emplace_back(panel);
 		}
 
 		return std::make_shared<PanelItems::PanelEntity>(std::move(PanelItems::PanelEntity(
@@ -116,6 +107,33 @@ namespace SvEditor::Core
 
 		if (info.Has(CREATE_RESOURCE))
 			panel = info.Call<PanelableResource>(CREATE_COMPONENT, (void*)&p_resource).value_or(nullptr);
+
+		return panel;
+	}
+
+	InspectorItemManager::PanelableComponent InspectorItemManager::AddPanelableComponent(
+		const ComponentInfo& p_typeInfo, const SvCore::ECS::EntityHandle& p_entity)
+	{
+		PanelableComponent panel = nullptr;
+
+		if (p_typeInfo.Has(ADD_COMPONENT))
+			panel = p_typeInfo.Call<PanelableComponent>(ADD_COMPONENT, (void*)&p_entity).value_or(nullptr);
+
+		return panel;
+	}
+
+	InspectorItemManager::PanelableComponent InspectorItemManager::GetPanelableComponent(const SvCore::Utility::TypeId& p_type, const SvCore::ECS::EntityHandle& p_entity)
+	{
+		auto& registry = ComponentRegistry::GetInstance();
+
+		if (!registry.Contains(p_type))
+			return nullptr;
+
+		auto& info = registry.GetTypeInfo(p_type);
+		PanelableComponent panel = nullptr;
+
+		if (info.Has(CREATE_COMPONENT))
+			panel = info.Call<PanelableComponent>(CREATE_COMPONENT, (void*)&p_entity).value_or(nullptr);
 
 		return panel;
 	}
@@ -374,7 +392,7 @@ namespace SvEditor::Core
 
 		//auto& ref = *p_entity.Get<ModelComponent>();
 
-		auto component = PanelComponent("Model",
+		auto component = PanelComponent(ComponentRegistry::GetInstance().GetRegisteredTypeName<ModelComponent>(),
 			PanelComponent::Items({
 					std::make_shared<PanelResourceSelector<Model>>(PanelResourceSelector<Model>(
 						"Model    ", [entity = p_entity]() mutable -> ResourceRef<Model>& { return

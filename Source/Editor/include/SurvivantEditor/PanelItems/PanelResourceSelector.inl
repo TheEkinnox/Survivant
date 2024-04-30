@@ -89,7 +89,7 @@ namespace SvEditor::PanelItems
 
 		for (ResourceRef<T>& resource : all)
 		{
-			std::string name = this->GetRef().GetPath();
+			std::string name = resource.GetPath();
 
 			m_allResources->m_items.emplace_back(std::make_unique<MenuButton>(MenuButton(
 				name, [this, resource](char) mutable {
