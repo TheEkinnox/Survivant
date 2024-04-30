@@ -162,19 +162,19 @@ namespace SvEditor::Core
 	{
 		auto component = PanelComponent(ComponentRegistry::GetInstance().GetRegisteredTypeName<HierarchyComponent>(),
 			PanelComponent::Items({
-					std::make_shared<PanelUInt32Input>(PanelUInt32Input(
-						"Parent      ",
-						PanelUInt32Input::GetCopyFunc([entity = p_entity]() mutable -> uint32_t { return
-							static_cast<uint32_t>(entity.Get<HierarchyComponent>()->GetParent().GetIndex()); }),
-						PanelUInt32Input::Callback([entity = p_entity](const uint32_t& p_index) mutable {
-							entity.SetParent(entity.GetScene()->Find(static_cast<Entity::Index>(p_index)));  })
-					)),
 				std::make_shared<PanelUInt32Input>(PanelUInt32Input(
-					"Child Count ",
-					PanelIntInput::GetCopyFunc([entity = p_entity]() mutable -> uint32_t { return
-						static_cast<uint32_t>(entity.Get<HierarchyComponent>()->GetChildCount()); }),
-					PanelIntInput::Callback()
+					"Parent      ",
+					PanelUInt32Input::GetCopyFunc([entity = p_entity]() mutable -> uint32_t { return
+						static_cast<uint32_t>(entity.Get<HierarchyComponent>()->GetParent().GetIndex()); }),
+					PanelUInt32Input::Callback([entity = p_entity](const uint32_t& p_index) mutable {
+						entity.SetParent(entity.GetScene()->Find(static_cast<Entity::Index>(p_index)));  })
 				)),
+				//std::make_shared<PanelUInt32Input>(PanelUInt32Input(
+				//	"Child Count ",
+				//	PanelIntInput::GetCopyFunc([entity = p_entity]() mutable -> uint32_t { return
+				//		static_cast<uint32_t>(entity.Get<HierarchyComponent>()->GetChildCount()); }),
+				//	PanelIntInput::Callback()
+				//)),
 				std::make_shared<PanelButton>(PanelButton(
 					"Remove Parent",
 					PanelButton::OnButtonPressEvent::EventDelegate([entity = p_entity]() mutable {
