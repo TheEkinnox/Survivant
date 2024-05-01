@@ -1,6 +1,7 @@
 //InspectorItemManager.cpp
 #include "SurvivantEditor/Core/InspectorComponentManager.h"
 
+#include "SurvivantApp/Core/IEngine.h"
 #include "SurvivantCore/Debug/Assertion.h"
 #include "SurvivantCore/ECS/Components/Hierarchy.h"
 #include "SurvivantCore/ECS/Components/TagComponent.h"
@@ -174,12 +175,6 @@ namespace SvEditor::Core
 						HierarchyPanel::s_isDirty = true;
 						})
 				)),
-				//std::make_shared<PanelUInt32Input>(PanelUInt32Input(
-				//	"Child Count ",
-				//	PanelIntInput::GetCopyFunc([entity = p_entity]() mutable -> uint32_t { return
-				//		static_cast<uint32_t>(entity.Get<HierarchyComponent>()->GetChildCount()); }),
-				//	PanelIntInput::Callback()
-				//)),
 				std::make_shared<PanelButton>(PanelButton(
 					"Remove Parent",
 					PanelButton::OnButtonPressEvent::EventDelegate([entity = p_entity]() mutable {
@@ -380,6 +375,10 @@ namespace SvEditor::Core
 
 		auto component = PanelComponent(ComponentRegistry::GetInstance().GetRegisteredTypeName<LightComponent>(),
 			PanelComponent::Items({
+					std::make_shared<PanelButton>(PanelButton(
+						"Bake Lighting",
+						[]() { SV_ENGINE()->BakeLights(); }
+					)),
 					std::make_shared<PanelSelectionDisplay>(PanelSelectionDisplay(
 						"Type ", enumNames, display,
 						[p_entity]() -> int { return static_cast<int>( //copy enum to int

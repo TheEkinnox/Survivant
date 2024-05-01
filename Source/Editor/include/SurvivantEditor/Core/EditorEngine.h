@@ -30,6 +30,8 @@ namespace SvEditor::Core
 		// Inherited via Engine
 		void Update() override;
 		void Init() override;
+		void BakeLights() override;
+
 		void RenderWorlds();
 
 		bool IsRunning();
@@ -76,8 +78,6 @@ namespace SvEditor::Core
 
 		SvCore::Utility::Timer			m_time;
 		bool							m_isRunning = true;
-
-
 
 		//always exists
 		std::shared_ptr<WorldContext>			m_editorWorld;

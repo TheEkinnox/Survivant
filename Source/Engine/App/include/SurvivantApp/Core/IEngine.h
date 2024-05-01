@@ -10,6 +10,7 @@
 #include <vector>
 
 #define SV_DELTA_TIME() SvApp::Core::Engine::s_engine->GetDeltaTime()
+#define SV_ENGINE() SvApp::Core::Engine::s_engine
 
 namespace SvApp::Core
 {
@@ -32,6 +33,7 @@ namespace SvApp::Core
 		virtual bool	ChangeScene(const std::string& p_sceneName) = 0;
 		virtual void	RedrawViewports() = 0;
 		virtual float	GetDeltaTime() = 0;
+		virtual void	BakeLights() = 0;
 
 
 		static std::shared_ptr<WorldContext>	CreateNewWorldContext(WorldContext::EWorldType p_worldType);

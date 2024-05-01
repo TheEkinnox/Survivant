@@ -39,6 +39,36 @@ namespace SvApp::Core
         MakeScene(*CurrentScene());
     }
 
+    void WorldContext::BakeLighting()
+    {
+        SceneView<const LightComponent> view(*CurrentScene());
+        std::vector<Matrix4>            lightMatrices;
+
+        for (const auto entity : view)
+        {
+            const LightComponent& light = *view.Get<const LightComponent>(entity);
+
+            switch (light.m_type)
+            {
+            case ELightType::AMBIENT:
+                lightMatrices.emplace_back(light.m_ambient.getMatrix());
+                break;
+            case ELightType::DIRECTIONAL:
+                lightMatrices.emplace_back(light.m_directional.getMatrix());
+                break;
+            case ELightType::POINT:
+                lightMatrices.emplace_back(light.m_point.getMatrix());
+                break;
+            case ELightType::SPOT:
+                lightMatrices.emplace_back(light.m_spot.getMatrix());
+                break;
+            }
+        }
+
+        m_lightsSSBO->Bind();
+        m_lightsSSBO->SetData(lightMatrices.data(), lightMatrices.size());
+    }
+
     void WorldContext::SetSceneCamera(const EntityHandle& p_entity)
     {
         m_renderingContext->m_mainCamera.SetEntity(p_entity);

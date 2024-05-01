@@ -67,8 +67,9 @@ namespace SvEditor::Core
 		pieWorld->CurrentScene() = p_inScene;
 		pieWorld->SetSceneCamera(pieWorld->GetDefaultSceneCamera());
 		pieWorld->m_inputs = ToRemove::SetupGameInputs();
-		pieWorld->m_lightsSSBO = ToRemove::SetupLightSSBO(*p_inScene);
+		pieWorld->m_lightsSSBO = IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, 0);
 
+		pieWorld->BakeLighting();
 		pieWorld->Render();
 		//pieWorld->m_persistentLevel = p_context.m_persistentLevel;
 
@@ -251,7 +252,7 @@ namespace SvEditor::Core
 		auto world = CreateNewWorldContext(WorldContext::EWorldType::EDITOR);
 		world->m_owningGameInstance = nullptr;
 
-		world->m_lightsSSBO = ToRemove::SetupLightSSBO(*p_inScene);
+		world->m_lightsSSBO = IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, 0);
 		world->m_viewport = { 800, 600 };
 		world->CurrentScene() = p_inScene;
 		CameraComponent cam;
@@ -262,6 +263,7 @@ namespace SvEditor::Core
 
 		//load and render
 		//world->LoadCurrentScene();
+		world->BakeLighting();
 		world->Render();
 
 		//world->m_persistentLevel = nullptr;
@@ -278,15 +280,15 @@ namespace SvEditor::Core
 		ASSERT(!worldContext.expired(), "GameInstance has no world");
 
 		worldContext.lock()->m_owningGameInstance = &p_instance;
-		worldContext.lock()->m_lightsSSBO = ToRemove::SetupLightSSBO(*worldContext.lock()->CurrentScene());
+		worldContext.lock()->m_lightsSSBO = IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, 0);
 
 		worldContext.lock()->SetInputs();
+		worldContext.lock()->BakeLighting();
 
 		//init
 		p_instance.Init();
 
 		//TODO : find and set main camera
-
 		//dont start here
 		//worldContext->BeginPlay();
 
@@ -306,6 +308,11 @@ namespace SvEditor::Core
 		//create editor world world
 		m_editorWorld = CreateEditorDefaultWorld(defaultScene.first->second);
 		m_editorWorld->SetInputs();
+	}
+
+	void EditorEngine::BakeLights()
+	{
+		m_editorWorld->BakeLighting();
 	}
 
 	void EditorEngine::RenderWorlds()

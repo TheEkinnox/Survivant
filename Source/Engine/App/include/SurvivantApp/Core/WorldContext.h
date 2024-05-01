@@ -48,6 +48,7 @@ namespace SvApp::Core
 		void Update();
 		void Render();
 		void LoadCurrentScene();
+		void BakeLighting();
 
 		void						SetOwningCamera(
 			const SvRendering::Components::CameraComponent& p_cam, const LibMath::Transform& p_trans);
@@ -65,10 +66,10 @@ namespace SvApp::Core
 		GameInstance*			m_owningGameInstance = nullptr;
 		LibMath::TVector2<int>	m_viewport = LibMath::Vector2(800, 600);
 
-		std::unique_ptr<SvRendering::RHI::IShaderStorageBuffer>		m_lightsSSBO = nullptr;
 		std::shared_ptr<InputManager::InputBindings>				m_inputs;
 		std::shared_ptr<RenderingContext>							m_renderingContext;
 		bool														m_isVisalbe;
+		std::unique_ptr<SvRendering::RHI::IShaderStorageBuffer>		m_lightsSSBO = nullptr;
 
 	private:
 		std::shared_ptr<ScenePtr>	m_currentSceneRef = std::make_shared<ScenePtr>(nullptr);

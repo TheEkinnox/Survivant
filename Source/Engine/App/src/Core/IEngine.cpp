@@ -30,6 +30,7 @@ namespace SvApp::Core
         //switch and the unload old scene
         std::shared_ptr<Scene> m_levelToUnload = p_context.CurrentScene();
         p_context.CurrentScene() = p_newLevel;
+        p_context.BakeLighting();
 
         if (m_levelToUnload != nullptr)
         {
