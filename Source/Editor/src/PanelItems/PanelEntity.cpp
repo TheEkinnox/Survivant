@@ -13,7 +13,8 @@
 namespace SvEditor::PanelItems
 {
     PanelEntity::PanelEntity(const SvCore::ECS::EntityHandle& p_entity, const Components& p_component) :
-        m_entity(p_entity)
+        m_entity(p_entity),
+        m_remove("Remove", [p_entity]() { p_entity.GetScene()->Remove(p_entity); })
     {
         m_index = "(" + std::to_string(p_entity.GetEntity().GetIndex()) + ')';
         m_addComponent = std::make_shared<PanelPopupMenuButton>(PanelPopupMenuButton(
@@ -25,16 +26,18 @@ namespace SvEditor::PanelItems
         m_components.reserve(p_component.size());
         for (auto& component : p_component)
             AddAndSortComponent(component);
-
     }
 
-    PanelEntity::PanelEntity(const PanelEntity& p_other)
+    PanelEntity::PanelEntity(const PanelEntity& p_other) :
+        m_remove("", []() {})
     {
         *this = p_other;
     }
 
-    PanelEntity::PanelEntity(PanelEntity&& p_other) noexcept
+    PanelEntity::PanelEntity(PanelEntity&& p_other) noexcept :
+        m_remove("", []() { })
     {
+        this->m_remove = PanelButton("Remove", [e = p_other.m_entity]() { e.GetScene()->Remove(e.GetEntity()); });
         this->m_addComponent = std::make_shared<PanelPopupMenuButton>(PanelPopupMenuButton(
             "Add Component",
             [this]() { GetAllComponents(); },
@@ -49,6 +52,7 @@ namespace SvEditor::PanelItems
 
     PanelEntity& PanelEntity::operator=(const PanelEntity& p_other)
     {
+        this->m_remove = PanelButton("Remove", [e = p_other.m_entity]() { e.GetScene()->Remove(e); });
         this->m_addComponent = std::make_shared<PanelPopupMenuButton>(PanelPopupMenuButton(
             "Add Component",
             [this]() { GetAllComponents(); },
@@ -66,11 +70,9 @@ namespace SvEditor::PanelItems
     void PanelEntity::DisplayAndUpdatePanel()
 	{
         if (!m_entity)
-        {
-            m_entity = SvCore::ECS::EntityHandle();
-            m_components.clear();
-        }
+            return;
 
+        m_remove.DisplayAndUpdatePanel();
         for (auto it = m_components.begin(); it != m_components.end();)
         {
             ImGui::Separator();
@@ -83,7 +85,6 @@ namespace SvEditor::PanelItems
                 ++it;
         }
         ImGui::Separator();
-        
         m_addComponent->DisplayAndUpdatePanel();
 	}
 
