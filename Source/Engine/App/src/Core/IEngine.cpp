@@ -12,11 +12,11 @@
 
 namespace SvApp::Core
 {
-    Scene& Engine::GetCurrentScene()
+    Scene& Engine::GetGameScene()
     {
-        ASSERT(m_currentScene != nullptr, "There is no current world");
+        ASSERT(m_gameScene != nullptr, "There is no current world");
 
-        return *m_currentScene;
+        return *m_gameScene;
     }
 
     bool Engine::PrepareSceneChange(WorldContext& /*p_context*/, const std::shared_ptr<Scene>& p_newLevel)

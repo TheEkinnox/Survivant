@@ -26,7 +26,7 @@ namespace SvEditor::PanelItems
 		~PanelResourceSelector() = default;
 
 		PanelResourceSelector(const PanelResourceSelector& p_other);
-		PanelResourceSelector(PanelResourceSelector&& p_other);
+		PanelResourceSelector(PanelResourceSelector&& p_other) noexcept;
 		PanelResourceSelector<T>& operator=(const PanelResourceSelector& p_other);
 
 		virtual void DisplayAndUpdatePanel() override;

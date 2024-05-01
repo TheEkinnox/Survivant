@@ -12,6 +12,8 @@ namespace SvApp::Core
     {
         using namespace ToRemove;
 
+        //TODO : Save resource ref in begin play
+        //CurrentScene()->Save("assets/scenes/DefaultScene.scn");
         TestLevelBeginPlay(*CurrentScene());
     }
 

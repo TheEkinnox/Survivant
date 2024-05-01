@@ -37,7 +37,7 @@ namespace SvApp::Core
 
 
 		static std::shared_ptr<WorldContext>	CreateNewWorldContext(WorldContext::EWorldType p_worldType);
-		Scene&									GetCurrentScene();
+		Scene&									GetGameScene();
 
 		static inline Engine* s_engine = nullptr;
 
@@ -48,7 +48,7 @@ namespace SvApp::Core
 		//acces GameInstace members
 		std::weak_ptr<WorldContext>&	GetWorldContextRef(GameInstance& p_instance);
 
-		std::shared_ptr<Scene>				m_currentScene;
+		std::shared_ptr<Scene>				m_gameScene;
 		LevelMap							m_allLevels;
 	};
 

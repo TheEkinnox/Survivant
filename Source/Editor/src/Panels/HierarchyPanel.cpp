@@ -27,7 +27,7 @@ namespace SvEditor::Panels
         m_name = NAME;
 
         UpdateScene();
-        GetScene().GetStorage<Entity>().m_onAdd.AddListener(
+       m_onAddId = GetScene().GetStorage<Entity>().m_onAdd.AddListener(
             [this](const EntityHandle& p_handle)
             {
                 auto parent = p_handle.GetParent();
@@ -36,11 +36,23 @@ namespace SvEditor::Panels
                 auto childBranch = CreateEntityBranch(p_handle);
                 AddEntityBranch(parentBranch, childBranch);
             });
-        GetScene().GetStorage<Entity>().m_onRemove.AddListener(
+       m_onRemId = GetScene().GetStorage<Entity>().m_onRemove.AddListener(
             [this](const EntityHandle& p_handle)
             {
                 RemoveEntity(p_handle);
             });
+
+        //tag dirty on hierarchy change
+       m_onModifId[0] = GetScene().GetStorage<SvCore::ECS::HierarchyComponent>().m_onAdd.AddListener(
+           [this](EntityHandle, SvCore::ECS::HierarchyComponent)
+           {
+               m_isDirty = true;
+           });
+       m_onModifId[0] = GetScene().GetStorage<SvCore::ECS::HierarchyComponent>().m_onRemove.AddListener(
+           [this](EntityHandle, SvCore::ECS::HierarchyComponent)
+           {
+               m_isDirty = true;
+           });
 
         //propagate selection
         auto selectFunc = [](HierarchyBranch& p_branch)
@@ -175,10 +187,10 @@ namespace SvEditor::Panels
     {
         bool open = true;
 
-        if (m_scene.expired() || s_isDirty)
+        if (m_scene.expired() || m_isDirty)
         {
             UpdateScene();
-            s_isDirty = false;
+            m_isDirty = false;
         }
 
         if (!ImGui::Begin(m_name.c_str(), &open))

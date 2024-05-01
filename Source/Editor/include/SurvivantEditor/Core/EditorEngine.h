@@ -49,7 +49,7 @@ namespace SvEditor::Core
 		//void CreatePIEWorld();
 
 		//on level switch, will ref new level
-		std::shared_ptr<Scene>* GetCurrentScene();
+		//Scene* GetGameScene();
 		//std::shared_ptr<Engine::WorldContext> GetPIEWorldContext();
 		
 		//create PIE after press play

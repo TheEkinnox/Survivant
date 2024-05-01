@@ -61,6 +61,7 @@ namespace SvCore::ECS
             p_writer.StartObject();
             p_writer.Key("type");
 
+            //auto tmp = ComponentRegistry::GetInstance(); tmp;
             const std::string& typeName = ComponentRegistry::GetInstance().GetRegisteredTypeName(typeId);
             if (!CHECK(p_writer.String(typeName.c_str(), static_cast<rapidjson::SizeType>(typeName.size())),
                     "Unable to serialize scene component storage - Failed to write type"))

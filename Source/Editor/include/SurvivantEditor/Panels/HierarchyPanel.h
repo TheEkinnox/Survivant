@@ -1,14 +1,16 @@
 //HierarchyPanel.h
 #pragma once
 
+#include "SurvivantCore/Events/Event.h"
 #include "SurvivantCore/ECS/EntityHandle.h"
 #include "SurvivantCore/ECS/Scene.h"
+#include "SurvivantCore/ECS/Components/Hierarchy.h"
 #include "SurvivantCore/Utility/UnusedIdGenerator.h"
 #include "SurvivantEditor/Panels/Panel.h"
 #include "SurvivantEditor/PanelItems/PanelTreeBranch.h"
 #include "SurvivantEditor/PanelItems/PanelButton.h"
 
-
+#include <array>
 
 namespace SvEditor::Panels
 {
@@ -31,9 +33,14 @@ namespace SvEditor::Panels
 		static void SetCurrentSceneGetter(CurrentSceneGetter p_getCurrentScene);
 		static void SelectSelectable(const SvCore::ECS::Entity::Id& p_entity);
 
-		static inline bool s_isDirty = false;
+		bool m_isDirty = false;
 		static constexpr char NAME[] = "Hierarchy";
+
 	private:
+		using EntityListenerId = SvCore::Events::Event<SvCore::ECS::EntityHandle>::ListenerId;
+		using HierarchyListenerId = SvCore::Events::Event<
+			SvCore::ECS::EntityHandle, SvCore::ECS::HierarchyComponent>::ListenerId;
+
 		void	UpdateScene();
 		void	SetupTree();
 		void	SetupEntityBranch(HierarchyBranch& p_parent, const SvCore::ECS::EntityHandle& p_entity);
@@ -50,6 +57,10 @@ namespace SvEditor::Panels
 		HierarchyBranch		m_tree;
 		SceneRef			m_scene;
 		PanelButton			m_addEntity;
+
+		EntityListenerId						m_onAddId;
+		EntityListenerId						m_onRemId;
+		std::array<HierarchyListenerId, 3>		m_onModifId;
 
 		std::weak_ptr<HierarchyBranch> m_currentSelected;
 	};

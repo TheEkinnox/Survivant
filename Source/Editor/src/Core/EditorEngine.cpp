@@ -49,7 +49,7 @@ namespace SvEditor::Core
 
 
 		//while playing, loaded new scene, so go back to selected
-		if (m_currentScene != m_editorSelectedScene)
+		if (m_gameScene != m_editorSelectedScene)
 			BrowseToScene(*m_editorWorld, m_editorSelectedScene);
 
 		m_editorWorld->SetInputs();
@@ -240,11 +240,6 @@ namespace SvEditor::Core
 		m_editorSelectedScene = p_worldContext.CurrentScene();
 
 		return 1;
-	}
-
-	std::shared_ptr<Scene>* EditorEngine::GetCurrentScene()
-	{
-		return &m_currentScene;
 	}
 
 	std::shared_ptr<WorldContext> EditorEngine::CreateEditorDefaultWorld(std::shared_ptr<Scene> p_inScene)

@@ -33,7 +33,7 @@ namespace SvEditor::PanelItems
 	}
 
 	template<class T>
-	inline PanelResourceSelector<T>::PanelResourceSelector(PanelResourceSelector&& p_other) :
+	inline PanelResourceSelector<T>::PanelResourceSelector(PanelResourceSelector&& p_other) noexcept :
 		PanelInputBase<SvCore::Resources::ResourceRef<T>>(std::move(p_other.m_getRef))
 	{
 		this->m_getRef = std::move(p_other.m_getRef);

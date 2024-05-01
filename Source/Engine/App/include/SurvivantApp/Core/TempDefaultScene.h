@@ -438,7 +438,7 @@ namespace ToRemove
         const Vector3 camPos(0.f, 1.8f, 2.f);
         camEntity.Make<Transform>(camPos, Quaternion::identity(), Vector3::one());
 
-        camEntity.Make<UserInput>(CAM_MOVE_SPEED, CAM_ROTATION_SPEED);
+        //camEntity.Make<UserInput>(CAM_MOVE_SPEED, CAM_ROTATION_SPEED);
         camEntity.Make<TagComponent>(TagComponent{ .m_tag = "Camera" });
 
         ResourceRef<Model> cube("models/cube.obj");
@@ -481,9 +481,9 @@ namespace ToRemove
 
         EntityHandle redCube = p_scene.Create();
         redCube.Make<ModelComponent>(cube, redMaterial);
-        redCube.Make<Rotator>(Quaternion(36_deg, Vector3::up()));
+        //redCube.Make<Rotator>(Quaternion(36_deg, Vector3::up()));
         redCube.Make<Transform>(Vector3(.75f, .5f, 0.f), Quaternion::identity(), Vector3::one());
-        redCube.Make<Temporary>(5.f);
+        //redCube.Make<Temporary>(5.f);
 
         EntityHandle greenCube = p_scene.Create();
         greenCube.Make<ModelComponent>(cube, greenMaterial);
