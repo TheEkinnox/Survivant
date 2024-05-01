@@ -52,9 +52,6 @@ namespace SvEditor::Core
         MainPanel::ChangeLayout l = std::bind(&EditorUI::Layout1, this, std::placeholders::_1);
         m_main->ChangePanelLayout(l);
 
-        //setup InspectorComponents
-        InspectorItemManager::Init();
-
         //TODO : add spawn save m_panel on event close request
         SvCore::Events::EventManager::GetInstance().AddListenner<SvApp::Window::WindowCloseRequest>(
             SvApp::Window::WindowCloseRequest::EventDelegate(std::bind(&EditorUI::TryCreateSavePanel, this)));
@@ -113,9 +110,9 @@ namespace SvEditor::Core
         ScenePanel::AddClickSceneListenner(
             [p_world](const LibMath::Vector2& p_uv)
             { 
-                auto scene = p_world.lock()->CurrentScene().get();
+                auto& scene = p_world.lock()->CurrentScene();
                 auto entity = p_world.lock()->
-                    m_renderingContext->GetEntityIdValue(p_uv, scene);
+                    m_renderingContext->GetEntityIdValue(p_uv, scene.Get());
 
                 SV_LOG(SvCore::Utility::FormatString("ID = %d", entity.GetIndex()).c_str());
 
@@ -123,7 +120,7 @@ namespace SvEditor::Core
                 HierarchyPanel::SelectSelectable(entity);
 
                 auto entityPanel = InspectorItemManager::GetPanelableEntity(
-                    SvCore::ECS::EntityHandle(p_world.lock()->CurrentScene().get(), entity)); 
+                    SvCore::ECS::EntityHandle(p_world.lock()->CurrentScene().Get(), entity));
                 InspectorPanel::SetInpectorInfo(entityPanel, "Entity");
             });
         

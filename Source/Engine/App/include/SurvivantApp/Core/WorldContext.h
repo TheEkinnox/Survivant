@@ -1,11 +1,11 @@
 //WorldContext.h
 #pragma once
 
-#include "SurvivantCore/ECS/Scene.h"
-#include "SurvivantCore/ECS/EntityHandle.h"
 #include "SurvivantApp/Core/RenderingContext.h"
 #include "SurvivantApp/Inputs/InputManager.h"
-
+#include "SurvivantCore/ECS/Scene.h"
+#include "SurvivantCore/ECS/EntityHandle.h"
+#include "SurvivantCore/Resources/ResourceRef.h"
 #include "SurvivantRendering/RHI/IShaderStorageBuffer.h"
 #include "SurvivantRendering/RHI/IFrameBuffer.h"
 #include "SurvivantRendering/Components/CameraComponent.h"	
@@ -28,7 +28,7 @@ namespace SvApp::Core
 		using DefaultTextureArray = std::vector<std::shared_ptr<SvRendering::RHI::ITexture>>;
 
 		using WorldCreator = std::function<std::shared_ptr<WorldContext>(const LibMath::Vector2I&)>;
-		using ScenePtr = std::shared_ptr<SvCore::ECS::Scene>;
+		using SceneRef = SvCore::Resources::ResourceRef<SvCore::ECS::Scene>;
 
 		enum class EWorldType
 		{
@@ -55,8 +55,8 @@ namespace SvApp::Core
 		void						SetSceneCamera(const SvCore::ECS::EntityHandle& p_entity);
 		SvCore::ECS::EntityHandle	GetDefaultSceneCamera();
 		void						SetInputs();
-		ScenePtr&					CurrentScene();
-		std::weak_ptr<ScenePtr>		CurrentSceneRef();
+		SceneRef&					CurrentScene();
+		std::weak_ptr<SceneRef>		CurrentSceneRef();
 
 
 		//TODO: deal with persistentLevel
@@ -64,7 +64,7 @@ namespace SvApp::Core
 
 		EWorldType				m_worldType = EWorldType::NONE;
 		GameInstance*			m_owningGameInstance = nullptr;
-		LibMath::TVector2<int>	m_viewport = LibMath::Vector2(800, 600);
+		LibMath::TVector2<int>	m_viewport = LibMath::Vector2(1, 1);
 
 		std::shared_ptr<InputManager::InputBindings>				m_inputs;
 		std::shared_ptr<RenderingContext>							m_renderingContext;
@@ -72,6 +72,6 @@ namespace SvApp::Core
 		std::unique_ptr<SvRendering::RHI::IShaderStorageBuffer>		m_lightsSSBO = nullptr;
 
 	private:
-		std::shared_ptr<ScenePtr>	m_currentSceneRef = std::make_shared<ScenePtr>(nullptr);
+		std::shared_ptr<SceneRef>	m_currentSceneRef = std::make_shared<SceneRef>(SceneRef());
 	};
 }

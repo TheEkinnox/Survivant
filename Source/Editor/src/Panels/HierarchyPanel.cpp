@@ -22,7 +22,7 @@ namespace SvEditor::Panels
     HierarchyPanel::HierarchyPanel() :
         m_tree("All", HierarchyBranch::Childreen(), false),
         m_addEntity( "Add Entity", []() {
-        s_getCurrentScene().lock().get()->get()->Create(); } )
+        s_getCurrentScene().lock()->Get()->Create(); })
     {
         m_name = NAME;
 
@@ -61,7 +61,7 @@ namespace SvEditor::Panels
 
                 auto val = p_branch.GetValue();
                 auto entityPanel = InspectorItemManager::GetPanelableEntity(
-                    EntityHandle(s_getCurrentScene().lock().get()->get(), Entity(val)));
+                    EntityHandle(s_getCurrentScene().lock()->Get(), Entity(val)));
 
                 InspectorPanel::SetInpectorInfo(entityPanel, "Entity");
                 ScenePanel::SelectEntity(val);
@@ -180,7 +180,7 @@ namespace SvEditor::Panels
 
     SvCore::ECS::Scene& HierarchyPanel::GetScene()
     {
-        return *m_scene.lock().get()->get();
+        return *m_scene.lock()->Get();
     }
 
     Panel::ERenderFlags HierarchyPanel::Render()
@@ -213,7 +213,7 @@ namespace SvEditor::Panels
         return flags;
     }
 
-    void HierarchyPanel::SetCurrentSceneGetter(CurrentSceneGetter p_getCurrentScene)
+    void HierarchyPanel::SetCurrentSceneGetter(const CurrentSceneGetter& p_getCurrentScene)
     {
         s_getCurrentScene = p_getCurrentScene;
     }

@@ -1,6 +1,7 @@
 //HierarchyPanel.h
 #pragma once
 
+#include "SurvivantApp/Core/WorldContext.h"
 #include "SurvivantCore/Events/Event.h"
 #include "SurvivantCore/ECS/EntityHandle.h"
 #include "SurvivantCore/ECS/Scene.h"
@@ -21,8 +22,8 @@ namespace SvEditor::Panels
 	public:
 		using HierarchyBranch = PanelTreeBranch<SvCore::ECS::Entity::Id>;
 		using EntityBranchMap = std::unordered_map<SvCore::ECS::Entity::Id, std::shared_ptr<HierarchyBranch>>;
-		using SceneRef = std::weak_ptr<std::shared_ptr<SvCore::ECS::Scene>>;
-		using CurrentSceneGetter = std::function<SceneRef()>;
+		using SceneRefPtr = std::weak_ptr<SvApp::Core::WorldContext::SceneRef>;
+		using CurrentSceneGetter = std::function<SceneRefPtr()>;
 
 		HierarchyPanel();
 		~HierarchyPanel();
@@ -30,7 +31,7 @@ namespace SvEditor::Panels
 		// Inherited via Panel
 		ERenderFlags Render() override;
 
-		static void SetCurrentSceneGetter(CurrentSceneGetter p_getCurrentScene);
+		static void SetCurrentSceneGetter(const CurrentSceneGetter& p_getCurrentScene);
 		static void SelectSelectable(const SvCore::ECS::Entity::Id& p_entity);
 
 		bool m_isDirty = false;
@@ -55,7 +56,7 @@ namespace SvEditor::Panels
 		static inline EntityBranchMap		s_entities;
 		
 		HierarchyBranch		m_tree;
-		SceneRef			m_scene;
+		SceneRefPtr			m_scene;
 		PanelButton			m_addEntity;
 
 		EntityListenerId						m_onAddId;

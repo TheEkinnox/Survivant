@@ -13,7 +13,9 @@ namespace SvApp::Core
         using namespace ToRemove;
 
         //TODO : Save resource ref in begin play
+        //ToRemove::MakeScene(*CurrentScene());
         //CurrentScene()->Save("assets/scenes/DefaultScene.scn");
+
         TestLevelBeginPlay(*CurrentScene());
     }
 
@@ -38,7 +40,7 @@ namespace SvApp::Core
     void WorldContext::LoadCurrentScene()
     {
         using namespace ToRemove;
-        MakeScene(*CurrentScene());
+        //MakeScene(*CurrentScene());
     }
 
     void WorldContext::BakeLighting()
@@ -81,7 +83,7 @@ namespace SvApp::Core
         SceneView<CameraComponent> cameras(*CurrentScene());
 
         ASSERT(cameras.begin() != cameras.end(), "No Cameras In World");
-        return EntityHandle(CurrentScene().get(), *cameras.begin());
+        return EntityHandle(CurrentScene().Get(), *cameras.begin());
     }
 
     void WorldContext::SetOwningCamera(
@@ -95,12 +97,12 @@ namespace SvApp::Core
         InputManager::GetInstance().SetInputBindings(m_inputs);
     }
 
-    std::shared_ptr<SvCore::ECS::Scene>& WorldContext::CurrentScene()
+    WorldContext::SceneRef& WorldContext::CurrentScene()
     {
         return *m_currentSceneRef;
     }
 
-    std::weak_ptr<WorldContext::ScenePtr> WorldContext::CurrentSceneRef()
+    std::weak_ptr<WorldContext::SceneRef> WorldContext::CurrentSceneRef()
     {
         return m_currentSceneRef;
     }

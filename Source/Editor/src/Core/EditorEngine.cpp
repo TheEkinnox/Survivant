@@ -58,7 +58,7 @@ namespace SvEditor::Core
 		m_PIEWorld.lock()->Render();
 	}
 
-	std::shared_ptr<WorldContext> EditorEngine::CreatePIEWorldByDuplication(const WorldContext& p_context, std::shared_ptr<Scene> p_inScene)
+	std::shared_ptr<WorldContext> EditorEngine::CreatePIEWorldByDuplication(const WorldContext& p_context, const WorldContext::SceneRef& p_inScene)
 	{
 		auto pieWorld = Engine::CreateNewWorldContext(WorldContext::EWorldType::PIE);
 
@@ -213,22 +213,17 @@ namespace SvEditor::Core
 
 	int EditorEngine::BrowseToDefaultScene(WorldContext& p_worldContext)
 	{
-		ASSERT(!m_allLevels.empty(), "No levels to browse to");
-		auto val = BrowseToScene(p_worldContext, m_allLevels.begin()->second);
-
-		return val;
+		return BrowseToScene(p_worldContext, DEFAULT_SCENE_PATH);
 	}
 
-	int EditorEngine::BrowseToScene(WorldContext& p_worldContext, std::shared_ptr<Scene> p_scene)
+	int EditorEngine::BrowseToScene(WorldContext& p_worldContext, const WorldContext::SceneRef& p_scene)
 	{
-		ASSERT(!m_allLevels.empty(), "No levels to browse to");
-
 		//not a valid scene
-		if (p_scene.get() == nullptr)
+		if (p_scene)
 			return -1;
 
 		//alredy in scene
-		if (m_editorSelectedScene.get() != nullptr && p_scene == m_editorSelectedScene)
+		if (m_editorSelectedScene && p_scene == m_editorSelectedScene)
 			return 0;
 		
 		//update current scene
@@ -242,7 +237,7 @@ namespace SvEditor::Core
 		return 1;
 	}
 
-	std::shared_ptr<WorldContext> EditorEngine::CreateEditorDefaultWorld(std::shared_ptr<Scene> p_inScene)
+	std::shared_ptr<WorldContext> EditorEngine::CreateEditorDefaultWorld(const WorldContext::SceneRef& p_inScene)
 	{
 		auto world = CreateNewWorldContext(WorldContext::EWorldType::EDITOR);
 		world->m_owningGameInstance = nullptr;
@@ -255,7 +250,7 @@ namespace SvEditor::Core
 		cam.SetClearColor(Color::lightGray);
 		world->SetOwningCamera(cam, Transform({ 0.f, 1.8f, 2.f }, Quaternion::identity(), Vector3::one()));
 		world->m_inputs = CreateEditorInputs();
-
+		
 		//load and render
 		//world->LoadCurrentScene();
 		world->BakeLighting();
@@ -297,11 +292,10 @@ namespace SvEditor::Core
 		//TODO: load all ressources here
 
 		//create scenes
-		auto defaultScene = m_allLevels.emplace("Defaut_Scene", ToRemove::TestCreateDefaultScene());
-		m_editorSelectedScene = defaultScene.first->second;
+		m_editorSelectedScene = ResourceManager::GetInstance().GetOrCreate<Scene>(DEFAULT_SCENE_PATH);
 
 		//create editor world world
-		m_editorWorld = CreateEditorDefaultWorld(defaultScene.first->second);
+		m_editorWorld = CreateEditorDefaultWorld(m_editorSelectedScene);
 		m_editorWorld->SetInputs();
 	}
 
@@ -347,23 +341,25 @@ namespace SvEditor::Core
 	//	return true;
 	//}
 
-	bool EditorEngine::ChangeScene(const std::string& p_sceneName)
+	bool EditorEngine::ChangeScene(const std::string& p_scenePath)
 	{
-		ASSERT(!m_allLevels.empty(), "No levels to browse to");
+		//ASSERT(!m_allLevels.empty(), "No levels to browse to");
 		//ASSERT(p_worldContext.CurrentScene != nullptr); can have no current if first browse
 
-		auto destination = m_allLevels.find(p_sceneName);
+		auto& rm = ResourceManager::GetInstance();
+
+		auto destination = rm.Get<Scene>(p_scenePath);
 
 		//not a valid scene name
-		if (destination == m_allLevels.end())
+		if (!destination)
 			return false;
 
-		if (PrepareSceneChange(*m_PIEWorld.lock(), destination->second) &&
-			CommitSceneChange(*m_PIEWorld.lock(), destination->second))
+		if (PrepareSceneChange(*m_PIEWorld.lock(), destination) &&
+			CommitSceneChange(*m_PIEWorld.lock(), destination))
 			return false;
 
 		//update editorWorld level
-		m_editorWorld->CurrentScene() = destination->second;
+		m_editorWorld->CurrentScene() = destination;
 		//dont update selected editor scene
 
 		return true;

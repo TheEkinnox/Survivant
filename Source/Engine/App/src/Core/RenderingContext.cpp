@@ -99,7 +99,6 @@ namespace SvApp::Core
             return;
 
         IRenderAPI::GetCurrent().Clear(true, true, true);
-
         DrawSelectedMainCameraScene(p_scene, *camInfo.first, *camInfo.second, s_editorSelectedEntity);
     }
 

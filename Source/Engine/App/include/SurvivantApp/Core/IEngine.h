@@ -22,15 +22,13 @@ namespace SvApp::Core
 	public:
 		//TODO: add Engine events
 
-		using LevelMap = std::unordered_map<std::string, std::shared_ptr<Scene>>;
-
 		Engine() = default;
 		~Engine() = default;
 
 		virtual void	Init() = 0;
 		virtual void	Update() = 0;
 		//virtual bool	StartScene(WorldContext& p_worldContext) = 0;
-		virtual bool	ChangeScene(const std::string& p_sceneName) = 0;
+		virtual bool	ChangeScene(const std::string& p_scenePath) = 0;
 		virtual void	RedrawViewports() = 0;
 		virtual float	GetDeltaTime() = 0;
 		virtual void	BakeLights() = 0;
@@ -42,14 +40,13 @@ namespace SvApp::Core
 		static inline Engine* s_engine = nullptr;
 
 	protected:
-		bool PrepareSceneChange(WorldContext& p_context, const std::shared_ptr<Scene>& p_newLevel);
-		bool CommitSceneChange(WorldContext& m_context, const std::shared_ptr<Scene>& p_newLevel);
+		bool PrepareSceneChange(WorldContext& p_context, const WorldContext::SceneRef& p_newLevel);
+		bool CommitSceneChange(WorldContext& m_context, const WorldContext::SceneRef& p_newLevel);
 
 		//acces GameInstace members
 		std::weak_ptr<WorldContext>&	GetWorldContextRef(GameInstance& p_instance);
 
-		std::shared_ptr<Scene>				m_gameScene;
-		LevelMap							m_allLevels;
+		WorldContext::SceneRef	m_gameScene;
 	};
 
 	

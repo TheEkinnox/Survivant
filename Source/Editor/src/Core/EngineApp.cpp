@@ -8,6 +8,7 @@
 #include <SurvivantCore/Utility/FileSystem.h>
 #include "SurvivantEditor/Panels/ScenePanel.h"
 #include "SurvivantEditor/Core/EditorUI.h"
+#include "SurvivantEditor/Core/InspectorComponentManager.h"
 
 #include <memory>
 
@@ -27,6 +28,9 @@ namespace SvEditor::Core
 
 		SvCore::Debug::Logger::GetInstance().SetFile("debug.log");
 		ResourceManager::GetInstance().AddSearchPath("assets");
+
+		//setup InspectorComponents
+		InspectorItemManager::Init();
 
 		m_window = std::make_unique<Core::EditorWindow>();
 

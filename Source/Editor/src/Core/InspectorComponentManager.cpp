@@ -5,6 +5,7 @@
 #include "SurvivantCore/Debug/Assertion.h"
 #include "SurvivantCore/ECS/Components/Hierarchy.h"
 #include "SurvivantCore/ECS/Components/TagComponent.h"
+#include "SurvivantCore/ECS/Scene.h"
 #include "SurvivantRendering/Components/CameraComponent.h"
 #include "SurvivantRendering/Components/LightComponent.h"
 #include "SurvivantRendering/Components/ModelComponent.h"
@@ -46,32 +47,21 @@ namespace SvEditor::Core
 {
 	void InspectorItemManager::Init()
 	{
-		//components
-		CHECK(AddComponentToPanelable<Transform>(&AddComponentTransform, "Transform"),
-			"Couldn't add ComponentToPanelable callback to type : Transform");
-		CHECK(AddComponentToPanelable<HierarchyComponent>(&AddComponentHierarchy, "Hierarchy"),
-			"Couldn't add ComponentToPanelable callback to type : Hierarchy");
-		CHECK(AddComponentToPanelable<TagComponent>(&AddComponentTag, "Tag"),
-			"Couldn't add ComponentToPanelable callback to type : Tag");
-		CHECK(AddComponentToPanelable<LightComponent>(&AddComponentLight, "Light"),
-			"Couldn't add ComponentToPanelable callback to type : Light");
-		CHECK(AddComponentToPanelable<ModelComponent>(&AddComponentModel, "Model"),
-			"Couldn't add ComponentToPanelable callback to type : Model");
-		CHECK(AddComponentToPanelable<CameraComponent>(&AddComponentCamera, "Camera"),
-			"Couldn't add ComponentToPanelable callback to type : Camera");
-
-
 		//resources
-		CHECK(AddResourceToPanelable<Model>(&AddResourceDefault, "Model"),
-			"Couldn't add ResourceToPanelable callback to type : Model");
-		CHECK(AddResourceToPanelable<Material>(&AddResourceDefault, "Material"),
-			"Couldn't add ResourceToPanelable callback to type : Material");
-		CHECK(AddResourceToPanelable<LuaScript>(&AddResourceDefault, "Script"),
-			"Couldn't add ResourceToPanelable callback to type : Script");
-		CHECK(AddResourceToPanelable<IShader>(&AddResourceDefault, "Shader"),
-			"Couldn't add ResourceToPanelable callback to type : Shader");
-		CHECK(AddResourceToPanelable<ITexture>(&AddResourceDefault, "Texture"),
-			"Couldn't add ResourceToPanelable callback to type : Texture");
+		CHECK(AddResourceToPanelable<Scene>(&AddResourceDefault, "Scene"),			"Couldn't init resource type : Scene");
+		CHECK(AddResourceToPanelable<Model>(&AddResourceDefault, "Model"),			"Couldn't init resource type : Model");
+		CHECK(AddResourceToPanelable<Material>(&AddResourceDefault, "Material"),	"Couldn't init resource type : Material");
+		CHECK(AddResourceToPanelable<LuaScript>(&AddResourceDefault, "Script"),		"Couldn't init resource type : Script");
+		CHECK(AddResourceToPanelable<IShader>(&AddResourceDefault, "Shader"),		"Couldn't init resource type : Shader");
+		CHECK(AddResourceToPanelable<ITexture>(&AddResourceDefault, "Texture"),		"Couldn't init resource type : Texture");
+
+		//components
+		CHECK(AddComponentToPanelable<Transform>(&AddComponentTransform, "Transform"),				"Couldn't init component type : Transform");
+		CHECK(AddComponentToPanelable<HierarchyComponent>(&AddComponentHierarchy, "Hierarchy"),		"Couldn't init component type : Hierarchy");
+		CHECK(AddComponentToPanelable<TagComponent>(&AddComponentTag, "Tag"),						"Couldn't init component type : Tag");
+		CHECK(AddComponentToPanelable<LightComponent>(&AddComponentLight, "Light"),					"Couldn't init component type : Light");
+		CHECK(AddComponentToPanelable<ModelComponent>(&AddComponentModel, "Model"),					"Couldn't init component type : Model");
+		CHECK(AddComponentToPanelable<CameraComponent>(&AddComponentCamera, "Camera"),				"Couldn't init component type : Camera");
 	}
 
 	InspectorItemManager::PanelableEntity InspectorItemManager::GetPanelableEntity(

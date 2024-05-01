@@ -14,25 +14,24 @@ namespace SvApp::Core
 {
     Scene& Engine::GetGameScene()
     {
-        ASSERT(m_gameScene != nullptr, "There is no current world");
-
+        ASSERT(!m_gameScene, "There is no current world");
         return *m_gameScene;
     }
 
-    bool Engine::PrepareSceneChange(WorldContext& /*p_context*/, const std::shared_ptr<Scene>& p_newLevel)
+    bool Engine::PrepareSceneChange(WorldContext& /*p_context*/, const WorldContext::SceneRef& p_newLevel)
     {
         //init destination scene
         return p_newLevel->Init();
     }
 
-    bool Engine::CommitSceneChange(WorldContext& p_context, const std::shared_ptr<Scene>& p_newLevel)
+    bool Engine::CommitSceneChange(WorldContext& p_context, const WorldContext::SceneRef& p_newLevel)
     {
         //switch and the unload old scene
-        std::shared_ptr<Scene> m_levelToUnload = p_context.CurrentScene();
+        auto& m_levelToUnload = p_context.CurrentScene();
         p_context.CurrentScene() = p_newLevel;
         p_context.BakeLighting();
 
-        if (m_levelToUnload != nullptr)
+        if (m_levelToUnload)
         {
             //m_levelToUnload->UnloadLevel();
         }
