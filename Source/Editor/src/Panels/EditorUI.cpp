@@ -104,9 +104,6 @@ namespace SvEditor::Core
 
         ScenePanel::SetSceneWorld(p_world);
 
-        //                p_world.lock()->m_renderingContext->GetTexture(RenderingContext::ERenderType::ID);
-
-
         ScenePanel::AddClickSceneListenner(
             [p_world](const LibMath::Vector2& p_uv)
             { 
