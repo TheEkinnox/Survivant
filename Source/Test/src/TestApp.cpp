@@ -205,9 +205,9 @@ namespace SvTest
 
     void TestApp::MakeScene()
     {
+        m_scene.Clear();
         LuaContext& luaContext = LuaContext::GetInstance();
         luaContext.Reload();
-        m_scene.Clear();
 
         EntityHandle camEntity = m_scene.Create();
 
