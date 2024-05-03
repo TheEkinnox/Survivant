@@ -271,13 +271,33 @@ namespace SvTest
 
         EntityHandle greenCube = m_scene.Create();
         greenCube.Make<ModelComponent>(cube, greenMaterial);
-        greenCube.Make<HierarchyComponent>(redCube.GetEntity());
         greenCube.Make<Transform>(Vector3(0.f, 1.5f, 0.f), Quaternion::identity(), Vector3::one());
+        greenCube.Make<HierarchyComponent>(redCube.GetEntity());
 
         EntityHandle yellowCube = m_scene.Create();
         yellowCube.Make<ModelComponent>(cube, yellowMaterial);
-        yellowCube.Make<HierarchyComponent>(greenCube.GetEntity());
         yellowCube.Make<Transform>(Vector3(0.f, 1.5f, 0.f), Quaternion::identity(), Vector3::one());
+        yellowCube.Make<HierarchyComponent>(greenCube.GetEntity());
+
+        EntityHandle yellowCube2 = m_scene.Create();
+        yellowCube2.Make<ModelComponent>(cube, yellowMaterial);
+        yellowCube2.Make<Transform>(Vector3(0.f, 1.5f, 0.f), Quaternion::identity(), Vector3::one());
+        yellowCube2.Make<HierarchyComponent>(yellowCube.GetEntity());
+
+        EntityHandle yellowCube3 = m_scene.Create();
+        yellowCube3.Make<ModelComponent>(cube, yellowMaterial);
+        yellowCube3.Make<Transform>(Vector3(0.f, 1.5f, 0.f), Quaternion::identity(), Vector3::one());
+        yellowCube3.Make<HierarchyComponent>(yellowCube2.GetEntity());
+
+        EntityHandle yellowCube4 = m_scene.Create();
+        yellowCube4.Make<ModelComponent>(cube, yellowMaterial);
+        yellowCube4.Make<Transform>(Vector3(0.f, 1.5f, 0.f), Quaternion::identity(), Vector3::one());
+        yellowCube4.Make<HierarchyComponent>(yellowCube3.GetEntity());
+
+        EntityHandle greenCube2 = m_scene.Create();
+        greenCube2.Make<ModelComponent>(cube, greenMaterial);
+        greenCube2.Make<Transform>(Vector3(0.f, 1.5f, 0.f), Quaternion::identity(), Vector3::one());
+        greenCube2.Make<HierarchyComponent>(yellowCube4.GetEntity());
 
         EntityHandle magentaCube = m_scene.Create();
         magentaCube.Make<ModelComponent>(cube, magentaMaterial);
@@ -289,9 +309,49 @@ namespace SvTest
         blueCube.Make<HierarchyComponent>(redCube.GetEntity());
         blueCube.Make<Transform>(Vector3(-1.5f, 1.5f, 0.f), Quaternion::identity(), Vector3::one());
 
+        EntityHandle magentaCube2 = m_scene.Create();
+        magentaCube2.Make<ModelComponent>(cube, magentaMaterial);
+        magentaCube2.Make<HierarchyComponent>(yellowCube3.GetEntity());
+        magentaCube2.Make<Transform>(Vector3(-1.5f, 1.5f, 0.f), Quaternion::identity(), Vector3::one());
+
+        EntityHandle blueCube2 = m_scene.Create();
+        blueCube2.Make<ModelComponent>(cube, blueMaterial);
+        blueCube2.Make<HierarchyComponent>(magentaCube2.GetEntity());
+        blueCube2.Make<Transform>(Vector3(-1.5f, 1.5f, 0.f), Quaternion::identity(), Vector3::one());
+
+        EntityHandle blueCube3 = m_scene.Create();
+        blueCube3.Make<ModelComponent>(cube, blueMaterial);
+        blueCube3.Make<HierarchyComponent>(greenCube2.GetEntity());
+        blueCube3.Make<Transform>(Vector3(1.5f, 1.5f, 0.f), Quaternion::identity(), Vector3::one());
+
+        EntityHandle magentaCube3 = m_scene.Create();
+        magentaCube3.Make<ModelComponent>(cube, magentaMaterial);
+        magentaCube3.Make<HierarchyComponent>(blueCube3.GetEntity());
+        magentaCube3.Make<Transform>(Vector3(1.5f, 1.5f, 0.f), Quaternion::identity(), Vector3::one());
+
         EntityHandle litCube = m_scene.Create();
         litCube.Make<ModelComponent>(cube, litMaterial);
         litCube.Make<Transform>(camPos + Vector3::front(), Quaternion::identity(), Vector3(1.5f, .5f, .1f));
+
+        EntityHandle litCube2 = m_scene.Create();
+        litCube2.Make<ModelComponent>(cube, litMaterial);
+        litCube2.Make<HierarchyComponent>(blueCube.GetEntity());
+        litCube2.Make<Transform>(Vector3(-1.5f, 1.5f, 0.f), Quaternion::identity(), Vector3::one());
+
+        EntityHandle litCube3 = m_scene.Create();
+        litCube3.Make<ModelComponent>(cube, litMaterial);
+        litCube3.Make<HierarchyComponent>(litCube2.GetEntity());
+        litCube3.Make<Transform>(Vector3(1.5f, 1.5f, 0.f), Quaternion::identity(), Vector3::one());
+
+        EntityHandle litCube4 = m_scene.Create();
+        litCube4.Make<ModelComponent>(cube, litMaterial);
+        litCube4.Make<HierarchyComponent>(magentaCube.GetEntity());
+        litCube4.Make<Transform>(Vector3(1.5f, 1.5f, 0.f), Quaternion::identity(), Vector3::one());
+
+        EntityHandle litCube5 = m_scene.Create();
+        litCube5.Make<ModelComponent>(cube, litMaterial);
+        litCube5.Make<HierarchyComponent>(litCube4.GetEntity());
+        litCube5.Make<Transform>(Vector3(-1.5f, 1.5f, 0.f), Quaternion::identity(), Vector3::one());
 
         m_scene.Create().Make<LightComponent>(Light(Color::lime));
         m_scene.Create().Make<LightComponent>(DirectionalLight{ Color::magenta, Vector3::back() });
