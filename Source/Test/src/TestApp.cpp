@@ -1,10 +1,7 @@
 #include "SurvivantTest/TestApp.h"
 
 #include "SurvivantTest/ResourceRegistrations.h"
-#include "SurvivantTest/RotatorComponent.h"
 #include "SurvivantTest/SceneTest.h"
-#include "SurvivantTest/TemporaryComponent.h"
-#include "SurvivantTest/UserInputComponent.h"
 
 #include <SurvivantCore/ECS/SceneView.h>
 #include <SurvivantCore/ECS/Components/Hierarchy.h>
@@ -98,10 +95,6 @@ namespace SvTest
 
             timer.Tick();
             m_window->Update();
-
-            UpdateTemporaries();
-            UpdateInput();
-            UpdateRotators();
 
             luaContext.Update(timer.GetDeltaTime());
 
@@ -223,8 +216,7 @@ namespace SvTest
 
         const Vector3 camPos(0.f, 1.8f, 2.f);
         camEntity.Make<Transform>(camPos, Quaternion::identity(), Vector3::one());
-
-        camEntity.Make<UserInput>(CAM_MOVE_SPEED, CAM_ROTATION_SPEED);
+        camEntity.Make<LuaScriptList>().Add("scripts.freeLook");
 
         ResourceRef<Model> cube("models/cube.obj");
         ASSERT(cube, "Failed to load model at path \"%s\"", "models/cube.obj");
@@ -269,9 +261,13 @@ namespace SvTest
 
         EntityHandle redCube = m_scene.Create();
         redCube.Make<ModelComponent>(cube, redMaterial);
-        redCube.Make<Rotator>(Quaternion(36_deg, Vector3::up()));
         redCube.Make<Transform>(Vector3(.75f, .5f, 0.f), Quaternion::identity(), Vector3::one());
-        redCube.Make<Temporary>(5.f);
+
+        {
+            LuaScriptList& scripts = redCube.Make<LuaScriptList>();
+            scripts.Add("scripts.rotator");
+            scripts.Add("scripts.temporary");
+        }
 
         EntityHandle greenCube = m_scene.Create();
         greenCube.Make<ModelComponent>(cube, greenMaterial);
@@ -345,69 +341,6 @@ namespace SvTest
 
         m_lightsSSBO->Bind();
         m_lightsSSBO->SetData(lightMatrices.data(), lightMatrices.size());
-    }
-
-    void TestApp::UpdateTemporaries()
-    {
-        const float deltaTime = Timer::GetInstance().GetDeltaTime();
-
-        SceneView<Temporary> view(m_scene);
-
-        for (const auto entity : view)
-        {
-            auto& [lifeSpanSec] = *view.Get<Temporary>(entity);
-            lifeSpanSec -= deltaTime;
-
-            if (lifeSpanSec <= 0)
-                EntityHandle(&view.GetScene(), entity).Destroy();
-        }
-    }
-
-    void TestApp::UpdateInput()
-    {
-        const float deltaTime = Timer::GetInstance().GetDeltaTime();
-
-        SceneView<const UserInput, Transform> view(m_scene);
-
-        for (const auto entity : view)
-        {
-            const auto [moveSpeed, rotationSpeed] = *view.Get<const UserInput>(entity);
-            Transform& transform                  = *view.Get<Transform>(entity);
-            Vector3    newPos                     = transform.getPosition();
-            Quaternion newRot                     = transform.getRotation();
-
-            if (m_moveInput.magnitudeSquared() > 0.f)
-            {
-                const Vector3 moveDir = m_moveInput.m_x * transform.worldRight() + m_moveInput.m_y * transform.worldBack();
-                newPos += moveDir.normalized() * (moveSpeed * deltaTime);
-            }
-
-            if (m_rotateInput.magnitudeSquared() > 0.f)
-            {
-                TVector3<Radian> angles = newRot.toEuler(ERotationOrder::YXZ);
-
-                angles.m_y -= rotationSpeed * m_rotateInput.m_x * deltaTime;
-                angles.m_x += rotationSpeed * m_rotateInput.m_y * deltaTime;
-                angles.m_x = Degree(clamp(angles.m_x.degree(true), -85.f, 85.f));
-
-                newRot = Quaternion::fromEuler(angles, ERotationOrder::YXZ);
-            }
-
-            transform.setAll(newPos, newRot, Vector3::one());
-        }
-    }
-
-    void TestApp::UpdateRotators()
-    {
-        const float deltaTime = Timer::GetInstance().GetDeltaTime();
-
-        SceneView<const Rotator, Transform> view(m_scene);
-
-        for (const auto entity : view)
-        {
-            const auto [rotator, transform] = view.Get(entity);
-            transform->rotate(rotator->m_speed.toEuler(ERotationOrder::YXZ) * deltaTime, ERotationOrder::YXZ);
-        }
     }
 
     void TestApp::DrawScene()

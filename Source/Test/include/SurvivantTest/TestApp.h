@@ -36,9 +36,6 @@ namespace SvTest
         void SetupInput();
         void MakeScene();
         void UpdateLightSSBO() const;
-        void UpdateTemporaries();
-        void UpdateInput();
-        void UpdateRotators();
         void DrawScene();
 
         static void BindCamUBO(const LibMath::Matrix4& p_viewProj, const LibMath::Vector3& p_viewPos);
