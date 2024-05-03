@@ -9,12 +9,7 @@ local Rotator = {
 local transform
 
 function Rotator:OnInit()
-    transform = self.owner:Get("Transform")
-    return transform.isValid and transform or self.owner:Add("Transform")
-end
-
-function Rotator:OnStart()
-    transform.rotation = Quaternion.identity
+    transform = self.owner:GetOrCreate("Transform")
 end
 
 function Rotator:OnUpdate(deltaTime)

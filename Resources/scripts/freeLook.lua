@@ -1,22 +1,14 @@
 local FreeLook = {
     move_speed = 3,
     rotation_speed = Degree.new(90),
-    mouse_sensitivity = 0.8
+    mouse_sensitivity = 0.005
 }
 
 local transform
-local cam
-
 local last_mouse_pos
 
-function FreeLook:RequireComponent(type)
-    local comp = self.owner:Get(type)
-    return comp.isValid and comp or self.owner:Add(type)
-end
-
 function FreeLook:OnInit()
-    transform = self:RequireComponent("Transform")
-    cam = self:RequireComponent("Camera")
+    transform = self.owner:GetOrCreate("Transform")
 end
 
 function FreeLook:OnStart()
@@ -24,7 +16,7 @@ function FreeLook:OnStart()
 end
 
 local function UpdatePosition(self, deltaTime)
-    local moveInput = Vector2.new()
+    local moveInput = Vector3.zero
 
     if Input.IsKeyDown(EKey.W) then
         moveInput.y = moveInput.y + 1
@@ -42,11 +34,27 @@ local function UpdatePosition(self, deltaTime)
         moveInput.x = moveInput.x + 1
     end
 
-    moveInput:Normalize()
+    if Input.IsKeyDown(EKey.SPACE) then
+        moveInput.z = moveInput.z + 1
+    end
 
-    if moveInput.magnitudeSquared > 0 then
+    if Input.IsKeyDown(EKey.LEFT_SHIFT) or Input.IsKeyDown(EKey.RIGHT_SHIFT) then
+        moveInput.z = moveInput.z - 1
+    end
+
+    local translation = Vector3.zero
+
+    if moveInput.xy.magnitudeSquared > 0 then
         local moveDir = ((transform.right * moveInput.x) + (transform.back * moveInput.y)).normalized
-        transform.position = transform.position + (moveDir * self.move_speed * deltaTime), true
+        translation = translation + (moveDir * self.move_speed * deltaTime)
+    end
+
+    if math.abs(moveInput.z) > 0 then
+        translation = translation + (Vector3.up * moveInput.z * self.move_speed * deltaTime)
+    end
+
+    if translation.magnitudeSquared > 0 then
+        transform.position = transform.position + translation
     end
 end
 
@@ -91,7 +99,7 @@ local function UpdateMouseRotation(self, deltaTime)
         return
     end
 
-    local rotationSpeed = self.rotation_speed * self.mouse_sensitivity * deltaTime
+    local rotationSpeed = self.rotation_speed * self.mouse_sensitivity
 
     if math.isNear(rotationSpeed.raw, 0) or math.isNear(mouseDelta.magnitudeSquared, 0) then
         return
@@ -115,7 +123,6 @@ end
 
 function FreeLook:OnStop()
     transform = nil
-    cam = nil
 end
 
 return FreeLook
