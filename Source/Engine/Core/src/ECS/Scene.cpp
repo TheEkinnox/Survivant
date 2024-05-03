@@ -22,7 +22,7 @@ namespace SvCore::ECS
     bool Scene::Save(const std::string& p_fileName)
     {
         JsonStringBuffer buffer;
-        JsonWriter              writer(buffer);
+        JsonWriter       writer(buffer);
 
         if (!ToJson(writer) || !ASSUME(writer.IsComplete(), "Failed to save scene - Generated json is incomplete"))
             return false;
