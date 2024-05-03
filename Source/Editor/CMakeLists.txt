@@ -62,4 +62,27 @@ endif()
 
 copy_resources(${TARGET_NAME})
 
+if (${PROJECT_PREFIX}_BUILD_RUNTIME)
+	set(${PROJECT_PREFIX}_RUNTIME_DIR "runtime" CACHE STRING "The editor's pre-compiled runtime binaries target path")
+
+	add_dependencies(${TARGET_NAME} ${RUNTIME_NAME})
+
+	# Create runtimes symlink
+	get_target_property(RUNTIME_BUILD_PATH ${RUNTIME_NAME} RUNTIME_OUTPUT_DIRECTORY)
+	set(RUNTIME_EDITOR_PATH $<TARGET_FILE_DIR:${TARGET_NAME}>/${${PROJECT_PREFIX}_RUNTIME_DIR})
+
+	add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E create_symlink ${RUNTIME_BUILD_PATH} ${RUNTIME_EDITOR_PATH}
+	)
+
+	# Set runtime utility macros
+	list(JOIN CMAKE_CONFIGURATION_TYPES "\",\"" CONFIG_TYPES)
+
+	target_compile_definitions(${TARGET_NAME} PRIVATE
+		SV_RUNTIME_DIR="${${PROJECT_PREFIX}_RUNTIME_DIR}"
+		SV_RUNTIME_EXE="$<TARGET_FILE_NAME:${RUNTIME_NAME}>"
+		SV_RUNTIME_CONFIGS="${CONFIG_TYPES}"
+	)
+endif()
+
 set(EDITOR_NAME ${TARGET_NAME} PARENT_SCOPE)

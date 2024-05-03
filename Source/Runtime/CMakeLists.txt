@@ -56,3 +56,5 @@ if(MSVC)
 else()
 	target_compile_options(${TARGET_NAME} PRIVATE -Wall -Wextra -Wpedantic -Werror)
 endif()
+
+set(RUNTIME_NAME ${TARGET_NAME} PARENT_SCOPE)

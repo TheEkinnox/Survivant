@@ -17,8 +17,8 @@ add_subdirectory(Engine)
 set(CMAKE_FOLDER ${BASE_FOLDER})
 
 if (${PROJECT_PREFIX}_BUILD_RUNTIME)
-	#add_subdirectory(Runtime)
-	#set(STARTUP_PROJECT ${RUNTIME_NAME})
+	add_subdirectory(Runtime)
+	set(STARTUP_PROJECT ${RUNTIME_NAME})
 endif()
 
 if (${PROJECT_PREFIX}_BUILD_EDITOR)
