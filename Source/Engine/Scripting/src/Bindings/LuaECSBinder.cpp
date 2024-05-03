@@ -153,19 +153,28 @@ namespace SvScripting::Bindings
                 data[p_key] = p_value;
                 typeInfo.FromLua(component, data);
             },
-            "Set", [](const LuaComponentHandle& p_self, const sol::userdata& p_value)
-            {
-                if (!p_self.m_owner)
-                    return;
+            "self", sol::property(
+                [&p_luaState](const LuaComponentHandle& p_self) -> sol::userdata
+                {
+                    if (!p_self.m_owner)
+                        return make_object_userdata(p_luaState, sol::nil);
 
-                void* component = p_self.m_owner.GetScene()->GetStorage(p_self.m_typeId).FindRaw(p_self.m_owner);
+                    void* component = p_self.m_owner.GetScene()->GetStorage(p_self.m_typeId).FindRaw(p_self.m_owner);
+                    return LuaTypeRegistry::GetInstance().GetTypeInfo(p_self.m_typeId).ToLua(component, p_luaState);
+                },
+                [](const LuaComponentHandle& p_self, const sol::userdata& p_value)
+                {
+                    if (!p_self.m_owner)
+                        return;
 
-                if (!component)
-                    return;
+                    void* component = p_self.m_owner.GetScene()->GetStorage(p_self.m_typeId).FindRaw(p_self.m_owner);
 
-                const LuaTypeInfo& typeInfo = LuaTypeRegistry::GetInstance().GetTypeInfo(p_self.m_typeId);
-                typeInfo.FromLua(component, p_value);
-            }
+                    if (!component)
+                        return;
+
+                    LuaTypeRegistry::GetInstance().GetTypeInfo(p_self.m_typeId).FromLua(component, p_value);
+                }
+            )
         );
 
         componentType["__type"]["name"] = typeName;
@@ -193,7 +202,16 @@ namespace SvScripting::Bindings
             {
                 if (p_self)
                     p_self.m_table[p_key] = p_value;
-            }
+            },
+            "table", sol::readonly_property(
+                [](const LuaScriptHandle& p_self) -> sol::table
+                {
+                    if (!p_self)
+                        return sol::nil;
+
+                    return p_self.m_table;
+                }
+            )
         );
 
         componentType["__type"]["name"] = typeName;

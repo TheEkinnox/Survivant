@@ -80,12 +80,19 @@ local function TestComponents(entity)
     assert(get == transform)
 
     local startPos = transform.position
-    local newPos = startPos + Vector3.new(1, 2, 3)
+    local offset = Vector3.new(1, 2, 3)
+    local newPos = startPos + offset
 
     transform.position = newPos
 
     assert(transform.position ~= startPos)
     assert(transform.position == newPos)
+    assert(get.position == transform.position)
+
+    transform.self:Translate(-offset)
+
+    assert(transform.position == startPos)
+    assert(transform.position ~= newPos)
     assert(get.position == transform.position)
 end
 
