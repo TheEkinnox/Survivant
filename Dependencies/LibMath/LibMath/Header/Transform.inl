@@ -43,7 +43,7 @@ namespace LibMath
 
     inline Transform::Transform(Transform&& other) noexcept
         : m_position(other.m_position), m_rotation(other.m_rotation), m_scale(other.m_scale), m_matrix(std::move(other.m_matrix)),
-        m_parent(nullptr)
+        m_parent(nullptr), m_listeners(std::move(other.m_listeners))
     {
         if (other.m_parent)
             setParent(other.m_parent, false);
@@ -84,10 +84,11 @@ namespace LibMath
 
         broadcast(ENotificationType::TRANSFORM_DESTROYED, nullptr);
 
-        m_position = other.m_position;
-        m_rotation = other.m_rotation;
-        m_scale    = other.m_scale;
-        m_matrix   = std::move(other.m_matrix);
+        m_position  = other.m_position;
+        m_rotation  = other.m_rotation;
+        m_scale     = other.m_scale;
+        m_matrix    = std::move(other.m_matrix);
+        m_listeners = std::move(other.m_listeners);
 
         if (other.m_parent != m_parent)
             setParent(other.m_parent, false);
