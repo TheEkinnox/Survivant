@@ -1,10 +1,10 @@
 #pragma once
-#include "SurvivantRendering/Geometry/BoundingBox.h"
-#include "SurvivantRendering/Geometry/BoundingSphere.h"
+#include "Geometry/BoundingBox.h"
+#include "Geometry/BoundingSphere.h"
 
-#include "Vector/Vector4.h"
+#include <cstdint>
 
-namespace SvRendering::Geometry
+namespace LibMath
 {
     class Frustum
     {
@@ -24,7 +24,7 @@ namespace SvRendering::Geometry
          * \brief Computes the frustum from the given view-projection matrix
          * \param p_viewProjection The source view-projection matrix
          */
-        explicit Frustum(const LibMath::Matrix4& p_viewProjection);
+        explicit Frustum(const Matrix4& p_viewProjection);
 
         /**
          * \brief Creates a copy of the given frustum
@@ -62,23 +62,25 @@ namespace SvRendering::Geometry
          * \param p_point The point to check
          * \return True if the point is in the camera's frustum. False otherwise
          */
-        bool Intersects(const LibMath::Vector3& p_point) const;
+        bool intersects(const Vector3& p_point) const;
 
         /**
          * \brief Checks if a given bounding sphere intersects the camera's frustum
          * \param p_boundingSphere The target bounding sphere
          * \return True if the sphere is in the camera's frustum. False otherwise
          */
-        bool Intersects(const BoundingSphere& p_boundingSphere) const;
+        bool intersects(const BoundingSphere& p_boundingSphere) const;
 
         /**
          * \brief Checks if a given bounding box is in the camera's frustum
          * \param p_boundingBox The target bounding box
          * \return True if the bounding box is in the camera's frustum. False otherwise
          */
-        bool Intersects(const BoundingBox& p_boundingBox) const;
+        bool intersects(const BoundingBox& p_boundingBox) const;
 
     private:
-        LibMath::Vector4 m_planes[PLANE_COUNT];
+        Vector4 m_planes[PLANE_COUNT];
     };
 }
+
+#include "Geometry/Frustum.inl"

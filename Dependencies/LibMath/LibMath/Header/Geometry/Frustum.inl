@@ -1,28 +1,27 @@
-#include "SurvivantRendering/Geometry/Frustum.h"
+#pragma once
+#include "Geometry/Frustum.h"
 
-using namespace LibMath;
-
-namespace SvRendering::Geometry
+namespace LibMath
 {
     // Adapted from https://www8.cs.umu.se/kurser/5DV051/HT12/lab/plane_extraction.pdf
-    Frustum::Frustum(const Matrix4& p_viewProjection)
+    inline Frustum::Frustum(const Matrix4& p_viewProjection)
     {
-        for (int8_t i = 0; i < 4; ++i)
+        for (int8_t i               = 0; i < 4; ++i)
             m_planes[PLANE_LEFT][i] = p_viewProjection(3, i) + p_viewProjection(0, i);
 
-        for (int8_t i = 0; i < 4; ++i)
+        for (int8_t i                = 0; i < 4; ++i)
             m_planes[PLANE_RIGHT][i] = p_viewProjection(3, i) - p_viewProjection(0, i);
 
-        for (int8_t i = 0; i < 4; ++i)
+        for (int8_t i              = 0; i < 4; ++i)
             m_planes[PLANE_TOP][i] = p_viewProjection(3, i) - p_viewProjection(1, i);
 
-        for (int8_t i = 0; i < 4; ++i)
+        for (int8_t i                 = 0; i < 4; ++i)
             m_planes[PLANE_BOTTOM][i] = p_viewProjection(3, i) + p_viewProjection(1, i);
 
-        for (int8_t i = 0; i < 4; ++i)
+        for (int8_t i               = 0; i < 4; ++i)
             m_planes[PLANE_NEAR][i] = p_viewProjection(3, i) + p_viewProjection(2, i);
 
-        for (int8_t i = 0; i < 4; ++i)
+        for (int8_t i              = 0; i < 4; ++i)
             m_planes[PLANE_FAR][i] = p_viewProjection(3, i) - p_viewProjection(2, i);
 
         for (Vector4& plane : m_planes)
@@ -34,7 +33,7 @@ namespace SvRendering::Geometry
         }
     }
 
-    bool Frustum::Intersects(const Vector3& p_point) const
+    inline bool Frustum::intersects(const Vector3& p_point) const
     {
         for (const Vector4& plane : m_planes)
         {
@@ -45,7 +44,7 @@ namespace SvRendering::Geometry
         return true;
     }
 
-    bool Frustum::Intersects(const BoundingSphere& p_boundingSphere) const
+    inline bool Frustum::intersects(const BoundingSphere& p_boundingSphere) const
     {
         for (const Vector4& plane : m_planes)
         {
@@ -56,7 +55,7 @@ namespace SvRendering::Geometry
         return true;
     }
 
-    bool Frustum::Intersects(const BoundingBox& p_boundingBox) const
+    inline bool Frustum::intersects(const BoundingBox& p_boundingBox) const
     {
         for (auto plane : m_planes)
         {

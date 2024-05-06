@@ -6,6 +6,7 @@
 #include <SurvivantCore/ECS/SceneView.h>
 #include <SurvivantCore/ECS/Components/Hierarchy.h>
 #include <SurvivantCore/Utility/FileSystem.h>
+#include <SurvivantCore/Utility/Timer.h>
 
 #include <SurvivantRendering/Components/CameraComponent.h>
 #include <SurvivantRendering/Components/LightComponent.h>
@@ -478,7 +479,7 @@ namespace SvTest
     void TestApp::DrawModel(
         const Model& p_model, const Frustum& p_viewFrustum, const Matrix4& p_transform, const Material& p_material)
     {
-        if (!p_viewFrustum.Intersects(TransformBoundingBox(p_model.GetBoundingBox(), p_transform)))
+        if (!p_viewFrustum.intersects(TransformBoundingBox(p_model.GetBoundingBox(), p_transform)))
             return;
 
         BindModelUBO(p_transform);

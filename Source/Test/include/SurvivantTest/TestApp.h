@@ -3,13 +3,13 @@
 #include <SurvivantApp/Windows/Window.h>
 
 #include <SurvivantCore/ECS/Scene.h>
-#include <SurvivantCore/Utility/Timer.h>
 
-#include <SurvivantRendering/Geometry/Frustum.h>
 #include <SurvivantRendering/Resources/Material.h>
 #include <SurvivantRendering/RHI/IShaderStorageBuffer.h>
 
 #include <memory>
+
+#include <Geometry/Frustum.h>
 
 #include <Vector/Vector2.h>
 
@@ -42,7 +42,7 @@ namespace SvTest
         static void BindModelUBO(const LibMath::Matrix4& p_modelMat);
 
         static void DrawModel(const SvRendering::Resources::Model&    p_model,
-                              const SvRendering::Geometry::Frustum&   p_viewFrustum,
+                              const LibMath::Frustum&                 p_viewFrustum,
                               const LibMath::Matrix4&                 p_transform,
                               const SvRendering::Resources::Material& p_material);
     };

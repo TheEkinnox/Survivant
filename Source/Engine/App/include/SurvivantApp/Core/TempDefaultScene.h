@@ -209,7 +209,7 @@ namespace ToRemove
 
     void inline DrawModel(const Model& p_model, const Frustum& p_viewFrustum, const Matrix4& p_transform, const Material& p_material)
     {
-        if (!p_viewFrustum.Intersects(TransformBoundingBox(p_model.GetBoundingBox(), p_transform)))
+        if (!p_viewFrustum.intersects(TransformBoundingBox(p_model.GetBoundingBox(), p_transform)))
             return;
 
         BindModelUBO(p_transform);
@@ -258,7 +258,7 @@ namespace ToRemove
     {
         static auto editorSceneShader = CreateEditorSceneShader();
 
-        if (!p_viewFrustum.Intersects(TransformBoundingBox(p_model.GetBoundingBox(), p_transform)))
+        if (!p_viewFrustum.intersects(TransformBoundingBox(p_model.GetBoundingBox(), p_transform)))
             return;
 
         BindModelUBO(p_transform);
