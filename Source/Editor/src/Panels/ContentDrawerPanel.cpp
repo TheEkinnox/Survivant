@@ -256,8 +256,11 @@ namespace SvEditor::Panels
         auto extension = path.substr(it);
         SV_LOG(std::string("Try to open file, path : " + path).c_str());
 
-        if (FileExtensions["Scene"].contains(extension))
+        if (FileExtensions["Scene"].contains(extension)
+            && !(SV_ENGINE()->IsPlayInEditor()))
+        {
             SV_ENGINE()->ChangeScene(path);
+        }
 
         //can display other items
         return false;

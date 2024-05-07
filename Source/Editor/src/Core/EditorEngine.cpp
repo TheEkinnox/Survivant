@@ -31,7 +31,7 @@ namespace SvEditor::Core
 		if (m_PIEWorld.expired())
 		{
 			ASSERT(false, "No PIE world on game instance creation");
-			m_PIEWorld = CreatePIEWorldByDuplication(*m_editorWorld, m_editorSelectedScene);
+			m_PIEWorld = CreatePIEWorldByDuplication(*m_editorWorld);
 		}
 
 		m_gameInstance = std::make_shared<GameInstance>(m_PIEWorld);
@@ -44,12 +44,11 @@ namespace SvEditor::Core
 
 	void EditorEngine::DestroyGameInstance()
 	{
+		WorldContext::SceneRef scene = GetWorldContextRef(*m_gameInstance).lock()->CurrentScene();
 		m_gameInstance.reset();
-		m_gameInstance = nullptr;
-
 
 		//while playing, loaded new scene, so go back to selected
-		if (m_gameScene != m_editorSelectedScene)
+		if (scene != m_editorSelectedScene)
 			BrowseToScene(*m_editorWorld, m_editorSelectedScene.GetPath());
 
 		m_editorWorld->SetInputs();
@@ -58,19 +57,13 @@ namespace SvEditor::Core
 		m_PIEWorld.lock()->Render();
 	}
 
-	std::shared_ptr<WorldContext> EditorEngine::CreatePIEWorldByDuplication(const WorldContext& p_context, const WorldContext::SceneRef& p_inScene)
+	std::shared_ptr<WorldContext> EditorEngine::CreatePIEWorldByDuplication(const WorldContext& p_context)
 	{
-		auto pieWorld = Engine::CreateNewWorldContext(WorldContext::EWorldType::PIE);
+		auto pieWorld =				Engine::CreateNewWorldContext(WorldContext::EWorldType::PIE);
+		pieWorld->m_lightsSSBO =	IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, 0);
+		pieWorld->m_viewport =		p_context.m_viewport;
 
-		pieWorld->m_owningGameInstance = p_context.m_owningGameInstance;
-		pieWorld->m_viewport = p_context.m_viewport; //TODO : setup viewport when dupliucating world
-		pieWorld->CurrentScene() = p_inScene;
-		pieWorld->SetSceneCamera(pieWorld->GetDefaultSceneCamera());
-		pieWorld->m_inputs = ToRemove::SetupGameInputs();
-		pieWorld->m_lightsSSBO = IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, 0);
-
-		pieWorld->BakeLighting();
-		pieWorld->Render();
+		//pieWorld->Render();
 		//pieWorld->m_persistentLevel = p_context.m_persistentLevel;
 
 		return pieWorld;
@@ -254,24 +247,20 @@ namespace SvEditor::Core
 
 	bool EditorEngine::InitializePlayInEditorGameInstance(GameInstance& p_instance)
 	{
-		EditorEngine* EditorEngine = this;
+		auto pieWorld = GetWorldContextRef(p_instance).lock();
+		ASSERT(pieWorld, "GameInstance has no world");
 
-		// Look for an existing pie world context, may have been created before
-		auto& worldContext = EditorEngine->GetWorldContextRef(p_instance);
-		ASSERT(!worldContext.expired(), "GameInstance has no world");
+		pieWorld->m_owningGameInstance = &p_instance;
+		pieWorld->CurrentScene() = m_editorSelectedScene;
 
-		worldContext.lock()->m_owningGameInstance = &p_instance;
-		worldContext.lock()->m_lightsSSBO = IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, 0);
-
-		worldContext.lock()->SetInputs();
-		//worldContext.lock()->BakeLighting();
+		pieWorld->m_inputs = ToRemove::SetupGameInputs();
+		pieWorld->SetSceneCamera();
+		pieWorld->BakeLighting();
+		pieWorld->SetInputs();
+		pieWorld->BakeLighting();
 
 		//init
 		p_instance.Init();
-
-		//TODO : find and set main camera
-		//dont start here
-		//worldContext->BeginPlay();
 
 		return true;
 	}
@@ -279,8 +268,6 @@ namespace SvEditor::Core
 	void EditorEngine::Init()
 	{
 		s_engine = this;
-
-		//TODO: load all ressources here
 
 		//create scenes
 		//BrowseToDefaultScene(*m_editorWorld); //cant use this func bcs world does not exist
@@ -318,7 +305,7 @@ namespace SvEditor::Core
 			{
 				ASSERT(m_PIEWorld.expired(), "Tried to create PIE world when already exists");
 
-				auto PIEWorld =	CreatePIEWorldByDuplication(*m_editorWorld, m_editorSelectedScene);
+				auto PIEWorld =	CreatePIEWorldByDuplication(*m_editorWorld);
 				m_PIEWorld = std::weak_ptr<WorldContext>(PIEWorld);
 
 				return PIEWorld;
@@ -346,8 +333,8 @@ namespace SvEditor::Core
 			return false;
 
 		//update editorWorld level. Dont bcs change back
-		//if (m_gameInstance)
-		//	m_editorSelectedScene;
+		if (m_gameInstance)
+			m_editorSelectedScene = m_PIEWorld.lock()->CurrentScene();
 
 		//m_editorWorld->CurrentScene() = destination;
 		//dont update selected editor scene
@@ -363,5 +350,10 @@ namespace SvEditor::Core
 	float EditorEngine::GetDeltaTime()
 	{
 		return m_time.GetDeltaTime();
+	}
+
+	bool SvEditor::Core::EditorEngine::IsPlayInEditor()
+	{
+		return m_gameInstance.get();
 	}
 }

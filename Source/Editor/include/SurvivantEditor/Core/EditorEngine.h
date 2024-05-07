@@ -30,17 +30,18 @@ namespace SvEditor::Core
 		void Update() override;
 		void Init() override;
 		void BakeLights() override;
+		bool ChangeScene(const std::string& p_scenePath) override;
+		void RedrawViewports() override;
+		float GetDeltaTime() override;
+		bool	IsPlayInEditor()override;
+
 
 		void RenderWorlds();
-
 		bool IsRunning();
 
 		void SetupUI(Core::EditorWindow* p_window, const std::array<std::function<void()>, 3> p_playPauseFrameCallbacks);
 
 		//bool StartScene(WorldContext& p_worldContext) override;
-		bool ChangeScene(const std::string& p_scenePath) override;
-		void RedrawViewports() override;
-		float GetDeltaTime() override;
 
 
 		////scene panel, where you mofi
@@ -74,7 +75,7 @@ namespace SvEditor::Core
 		bool InitializePlayInEditorGameInstance(GameInstance& p_instance);
 
 		std::shared_ptr<WorldContext>	CreateEditorDefaultWorld(const WorldContext::SceneRef& p_inScene);
-		std::shared_ptr<WorldContext>	CreatePIEWorldByDuplication(const WorldContext& p_context, const WorldContext::SceneRef& p_inScene);
+		std::shared_ptr<WorldContext>	CreatePIEWorldByDuplication(const WorldContext& p_context);
 		std::shared_ptr<Inputs>			CreateEditorInputs();
 
 		SvCore::Utility::Timer			m_time;

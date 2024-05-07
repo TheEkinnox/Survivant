@@ -52,8 +52,7 @@ namespace SvApp::Core
 
 		void						SetOwningCamera(
 			const SvRendering::Components::CameraComponent& p_cam, const LibMath::Transform& p_trans);
-		void						SetSceneCamera(const SvCore::ECS::EntityHandle& p_entity);
-		SvCore::ECS::EntityHandle	GetDefaultSceneCamera();
+		void						SetSceneCamera();
 		void						SetInputs();
 		SceneRef&					CurrentScene();
 		std::weak_ptr<SceneRef>		CurrentSceneRef();

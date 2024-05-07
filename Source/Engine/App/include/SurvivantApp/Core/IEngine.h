@@ -32,10 +32,10 @@ namespace SvApp::Core
 		virtual void	RedrawViewports() = 0;
 		virtual float	GetDeltaTime() = 0;
 		virtual void	BakeLights() = 0;
+		virtual bool	IsPlayInEditor() = 0;
 
 
 		static std::shared_ptr<WorldContext>	CreateNewWorldContext(WorldContext::EWorldType p_worldType);
-		Scene&									GetGameScene();
 
 		static inline Engine* s_engine = nullptr;
 
@@ -45,8 +45,6 @@ namespace SvApp::Core
 
 		//acces GameInstace members
 		std::weak_ptr<WorldContext>&	GetWorldContextRef(GameInstance& p_instance);
-
-		WorldContext::SceneRef	m_gameScene;
 	};
 
 	

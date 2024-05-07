@@ -47,7 +47,7 @@ namespace SvApp::Core
 
     void WorldContext::Render()
     {
-        m_renderingContext->Render(*CurrentScene());
+        m_renderingContext->Render(CurrentScene().Get());
     }
 
     void WorldContext::LoadCurrentScene()
@@ -86,17 +86,15 @@ namespace SvApp::Core
         m_lightsSSBO->SetData(lightMatrices.data(), lightMatrices.size());
     }
 
-    void WorldContext::SetSceneCamera(const EntityHandle& p_entity)
-    {
-        m_renderingContext->m_mainCamera.SetEntity(p_entity);
-    }
-
-    SvCore::ECS::EntityHandle WorldContext::GetDefaultSceneCamera()
+    void WorldContext::SetSceneCamera()
     {
         SceneView<CameraComponent> cameras(*CurrentScene());
 
-        ASSERT(cameras.begin() != cameras.end(), "No Cameras In World");
-        return EntityHandle(CurrentScene().Get(), *cameras.begin());
+        EntityHandle entity;
+        if (cameras.begin() != cameras.end())
+            entity = EntityHandle(CurrentScene().Get(), *cameras.begin());
+        
+        m_renderingContext->m_mainCamera.SetEntity(entity);
     }
 
     void WorldContext::SetOwningCamera(
