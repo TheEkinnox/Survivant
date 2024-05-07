@@ -213,7 +213,7 @@ namespace SvEditor::Core
         auto& menuList = menuBar.m_menus;
 
         //add menu 'File' to menu list
-        Menu& menu1 = menuList.emplace_back("File");
+        Menu& menu1 = menuList.emplace_back("Test");
         //add buttons to menu that triggers an event
         menu1.m_items.emplace_back(std::make_unique<MenuButton>(
             "New",
@@ -262,8 +262,13 @@ namespace SvEditor::Core
             menu2.m_items.emplace_back(std::move(menu3));
         }
 
-        Menu& menu4 = menuList.emplace_back(menu2);
-        menu4.SetName("Copy");
+        Menu& menu4 = menuList.emplace_back("Scene");
+        menu4.m_items.emplace_back(std::make_unique<MenuButton>(MenuButton(
+            "Save",
+            [p_world](char) { p_world.lock()->Save(); },
+            InputManager::KeyboardKeyType(EKey::S, EKeyState::PRESSED, EInputModifier::MOD_CONTROL),
+            *m_inputs
+            )));
 
         Menu& menu5 = menuList.emplace_back("Panels");
 

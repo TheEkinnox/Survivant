@@ -13,7 +13,7 @@
 
 namespace SvApp::Core
 {
-    bool Engine::PrepareSceneChange(WorldContext& p_context, WorldContext::SceneRef& p_newLevel, const std::string& p_path)
+    bool IEngine::PrepareSceneChange(WorldContext& p_context, WorldContext::SceneRef& p_newLevel, const std::string& p_path)
     {
         //init destination scene
         using namespace SvCore::Resources;
@@ -28,7 +28,7 @@ namespace SvApp::Core
         return p_newLevel->Init();
     }
 
-    bool Engine::CommitSceneChange(WorldContext& p_context, const WorldContext::SceneRef& p_newLevel)
+    bool IEngine::CommitSceneChange(WorldContext& p_context, const WorldContext::SceneRef& p_newLevel)
     {
         p_context.m_currentSceneRef.reset();
         p_context.m_currentSceneRef = std::make_shared<WorldContext::SceneRef>(p_newLevel);
@@ -37,12 +37,12 @@ namespace SvApp::Core
         return true;
     }
 
-    std::weak_ptr<WorldContext>& Engine::GetWorldContextRef(GameInstance& p_instance)
+    std::weak_ptr<WorldContext>& IEngine::GetWorldContextRef(GameInstance& p_instance)
     {
         return p_instance.m_worldContext;
     }
 
-    std::shared_ptr<WorldContext> Engine::CreateNewWorldContext(WorldContext::EWorldType p_worldType)
+    std::shared_ptr<WorldContext> IEngine::CreateNewWorldContext(WorldContext::EWorldType p_worldType)
     {
         using namespace LibMath;
         using namespace SvCore::ECS;

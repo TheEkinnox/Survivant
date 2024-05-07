@@ -11,7 +11,7 @@ namespace SvApp::Core
 	class GameInstance
 	{
 	public:
-		friend Engine;
+		friend IEngine;
 
 		class InitEvent : public SvCore::Events::Event<> {};
 
@@ -22,12 +22,12 @@ namespace SvApp::Core
 		void Start();
 		void Update();
 
-		//TODO: move to editor Engine
+		//TODO: move to editor IEngine
 		void InitializeStandalone();
 
 	
 	private:
-		Engine* GetEngine();
+		IEngine* GetEngine();
 
 		void UpdatePhysics() {}
 

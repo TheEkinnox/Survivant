@@ -1,4 +1,4 @@
-//Engine.h
+//IEngine.h
 #pragma once
 
 #include "SurvivantApp/Core/WorldContext.h"
@@ -9,21 +9,21 @@
 #include <memory>
 #include <vector>
 
-#define SV_DELTA_TIME() SvApp::Core::Engine::s_engine->GetDeltaTime()
-#define SV_ENGINE() SvApp::Core::Engine::s_engine
+#define SV_DELTA_TIME() SvApp::Core::IEngine::s_engine->GetDeltaTime()
+#define SV_ENGINE() SvApp::Core::IEngine::s_engine
 
 namespace SvApp::Core
 {
 	using Scene = SvCore::ECS::Scene;
 	using Camera = SvRendering::Core::Camera;
 
-	class Engine 
+	class IEngine 
 	{
 	public:
-		//TODO: add Engine events
+		//TODO: add IEngine events
 
-		Engine() = default;
-		~Engine() = default;
+		IEngine() = default;
+		~IEngine() = default;
 
 		virtual void	Init() = 0;
 		virtual void	Update() = 0;
@@ -37,7 +37,7 @@ namespace SvApp::Core
 
 		static std::shared_ptr<WorldContext>	CreateNewWorldContext(WorldContext::EWorldType p_worldType);
 
-		static inline Engine* s_engine = nullptr;
+		static inline IEngine* s_engine = nullptr;
 
 	protected:
 		bool PrepareSceneChange(WorldContext& p_context, WorldContext::SceneRef& p_newLevel, const std::string& p_path);

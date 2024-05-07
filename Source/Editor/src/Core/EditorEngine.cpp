@@ -52,14 +52,13 @@ namespace SvEditor::Core
 			BrowseToScene(*m_editorWorld, m_editorSelectedScene.GetPath());
 
 		m_editorWorld->SetInputs();
-		m_editorWorld->LoadCurrentScene();
 
 		m_PIEWorld.lock()->Render();
 	}
 
 	std::shared_ptr<WorldContext> EditorEngine::CreatePIEWorldByDuplication(const WorldContext& p_context)
 	{
-		auto pieWorld =				Engine::CreateNewWorldContext(WorldContext::EWorldType::PIE);
+		auto pieWorld =				IEngine::CreateNewWorldContext(WorldContext::EWorldType::PIE);
 		pieWorld->m_lightsSSBO =	IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, 0);
 		pieWorld->m_viewport =		p_context.m_viewport;
 
@@ -236,7 +235,7 @@ namespace SvEditor::Core
 		world->m_inputs = CreateEditorInputs();
 		
 		//load and render
-		//world->LoadCurrentScene();
+		//world->Save();
 		world->BakeLighting();
 		world->Render();
 

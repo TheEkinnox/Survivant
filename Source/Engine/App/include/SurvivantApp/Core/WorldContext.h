@@ -47,7 +47,7 @@ namespace SvApp::Core
 		void BeginPlay();
 		void Update();
 		void Render();
-		void LoadCurrentScene();
+		void Save();
 		void BakeLighting();
 
 		void						SetOwningCamera(

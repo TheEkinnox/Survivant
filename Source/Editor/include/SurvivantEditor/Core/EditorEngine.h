@@ -20,13 +20,13 @@ namespace SvEditor::Core
 {
 	class EditorWindow;
 
-	class EditorEngine : public SvApp::Core::Engine
+	class EditorEngine : public SvApp::Core::IEngine
 	{
 	public:
 		EditorEngine() = default;
 		~EditorEngine() = default;
 
-		// Inherited via Engine
+		// Inherited via IEngine
 		void Update() override;
 		void Init() override;
 		void BakeLights() override;
@@ -50,7 +50,7 @@ namespace SvEditor::Core
 
 		//on level switch, will ref new level
 		//Scene* GetGameScene();
-		//std::shared_ptr<Engine::WorldContext> GetPIEWorldContext();
+		//std::shared_ptr<IEngine::WorldContext> GetPIEWorldContext();
 		
 		//create PIE after press play
 		std::weak_ptr<GameInstance> CreatePIEGameInstance();

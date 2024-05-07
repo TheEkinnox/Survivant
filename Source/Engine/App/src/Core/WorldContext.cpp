@@ -50,10 +50,9 @@ namespace SvApp::Core
         m_renderingContext->Render(CurrentScene().Get());
     }
 
-    void WorldContext::LoadCurrentScene()
+    void WorldContext::Save()
     {
-        using namespace ToRemove;
-        //MakeScene(*CurrentScene());
+        CurrentScene()->Save(CurrentScene().GetPath());
     }
 
     void WorldContext::BakeLighting()
