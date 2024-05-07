@@ -129,7 +129,7 @@ namespace SvEditor::Core
             });
 
         m_inputs = p_world.lock()->m_inputs;
-        m_main->SetMenuBar(CreateMenuBar());
+        m_main->SetMenuBar(CreateMenuBar(p_world));
     }
 
     void EditorUI::InitHierarchyPanel(std::weak_ptr<WorldContext> p_world)
@@ -202,7 +202,7 @@ namespace SvEditor::Core
         m_main->ForceFocus(ScenePanel::NAME);
     }
 
-    MenuBar EditorUI::CreateMenuBar()
+    MenuBar EditorUI::CreateMenuBar(std::weak_ptr<WorldContext> p_world)
     {
 #undef MOD_ALT
 #undef MOD_CONTROL
@@ -258,24 +258,33 @@ namespace SvEditor::Core
             menu3->m_items.emplace_back(std::make_unique<MenuButton>(
                 "Test",
                 [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateNewTestPanel); }));
-            menu3->m_items.emplace_back(std::make_unique<MenuButton>(
-                "Console",
-                [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateConsolePanel); }));
-            menu3->m_items.emplace_back(std::make_unique<MenuButton>(
-                "Save",
-                [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateSavePanel); }));
-            menu3->m_items.emplace_back(std::make_unique<MenuButton>(
-                "Content",
-                [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateContentPanel); }));
-            menu3->m_items.emplace_back(std::make_unique<MenuButton>(
-                "Inspector",
-                [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateInspectorPanel); }));
 
             menu2.m_items.emplace_back(std::move(menu3));
         }
 
         Menu& menu4 = menuList.emplace_back(menu2);
         menu4.SetName("Copy");
+
+        Menu& menu5 = menuList.emplace_back("Panels");
+
+        menu5.m_items.emplace_back(std::make_unique<MenuButton>(
+            "Console",
+            [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateConsolePanel); }));
+        menu5.m_items.emplace_back(std::make_unique<MenuButton>(
+            "Content",
+            [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateContentPanel); }));
+        menu5.m_items.emplace_back(std::make_unique<MenuButton>(
+            "Game",
+            [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateGamePanel); }));
+        menu5.m_items.emplace_back(std::make_unique<MenuButton>(
+            "Hierarchy",
+            [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateHierarchyPanel); }));
+        menu5.m_items.emplace_back(std::make_unique<MenuButton>(
+            "Inspector",
+            [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateInspectorPanel); }));
+        menu5.m_items.emplace_back(std::make_unique<MenuButton>(
+            "Scene",
+            [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateScenePanel); }));
 
         return menuBar;
     }
