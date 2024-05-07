@@ -1,11 +1,12 @@
 //ContentDrawerPanel.cpp
-
 #include "SurvivantEditor/Panels/ContentDrawerPanel.h"
+
 
 #include "SurvivantCore/Events/EventManager.h"
 #include "SurvivantEditor/Core/InspectorComponentManager.h"
 #include "SurvivantEditor/Core/EditorUI.h"
 #include "SurvivantEditor/Panels/InspectorPanel.h"
+#include "SurvivantApp/Core/IEngine.h"
 
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
@@ -104,7 +105,7 @@ namespace SvEditor::Panels
     bool ContentDrawerPanel::SetGridDisplay(ResourceBranch& p_branch)
     {
         p_branch.ForceOpenParents();
-        auto& childreen = p_branch.GetChildreen();
+        auto& childreen = p_branch.GetChildren();
 
         //"cast" from PanelTreeBranch to ISelectionBoxable
         PanelSelectionBox::SelectableMap gridItems;
@@ -193,6 +194,10 @@ namespace SvEditor::Panels
             auto& set = extensions.insert({"Texture", std::set<std::string>() }).first->second;
             set.insert(".png");
         }
+        {
+            auto& set = extensions.insert({ "Scene", std::set<std::string>() }).first->second;
+            set.insert(".scn");
+        }
 
         return extensions;
     }
@@ -241,8 +246,18 @@ namespace SvEditor::Panels
 
     bool ContentDrawerPanel::TryOpenFile(ResourceBranch& p_branch)
     {
-        std::string message = "Try to open file, path : " + p_branch.GetPathName();
-        SV_LOG(message.c_str());
+        auto path = p_branch.GetPathName();
+
+        auto it = path.find_last_of('.');
+
+        if (it == path.npos)
+            return false;
+
+        auto extension = path.substr(it);
+        SV_LOG(std::string("Try to open file, path : " + path).c_str());
+
+        if (FileExtensions["Scene"].contains(extension))
+            SV_ENGINE()->ChangeScene(path);
 
         //can display other items
         return false;

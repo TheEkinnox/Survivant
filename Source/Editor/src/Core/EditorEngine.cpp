@@ -50,7 +50,7 @@ namespace SvEditor::Core
 
 		//while playing, loaded new scene, so go back to selected
 		if (m_gameScene != m_editorSelectedScene)
-			BrowseToScene(*m_editorWorld, m_editorSelectedScene);
+			BrowseToScene(*m_editorWorld, m_editorSelectedScene.GetPath());
 
 		m_editorWorld->SetInputs();
 		m_editorWorld->LoadCurrentScene();
@@ -216,23 +216,14 @@ namespace SvEditor::Core
 		return BrowseToScene(p_worldContext, DEFAULT_SCENE_PATH);
 	}
 
-	int EditorEngine::BrowseToScene(WorldContext& p_worldContext, const WorldContext::SceneRef& p_scene)
+	int EditorEngine::BrowseToScene(WorldContext& p_worldContext, const std::string& p_path)
 	{
-		//not a valid scene
-		if (p_scene)
-			return -1;
-
-		//alredy in scene
-		if (m_editorSelectedScene && p_scene == m_editorSelectedScene)
-			return 0;
-		
 		//update current scene
-		if (!(	PrepareSceneChange(p_worldContext, p_scene) &&
-				CommitSceneChange(p_worldContext, p_scene)))
-			return -1;
+		WorldContext::SceneRef sceneRef;
 
-		//update selected scene, dont keep ref to current scene
-		m_editorSelectedScene = p_worldContext.CurrentScene();
+		if (!(	PrepareSceneChange(p_worldContext, sceneRef, p_path) &&
+				CommitSceneChange(p_worldContext, sceneRef)))
+			return -1;
 
 		return 1;
 	}
@@ -273,7 +264,7 @@ namespace SvEditor::Core
 		worldContext.lock()->m_lightsSSBO = IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, 0);
 
 		worldContext.lock()->SetInputs();
-		worldContext.lock()->BakeLighting();
+		//worldContext.lock()->BakeLighting();
 
 		//init
 		p_instance.Init();
@@ -292,6 +283,7 @@ namespace SvEditor::Core
 		//TODO: load all ressources here
 
 		//create scenes
+		//BrowseToDefaultScene(*m_editorWorld); //cant use this func bcs world does not exist
 		m_editorSelectedScene = ResourceManager::GetInstance().GetOrCreate<Scene>(DEFAULT_SCENE_PATH);
 
 		//create editor world world
@@ -346,20 +338,18 @@ namespace SvEditor::Core
 		//ASSERT(!m_allLevels.empty(), "No levels to browse to");
 		//ASSERT(p_worldContext.CurrentScene != nullptr); can have no current if first browse
 
-		auto& rm = ResourceManager::GetInstance();
+		//auto& rm = ResourceManager::GetInstance();
+		auto& world = m_gameInstance? *m_PIEWorld.lock() : *m_editorWorld;
 
-		auto destination = rm.Get<Scene>(p_scenePath);
-
-		//not a valid scene name
-		if (!destination)
+		//couldnt browse to scene
+		if (BrowseToScene(world, p_scenePath) <= 0)
 			return false;
 
-		if (PrepareSceneChange(*m_PIEWorld.lock(), destination) &&
-			CommitSceneChange(*m_PIEWorld.lock(), destination))
-			return false;
+		//update editorWorld level. Dont bcs change back
+		//if (m_gameInstance)
+		//	m_editorSelectedScene;
 
-		//update editorWorld level
-		m_editorWorld->CurrentScene() = destination;
+		//m_editorWorld->CurrentScene() = destination;
 		//dont update selected editor scene
 
 		return true;

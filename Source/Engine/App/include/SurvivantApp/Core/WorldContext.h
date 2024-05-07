@@ -71,7 +71,6 @@ namespace SvApp::Core
 		bool														m_isVisalbe;
 		std::unique_ptr<SvRendering::RHI::IShaderStorageBuffer>		m_lightsSSBO = nullptr;
 
-	private:
 		std::shared_ptr<SceneRef>	m_currentSceneRef = std::make_shared<SceneRef>(SceneRef());
 	};
 }

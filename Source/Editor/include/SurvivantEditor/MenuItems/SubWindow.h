@@ -297,10 +297,10 @@
 //	{
 //	public:
 //		using OnOpenCallback = std::function<bool(PanelTreeBranch&)>;
-//		using Childreen = std::unordered_map<std::string, std::shared_ptr<PanelTreeBranch>>;
+//		using Children = std::unordered_map<std::string, std::shared_ptr<PanelTreeBranch>>;
 //
 //		PanelTreeBranch(const std::string& p_name, bool p_hideLeafs = true);
-//		PanelTreeBranch(const std::string& p_name, const Childreen& p_branches, bool p_hideLeafs = true);
+//		PanelTreeBranch(const std::string& p_name, const Children& p_branches, bool p_hideLeafs = true);
 //		~PanelTreeBranch() = default;
 //
 //		//IPanelable
@@ -313,11 +313,11 @@
 //		void DisplayTreePanel();
 //
 //		bool				IsBranch()const;
-//		const Childreen&	GetChildreen()const;
+//		const Children&	GetChildren()const;
 //		std::string			GetPathName()const;
 //
-//		Childreen&	SetBranches(const Childreen& p_branches);
-//		Childreen&	SetBranches(const std::set<std::shared_ptr<PanelTreeBranch>>& p_branches);
+//		Children&	SetBranches(const Children& p_branches);
+//		Children&	SetBranches(const std::set<std::shared_ptr<PanelTreeBranch>>& p_branches);
 //		void		AddBranch(const std::shared_ptr<PanelTreeBranch>& p_branch);
 //		void		RemoveBranch(const std::string& p_name);
 //		void		ForceOpenParents(bool p_openSelf = false);
@@ -340,7 +340,7 @@
 //		bool								m_hideLeafs;
 //		std::string							m_name;
 //		PanelTreeBranch*					m_parent;
-//		Childreen							m_children;
+//		Children							m_children;
 //		EForceState							m_forceState;
 //		std::shared_ptr<OnOpenCallback>		m_callback;
 //	};

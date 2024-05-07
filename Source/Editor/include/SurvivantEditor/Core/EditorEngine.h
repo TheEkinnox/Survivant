@@ -67,7 +67,7 @@ namespace SvEditor::Core
 		/// <param name="p_worldContext">Current world</param>
 		/// <param name="p_scene">Scene to go to</param>
 		/// <returns>-1 if couldnt, 0 if already there, 1 if properly browsed to</returns>
-		int			BrowseToScene(WorldContext& p_worldContext, const WorldContext::SceneRef& p_scene);
+		int			BrowseToScene(WorldContext& p_worldContext, const std::string& p_path);
 		/// <returns>-1 if couldnt, 0 if already there, 1 if properly </returns>
 		int			BrowseToDefaultScene(WorldContext& p_worldContext);
 

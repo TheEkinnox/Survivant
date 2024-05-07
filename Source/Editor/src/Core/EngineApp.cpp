@@ -22,6 +22,11 @@ namespace SvEditor::Core
 		m_gameInstance = std::weak_ptr<GameInstance>();
 	}
 
+	EngineApp::~EngineApp()
+	{
+		m_window.release();
+	}
+
 	void EngineApp::Init()
 	{
 		m_gameIsPaused = false;

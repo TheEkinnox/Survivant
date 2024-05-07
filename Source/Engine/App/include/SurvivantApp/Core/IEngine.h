@@ -40,8 +40,8 @@ namespace SvApp::Core
 		static inline Engine* s_engine = nullptr;
 
 	protected:
-		bool PrepareSceneChange(WorldContext& p_context, const WorldContext::SceneRef& p_newLevel);
-		bool CommitSceneChange(WorldContext& m_context, const WorldContext::SceneRef& p_newLevel);
+		bool PrepareSceneChange(WorldContext& p_context, WorldContext::SceneRef& p_newLevel, const std::string& p_path);
+		bool CommitSceneChange(WorldContext& p_context, const WorldContext::SceneRef& p_newLevel);
 
 		//acces GameInstace members
 		std::weak_ptr<WorldContext>&	GetWorldContextRef(GameInstance& p_instance);

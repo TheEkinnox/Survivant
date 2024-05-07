@@ -12,9 +12,22 @@ namespace SvApp::Core
     {
         using namespace ToRemove;
 
+
         //TODO : Save resource ref in begin play
-        //ToRemove::MakeScene(*CurrentScene());
+        //static int i = 0;
+        //if (i == 0)
+        //{
+        ToRemove::MakeScene(*CurrentScene());
         //CurrentScene()->Save("assets/scenes/DefaultScene.scn");
+            //i++;
+        //}
+        //else
+        //{
+        //    CurrentScene()->Save("assets/scenes/TestScene1.scn");
+        //}
+
+        //CurrentScene()->Clear();
+        //CurrentScene()->Save("assets/scenes/EmptyScene.scn");
 
         TestLevelBeginPlay(*CurrentScene());
     }

@@ -16,14 +16,14 @@ namespace SvEditor::PanelItems
     template<typename T>
     inline PanelTreeBranch<T>::PanelTreeBranch(
         const std::string& p_name, bool p_hideLeafs, const T& p_value) :
-        PanelTreeBranch(p_name, Childreen(), p_hideLeafs, p_value)
+        PanelTreeBranch(p_name, Children(), p_hideLeafs, p_value)
     {
     }
 
     template <typename T>
     PanelTreeBranch<T>::PanelTreeBranch(
             const std::string& p_name, 
-            const Childreen & p_branches,
+            const Children & p_branches,
             bool p_hideLeafs,
             const T& p_value) :
         m_name(p_name),
@@ -45,7 +45,7 @@ namespace SvEditor::PanelItems
     }
 
     template <typename T>
-    inline PanelTreeBranch<T>::Childreen& PanelTreeBranch<T>::SetBranches(const Childreen& p_branches)
+    inline PanelTreeBranch<T>::Children& PanelTreeBranch<T>::SetBranches(const Children& p_branches)
     {
         m_children = p_branches;
 
@@ -56,7 +56,7 @@ namespace SvEditor::PanelItems
     }
 
     template <typename T>
-    inline PanelTreeBranch<T>::Childreen& PanelTreeBranch<T>::SetBranches(const std::vector<std::shared_ptr<PanelTreeBranch>>& p_branches)
+    inline PanelTreeBranch<T>::Children& PanelTreeBranch<T>::SetBranches(const std::vector<std::shared_ptr<PanelTreeBranch>>& p_branches)
     {
         m_children.clear();
         for (auto& child : p_branches)
@@ -142,7 +142,7 @@ namespace SvEditor::PanelItems
     template <typename T>
     inline void PanelTreeBranch<T>::SetAllPriority(const PriorityFunc& p_prioFunc)
     {
-        std::vector<Childreen::node_type> extracted;
+        std::vector<Children::node_type> extracted;
 
         for (auto it = m_children.begin(); it != m_children.end();)
         {
@@ -178,7 +178,7 @@ namespace SvEditor::PanelItems
     template <typename T>
     inline size_t PanelTreeBranch<T>::HasChildreenPriority(const PanelTreeBranch& p_branch)
     {
-        return p_branch.GetChildreen().empty() ? 0 : 1;
+        return p_branch.GetChildren().empty() ? 0 : 1;
     }
 
     template <typename T>
@@ -317,7 +317,7 @@ namespace SvEditor::PanelItems
     }
 
     template <typename T>
-    inline const PanelTreeBranch<T>::Childreen& PanelTreeBranch<T>::GetChildreen() const
+    inline const PanelTreeBranch<T>::Children& PanelTreeBranch<T>::GetChildren() const
     {
         return m_children;
     }
@@ -336,14 +336,16 @@ namespace SvEditor::PanelItems
 
         //get all parents
         while (parents.back()->m_parent != nullptr)
-        {
             parents.push_back(parents.back()->m_parent);
-        }
 
         std::string path;
 
         for (auto it = parents.rbegin(); it != parents.rend(); it++)
-            path += (*it)->m_name + "$";
+        {
+            path += (*it)->m_name;
+            if (!(*it)->GetChildren().empty())
+                path += '/';
+        }
 
         return path;
     }
