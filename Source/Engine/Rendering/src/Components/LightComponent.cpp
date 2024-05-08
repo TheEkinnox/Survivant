@@ -331,7 +331,7 @@ namespace SvCore::ECS
     {
         p_writer.StartObject();
 
-        const std::string typeString = LightTypeToString(ELightType::AMBIENT);
+        const std::string typeString = LightTypeToString(p_component.m_type);
 
         p_writer.Key("type");
         p_writer.String(typeString.c_str(), static_cast<rapidjson::SizeType>(typeString.size()));
@@ -343,7 +343,7 @@ namespace SvCore::ECS
         case ELightType::AMBIENT:
             return SerializeAmbient(p_component.m_ambient, p_writer) && CHECK(p_writer.EndObject());
         case ELightType::DIRECTIONAL:
-            return SerializeDirectional(p_component.m_directional, p_writer);
+            return SerializeDirectional(p_component.m_directional, p_writer) && CHECK(p_writer.EndObject());
         case ELightType::POINT:
             return SerializePoint(p_component.m_point, p_writer) && CHECK(p_writer.EndObject());
         case ELightType::SPOT:

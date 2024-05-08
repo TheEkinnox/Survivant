@@ -12,6 +12,23 @@ namespace SvApp::Core
     {
         using namespace ToRemove;
 
+
+        //TODO : Save resource ref in begin play
+        //static int i = 0;
+        //if (i == 0)
+        //{
+        ToRemove::MakeScene(*CurrentScene());
+        //CurrentScene()->Save("assets/scenes/DefaultScene.scn");
+            //i++;
+        //}
+        //else
+        //{
+        //    CurrentScene()->Save("assets/scenes/TestScene1.scn");
+        //}
+
+        //CurrentScene()->Clear();
+        //CurrentScene()->Save("assets/scenes/EmptyScene.scn");
+
         TestLevelBeginPlay(*CurrentScene());
     }
 
@@ -30,26 +47,53 @@ namespace SvApp::Core
 
     void WorldContext::Render()
     {
-        m_renderingContext->Render(*CurrentScene());
+        m_renderingContext->Render(CurrentScene().Get());
     }
 
-    void WorldContext::LoadCurrentScene()
+    void WorldContext::Save()
     {
-        using namespace ToRemove;
-        MakeScene(*CurrentScene());
+        CurrentScene()->Save(CurrentScene().GetPath());
     }
 
-    void WorldContext::SetSceneCamera(const EntityHandle& p_entity)
+    void WorldContext::BakeLighting()
     {
-        m_renderingContext->m_mainCamera.SetEntity(p_entity);
+        SceneView<const LightComponent> view(*CurrentScene());
+        std::vector<Matrix4>            lightMatrices;
+
+        for (const auto entity : view)
+        {
+            const LightComponent& light = *view.Get<const LightComponent>(entity);
+
+            switch (light.m_type)
+            {
+            case ELightType::AMBIENT:
+                lightMatrices.emplace_back(light.m_ambient.getMatrix());
+                break;
+            case ELightType::DIRECTIONAL:
+                lightMatrices.emplace_back(light.m_directional.getMatrix());
+                break;
+            case ELightType::POINT:
+                lightMatrices.emplace_back(light.m_point.getMatrix());
+                break;
+            case ELightType::SPOT:
+                lightMatrices.emplace_back(light.m_spot.getMatrix());
+                break;
+            }
+        }
+
+        m_lightsSSBO->Bind();
+        m_lightsSSBO->SetData(lightMatrices.data(), lightMatrices.size());
     }
 
-    SvCore::ECS::EntityHandle WorldContext::GetDefaultSceneCamera()
+    void WorldContext::SetSceneCamera()
     {
         SceneView<CameraComponent> cameras(*CurrentScene());
 
-        ASSERT(cameras.begin() != cameras.end(), "No Cameras In World");
-        return EntityHandle(CurrentScene().get(), *cameras.begin());
+        EntityHandle entity;
+        if (cameras.begin() != cameras.end())
+            entity = EntityHandle(CurrentScene().Get(), *cameras.begin());
+        
+        m_renderingContext->m_mainCamera.SetEntity(entity);
     }
 
     void WorldContext::SetOwningCamera(
@@ -63,12 +107,12 @@ namespace SvApp::Core
         InputManager::GetInstance().SetInputBindings(m_inputs);
     }
 
-    std::shared_ptr<SvCore::ECS::Scene>& WorldContext::CurrentScene()
+    WorldContext::SceneRef& WorldContext::CurrentScene()
     {
         return *m_currentSceneRef;
     }
 
-    std::weak_ptr<WorldContext::ScenePtr> WorldContext::CurrentSceneRef()
+    std::weak_ptr<WorldContext::SceneRef> WorldContext::CurrentSceneRef()
     {
         return m_currentSceneRef;
     }

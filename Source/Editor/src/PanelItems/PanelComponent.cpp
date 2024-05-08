@@ -37,4 +37,8 @@ namespace SvEditor::PanelItems
     {
         return m_prio;
     }
+    const std::string& PanelComponent::GetName() const
+    {
+        return m_name;
+    }
 }

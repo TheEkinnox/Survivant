@@ -7,6 +7,8 @@
 #include "SurvivantEditor/PanelItems/PanelButtonList.h"
 #include "SurvivantApp/Core/WorldContext.h"
 
+#include <Vector/Vector2.h>
+
 #include <functional>
 #include <cstdint>
 
@@ -18,6 +20,7 @@ namespace SvEditor::Panels
 	{
 	public:
 		using WorldContext = SvApp::Core::WorldContext;
+		using ResizeEvent = SvCore::Events::Event<const LibMath::Vector2&>;
 
 		GamePanel();
 		~GamePanel();
@@ -32,7 +35,6 @@ namespace SvEditor::Panels
 
 		static constexpr char NAME[] = "Game";
 	private:
-
 		static inline WorldContext::WorldCreator			s_worldCreator;
 		static inline PanelButton::OnButtonPressEvent		s_playListenners;
 		static inline PanelButton::OnButtonPressEvent		s_pauseListenners;
@@ -42,6 +44,8 @@ namespace SvEditor::Panels
 		PanelButtonList					m_buttons;
 		PanelImage						m_image;
 		bool							m_prevFocus;
+		LibMath::Vector2				m_imageSize;
+		ResizeEvent						m_onResize;
 	};
 
 }

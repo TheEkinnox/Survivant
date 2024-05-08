@@ -19,9 +19,11 @@ namespace SvEditor::PanelItems
 		PanelComponent(const std::string& p_name, const Items& p_items, size_t p_prio = 0);
 		~PanelComponent() = default;
 
-        void	DisplayAndUpdatePanel() override;
-		bool	NeedToRemove()const;
-		size_t	GetPrio()const;
+        void		DisplayAndUpdatePanel() override;
+		bool		NeedToRemove()const;
+		size_t		GetPrio()const;
+
+		const std::string&	GetName()const;
 
 	private:
 		std::string m_name;

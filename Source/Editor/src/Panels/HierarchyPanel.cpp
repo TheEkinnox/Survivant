@@ -20,38 +20,26 @@ using namespace SvCore::Utility;
 namespace SvEditor::Panels
 {
     HierarchyPanel::HierarchyPanel() :
-        m_tree("All", HierarchyBranch::Childreen(), false),
-        m_addEntity("Add Entity", []() { 
-        s_getCurrentScene().lock().get()->get()->Create(); })
+        m_tree("All", HierarchyBranch::Children(), false),
+        m_addEntity( "Add Entity", []() {
+        s_getCurrentScene().lock()->Get()->Create(); })
     {
         m_name = NAME;
 
         UpdateScene();
-        GetScene().GetStorage<Entity>().m_onAdd.AddListener(
-            [this](const EntityHandle& p_handle)
-            {
-                auto parent = p_handle.GetParent();
-                auto& parentBranch = parent.GetEntity() == NULL_ENTITY ? m_tree : *s_entities.at(p_handle.GetEntity());
-
-                auto childBranch = CreateEntityBranch(p_handle);
-                AddEntityBranch(parentBranch, childBranch);
-            });
-        GetScene().GetStorage<Entity>().m_onRemove.AddListener(
-            [this](const EntityHandle& p_handle)
-            {
-                RemoveEntity(p_handle);
-            });
 
         //propagate selection
         auto selectFunc = [](HierarchyBranch& p_branch)
             { 
                 using namespace Core;
 
+                auto val = p_branch.GetValue();
                 auto entityPanel = InspectorItemManager::GetPanelableEntity(
-                    EntityHandle(s_getCurrentScene().lock().get()->get(), Entity(p_branch.GetValue())));
+                    EntityHandle(s_getCurrentScene().lock()->Get(), Entity(val)));
 
                 InspectorPanel::SetInpectorInfo(entityPanel, "Entity");
-                ScenePanel::SelectEntity(p_branch.GetValue());
+                ScenePanel::SelectEntity(val);
+                p_branch.ForceOpenParents();
                 return false; 
             };
 
@@ -61,16 +49,71 @@ namespace SvEditor::Panels
 
     HierarchyPanel::~HierarchyPanel()
     {
+        if (m_scene.expired())
+            return;
+
+        GetScene().GetStorage<Entity>().m_onAdd.RemoveListener(     m_onModifEntity[0]);
+        GetScene().GetStorage<Entity>().m_onRemove.RemoveListener(  m_onModifEntity[1]);
+        GetScene().GetStorage<SvCore::ECS::HierarchyComponent>().m_onAdd.RemoveListener(    m_onModifHierarchy[0]);
+        GetScene().GetStorage<SvCore::ECS::HierarchyComponent>().m_onRemove.RemoveListener( m_onModifHierarchy[1]);
+        GetScene().GetStorage<SvCore::ECS::HierarchyComponent>().m_onChange.RemoveListener( m_onModifHierarchy[2]);
     }
 
     void HierarchyPanel::UpdateScene()
     {
         ASSERT(s_getCurrentScene, "Current Scene Getter not set");
+
+        auto oldScene = m_scene;
         m_scene = s_getCurrentScene();
-
         m_tree.SetBranches();
-
         SetupTree();
+
+        if (!oldScene.expired() && *m_scene.lock()->Get() == *oldScene.lock()->Get())
+            return;
+
+        m_onModifEntity[0] = GetScene().GetStorage<Entity>().m_onAdd.AddListener(
+            [this](const EntityHandle& /*p_handle*/)
+            {
+                //auto parent = p_handle.GetParent();
+                //auto& parentBranch = parent.GetEntity() == NULL_ENTITY ? m_tree : *s_entities.at(p_handle.GetEntity());
+
+                //auto childBranch = CreateEntityBranch(p_handle);
+                //AddEntityBranch(parentBranch, childBranch);
+                m_isDirty = true;
+            });
+        m_onModifEntity[1] = GetScene().GetStorage<Entity>().m_onRemove.AddListener(
+            [this](const EntityHandle& /*p_handle*/)
+            {
+                m_isDirty = true;
+                //RemoveEntity(p_handle);
+            });
+
+        //tag dirty on hierarchy change
+        m_onModifHierarchy[0] = GetScene().GetStorage<SvCore::ECS::HierarchyComponent>().m_onAdd.AddListener(
+            [this](EntityHandle, SvCore::ECS::HierarchyComponent)
+            {
+                m_isDirty = true;
+            });
+        m_onModifHierarchy[1] = GetScene().GetStorage<SvCore::ECS::HierarchyComponent>().m_onRemove.AddListener(
+            [this](EntityHandle, SvCore::ECS::HierarchyComponent)
+            {
+                m_isDirty = true;
+            });
+        m_onModifHierarchy[2] = GetScene().GetStorage<SvCore::ECS::HierarchyComponent>().m_onChange.AddListener(
+            [this](EntityHandle, SvCore::ECS::HierarchyComponent)
+            {
+                m_isDirty = true;
+            }); 
+
+        if (!oldScene.expired())
+        {
+            auto& oldRef = *oldScene.lock()->Get();
+            oldRef.GetStorage<Entity>().m_onAdd.RemoveListener(m_onModifEntity[0]);
+            oldRef.GetStorage<Entity>().m_onRemove.RemoveListener(m_onModifEntity[1]);
+            oldRef.GetStorage<SvCore::ECS::HierarchyComponent>().m_onAdd.RemoveListener(m_onModifHierarchy[0]);
+            oldRef.GetStorage<SvCore::ECS::HierarchyComponent>().m_onRemove.RemoveListener(m_onModifHierarchy[1]);
+            oldRef.GetStorage<SvCore::ECS::HierarchyComponent>().m_onChange.RemoveListener(m_onModifHierarchy[2]);
+        }
     }
 
     void HierarchyPanel::SetupTree()
@@ -84,8 +127,9 @@ namespace SvEditor::Panels
             if (handle.GetParent().GetEntity() != NULL_ENTITY)
                 continue;
 
-            AddEntityBranch(m_tree, CreateEntityBranch(handle));
-            SetupEntityBranch(m_tree, handle);
+            auto newBranch = CreateEntityBranch(handle);
+            AddEntityBranch(m_tree, newBranch);
+            SetupEntityBranch(*newBranch, handle);
         }
     }
 
@@ -121,12 +165,12 @@ namespace SvEditor::Panels
         HierarchyBranch& p_parent, 
         std::shared_ptr<HierarchyBranch> p_childBranch)
     {
-        auto prio = SIZE_MAX - p_parent.GetChildreen().size();
+        auto prio = SIZE_MAX - p_parent.GetChildren().size();
 
         p_parent.AddBranch(p_childBranch, prio);
-        auto ins = s_entities.insert({ p_childBranch->GetValue(), p_childBranch}).second;
+        /*auto ins = */s_entities.insert({ p_childBranch->GetValue(), p_childBranch}).second;
 
-        ASSERT(ins, "Entity cant be added");
+        //ASSERT(ins, "Entity cant be added");
     }
 
     void HierarchyPanel::RemoveEntity(const SvCore::ECS::EntityHandle& p_entity)
@@ -138,14 +182,17 @@ namespace SvEditor::Panels
 
         auto& childBranch = it->second;
 
-        //always have parrent bcs tree is root
-        childBranch->GetParent()->RemoveBranch(childBranch->GetName());
+        std::set<SvCore::ECS::Entity::Id> deleted;
+        childBranch->DeleteBranch(&deleted);
 
-        auto val = childBranch.use_count();
-        ASSERT(val == 1, "HELP HERE");
+        //unless parent is already removed
+        m_tree.RemoveBranch(childBranch->GetName());
+
+        for (auto& item : deleted)
+            s_entities.erase(item);
     }
 
-    /*void HierarchyPanel::SetupChildsEntityValue(const HierarchyBranch::Childreen& p_childreen)
+    /*void HierarchyPanel::SetupChildsEntityValue(const HierarchyBranch::Children& p_childreen)
     {
         if (p_childreen.size() == 0)
             return;
@@ -157,20 +204,23 @@ namespace SvEditor::Panels
         }
 
         for (auto& [name, branch] : p_childreen)
-            SetupChildsEntityValue(branch->GetChildreen());
+            SetupChildsEntityValue(branch->GetChildren());
     }*/
 
     SvCore::ECS::Scene& HierarchyPanel::GetScene()
     {
-        return *m_scene.lock().get()->get();
+        return *m_scene.lock()->Get();
     }
 
     Panel::ERenderFlags HierarchyPanel::Render()
     {
         bool open = true;
 
-        if (m_scene.expired())
+        if (m_scene.expired() || m_isDirty)
+        {
             UpdateScene();
+            m_isDirty = false;
+        }
 
         if (!ImGui::Begin(m_name.c_str(), &open))
         {
@@ -178,7 +228,7 @@ namespace SvEditor::Panels
             return Panel::ERenderFlags();
         }
 
-        for (auto& branch : m_tree.GetChildreen())
+        for (auto& branch : m_tree.GetChildren())
             branch.second->DisplayAndUpdatePanel();
 
         m_addEntity.DisplayAndUpdatePanel();
@@ -192,7 +242,7 @@ namespace SvEditor::Panels
         return flags;
     }
 
-    void HierarchyPanel::SetCurrentSceneGetter(CurrentSceneGetter p_getCurrentScene)
+    void HierarchyPanel::SetCurrentSceneGetter(const CurrentSceneGetter& p_getCurrentScene)
     {
         s_getCurrentScene = p_getCurrentScene;
     }

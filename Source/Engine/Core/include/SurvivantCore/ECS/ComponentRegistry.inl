@@ -22,7 +22,7 @@ namespace SvCore::ECS
                 return storage;
             }
         };
-
+        
         TypeRegistry::RegisterType<T>(p_name, typeInfo);
     }
 

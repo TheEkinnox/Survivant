@@ -33,7 +33,7 @@ namespace SvEditor::PanelItems
 	}
 
 	template<class T>
-	inline PanelResourceSelector<T>::PanelResourceSelector(PanelResourceSelector&& p_other) :
+	inline PanelResourceSelector<T>::PanelResourceSelector(PanelResourceSelector&& p_other) noexcept :
 		PanelInputBase<SvCore::Resources::ResourceRef<T>>(std::move(p_other.m_getRef))
 	{
 		this->m_getRef = std::move(p_other.m_getRef);
@@ -89,7 +89,7 @@ namespace SvEditor::PanelItems
 
 		for (ResourceRef<T>& resource : all)
 		{
-			std::string name = this->GetRef().GetPath();
+			std::string name = resource.GetPath();
 
 			m_allResources->m_items.emplace_back(std::make_unique<MenuButton>(MenuButton(
 				name, [this, resource](char) mutable {

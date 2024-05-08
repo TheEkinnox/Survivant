@@ -430,6 +430,7 @@ namespace ToRemove
         p_scene.Clear();
         EntityHandle camEntity = p_scene.Create();
 
+
         auto& cam = camEntity.Make<CameraComponent>();
         cam.SetAspect(4.f / 3.f);
         cam.SetPerspective(90_deg, .01f, 14.f);
@@ -438,7 +439,7 @@ namespace ToRemove
         const Vector3 camPos(0.f, 1.8f, 2.f);
         camEntity.Make<Transform>(camPos, Quaternion::identity(), Vector3::one());
 
-        camEntity.Make<UserInput>(CAM_MOVE_SPEED, CAM_ROTATION_SPEED);
+        //camEntity.Make<UserInput>(CAM_MOVE_SPEED, CAM_ROTATION_SPEED);
         camEntity.Make<TagComponent>(TagComponent{ .m_tag = "Camera" });
 
         ResourceRef<Model> cube("models/cube.obj");
@@ -450,30 +451,13 @@ namespace ToRemove
         ResourceRef<IShader> litShader(LIT_SHADER_PATH);
         ASSERT(litShader, "Failed to load shader at path \"%s\"", LIT_SHADER_PATH);
 
-        ResourceRef whiteMaterial("", new Material(unlitShader));
-        whiteMaterial->GetProperty<ResourceRef<ITexture>>("u_diffuse") = GetTexture();
-        whiteMaterial->GetProperty<Vector4>("u_tint") = Color::white;
-
-        ResourceRef redMaterial("", new Material(*whiteMaterial));
-        redMaterial->GetProperty<Vector4>("u_tint") = Color::red;
-
-        ResourceRef greenMaterial("", new Material(*whiteMaterial));
-        greenMaterial->GetProperty<Vector4>("u_tint") = Color::green;
-
-        ResourceRef blueMaterial("", new Material(*whiteMaterial));
-        blueMaterial->GetProperty<Vector4>("u_tint") = Color::blue;
-
-        ResourceRef yellowMaterial("", new Material(*whiteMaterial));
-        yellowMaterial->GetProperty<Vector4>("u_tint") = Color::yellow;
-
-        ResourceRef magentaMaterial("", new Material(*whiteMaterial));
-        magentaMaterial->GetProperty<Vector4>("u_tint") = Color::magenta;
-
-        ResourceRef litMaterial("", new Material(litShader));
-        litMaterial->GetProperty<ResourceRef<ITexture>>("u_diffuse") = GetTexture();
-        litMaterial->GetProperty<Vector4>("u_tint") = Color::white;
-        litMaterial->GetProperty<Vector4>("u_specularColor") = Color(.2f, .2f, .2f);
-        litMaterial->GetProperty<float>("u_shininess") = 32.f;
+        ResourceRef<Material> whiteMaterial("assets/materials/unlitWhite.mat");
+        ResourceRef<Material> redMaterial("assets/materials/unlitRed.mat");
+        ResourceRef<Material> greenMaterial("assets/materials/unlitGreen.mat");
+        ResourceRef<Material> blueMaterial("assets/materials/unlitBlue.mat");
+        ResourceRef<Material> yellowMaterial("assets/materials/unlitYellow.mat");
+        ResourceRef<Material> magentaMaterial("assets/materials/unlitMagenta.mat");
+        ResourceRef<Material> litMaterial("assets/materials/litWhite.mat");
 
         EntityHandle whiteCube = p_scene.Create();
         whiteCube.Make<ModelComponent>(cube, whiteMaterial);
@@ -481,9 +465,9 @@ namespace ToRemove
 
         EntityHandle redCube = p_scene.Create();
         redCube.Make<ModelComponent>(cube, redMaterial);
-        redCube.Make<Rotator>(Quaternion(36_deg, Vector3::up()));
+        //redCube.Make<Rotator>(Quaternion(36_deg, Vector3::up()));
         redCube.Make<Transform>(Vector3(.75f, .5f, 0.f), Quaternion::identity(), Vector3::one());
-        redCube.Make<Temporary>(5.f);
+        //redCube.Make<Temporary>(5.f);
 
         EntityHandle greenCube = p_scene.Create();
         greenCube.Make<ModelComponent>(cube, greenMaterial);
@@ -515,6 +499,15 @@ namespace ToRemove
 
         SpotLight spot{ Color(0.f, 1.f, 0.f, 3.f), camPos, Vector3::front(), Attenuation(10), Cutoff{ cos(0_deg), cos(30_deg) } };
         p_scene.Create().Make<LightComponent>(spot);
+
+        //create materials
+        //whiteMaterial->Save("assets/materials/unlitWhite.mat");
+        //redMaterial->Save("assets/materials/unlitRed.mat");
+        //greenMaterial->Save("assets/materials/unlitGreen.mat");
+        //blueMaterial->Save("assets/materials/unlitBlue.mat");
+        //yellowMaterial->Save("assets/materials/unlitYellow.mat");
+        //magentaMaterial->Save("assets/materials/unlitMagenta.mat");
+        //magentaMaterial->Save("assets/materials/litWhite.mat");
     }
 
     std::unique_ptr<IShaderStorageBuffer> inline SetupLightSSBO(const Scene& p_scene)
@@ -577,7 +570,8 @@ namespace ToRemove
             for (const auto modelEntity : renderables)
             {
                 const auto [model, transform] = renderables.Get(modelEntity);
-                ASSERT(model->m_model && model->m_material);
+                if (!(model->m_model && model->m_material))
+                    continue;
 
                 if (isIdTexture)
                     DrawModelEditorScene(*model->m_model, camFrustum, transform->getWorldMatrix(), *model->m_material, modelEntity);
@@ -611,7 +605,8 @@ namespace ToRemove
         for (const auto modelEntity : renderables)
         {
             const auto [model, transform] = renderables.Get(modelEntity);
-            ASSERT(model->m_model && model->m_material);
+            if (!(model->m_model && model->m_material))
+                continue;
 
             if (isIdTexture)
                 DrawModelEditorScene(*model->m_model, camFrustum, transform->getWorldMatrix(), *model->m_material, modelEntity);
@@ -651,7 +646,8 @@ namespace ToRemove
         for (const auto modelEntity : renderables)
         {
             const auto [model, transform] = renderables.Get(modelEntity);
-            ASSERT(model->m_model && model->m_material);
+            if (!(model->m_model && model->m_material))
+                continue;
 
             if (p_entityIndex && (modelEntity == p_entityIndex))
             {

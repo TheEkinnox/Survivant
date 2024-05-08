@@ -73,7 +73,7 @@ namespace SvEditor::Core
 		typedef std::shared_ptr<Panel> (EditorUI::* CreatePanelCallback)();
 		using Inputs = std::shared_ptr<SvApp::InputManager::InputBindings>;
 
-		MenuBar CreateMenuBar();
+		MenuBar CreateMenuBar(std::weak_ptr<WorldContext> p_world);
 		void HandlePanelFlags(const std::string& p_name, Panel::ERenderFlags p_flags);
 
 		//TODO : add ratio vfont sizes
