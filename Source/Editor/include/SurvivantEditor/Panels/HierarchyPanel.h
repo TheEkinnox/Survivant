@@ -59,9 +59,8 @@ namespace SvEditor::Panels
 		SceneRefPtr			m_scene;
 		PanelButton			m_addEntity;
 
-		EntityListenerId						m_onAddId;
-		EntityListenerId						m_onRemId;
-		std::array<HierarchyListenerId, 3>		m_onModifId;
+		std::array<EntityListenerId, 2>			m_onModifEntity;
+		std::array<HierarchyListenerId, 3>		m_onModifHierarchy;
 
 		std::weak_ptr<HierarchyBranch> m_currentSelected;
 	};
