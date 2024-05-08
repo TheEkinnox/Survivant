@@ -61,6 +61,12 @@ namespace SvCore::ECS
          */
         void BumpVersion();
 
+        /**
+         * \brief Creates a string representation of the entity
+         * \return A string representation of the entity
+         */
+        std::string GetString() const;
+
     private:
         Id m_id = 0;
 

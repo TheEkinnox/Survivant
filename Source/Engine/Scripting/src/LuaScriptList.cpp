@@ -59,8 +59,8 @@ namespace SvScripting
         if (p_script.empty())
             return {};
 
-        if (!CHECK(!m_scripts.contains(p_script), "Attempted to add script \"%s\" to entity \"%llu:%u\" more than once",
-                p_script.c_str(), m_owner.GetEntity().GetIndex(), m_owner.GetEntity().GetVersion()))
+        if (!CHECK(!m_scripts.contains(p_script), "Attempted to add script \"%s\" to entity \"%s\" more than once",
+                p_script.c_str(), m_owner.GetEntity().GetString().c_str()))
             return {};
 
         LuaScriptHandle handle = LuaContext::GetInstance().AddScript(p_script, m_owner, p_hint);
