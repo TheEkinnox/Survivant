@@ -1,12 +1,11 @@
 #include "SurvivantScripting/LuaContext.h"
 
 #include "SurvivantScripting/FunctionNames.h"
-#include "SurvivantScripting/LuaScriptList.h"
 #include "SurvivantScripting/Bindings/LuaECSBinder.h"
 #include "SurvivantScripting/Bindings/LuaInputBinder.h"
 #include "SurvivantScripting/Bindings/LuaMathBinder.h"
-#include "SurvivantScripting/Bindings/LuaUtilityBinder.h"
 #include "SurvivantScripting/Bindings/LuaResourceBinder.h"
+#include "SurvivantScripting/Bindings/LuaUtilityBinder.h"
 
 #include <SurvivantCore/Resources/ResourceManager.h>
 #include <SurvivantCore/Utility/FileSystem.h>
@@ -27,7 +26,7 @@ namespace SvScripting
         if (m_hasStarted)
             Stop();
 
-        Clear();
+        Reset();
     }
 
     LuaContext& LuaContext::GetInstance()

@@ -1,9 +1,9 @@
 #include "SurvivantScripting/Bindings/LuaECSBinder.h"
 
-#include "SurvivantScripting/LuaComponentHandle.h"
 #include "SurvivantScripting/LuaScriptHandle.h"
 #include "SurvivantScripting/LuaTypeRegistry.h"
 
+#include <SurvivantCore/ECS/ComponentHandle.h>
 #include <SurvivantCore/ECS/Components/TagComponent.h>
 
 #include <sol/state.hpp>
@@ -124,24 +124,24 @@ namespace SvScripting::Bindings
     {
         static constexpr const char* typeName = "Component";
 
-        sol::usertype componentType = p_luaState.new_usertype<LuaComponentHandle>(
+        sol::usertype componentType = p_luaState.new_usertype<ComponentHandle>(
             typeName,
-            "isValid", sol::readonly_property(&LuaComponentHandle::operator bool),
-            sol::meta_function::index, [&p_luaState](const LuaComponentHandle& p_self, const sol::object& p_index) -> sol::object
+            "isValid", sol::readonly_property(&ComponentHandle::operator bool),
+            sol::meta_function::index, [&p_luaState](const ComponentHandle& p_self, const sol::object& p_index) -> sol::object
             {
                 if (!p_self.m_owner)
                     return sol::nil;
 
-                void* component = p_self.m_owner.GetScene()->GetStorage(p_self.m_typeId).FindRaw(p_self.m_owner);
+                void* component = p_self.Get();
                 return LuaTypeRegistry::GetInstance().GetTypeInfo(p_self.m_typeId).ToLua(component, p_luaState)[p_index];
             },
             sol::meta_function::new_index,
-            [&p_luaState](const LuaComponentHandle& p_self, const sol::object& p_key, sol::object p_value)
+            [&p_luaState](const ComponentHandle& p_self, const sol::object& p_key, sol::object p_value)
             {
                 if (!p_self.m_owner)
                     return;
 
-                void* component = p_self.m_owner.GetScene()->GetStorage(p_self.m_typeId).FindRaw(p_self.m_owner);
+                void* component = p_self.Get();
 
                 if (!component)
                     return;
@@ -154,7 +154,7 @@ namespace SvScripting::Bindings
                 typeInfo.FromLua(component, data);
             },
             "self", sol::property(
-                [&p_luaState](const LuaComponentHandle& p_self) -> sol::userdata
+                [&p_luaState](const ComponentHandle& p_self) -> sol::userdata
                 {
                     if (!p_self.m_owner)
                         return make_object_userdata(p_luaState, sol::nil);
@@ -162,7 +162,7 @@ namespace SvScripting::Bindings
                     void* component = p_self.m_owner.GetScene()->GetStorage(p_self.m_typeId).FindRaw(p_self.m_owner);
                     return LuaTypeRegistry::GetInstance().GetTypeInfo(p_self.m_typeId).ToLua(component, p_luaState);
                 },
-                [](const LuaComponentHandle& p_self, const sol::userdata& p_value)
+                [](const ComponentHandle& p_self, const sol::userdata& p_value)
                 {
                     if (!p_self.m_owner)
                         return;
@@ -179,7 +179,7 @@ namespace SvScripting::Bindings
 
         componentType["__type"]["name"] = typeName;
 
-        static const LuaTypeInfo& typeInfo = LuaTypeRegistry::GetInstance().RegisterType<LuaComponentHandle>(typeName);
+        static const LuaTypeInfo& typeInfo = LuaTypeRegistry::GetInstance().RegisterType<ComponentHandle>(typeName);
         return (void)typeInfo;
     }
 

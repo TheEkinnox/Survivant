@@ -8,6 +8,7 @@ namespace SvCore::ECS
     template <class T>
     class ComponentStorage;
     class IComponentStorage;
+    struct ComponentHandle;
     class EntityHandle;
 
     class Scene final : public Resources::IResource
@@ -256,6 +257,13 @@ namespace SvCore::ECS
          * \return The components owned by the given entity
          */
         std::vector<std::pair<Utility::TypeId, void*>> GetComponents(Entity p_owner) const;
+
+        /**
+         * \brief Gets handles to all the components owned by the given entity
+         * \param p_owner The components' owner
+         * \return Handles to the components owned by the given entity
+         */
+        std::vector<ComponentHandle> GetComponentHandles(Entity p_owner) const;
 
     private:
         EntityStorage                                                                   m_entities;
