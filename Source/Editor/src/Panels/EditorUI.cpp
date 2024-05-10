@@ -73,11 +73,11 @@ namespace SvEditor::Core
         SvEditor::Core::IUI::m_currentUI = this;
 
         //Propagate selection
-        ISelectable::m_onSelected.AddListener([this](ISelectable* p_selected) 
-            { 
+        ISelectable::m_onSelected.AddListener([this](ISelectable* p_selected)
+            {
             if (m_selected)
-                m_selected->ClearSelection(); 
-            m_selected = p_selected; 
+                m_selected->ClearSelection();
+            m_selected = p_selected;
             });
         ISelectable::m_onClearSelected.AddListener([this]() { m_selected = nullptr; });
     }
@@ -112,7 +112,7 @@ namespace SvEditor::Core
 
         ScenePanel::AddClickSceneListenner(
             [p_world](const LibMath::Vector2& p_uv)
-            { 
+            {
                 auto scene = p_world.lock()->CurrentScene().get();
                 auto entity = p_world.lock()->
                     m_renderingContext->GetEntityIdValue(p_uv, scene);
@@ -123,13 +123,13 @@ namespace SvEditor::Core
                 HierarchyPanel::SelectSelectable(entity);
 
                 auto entityPanel = InspectorItemManager::GetPanelableEntity(
-                    SvCore::ECS::EntityHandle(p_world.lock()->CurrentScene().get(), entity)); 
+                    SvCore::ECS::EntityHandle(p_world.lock()->CurrentScene().get(), entity));
                 InspectorPanel::SetInpectorInfo(entityPanel, "Entity");
             });
-        
+
         ScenePanel::AddResizeListenner(
             [p_world](const LibMath::Vector2& p_size)
-            { 
+            {
                 p_world.lock()->m_renderingContext->Resize(p_size);
                 SV_LOG(SvCore::Utility::FormatString("Size = %f, %f", p_size.m_x, p_size.m_y).c_str());
             });
@@ -210,9 +210,6 @@ namespace SvEditor::Core
 
     MenuBar EditorUI::CreateMenuBar()
     {
-#undef MOD_ALT
-#undef MOD_CONTROL
-
         using namespace SvApp;
 
         MenuBar menuBar;

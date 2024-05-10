@@ -2,10 +2,7 @@
 
 #ifdef _DEBUG
     #if defined(_WIN32)
-        #define WIN32_LEAN_AND_MEAN	// Disables unnecessary windows features
-        #define NOMINMAX			// Avoids conflicts with LibMath's min and max
-        #undef APIENTRY				// Avoids conflicts with some other libs (e.g: GLAD)
-        #include <windows.h>
+        #include "SurvivantCore/Utility/LeanWindows.h"
         #include <intrin.h>
 
         inline bool HasDebugger()

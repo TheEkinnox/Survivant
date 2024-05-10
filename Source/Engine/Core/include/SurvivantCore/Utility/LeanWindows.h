@@ -13,4 +13,9 @@
 #undef APIENTRY				// Avoids conflicts with some other libs (e.g: GLFW)
 #include <windows.h>
 
+// Avoids conflict with input modifiers
+#undef MOD_SHIFT
+#undef MOD_CONTROL
+#undef MOD_ALT
+
 #endif // _WIN32

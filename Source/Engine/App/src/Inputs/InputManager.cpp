@@ -164,9 +164,6 @@ std::string SvApp::InputManager::KeyNameToString(const EKey& p_name)
 
 std::string SvApp::InputManager::KeyModifToString(const EInputModifier& p_modif)
 {
-#undef MOD_SHIFT
-#undef MOD_CONTROL
-#undef MOD_ALT
 	switch (p_modif)
 	{
 	case SvApp::EInputModifier::MOD_SHIFT:		return "SHIFT";
@@ -182,10 +179,6 @@ std::string SvApp::InputManager::KeyModifToString(const EInputModifier& p_modif)
 
 EKey SvApp::InputManager::GetModifKey(const EInputModifier& p_modif)
 {
-	//gotat put this if I want to use enum. guess not. guess yes
-#undef MOD_SHIFT
-#undef MOD_CONTROL
-#undef MOD_ALT
 	switch (p_modif)
 	{
 	case SvApp::EInputModifier::MOD_SHIFT:
