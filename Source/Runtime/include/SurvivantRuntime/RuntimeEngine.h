@@ -42,6 +42,7 @@ namespace SvRuntime
 		void	DestroyGameInstance();
 		void	UpdateGame();
 		void	Render();
+		void	SetViewport(const LibMath::TVector2<int>& p_size);
 		
 	private:
 		bool InitializeGameInstance();
@@ -52,9 +53,6 @@ namespace SvRuntime
 		WorldContextPtr				CreateGameWorld();
 		GameInstancePtr				CreateGameInstance();
 		WorldContext::SceneRef		GetStartScene();
-
-		LibMath::TVector2<int>		GetViewportSize();
-		void						RedrawViewports(int p_width, int p_height);
 
 		SvCore::Utility::Timer		m_time;
 		bool						m_isRunning = true;

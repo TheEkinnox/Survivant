@@ -1,15 +1,21 @@
 //RuntimeApp.cpp
 #include "SurvivantRuntime/RuntimeApp.h"
 
-#include "SurvivantApp/Inputs/InputManager.h"
+#include "SurvivantRuntime/ComponentRegistrations.h"
+#include "SurvivantRuntime/ResourceRegistrations.h"
+
+#include <SurvivantApp/Inputs/InputManager.h>
 #include <SurvivantCore/Debug/Assertion.h>
 #include <SurvivantCore/Debug/Logger.h>
-#include "SurvivantCore/Events/EventManager.h"
+#include <SurvivantCore/Events/EventManager.h>
 #include <SurvivantCore/Utility/FileSystem.h>
 
 #include <memory>
 
-#include "SurvivantApp/Core/TempDefaultScene.h"
+using namespace SvCore::Resources;
+using namespace SvCore::Utility;
+using namespace SvRendering::Enums;
+using namespace SvRendering::RHI;
 
 namespace SvRuntime
 {
@@ -32,23 +38,29 @@ namespace SvRuntime
 		SvCore::Debug::Logger::GetInstance().SetFile("debug.log");
 		ResourceManager::GetInstance().AddSearchPath("assets");
 
-		m_window = std::make_unique<Window>(Window());
-
 		ASSERT(SetWorkingDirectory(GetApplicationDirectory()), "Failed to update working directory");
+
+		m_window = std::make_unique<Window>();
 
 		IRenderAPI& renderAPI = IRenderAPI::SetCurrent(EGraphicsAPI::OPENGL);
 		renderAPI.Init(true)
 			.SetCapability(ERenderingCapability::DEPTH_TEST, true)
 			.SetCullFace(ECullFace::BACK);
 
-		renderAPI.SetViewport({ 0, 0 }, { 800, 600 });
+
+		SV_EVENT_MANAGER().AddListenner<Window::OnFrameBufferSize>([this](int p_width, int p_height) { 
+			m_runEngine.SetViewport({ p_width, p_height }); });
 
 		SvApp::InputManager::GetInstance().InitWindow(m_window.get());
 
 		//LoadAllResources();
+		m_window->GetWindow();
 
-		//Start Game
 		m_runEngine.Init();
+
+		TVector2<int> viewport;
+		m_window->GetSize(viewport.m_x, viewport.m_y);
+		m_runEngine.SetViewport(viewport);
 	}
 
 	void RuntimeApp::Run()
@@ -60,8 +72,7 @@ namespace SvRuntime
 			SvApp::InputManager::GetInstance().Update();
 
 			if (!m_gameIsPaused)
-				m_runEngine.Update();
-
+				m_runEngine.UpdateGame();
 
 			m_runEngine.Render();
 

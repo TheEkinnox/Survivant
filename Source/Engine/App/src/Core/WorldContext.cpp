@@ -17,7 +17,7 @@ namespace SvApp::Core
         //static int i = 0;
         //if (i == 0)
         //{
-        ToRemove::MakeScene(*CurrentScene());
+        //ToRemove::MakeScene(*CurrentScene());
         //CurrentScene()->Save("assets/scenes/DefaultScene.scn");
             //i++;
         //}
@@ -80,7 +80,7 @@ namespace SvApp::Core
         m_lightsSSBO->SetData(lightMatrices.data(), lightMatrices.size());
     }
 
-    void WorldContext::SetSceneCamera()
+    SvCore::ECS::EntityHandle WorldContext::GetFirstCamera()
     {
         SceneView<CameraComponent> cameras(*CurrentScene());
 
@@ -88,13 +88,17 @@ namespace SvApp::Core
         if (cameras.begin() != cameras.end())
             entity = EntityHandle(CurrentScene().Get(), *cameras.begin());
         
-        m_renderingContext->m_mainCamera.SetEntity(entity);
+        return entity;
     }
 
-    void WorldContext::SetOwningCamera(
-        const SvRendering::Components::CameraComponent& p_cam, const LibMath::Transform& p_trans)
+    void WorldContext::SetCamera(const SvRendering::Components::CameraComponent& p_cam, const LibMath::Transform& p_trans)
     {
         m_renderingContext->m_mainCamera.SetCamera(p_cam, p_trans);
+    }
+
+    void WorldContext::SetCamera(const SvCore::ECS::EntityHandle& p_camera)
+    {
+        m_renderingContext->m_mainCamera.SetEntity(p_camera);
     }
 
     void WorldContext::SetInputs()

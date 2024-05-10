@@ -118,6 +118,11 @@ GLFWwindow* SvApp::Window::GetWindow()
     return m_window;
 }
 
+void SvApp::Window::GetSize(int& p_width, int& p_height)
+{
+    glfwGetWindowSize(m_window, &p_width, &p_height);
+}
+
 void SvApp::Window::SetupWindowCallbacks() const
 {
     glfwSetWindowCloseCallback(m_window, WindowCloseCallback);

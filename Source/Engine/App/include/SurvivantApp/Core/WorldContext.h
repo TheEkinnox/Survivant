@@ -49,9 +49,11 @@ namespace SvApp::Core
 		void Save();
 		void BakeLighting();
 
-		void						SetOwningCamera(
+		SvCore::ECS::EntityHandle	GetFirstCamera();
+		void						SetCamera(
 			const SvRendering::Components::CameraComponent& p_cam, const LibMath::Transform& p_trans);
-		void						SetSceneCamera();
+		void						SetCamera(const SvCore::ECS::EntityHandle& p_camera);
+
 		void						SetInputs();
 		SceneRef&					CurrentScene();
 		std::weak_ptr<SceneRef>		CurrentSceneRef();

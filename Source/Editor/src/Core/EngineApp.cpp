@@ -111,11 +111,5 @@ namespace SvEditor::Core
 	{
 		//TODO: press frame
 	}
-
-	void EngineApp::PauseGameInstance()
-	{
-
-	}
-
 }
 

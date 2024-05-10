@@ -45,12 +45,12 @@ namespace SvApp
 		class WindowClosing : public SvCore::Events::Event<> {};
 
 		/// <summary>
-		/// (width, height)
+		/// (width, height) screen coordinates
 		/// </summary>
 		class OnWindowSize : public SvCore::Events::Event<int, int> {};
 
 		/// <summary>
-		/// (width, height) //TODO: unit/ de mesure
+		/// (width, height) pixels
 		/// </summary>
 		class OnFrameBufferSize : public SvCore::Events::Event<int, int> {};
 
@@ -69,7 +69,14 @@ namespace SvApp
 		Window(std::string p_name, int p_width, int p_height, int p_x, int p_y);
 		~Window();
 
+		Window(Window&&) = delete;
+		Window(const Window&) = delete;
+		void operator=(const Window&) = delete;
+		void operator=(Window&&) = delete;
+
 		GLFWwindow* GetWindow();
+		void GetSize(int& p_width, int& p_height);
+
 		void ToggleFullScreenMode();
 
 		virtual void Update();

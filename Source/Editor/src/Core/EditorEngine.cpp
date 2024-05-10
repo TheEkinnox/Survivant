@@ -214,7 +214,7 @@ namespace SvEditor::Core
 		CameraComponent cam;
 		cam.SetPerspective(90_deg, .01f, 14.f);
 		cam.SetClearColor(Color::lightGray);
-		world->SetOwningCamera(cam, Transform({ 0.f, 1.8f, 2.f }, Quaternion::identity(), Vector3::one()));
+		world->SetCamera(cam, Transform({ 0.f, 1.8f, 2.f }, Quaternion::identity(), Vector3::one()));
 		world->m_inputs = CreateEditorInputs();
 		
 		//load and render
@@ -236,7 +236,7 @@ namespace SvEditor::Core
 		pieWorld->CurrentScene() = m_editorSelectedScene;
 
 		pieWorld->m_inputs = ToRemove::SetupGameInputs();
-		pieWorld->SetSceneCamera();
+		pieWorld->GetFirstCamera();
 		pieWorld->BakeLighting();
 		pieWorld->SetInputs();
 		pieWorld->BakeLighting();
@@ -311,7 +311,7 @@ namespace SvEditor::Core
 		auto& world = m_gameInstance? *m_PIEWorld.lock() : *m_editorWorld;
 
 		//couldnt browse to scene
-		if (BrowseToScene(world, p_scenePath))
+		if (!BrowseToScene(world, p_scenePath))
 			return false;
 
 		//update editorWorld level. Dont bcs change back

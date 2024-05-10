@@ -25,6 +25,9 @@ namespace SvRuntime
 		CHECK(InitializeGameInstance(), "couldnt initialize gi");
 
 		m_world->SetInputs();
+		m_camera = EntityHandle(m_world->CurrentScene().Get(), m_world->GetFirstCamera());
+
+		m_game->Start();
 	}
 
 	void RuntimeEngine::Update()
@@ -51,14 +54,9 @@ namespace SvRuntime
 		world->m_owningGameInstance = nullptr;
 
 		world->m_lightsSSBO = IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, 0);
-		world->m_viewport = GetViewportSize();
-		world->CurrentScene() = GetStartScene();
-		world->m_inputs = nullptr;
-		world->m_renderingContext = nullptr;
-		
-		world->BakeLighting();
-		world->m_renderingContext->Render(world->CurrentScene().Get());
+		world->m_viewport = { 0, 0 };
 
+		
 		return world;
 	}
 
@@ -66,12 +64,6 @@ namespace SvRuntime
 	{
 		ASSERT(false, "GetStartScene not implemented");
 		return WorldContext::SceneRef();
-	}
-
-	LibMath::TVector2<int> RuntimeEngine::GetViewportSize()
-	{
-		ASSERT(false, "GetViewportSize not implemented");
-		return LibMath::TVector2<int>();
 	}
 
 	void RuntimeEngine::UpdateGame()
@@ -82,10 +74,11 @@ namespace SvRuntime
 	bool RuntimeEngine::InitializeGameInstance()
 	{
 		m_world->m_owningGameInstance = m_game.get();
-		m_world->CurrentScene() = GetStartScene();
+		//m_world->CurrentScene() = GetStartScene();
+		BrowseToDefaultScene(*m_world);
 
 		m_world->m_inputs = ToRemove::SetupGameInputs();
-		m_world->SetSceneCamera();
+		m_world->SetCamera(m_world->GetFirstCamera()); //dont use cam un rendering context
 		m_world->BakeLighting();
 		m_world->SetInputs();
 
@@ -98,6 +91,19 @@ namespace SvRuntime
 	void RuntimeEngine::Render()
 	{
 		RenderingContext::DefaultFBGameRendering(m_camera);
+	}
+
+	void RuntimeEngine::SetViewport(const LibMath::TVector2<int>& p_size)
+	{
+		m_world->m_viewport = p_size;
+
+		IRenderAPI::GetCurrent().SetViewport( { 0, 0 }, p_size);
+
+		//camera
+		auto cam = m_camera.Get<CameraComponent>();
+
+		if (cam)
+			cam->SetAspect(static_cast<float>(p_size.m_x) / static_cast<float>(p_size.m_y));
 	}
 
 	void RuntimeEngine::BakeLights()
@@ -117,17 +123,6 @@ namespace SvRuntime
 			return false;
 
 		return true;
-	}
-
-	void RuntimeEngine::RedrawViewports(int p_width, int p_height)
-	{
-		m_world->m_viewport = { p_width , p_height };
-
-		//camera
-		auto cam = m_camera.Get<CameraComponent>();
-
-		if (cam)
-			cam->SetAspect(static_cast<float>(p_width) / static_cast<float>(p_width));
 	}
 
 	float RuntimeEngine::GetDeltaTime()

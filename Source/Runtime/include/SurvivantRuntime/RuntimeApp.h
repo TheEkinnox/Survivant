@@ -33,8 +33,6 @@ namespace SvRuntime
 		void Run() override;
 
 	private:
-		void PauseGameInstance();
-
 		std::unique_ptr<SvApp::Window>		m_window;
 		bool								m_gameIsPaused;
 		RuntimeEngine						m_runEngine;

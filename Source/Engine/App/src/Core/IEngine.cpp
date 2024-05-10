@@ -34,7 +34,7 @@ namespace SvApp::Core
     {
         p_context.m_currentSceneRef.reset();
         p_context.m_currentSceneRef = std::make_shared<WorldContext::SceneRef>(p_newLevel);
-        p_context.BakeLighting();
+        //p_context.BakeLighting();
 
         return true;
     }
