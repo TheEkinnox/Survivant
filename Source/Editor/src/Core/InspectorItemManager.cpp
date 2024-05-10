@@ -1,5 +1,5 @@
 //InspectorItemManager.cpp
-#include "SurvivantEditor/Core/InspectorComponentManager.h"
+#include "SurvivantEditor/Core/InspectorItemManager.h"
 
 #include "SurvivantApp/Core/IEngine.h"
 #include "SurvivantCore/Debug/Assertion.h"

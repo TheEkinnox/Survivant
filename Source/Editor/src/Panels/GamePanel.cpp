@@ -29,7 +29,7 @@ namespace SvEditor::Panels
 		m_onResize.AddListener([this](const LibMath::Vector2& p_size)
 			{
 				m_world->m_renderingContext->Resize(p_size);
-				m_world->Render();
+				m_world->m_renderingContext->Render(m_world->CurrentScene().Get());
 				SV_LOG(SvCore::Utility::FormatString("Size = %f, %f", p_size.m_x, p_size.m_y).c_str());
 			});
 	}

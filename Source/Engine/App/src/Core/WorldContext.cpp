@@ -45,11 +45,6 @@ namespace SvApp::Core
         UpdateRotators(rotatorsView, SV_DELTA_TIME());
     }
 
-    void WorldContext::Render()
-    {
-        m_renderingContext->Render(CurrentScene().Get());
-    }
-
     void WorldContext::Save()
     {
         CurrentScene()->Save(CurrentScene().GetPath());

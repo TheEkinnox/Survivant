@@ -1,4 +1,4 @@
-//EditorWindow.h
+//RuntimeWindow.h
 #pragma once
 
 #include "SurvivantApp/Inputs/InputManager.h"

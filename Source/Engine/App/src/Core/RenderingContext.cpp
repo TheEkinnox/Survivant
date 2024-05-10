@@ -115,8 +115,8 @@ namespace SvApp::Core
     {
         switch (p_type)
         {
-        case ERenderType::GAME:     AddDefaultRenderPass();     break;
-        case ERenderType::SCENE:    AddDefaultRenderPass();     break;
+        case ERenderType::GAME:     AddColorRenderPass();     break;
+        case ERenderType::SCENE:    AddColorRenderPass();     break;
         case ERenderType::ID:       AddIdRenderPass();          break;
         default:
             break;
@@ -157,6 +157,26 @@ namespace SvApp::Core
         cam->SetAspect(static_cast<float>(m_viewport.m_x) / static_cast<float>(m_viewport.m_y));
     }
 
+    void RenderingContext::DefaultFBGameRendering(EntityHandle& p_cameraEntity)
+    {
+        using namespace ToRemove;
+
+        struct
+        {
+            CameraComponent*    m_cam;
+            Transform*          m_trans;
+        }camInfo
+        {
+            .m_cam = p_cameraEntity.Get<CameraComponent>(),
+            .m_trans = p_cameraEntity.Get<Transform>()
+        };
+        
+        IRenderAPI::GetCurrent().Clear(true, true, true);
+
+        if (camInfo.m_cam && camInfo.m_trans)
+            DrawMainCameraScene(*p_cameraEntity.GetScene(), *camInfo.m_cam, *camInfo.m_trans);
+    }
+
     void RenderingContext::IdRender(Scene& p_scene)
     {
         using namespace ToRemove;
@@ -170,7 +190,7 @@ namespace SvApp::Core
         DrawMainCameraScene(p_scene, *camInfo.first, *camInfo.second, true);
     }
 
-    void RenderingContext::AddDefaultRenderPass()
+    void RenderingContext::AddColorRenderPass()
     {
         std::shared_ptr<ITexture> color = m_frameTextures.emplace_back(CreateTexture(ETextureType::COLOR));
         m_textureTypeBuffer.push_back(ETextureType::COLOR);
@@ -183,6 +203,10 @@ namespace SvApp::Core
         auto frameBuffer = m_frameBuffers.emplace_back(IFrameBuffer::Create()).get();
         frameBuffer->Attach(*color, EFrameBufferAttachment::COLOR);
         frameBuffer->Attach(*depth, EFrameBufferAttachment::DEPTH);
+    }
+
+    void RenderingContext::AddDefaultRenderPass()
+    {
     }
 
     void RenderingContext::AddIdRenderPass()

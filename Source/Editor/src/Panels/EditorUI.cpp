@@ -8,7 +8,7 @@
 #include "SurvivantCore/Events/EventManager.h"
 #include "SurvivantCore/Utility/Utility.h"
 #include "SurvivantEditor/Core/IUI.h"
-#include "SurvivantEditor/Core/InspectorComponentManager.h"
+#include "SurvivantEditor/Core/InspectorItemManager.h"
 #include "SurvivantEditor/MenuItems/MenuButton.h"
 #include "SurvivantEditor/Panels/ConsolePanel.h"
 #include "SurvivantEditor/Panels/ContentDrawerPanel.h"

@@ -2,7 +2,7 @@
 #pragma once
 
 #include "SurvivantApp/Core/MainCamera.h"
-#include "SurvivantCore/ECS/Entity.h"
+#include "SurvivantCore/ECS/EntityHandle.h"
 #include "SurvivantCore/ECS/Scene.h"
 #include "SurvivantRendering/RHI/IShaderStorageBuffer.h"
 #include "SurvivantRendering/RHI/IFrameBuffer.h"
@@ -35,6 +35,7 @@ namespace SvApp::Core
 
 		enum class ERenderType
 		{
+			DEFAULT,
 			GAME,
 			SCENE,
 			ID
@@ -69,6 +70,8 @@ namespace SvApp::Core
 		void		UpdateCameraInput();
 		void		Resize(const Vec2& p_size);
 
+		static void DefaultFBGameRendering(SvCore::ECS::EntityHandle& p_cameraEntity);
+
 		static inline SvCore::ECS::Entity s_editorSelectedEntity = SvCore::ECS::NULL_ENTITY;
 
 	private:
@@ -76,10 +79,10 @@ namespace SvApp::Core
 		void SceneRender(Scene& p_scene);
 		void IdRender(Scene& p_scene);
 
-		void AddDefaultRenderPass();
-		void AddIdRenderPass();
-
-		TexturePtr CreateTexture(const ETextureType& p_type);
+		void		AddColorRenderPass();
+		void		AddIdRenderPass();
+		void		AddDefaultRenderPass();
+		TexturePtr	CreateTexture(const ETextureType& p_type);
 
 		LibMath::TVector2<int>		m_viewport = LibMath::Vector2(800, 600);
 		MainCamera					m_mainCamera;

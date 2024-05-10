@@ -5,7 +5,7 @@
 #include "SurvivantCore/Events/EventManager.h"
 #include "SurvivantCore/Utility/Utility.h"
 #include "SurvivantEditor/Core/EditorUI.h"
-#include "SurvivantEditor/Core/InspectorComponentManager.h"
+#include "SurvivantEditor/Core/InspectorItemManager.h"
 #include "SurvivantEditor/PanelItems/PanelEntity.h"
 #include "SurvivantEditor/Panels/ExamplGameObj.h"
 #include "SurvivantEditor/Panels/ScenePanel.h"

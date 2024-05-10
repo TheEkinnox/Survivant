@@ -1,7 +1,11 @@
-#include <SurvivantCore/Debug/Assertion.h>
+#include "SurvivantRuntime/RuntimeApp.h"
 
 int main()
 {
-	ASSERT(false, "Runtime not implemented");
+    SvRuntime::RuntimeApp app;
+
+    app.Init();
+    app.Run();
+
 	return 0;
 }

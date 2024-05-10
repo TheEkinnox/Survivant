@@ -3,7 +3,7 @@
 
 #include "SurvivantCore/ECS/ComponentRegistry.h"
 #include "SurvivantCore/ECS/Components/TagComponent.h"
-#include "SurvivantEditor/Core/InspectorComponentManager.h"
+#include "SurvivantEditor/Core/InspectorItemManager.h"
 #include "SurvivantEditor/Core/IUI.h"
 #include "SurvivantEditor/MenuItems/MenuButton.h"
 

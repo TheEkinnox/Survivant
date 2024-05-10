@@ -1,4 +1,4 @@
-//EditorEngine.cpp
+//RuntimeEngine.cpp
 
 #include "SurvivantEditor/Core/EditorEngine.h"
 
@@ -19,10 +19,10 @@ namespace SvEditor::Core
 		m_editorWorld->m_renderingContext->UpdateCameraInput();
 
 		//if (m_editorWorld)
-		//	m_editorWorld->Render();
+		//	m_editorWorld->RenderContext();
 
 		//if (!m_PIEWorld.expired())
-		//	m_PIEWorld.lock()->Render();
+		//	m_PIEWorld.lock()->RenderContext();
 	}
 
 	std::weak_ptr<GameInstance> EditorEngine::CreatePIEGameInstance()
@@ -31,7 +31,7 @@ namespace SvEditor::Core
 		if (m_PIEWorld.expired())
 		{
 			ASSERT(false, "No PIE world on game instance creation");
-			m_PIEWorld = CreatePIEWorldByDuplication(*m_editorWorld);
+			m_PIEWorld = CreatePIEWorld();
 		}
 
 		m_gameInstance = std::make_shared<GameInstance>(m_PIEWorld);
@@ -53,16 +53,16 @@ namespace SvEditor::Core
 
 		m_editorWorld->SetInputs();
 
-		m_PIEWorld.lock()->Render();
+		m_PIEWorld.lock()->m_renderingContext->Render(m_PIEWorld.lock()->CurrentScene().Get());
 	}
 
-	std::shared_ptr<WorldContext> EditorEngine::CreatePIEWorldByDuplication(const WorldContext& p_context)
+	std::shared_ptr<WorldContext> EditorEngine::CreatePIEWorld()
 	{
 		auto pieWorld =				IEngine::CreateNewWorldContext(WorldContext::EWorldType::PIE);
 		pieWorld->m_lightsSSBO =	IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, 0);
-		pieWorld->m_viewport =		p_context.m_viewport;
+		//pieWorld->m_viewport =		p_context.m_viewport;
 
-		//pieWorld->Render();
+		//pieWorld->RenderContext();
 		//pieWorld->m_persistentLevel = p_context.m_persistentLevel;
 
 		return pieWorld;
@@ -203,23 +203,6 @@ namespace SvEditor::Core
 		return input;
 	}
 
-	int EditorEngine::BrowseToDefaultScene(WorldContext& p_worldContext)
-	{
-		return BrowseToScene(p_worldContext, DEFAULT_SCENE_PATH);
-	}
-
-	int EditorEngine::BrowseToScene(WorldContext& p_worldContext, const std::string& p_path)
-	{
-		//update current scene
-		WorldContext::SceneRef sceneRef;
-
-		if (!(	PrepareSceneChange(p_worldContext, sceneRef, p_path) &&
-				CommitSceneChange(p_worldContext, sceneRef)))
-			return -1;
-
-		return 1;
-	}
-
 	std::shared_ptr<WorldContext> EditorEngine::CreateEditorDefaultWorld(const WorldContext::SceneRef& p_inScene)
 	{
 		auto world = CreateNewWorldContext(WorldContext::EWorldType::EDITOR);
@@ -237,7 +220,7 @@ namespace SvEditor::Core
 		//load and render
 		//world->Save();
 		world->BakeLighting();
-		world->Render();
+		world->m_renderingContext->Render(world->CurrentScene().Get());
 
 		//world->m_persistentLevel = nullptr;
 
@@ -285,10 +268,10 @@ namespace SvEditor::Core
 	void EditorEngine::RenderWorlds()
 	{
 		if (m_editorWorld->m_isVisalbe)
-			m_editorWorld->Render();
+			m_editorWorld->m_renderingContext->Render(m_editorWorld->CurrentScene().Get());
 
 		if (m_gameInstance && !m_PIEWorld.expired() && m_PIEWorld.lock()->m_isVisalbe)
-			m_PIEWorld.lock()->Render();
+			m_PIEWorld.lock()->m_renderingContext->Render(m_PIEWorld.lock()->CurrentScene().Get());
 	}
 
 	bool EditorEngine::IsRunning()
@@ -304,7 +287,7 @@ namespace SvEditor::Core
 			{
 				ASSERT(m_PIEWorld.expired(), "Tried to create PIE world when already exists");
 
-				auto PIEWorld =	CreatePIEWorldByDuplication(*m_editorWorld);
+				auto PIEWorld =	CreatePIEWorld();
 				m_PIEWorld = std::weak_ptr<WorldContext>(PIEWorld);
 
 				return PIEWorld;
@@ -312,7 +295,7 @@ namespace SvEditor::Core
 			p_playPauseFrameCallbacks);
 	}
 
-	//bool EditorEngine::StartScene(WorldContext& p_worldContext)
+	//bool RuntimeEngine::StartScene(WorldContext& p_worldContext)
 	//{
 	//	p_worldContext.BeginPlay();
 
@@ -328,7 +311,7 @@ namespace SvEditor::Core
 		auto& world = m_gameInstance? *m_PIEWorld.lock() : *m_editorWorld;
 
 		//couldnt browse to scene
-		if (BrowseToScene(world, p_scenePath) <= 0)
+		if (BrowseToScene(world, p_scenePath))
 			return false;
 
 		//update editorWorld level. Dont bcs change back
@@ -339,11 +322,6 @@ namespace SvEditor::Core
 		//dont update selected editor scene
 
 		return true;
-	}
-
-	void EditorEngine::RedrawViewports()
-	{
-		//TODO: redraw viewports here
 	}
 
 	float EditorEngine::GetDeltaTime()

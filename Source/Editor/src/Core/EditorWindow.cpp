@@ -1,4 +1,4 @@
-//EditorWindow.cpp
+//RuntimeWindow.cpp
 
 #include "SurvivantCore/Events/EventManager.h"
 #include "SurvivantEditor/Core/EditorWindow.h"

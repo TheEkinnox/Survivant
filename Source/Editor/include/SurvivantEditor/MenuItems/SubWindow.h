@@ -352,7 +352,7 @@
 //		ImagePanel(const std::string& p_name, intptr_t p_textureId) : Panel(p_name), m_textureId(p_textureId){}
 //		~ImagePanel() = default;
 //
-//		ERenderFlags Render() override;
+//		ERenderFlags RenderContext() override;
 //
 //	private:
 //		intptr_t m_textureId;
@@ -364,7 +364,7 @@
 //		TestPanel(const std::string& p_name);
 //		~TestPanel() = default;
 //
-//		ERenderFlags Render() override;
+//		ERenderFlags RenderContext() override;
 //
 //		PanelUniqueSelection								m_unique;
 //		PanelMultipleSelection								m_multiple;
@@ -379,7 +379,7 @@
 //		MainPanel(MenuBar&& p_menuBar);
 //		~MainPanel() = default;
 //
-//		ERenderFlags Render() override;
+//		ERenderFlags RenderContext() override;
 //
 //		void SetMenuBar(MenuBar&& p_menuBar);
 //		void ChangePanelLayout(const ChangeLayout& p_layout);
@@ -415,7 +415,7 @@
 //		ConsolePanel();
 //		~ConsolePanel();
 //
-//		ERenderFlags Render() override;
+//		ERenderFlags RenderContext() override;
 //
 //		void AddConsoleLog(const LogInfo& p_log);
 //
@@ -466,7 +466,7 @@
 //		SavePanel();
 //		~SavePanel(); 
 //
-//		ERenderFlags Render() override;
+//		ERenderFlags RenderContext() override;
 //
 //		static int GetPanelCount() { return s_panelCount; };
 //
@@ -486,7 +486,7 @@
 //		~ContentDrawerPanel();
 //
 //		//Panel
-//		ERenderFlags Render() override;
+//		ERenderFlags RenderContext() override;
 //
 //		bool SetGridDisplay(PanelTreeBranch& p_branch);
 //		bool TryOpenFile(PanelTreeBranch& p_branch);
@@ -558,7 +558,7 @@
 //		void SetInpectorInfo(const std::shared_ptr<IPanelable>& p_info);
 //		void ClearInfo();
 //
-//		virtual ERenderFlags Render()override;
+//		virtual ERenderFlags RenderContext()override;
 //
 //	private:
 //		static constexpr char NAME[] = "Inspector";

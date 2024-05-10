@@ -1,4 +1,4 @@
-//EditorEngine.h
+//RuntimeEngine.h
 #pragma once
 
 #include "SurvivantApp/Core/IEngine.h"
@@ -31,7 +31,6 @@ namespace SvEditor::Core
 		void Init() override;
 		void BakeLights() override;
 		bool ChangeScene(const std::string& p_scenePath) override;
-		void RedrawViewports() override;
 		float GetDeltaTime() override;
 		bool	IsPlayInEditor()override;
 
@@ -57,25 +56,14 @@ namespace SvEditor::Core
 		void DestroyGameInstance();
 		
 	private:
-		static inline const std::string DEFAULT_SCENE_PATH = "assets/scenes/DefaultScene.scn";
-
 		using Inputs = SvApp::InputManager::InputBindings;
 
-		/// <summary>
-		/// Changes current level and editorSelectedLevel with levelName, 
-		/// make sure that p_scene is in m_allWorlds before browsing to it
-		/// </summary>
-		/// <param name="p_worldContext">Current world</param>
-		/// <param name="p_scene">Scene to go to</param>
-		/// <returns>-1 if couldnt, 0 if already there, 1 if properly browsed to</returns>
-		int			BrowseToScene(WorldContext& p_worldContext, const std::string& p_path);
-		/// <returns>-1 if couldnt, 0 if already there, 1 if properly </returns>
-		int			BrowseToDefaultScene(WorldContext& p_worldContext);
+
 
 		bool InitializePlayInEditorGameInstance(GameInstance& p_instance);
 
 		std::shared_ptr<WorldContext>	CreateEditorDefaultWorld(const WorldContext::SceneRef& p_inScene);
-		std::shared_ptr<WorldContext>	CreatePIEWorldByDuplication(const WorldContext& p_context);
+		std::shared_ptr<WorldContext>	CreatePIEWorld();
 		std::shared_ptr<Inputs>			CreateEditorInputs();
 
 		SvCore::Utility::Timer			m_time;

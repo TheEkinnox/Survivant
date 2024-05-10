@@ -1,4 +1,4 @@
-//EngineApp.cpp
+//RuntimeApp.cpp
 
 #include "SurvivantCore/Debug/Assertion.h"
 
@@ -19,7 +19,9 @@ namespace SvApp::Core
         using namespace SvCore::Resources;
 
         //switch and the unload old scene
-        p_context.CurrentScene()->Clear();
+        if (p_context.CurrentScene())
+            p_context.CurrentScene()->Clear();
+
         p_newLevel = ResourceManager::GetInstance().Load<Scene>(p_path);
 
         if (!p_newLevel)
@@ -50,7 +52,7 @@ namespace SvApp::Core
 
         static CameraComponent EditorCameraComponent = CameraComponent();
 
-        std::shared_ptr<WorldContext> wrdPtr = std::make_unique<WorldContext>();
+        std::shared_ptr<WorldContext> wrdPtr = std::make_shared<WorldContext>();
         WorldContext& world = *wrdPtr;
         world.m_worldType = p_worldType;
 
@@ -76,5 +78,22 @@ namespace SvApp::Core
         }
 
         return wrdPtr;
+    }
+
+    bool IEngine::BrowseToDefaultScene(WorldContext& p_worldContext)
+    {
+        return BrowseToScene(p_worldContext, DEFAULT_SCENE_PATH);
+    }
+
+    bool IEngine::BrowseToScene(WorldContext& p_worldContext, const std::string& p_path)
+    {
+        //update current scene
+        WorldContext::SceneRef sceneRef;
+
+        if (!(PrepareSceneChange(p_worldContext, sceneRef, p_path) &&
+            CommitSceneChange(p_worldContext, sceneRef)))
+            return false;
+
+        return true;
     }
 }

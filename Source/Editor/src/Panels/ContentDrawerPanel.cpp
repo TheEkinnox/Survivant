@@ -3,7 +3,7 @@
 
 
 #include "SurvivantCore/Events/EventManager.h"
-#include "SurvivantEditor/Core/InspectorComponentManager.h"
+#include "SurvivantEditor/Core/InspectorItemManager.h"
 #include "SurvivantEditor/Core/EditorUI.h"
 #include "SurvivantEditor/Panels/InspectorPanel.h"
 #include "SurvivantApp/Core/IEngine.h"

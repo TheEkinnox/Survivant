@@ -8,7 +8,7 @@
 #include <SurvivantCore/Utility/FileSystem.h>
 #include "SurvivantEditor/Panels/ScenePanel.h"
 #include "SurvivantEditor/Core/EditorUI.h"
-#include "SurvivantEditor/Core/InspectorComponentManager.h"
+#include "SurvivantEditor/Core/InspectorItemManager.h"
 
 #include <memory>
 
@@ -90,7 +90,6 @@ namespace SvEditor::Core
 	{
 		if (!m_gameInstance.expired()) //game is running
 		{
-			m_onStopInEditor.Invoke(*m_gameInstance.lock());
 			m_editorEngine.DestroyGameInstance();
 			m_window->GetUI().ForceSceneFocus();
 		}
