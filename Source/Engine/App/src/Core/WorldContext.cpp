@@ -32,18 +32,18 @@ namespace SvApp::Core
         TestLevelBeginPlay(*CurrentScene());
     }
 
-    void WorldContext::Update()
-    {
-        using namespace ToRemove;
+    //void WorldContext::Update()
+    //{
+    //    using namespace ToRemove;
 
-        SceneView<Temporary>                  temporariesView(*CurrentScene());
-        SceneView<const UserInput, Transform> userInputsView(*CurrentScene());
-        SceneView<const Rotator, Transform>   rotatorsView(*CurrentScene());
+    //    SceneView<Temporary>                  temporariesView(*CurrentScene());
+    //    SceneView<const UserInput, Transform> userInputsView(*CurrentScene());
+    //    SceneView<const Rotator, Transform>   rotatorsView(*CurrentScene());
 
-        UpdateTemporaries(temporariesView, SV_DELTA_TIME());
-        UpdateInput(userInputsView, ToRemove::GameInfo::moveInput, ToRemove::GameInfo::rotateInput, SV_DELTA_TIME());
-        UpdateRotators(rotatorsView, SV_DELTA_TIME());
-    }
+    //    UpdateTemporaries(temporariesView, SV_DELTA_TIME());
+    //    UpdateInput(userInputsView, ToRemove::GameInfo::moveInput, ToRemove::GameInfo::rotateInput, SV_DELTA_TIME());
+    //    UpdateRotators(rotatorsView, SV_DELTA_TIME());
+    //}
 
     void WorldContext::Save()
     {

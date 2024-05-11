@@ -48,6 +48,7 @@ target_link_libraries(${TARGET_NAME}
 	${LIBMATH_NAME}
 	${CORE_NAME}
 	${RENDERING_NAME}
+	${SCRIPTING_NAME}
 )
 
 if(MSVC)

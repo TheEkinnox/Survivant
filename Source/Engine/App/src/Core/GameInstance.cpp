@@ -6,22 +6,22 @@
 
 namespace SvApp::Core
 {
-    GameInstance::GameInstance(std::weak_ptr<WorldContext> p_worldContext) : 
-        m_worldContext(p_worldContext) 
-    {}
-
-    void GameInstance::Init()
+    void GameInstance::Init(const std::weak_ptr<WorldContext>& p_worldContext)
     {
-        //init here
-        int i = 0; i; 
+        m_worldContext = p_worldContext;
 
     }
 
-    void GameInstance::Update()
+    void GameInstance::UpdateScripts()
     {
-        UpdatePhysics();
 
-        m_worldContext.lock()->Update();
+
+        //put all updates in gameInstance
+        //m_worldContext.lock()->Update();
+    }
+
+    void GameInstance::UpdatePhysics()
+    {
     }
 
     void GameInstance::InitializeStandalone()

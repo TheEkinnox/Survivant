@@ -15,14 +15,7 @@ namespace SvEditor::Core
 	void EditorEngine::Update()
 	{
 		m_time.Tick();
-
 		m_editorWorld->m_renderingContext->UpdateCameraInput();
-
-		//if (m_editorWorld)
-		//	m_editorWorld->RenderContext();
-
-		//if (!m_PIEWorld.expired())
-		//	m_PIEWorld.lock()->RenderContext();
 	}
 
 	std::weak_ptr<GameInstance> EditorEngine::CreatePIEGameInstance()
@@ -34,9 +27,9 @@ namespace SvEditor::Core
 			m_PIEWorld = CreatePIEWorld();
 		}
 
-		m_gameInstance = std::make_shared<GameInstance>(m_PIEWorld);
+		m_gameInstance = std::make_shared<GameInstance>();
 
-		if (!InitializePlayInEditorGameInstance(*m_gameInstance))
+		if (!InitializePlayInEditorGameInstance())
 			return std::weak_ptr<GameInstance>();
 
 		return std::weak_ptr<GameInstance>(m_gameInstance);
@@ -227,22 +220,21 @@ namespace SvEditor::Core
 		return world;
 	}
 
-	bool EditorEngine::InitializePlayInEditorGameInstance(GameInstance& p_instance)
+	bool EditorEngine::InitializePlayInEditorGameInstance()
 	{
-		auto pieWorld = GetWorldContextRef(p_instance).lock();
-		ASSERT(pieWorld, "GameInstance has no world");
+		auto& pieWorld = *m_PIEWorld.lock();
 
-		pieWorld->m_owningGameInstance = &p_instance;
-		pieWorld->CurrentScene() = m_editorSelectedScene;
+		pieWorld.m_owningGameInstance = m_gameInstance.get();
+		pieWorld.CurrentScene() = m_editorSelectedScene;
 
-		pieWorld->m_inputs = ToRemove::SetupGameInputs();
-		pieWorld->GetFirstCamera();
-		pieWorld->BakeLighting();
-		pieWorld->SetInputs();
-		pieWorld->BakeLighting();
+		pieWorld.m_inputs = ToRemove::SetupGameInputs();
+		pieWorld.SetCamera(pieWorld.GetFirstCamera());
+		pieWorld.BakeLighting();
+		pieWorld.SetInputs();
+		pieWorld.BakeLighting();
 
 		//init
-		p_instance.Init();
+		m_gameInstance->Init(m_PIEWorld);
 
 		return true;
 	}

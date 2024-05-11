@@ -45,7 +45,7 @@ namespace SvApp::Core
 		};
 
 		void BeginPlay();
-		void Update();
+		//void Update();
 		void Save();
 		void BakeLighting();
 

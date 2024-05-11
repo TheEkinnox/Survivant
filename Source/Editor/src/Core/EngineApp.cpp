@@ -9,6 +9,7 @@
 #include "SurvivantEditor/Panels/ScenePanel.h"
 #include "SurvivantEditor/Core/EditorUI.h"
 #include "SurvivantEditor/Core/InspectorItemManager.h"
+#include "SurvivantScripting/LuaContext.h"
 
 #include <memory>
 
@@ -37,11 +38,12 @@ namespace SvEditor::Core
 		//setup InspectorComponents
 		InspectorItemManager::Init();
 
+		//scripts
+		SvScripting::LuaContext::GetInstance().Init();
+
+		//window
 		m_window = std::make_unique<Core::EditorWindow>();
-
-		ASSERT(SetWorkingDirectory(GetApplicationDirectory()), "Failed to update working directory");
-		//SV_LOG("Current working directory: \"%s\"", GetWorkingDirectory().c_str());
-
+		CHECK(SetWorkingDirectory(GetApplicationDirectory()), "Failed to update working directory");
 		IRenderAPI& renderAPI = IRenderAPI::SetCurrent(EGraphicsAPI::OPENGL);
 		renderAPI.Init(true)
 			.SetCapability(ERenderingCapability::DEPTH_TEST, true)
@@ -49,8 +51,8 @@ namespace SvEditor::Core
 
 		renderAPI.SetViewport({ 0, 0 }, { 800, 600 });
 
+		//engine
 		m_editorEngine.Init();
-
 		LoadAllResources();
 		SvApp::InputManager::GetInstance().InitWindow(m_window.get());
 
@@ -59,6 +61,7 @@ namespace SvEditor::Core
 			[this]() { TogglePausePIE(); },
 			[this]() { PressFramePIE(); }
 			});
+
 	}
 
 	void EngineApp::Run()
@@ -71,7 +74,8 @@ namespace SvEditor::Core
 
 			if (!m_gameInstance.expired() && !m_gameIsPaused)
 			{
-				m_gameInstance.lock()->Update();
+				UpdateScripts();
+				UpdatePhysics();
 			}
 
 			m_editorEngine.RenderWorlds();
@@ -110,6 +114,18 @@ namespace SvEditor::Core
 	void EngineApp::PressFramePIE()
 	{
 		//TODO: press frame
+	}
+
+	void EngineApp::UpdateScripts()
+	{
+		//update scripts
+
+		//update scripts
+		//SvScripting::LuaContext::GetInstance().Update(SV_DELTA_TIME());
+	}
+
+	void EngineApp::UpdatePhysics()
+	{
 	}
 }
 

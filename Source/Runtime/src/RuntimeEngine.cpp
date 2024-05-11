@@ -45,7 +45,7 @@ namespace SvRuntime
 
 	RuntimeEngine::GameInstancePtr RuntimeEngine::CreateGameInstance()
 	{
-		return std::make_unique<GameInstance>(m_world);
+		return std::make_unique<GameInstance>();
 	}
 
 	RuntimeEngine::WorldContextPtr RuntimeEngine::CreateGameWorld()
@@ -68,7 +68,7 @@ namespace SvRuntime
 
 	void RuntimeEngine::UpdateGame()
 	{
-		m_game->Update();
+		m_game->UpdateScripts();
 	}
 
 	bool RuntimeEngine::InitializeGameInstance()
@@ -83,7 +83,7 @@ namespace SvRuntime
 		m_world->SetInputs();
 
 		//init
-		m_game->Init();
+		m_game->Init(m_world);
 
 		return true;
 	}

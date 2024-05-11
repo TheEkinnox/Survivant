@@ -15,12 +15,14 @@ namespace SvApp::Core
 
 		class InitEvent : public SvCore::Events::Event<> {};
 
-		GameInstance(std::weak_ptr<WorldContext> p_worldContext);
+		GameInstance() = default;
 		~GameInstance() = default;
 
-		void Init();
+		void Init(const std::weak_ptr<WorldContext>& p_worldContext);
 		void Start();
-		void Update();
+		void UpdateScripts();
+		void UpdatePhysics();
+
 
 		//TODO: move to editor IEngine
 		void InitializeStandalone();
@@ -28,8 +30,6 @@ namespace SvApp::Core
 	
 	private:
 		IEngine* GetEngine();
-
-		void UpdatePhysics() {}
 
 		std::weak_ptr<WorldContext> m_worldContext;
 	};

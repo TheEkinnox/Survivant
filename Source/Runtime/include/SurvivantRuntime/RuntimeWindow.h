@@ -21,7 +21,7 @@
 //		RuntimeWindow();
 //		~RuntimeWindow() = default;
 //
-//		void Update() override;
+//		void UpdateScripts() override;
 //		void RenderUI();
 //		void EndRender() override;
 //		bool ShouldClose() override;

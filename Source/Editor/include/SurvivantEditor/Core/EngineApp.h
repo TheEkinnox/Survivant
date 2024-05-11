@@ -47,6 +47,9 @@ namespace SvEditor::Core
 		void TogglePausePIE();
 		void PressFramePIE();
 
+		void UpdateScripts();
+		void UpdatePhysics();
+
 		//class GameLoopEvent : public SvCore::Events::Event<> {};
 
 		std::unique_ptr<Core::EditorWindow>			m_window;

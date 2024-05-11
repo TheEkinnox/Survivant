@@ -21,9 +21,9 @@
 //		m_ui->InitWindow(this);
 //	}
 //
-//	void EditorWindow::Update()
+//	void EditorWindow::UpdateScripts()
 //	{
-//		SvApp::Window::Update();
+//		SvApp::Window::UpdateScripts();
 //		m_ui->StartFrameUpdate();
 //	}
 //

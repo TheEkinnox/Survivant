@@ -140,7 +140,7 @@ namespace SvEditor::Core
 
     void EditorUI::StartFrameUpdate()
     {
-        // Update the Dear ImGui frame
+        // UpdateScripts the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();

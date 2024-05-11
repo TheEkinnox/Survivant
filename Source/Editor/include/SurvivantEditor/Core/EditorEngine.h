@@ -58,9 +58,7 @@ namespace SvEditor::Core
 	private:
 		using Inputs = SvApp::InputManager::InputBindings;
 
-
-
-		bool InitializePlayInEditorGameInstance(GameInstance& p_instance);
+		bool InitializePlayInEditorGameInstance();
 
 		std::shared_ptr<WorldContext>	CreateEditorDefaultWorld(const WorldContext::SceneRef& p_inScene);
 		std::shared_ptr<WorldContext>	CreatePIEWorld();
