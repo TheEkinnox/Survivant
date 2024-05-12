@@ -12,12 +12,12 @@ void IMKeyCallback(GLFWwindow* /*p_window*/, int p_key, int p_scancode, int p_ac
 {
     InputManager::GetInstance().CallInput(
         InputManager::KeyboardKeyType(
-            static_cast<EKey>(p_key), 
-            static_cast<EKeyState>(p_action), 
-            static_cast<EInputModifier>(p_mods)), 
+            static_cast<EKey>(p_key),
+            static_cast<EKeyState>(p_action),
+            static_cast<EInputModifier>(p_mods)),
         static_cast<char>(p_scancode),
         true);
-}  
+}
 
 void IMMouseCallback(GLFWwindow* p_window, int p_button, int p_action, int p_mods)
 {
@@ -29,7 +29,7 @@ void IMMouseCallback(GLFWwindow* p_window, int p_button, int p_action, int p_mod
             static_cast<EMouseButton>(p_button),
             static_cast<EMouseButtonState>(p_action),
             static_cast<EInputModifier>(p_mods)),
-        static_cast<float>(xpos), 
+        static_cast<float>(xpos),
         static_cast<float>(ypos),
         true);
 }
@@ -154,35 +154,43 @@ bool SvApp::Window::EvaluateInput(EMouseButton p_button, EMouseButtonState p_sta
             EvaluteModif(p_modif);
 }
 
-bool SvApp::Window::EvaluteModif(EInputModifier p_modif)
+bool SvApp::Window::EvaluteModif(const EInputModifier p_modif)
 {
-    int disiredModif = static_cast<int>(p_modif);
-    int currentModif = 0;
-
-    if (disiredModif < 0)
+    if (p_modif == EInputModifier::MOD_ANY)
         return true;
 
-    for (size_t i = 0; i < NUM_INPUT_MODIFIERS; i++)
+    uint8_t currentModif = 0;
+
+    for (uint8_t i = 0; i < NUM_INPUT_MODIFIERS; i++)
     {
-        int modif = 1 << i;
-        int state = glfwGetKey(m_window, static_cast<int>(InputManager::GetModifKey(static_cast<EInputModifier>(modif))));
-        if (state == static_cast<int>(EKeyState::PRESSED))
-            currentModif += modif;
+        const EInputModifier modif = static_cast<EInputModifier>(1 << i);
+
+        if (!(p_modif & modif))
+            continue;
+
+        const int modifierKey = static_cast<int>(InputManager::GetModifKey(modif));
+        int       state       = glfwGetKey(m_window, modifierKey);
+
+        if (state != GLFW_PRESS && modifierKey >= GLFW_KEY_LEFT_SHIFT && modifierKey <= GLFW_KEY_LEFT_SUPER)
+            state = glfwGetKey(m_window, modifierKey + (GLFW_KEY_RIGHT_SHIFT - GLFW_KEY_LEFT_SHIFT));
+
+        if (state == GLFW_PRESS)
+            currentModif |= modif;
     }
 
-    return disiredModif == currentModif;
+    return static_cast<uint8_t>(p_modif) == currentModif;
 }
 
 void SvApp::Window::ToggleFullScreenMode()
 {
     const GLFWvidmode* mode = glfwGetVideoMode(m_monitor);
     glfwSetWindowMonitor(
-        m_window, 
+        m_window,
         m_isInFullscreen? nullptr: m_monitor,
-        0, 
-        m_isInFullscreen? m_yWindowedPos: 0, 
-        mode->width, 
-        mode->height, 
+        0,
+        m_isInFullscreen? m_yWindowedPos: 0,
+        mode->width,
+        mode->height,
         mode->refreshRate);
 
     m_isInFullscreen = !m_isInFullscreen;

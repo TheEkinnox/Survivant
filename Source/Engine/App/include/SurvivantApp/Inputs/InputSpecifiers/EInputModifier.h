@@ -3,7 +3,7 @@
 
 namespace SvApp
 {
-    constexpr size_t NUM_INPUT_MODIFIERS = 6;
+    constexpr uint8_t NUM_INPUT_MODIFIERS = 6;
 
     enum EInputModifier : uint8_t
     {

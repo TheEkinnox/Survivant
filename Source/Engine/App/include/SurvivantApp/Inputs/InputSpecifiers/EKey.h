@@ -1,11 +1,12 @@
 #pragma once
+#include <cstdint>
 
 namespace SvApp
 {
     /**
      * \brief Wrapper for GLFW_KEY_*
      */
-    enum class EKey
+    enum class EKey : int16_t
     {
         UNKNOWN       = -1,
         SPACE         = 32,
