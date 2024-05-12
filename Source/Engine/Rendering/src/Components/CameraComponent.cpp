@@ -105,7 +105,7 @@ namespace SvRendering::Components
         if (!CHECK(it != p_json.MemberEnd() && it->value.IsNumber(), "Unable to deserialize camera component's vertical fov"))
             return false;
 
-        m_fovY = Degree(it->value.Get<float>());
+        m_fovY = Degree(it->value.GetFloat());
 
         it = p_json.FindMember("perspective_near");
 
@@ -113,7 +113,7 @@ namespace SvRendering::Components
                 "Unable to deserialize camera component's perspective near clipping plane"))
             return false;
 
-        m_perspectiveNear = it->value.Get<float>();
+        m_perspectiveNear = it->value.GetFloat();
 
         it = p_json.FindMember("perspective_far");
 
@@ -121,14 +121,14 @@ namespace SvRendering::Components
                 "Unable to deserialize camera component's perspective far clipping plane"))
             return false;
 
-        m_perspectiveFar = it->value.Get<float>();
+        m_perspectiveFar = it->value.GetFloat();
 
         it = p_json.FindMember("orthographic_size");
 
         if (!CHECK(it != p_json.MemberEnd() && it->value.IsNumber(), "Unable to deserialize camera component's orthographic size"))
             return false;
 
-        m_orthographicSize = it->value.Get<float>();
+        m_orthographicSize = it->value.GetFloat();
 
         it = p_json.FindMember("orthographic_near");
 
@@ -136,7 +136,7 @@ namespace SvRendering::Components
                 "Unable to deserialize camera component's orthographic near clipping plane"))
             return false;
 
-        m_orthographicNear = it->value.Get<float>();
+        m_orthographicNear = it->value.GetFloat();
 
         it = p_json.FindMember("orthographic_far");
 
@@ -144,7 +144,7 @@ namespace SvRendering::Components
                 "Unable to deserialize camera component's orthographic far clipping plane"))
             return false;
 
-        m_orthographicFar = it->value.Get<float>();
+        m_orthographicFar = it->value.GetFloat();
         return true;
     }
 

@@ -77,10 +77,10 @@ namespace SvCore::Serialization
         if (!CHECK(it != p_json.MemberEnd(), "Unable to deserialize bounding sphere - Missing radius"))
             return false;
 
-        if (!CHECK(it->value.Is<float>(), "Unable to deserialize bounding sphere radius - Json value should be a float"))
+        if (!CHECK(it->value.IsFloat(), "Unable to deserialize bounding sphere radius - Json value should be a float"))
             return false;
 
-        p_out.m_radius = it->value.Get<float>();
+        p_out.m_radius = it->value.GetFloat();
 
         return true;
     }

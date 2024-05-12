@@ -56,30 +56,30 @@ namespace SvPhysics
         if (!CHECK(it != p_json.MemberEnd(), "Unable to deserialize physics material - Missing static friction"))
             return false;
 
-        if (!CHECK(it->value.Is<float>(), "Unable to deserialize physics material static friction - Json value should be a float"))
+        if (!CHECK(it->value.IsFloat(), "Unable to deserialize physics material static friction - Json value should be a float"))
             return false;
 
-        m_staticFriction = it->value.Get<float>();
+        m_staticFriction = it->value.GetFloat();
 
         it = p_json.FindMember("dynamic_friction");
 
         if (!CHECK(it != p_json.MemberEnd(), "Unable to deserialize physics material - Missing dynamic friction"))
             return false;
 
-        if (!CHECK(it->value.Is<float>(), "Unable to deserialize physics material dynamic friction - Json value should be a float"))
+        if (!CHECK(it->value.IsFloat(), "Unable to deserialize physics material dynamic friction - Json value should be a float"))
             return false;
 
-        m_dynamicFriction = it->value.Get<float>();
+        m_dynamicFriction = it->value.GetFloat();
 
         it = p_json.FindMember("restitution");
 
         if (!CHECK(it != p_json.MemberEnd(), "Unable to deserialize physics material - Missing restitution coefficient"))
             return false;
 
-        if (!CHECK(it->value.Is<float>(), "Unable to deserialize physics restitution coefficient - Json value should be a float"))
+        if (!CHECK(it->value.IsFloat(), "Unable to deserialize physics restitution coefficient - Json value should be a float"))
             return false;
 
-        m_restitution = it->value.Get<float>();
+        m_restitution = it->value.GetFloat();
 
         return true;
     }

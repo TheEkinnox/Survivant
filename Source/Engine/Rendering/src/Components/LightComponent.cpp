@@ -124,24 +124,24 @@ namespace SvRendering::Components
 
         auto it = p_json.FindMember("constant");
 
-        if (!CHECK(it != p_json.MemberEnd() && it->value.Is<float>(), "Unable to deserialize light constant attenuation"))
+        if (!CHECK(it != p_json.MemberEnd() && it->value.IsFloat(), "Unable to deserialize light constant attenuation"))
             return false;
 
-        p_out.m_constant = it->value.Get<float>();
+        p_out.m_constant = it->value.GetFloat();
 
         it = p_json.FindMember("linear");
 
-        if (!CHECK(it != p_json.MemberEnd() && it->value.Is<float>(), "Unable to deserialize light linear attenuation"))
+        if (!CHECK(it != p_json.MemberEnd() && it->value.IsFloat(), "Unable to deserialize light linear attenuation"))
             return false;
 
-        p_out.m_linear = it->value.Get<float>();
+        p_out.m_linear = it->value.GetFloat();
 
         it = p_json.FindMember("quadratic");
 
-        if (!CHECK(it != p_json.MemberEnd() && it->value.Is<float>(), "Unable to deserialize light quadratic attenuation"))
+        if (!CHECK(it != p_json.MemberEnd() && it->value.IsFloat(), "Unable to deserialize light quadratic attenuation"))
             return false;
 
-        p_out.m_quadratic = it->value.Get<float>();
+        p_out.m_quadratic = it->value.GetFloat();
 
         return true;
     }
@@ -222,17 +222,17 @@ namespace SvRendering::Components
 
         auto it = p_json.FindMember("inner");
 
-        if (!CHECK(it != p_json.MemberEnd() && it->value.Is<float>(), "Unable to deserialize light inner cuttoff"))
+        if (!CHECK(it != p_json.MemberEnd() && it->value.IsFloat(), "Unable to deserialize light inner cuttoff"))
             return false;
 
-        p_out.m_inner = it->value.Get<float>();
+        p_out.m_inner = it->value.GetFloat();
 
         it = p_json.FindMember("outer");
 
-        if (!CHECK(it != p_json.MemberEnd() && it->value.Is<float>(), "Unable to deserialize light outer cuttoff"))
+        if (!CHECK(it != p_json.MemberEnd() && it->value.IsFloat(), "Unable to deserialize light outer cuttoff"))
             return false;
 
-        p_out.m_outer = it->value.Get<float>();
+        p_out.m_outer = it->value.GetFloat();
 
         return true;
     }
@@ -331,7 +331,7 @@ namespace SvCore::ECS
     {
         p_writer.StartObject();
 
-        const std::string typeString = LightTypeToString(ELightType::AMBIENT);
+        const std::string typeString = LightTypeToString(p_component.m_type);
 
         p_writer.Key("type");
         p_writer.String(typeString.c_str(), static_cast<rapidjson::SizeType>(typeString.size()));
@@ -343,7 +343,7 @@ namespace SvCore::ECS
         case ELightType::AMBIENT:
             return SerializeAmbient(p_component.m_ambient, p_writer) && CHECK(p_writer.EndObject());
         case ELightType::DIRECTIONAL:
-            return SerializeDirectional(p_component.m_directional, p_writer);
+            return SerializeDirectional(p_component.m_directional, p_writer) && CHECK(p_writer.EndObject());
         case ELightType::POINT:
             return SerializePoint(p_component.m_point, p_writer) && CHECK(p_writer.EndObject());
         case ELightType::SPOT:
