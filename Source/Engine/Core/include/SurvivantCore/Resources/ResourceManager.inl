@@ -25,7 +25,7 @@ namespace SvCore::Resources
             resource = dynamic_cast<T*>(savedResource);
 
             if (!CHECK(!savedResource || resource || it->second->GetReferenceCount() <= 1,
-                    "Unsafe reloading of resource at path \"%s\"", p_path.c_str()))
+                    "Unsafe reloading of resource at path \"%s\"", key.c_str()))
                 return {};
         }
 
@@ -34,7 +34,7 @@ namespace SvCore::Resources
         if (!resource)
             resource = CreateResource<T>();
 
-        if (!LoadResource(resource, p_path))
+        if (!LoadResource(resource, key))
         {
             if (it != m_resources.end())
                 m_resources.erase(it);
@@ -42,7 +42,7 @@ namespace SvCore::Resources
             return {};
         }
 
-        return canReuse ? *it->second : *(m_resources[key] = std::make_unique<ResourceRef<IResource>>(p_path, resource));
+        return canReuse ? *it->second : *(m_resources[key] = std::make_unique<ResourceRef<IResource>>(key, resource));
     }
 
     template <typename T>

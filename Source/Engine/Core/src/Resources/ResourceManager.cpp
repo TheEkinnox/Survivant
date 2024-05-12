@@ -63,7 +63,7 @@ namespace SvCore::Resources
             resource = !savedResource || savedResource->GetTypeName() == p_type ? savedResource : nullptr;
 
             if (!CHECK(!savedResource || resource || it->second->GetReferenceCount() <= 1,
-                    "Unsafe reloading of resource at path \"%s\"", p_path.c_str()))
+                    "Unsafe reloading of resource at path \"%s\"", key.c_str()))
                 return {};
         }
 
@@ -72,13 +72,13 @@ namespace SvCore::Resources
         if (!resource)
             resource = ResourceRegistry::GetInstance().Create(p_type);
 
-        if (!LoadResource(resource, p_path))
+        if (!LoadResource(resource, key))
         {
             m_resources.erase(it);
             return {};
         }
 
-        return canReuse ? *it->second : *(m_resources[key] = std::make_unique<GenericResourceRef>(p_type, p_path, resource));
+        return canReuse ? *it->second : *(m_resources[key] = std::make_unique<GenericResourceRef>(p_type, key, resource));
     }
 
     GenericResourceRef ResourceManager::Get(const std::string& p_type, const std::string& p_path) const

@@ -189,8 +189,11 @@ namespace SvCore::Resources
     {
         p_writer.StartObject();
 
+        std::string path = Utility::Replace(m_path, "\\", "/");
+        Utility::ReplaceInPlace(path, "//", "/");
+
         p_writer.Key("path");
-        p_writer.String(m_path.c_str(), static_cast<rapidjson::SizeType>(m_path.size()));
+        p_writer.String(path.c_str(), static_cast<rapidjson::SizeType>(path.size()));
 
         return p_writer.EndObject();
     }
@@ -213,7 +216,7 @@ namespace SvCore::Resources
         if constexpr (!std::is_same_v<T, IResource>)
             (*this) = { m_path };
 
-        return CHECK(basePath == m_path, "Unable to deserialize resource ref - Failed to load resource");
+        return CHECK(basePath.empty() == m_path.empty(), "Unable to deserialize resource ref - Failed to load resource");
     }
 
     inline GenericResourceRef::GenericResourceRef(std::string p_type, const std::string& p_path, IResource* p_resource)
@@ -288,8 +291,11 @@ namespace SvCore::Resources
         p_writer.Key("type");
         p_writer.String(m_type.c_str(), static_cast<rapidjson::SizeType>(m_type.size()));
 
+        std::string path = Utility::Replace(m_path, "\\", "/");
+        Utility::ReplaceInPlace(path, "//", "/");
+
         p_writer.Key("path");
-        p_writer.String(m_path.c_str(), static_cast<rapidjson::SizeType>(m_path.size()));
+        p_writer.String(path.c_str(), static_cast<rapidjson::SizeType>(path.size()));
 
         return p_writer.EndObject();
     }
@@ -308,6 +314,6 @@ namespace SvCore::Resources
         const std::string basePath = m_path;
 
         (*this) = { m_type, m_path };
-        return CHECK(basePath == m_path, "Unable to deserialize resource ref - Failed to load resource");
+        return CHECK(basePath.empty() == m_path.empty(), "Unable to deserialize resource ref - Failed to load resource");
     }
 }
