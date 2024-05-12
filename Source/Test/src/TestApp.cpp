@@ -231,30 +231,13 @@ namespace SvTest
         ResourceRef<ITexture> texture(TEXTURE_PATH);
         ASSERT(texture, "Failed to load texture at path \"%s\"", TEXTURE_PATH);
 
-        ResourceRef whiteMaterial("", new Material(unlitShader));
-        whiteMaterial->GetProperty<ResourceRef<ITexture>>("u_diffuse") = texture;
-        whiteMaterial->GetProperty<Vector4>("u_tint")                  = Color::white;
-
-        ResourceRef redMaterial("", new Material(*whiteMaterial));
-        redMaterial->GetProperty<Vector4>("u_tint") = Color::red;
-
-        ResourceRef greenMaterial("", new Material(*whiteMaterial));
-        greenMaterial->GetProperty<Vector4>("u_tint") = Color::green;
-
-        ResourceRef blueMaterial("", new Material(*whiteMaterial));
-        blueMaterial->GetProperty<Vector4>("u_tint") = Color::blue;
-
-        ResourceRef yellowMaterial("", new Material(*whiteMaterial));
-        yellowMaterial->GetProperty<Vector4>("u_tint") = Color::yellow;
-
-        ResourceRef magentaMaterial("", new Material(*whiteMaterial));
-        magentaMaterial->GetProperty<Vector4>("u_tint") = Color::magenta;
-
-        ResourceRef litMaterial("", new Material(litShader));
-        litMaterial->GetProperty<ResourceRef<ITexture>>("u_diffuse") = texture;
-        litMaterial->GetProperty<Vector4>("u_tint")                  = Color::white;
-        litMaterial->GetProperty<Vector4>("u_specularColor")         = Color(.2f, .2f, .2f);
-        litMaterial->GetProperty<float>("u_shininess")               = 32.f;
+        ResourceRef<::Material> whiteMaterial("materials/white.mat");
+        ResourceRef<::Material> redMaterial("materials/red.mat");
+        ResourceRef<::Material> greenMaterial("materials/green.mat");
+        ResourceRef<::Material> blueMaterial("materials/blue.mat");
+        ResourceRef<::Material> yellowMaterial("materials/yellow.mat");
+        ResourceRef<::Material> magentaMaterial("materials/magenta.mat");
+        ResourceRef<::Material> litMaterial("materials/lit.mat");
 
         EntityHandle whiteCube = m_scene.Create();
         whiteCube.Make<ModelComponent>(cube, whiteMaterial);
