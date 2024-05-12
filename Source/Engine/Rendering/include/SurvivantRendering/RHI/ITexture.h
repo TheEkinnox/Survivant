@@ -182,4 +182,7 @@ namespace SvCore::Resources
 {
     template <>
     SvRendering::RHI::ITexture* CreateResource<SvRendering::RHI::ITexture>();
+
+    template <>
+    SvRendering::RHI::ITexture* GetDefaultResource<SvRendering::RHI::ITexture>();
 }

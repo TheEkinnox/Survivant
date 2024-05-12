@@ -31,6 +31,12 @@ namespace SvCore::Resources
             return nullptr;
         }
     }
+
+    template <>
+    ITexture* GetDefaultResource<ITexture>()
+    {
+        return &ITexture::GetDefault();
+    }
 }
 
 namespace SvRendering::RHI
