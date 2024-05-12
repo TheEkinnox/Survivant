@@ -57,6 +57,7 @@ namespace SvCore::Resources
         static_assert(std::is_same_v<T, U> || std::is_base_of_v<T, U> || std::is_base_of_v<U, T>,
             "Attempted to convert to an incompatible resource type");
 
+        // Required for invalid conversions from IResource (can't just check for nullptr since it's a valid value)
         ASSERT((void*)p_other.m_resource == (void*)m_resource, "Attempted to convert to an incompatible resource type");
 
         p_other.m_resource = nullptr;
@@ -137,6 +138,7 @@ namespace SvCore::Resources
     template <typename U>
     bool ResourceRef<T>::CanCastTo() const
     {
+        // DON'T check if T is a base of U (refs to IResource would evaluate to true even for incompatible resource types)
         if constexpr (std::is_same_v<T, U> || std::is_base_of_v<U, T>)
             return true;
         else
