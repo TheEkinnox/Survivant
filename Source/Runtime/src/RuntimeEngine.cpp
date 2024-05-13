@@ -125,6 +125,19 @@ namespace SvRuntime
 		return true;
 	}
 
+	bool RuntimeEngine::ChangeCamera(const SvCore::ECS::EntityHandle& p_camera)
+	{
+		auto cam = p_camera.Get<CameraComponent>();
+		auto trans = p_camera.Get<Transform>();
+
+		if (!(cam && trans))
+			SV_LOG("Can't change camera, Entity doesn't have a camera or transform component");
+
+		m_camera = p_camera;
+
+		return false;
+	}
+
 	float RuntimeEngine::GetDeltaTime()
 	{
 		return m_time.GetDeltaTime();

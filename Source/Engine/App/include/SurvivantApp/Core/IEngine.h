@@ -4,6 +4,7 @@
 #include "SurvivantApp/Core/WorldContext.h"
 #include "SurvivantCore/ECS/Scene.h"
 #include "SurvivantRendering/Core/Camera.h"
+#include "SurvivantCore/ECS/EntityHandle.h"
 
 #include <string>
 #include <memory>
@@ -20,8 +21,6 @@ namespace SvApp::Core
 	class IEngine 
 	{
 	public:
-		//TODO: add IEngine events
-
 		IEngine() = default;
 		~IEngine() = default;
 
@@ -29,6 +28,7 @@ namespace SvApp::Core
 		virtual void	Update() = 0;
 		//virtual bool	StartScene(WorldContext& p_worldContext) = 0;
 		virtual bool	ChangeScene(const std::string& p_scenePath) = 0;
+		virtual bool	ChangeCamera(const SvCore::ECS::EntityHandle& p_camera) = 0;
 		virtual float	GetDeltaTime() = 0;
 		virtual void	BakeLights() = 0;
 		virtual bool	IsPlayInEditor() = 0;

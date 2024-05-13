@@ -325,4 +325,14 @@ namespace SvEditor::Core
 	{
 		return m_gameInstance.get();
 	}
+
+	bool SvEditor::Core::EditorEngine::ChangeCamera(const SvCore::ECS::EntityHandle& p_camera)
+	{
+		if (!p_camera)
+			return false;
+
+		m_PIEWorld.lock()->SetCamera(p_camera);
+
+		return true;
+	}
 }
