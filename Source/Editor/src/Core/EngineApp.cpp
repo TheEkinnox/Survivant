@@ -10,6 +10,7 @@
 #include "SurvivantEditor/Core/EditorUI.h"
 #include "SurvivantEditor/Core/InspectorItemManager.h"
 #include "SurvivantScripting/LuaContext.h"
+#include "SurvivantCore/Build/BuildManager.h"
 
 #include <memory>
 

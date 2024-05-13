@@ -23,6 +23,11 @@ namespace SvEditor::PanelItems
 			const std::string& p_name,
 			const Ref& p_resourceRef,
 			const Callback& p_callback = Callback());
+		PanelResourceSelector(
+			const std::string& p_name,
+			const Ref& p_resourceRef,
+			bool p_displayResource,
+			const Callback& p_callback = Callback());
 		~PanelResourceSelector() = default;
 
 		PanelResourceSelector(const PanelResourceSelector& p_other);
@@ -36,6 +41,7 @@ namespace SvEditor::PanelItems
 
 		std::string								m_name;
 		std::shared_ptr<PanelPopupMenuButton>	m_allResources;
+		bool									m_displayResource;
 	};
 }
 

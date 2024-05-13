@@ -48,7 +48,7 @@ namespace SvEditor::Panels
 
     ConsolePanel::~ConsolePanel()
     {
-        s_panelCount--;
+        //s_panelCount--;
         SvCore::Debug::Logger::GetInstance().m_onPrint.RemoveListener(m_eventHandle);
     }
 

@@ -1,17 +1,41 @@
-//RuntimeEngine.cpp
-
+//EditorEngine.cpp
 #include "SurvivantEditor/Core/EditorEngine.h"
 
-#include "SurvivantCore/Debug/Assertion.h"
 #include "SurvivantEditor/Core/EditorWindow.h"
 
-#include "SurvivantApp/Core/TempDefaultScene.h"
+#include <SurvivantCore/Build/BuildManager.h>
+#include <SurvivantCore/Debug/Assertion.h>
 
+#include "SurvivantApp/Core/TempDefaultScene.h"
 
 using namespace SvApp::Core;
 
 namespace SvEditor::Core
 {
+	void EditorEngine::Init()
+	{
+		using namespace SvCore::Build;
+
+		s_engine = this;
+
+		//create scenes
+		//BrowseToDefaultScene(*m_editorWorld); //cant use this func bcs world does not exist
+		m_editorSelectedScene = ResourceManager::GetInstance().GetOrCreate<Scene>(DEFAULT_SCENE_PATH);
+
+		//create editor world world
+		m_editorWorld = CreateEditorDefaultWorld(m_editorSelectedScene);
+		m_editorWorld->SetInputs();
+
+		//setup events
+		SV_EVENT_MANAGER().AddListenner<OnCreateBuildGame>(OnCreateBuildGame::EventDelegate(
+			[](std::string p_buildFileName, BuildSetup p_buildInfo) 
+			{ BuildManager::GetInstance().CreateBuild(p_buildFileName, p_buildInfo); }));
+
+		SV_EVENT_MANAGER().AddListenner<OnRunBuildGame>(OnRunBuildGame::EventDelegate(
+			[](std::string p_buildFileName)
+			{ BuildManager::GetInstance().RunBuild(p_buildFileName); }));
+	}
+
 	void EditorEngine::Update()
 	{
 		m_time.Tick();
@@ -239,19 +263,6 @@ namespace SvEditor::Core
 		return true;
 	}
 
-	void EditorEngine::Init()
-	{
-		s_engine = this;
-
-		//create scenes
-		//BrowseToDefaultScene(*m_editorWorld); //cant use this func bcs world does not exist
-		m_editorSelectedScene = ResourceManager::GetInstance().GetOrCreate<Scene>(DEFAULT_SCENE_PATH);
-
-		//create editor world world
-		m_editorWorld = CreateEditorDefaultWorld(m_editorSelectedScene);
-		m_editorWorld->SetInputs();
-	}
-
 	void EditorEngine::BakeLights()
 	{
 		m_editorWorld->BakeLighting();
@@ -286,13 +297,6 @@ namespace SvEditor::Core
 			},
 			p_playPauseFrameCallbacks);
 	}
-
-	//bool RuntimeEngine::StartScene(WorldContext& p_worldContext)
-	//{
-	//	p_worldContext.BeginPlay();
-
-	//	return true;
-	//}
 
 	bool EditorEngine::ChangeScene(const std::string& p_scenePath)
 	{

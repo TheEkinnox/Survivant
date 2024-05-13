@@ -14,12 +14,19 @@ namespace SvEditor::PanelItems
 	inline PanelResourceSelector<T>::PanelResourceSelector(
 		const std::string& p_name, const Ref& p_resourceRef,
 		const Callback& p_callback) :
+		PanelResourceSelector(p_name, p_resourceRef, true, p_callback)
+	{}
+
+	template<class T>
+	inline PanelResourceSelector<T>::PanelResourceSelector(
+		const std::string& p_name, const Ref& p_resourceRef, bool p_displayResource, const Callback& p_callback) :
 		PanelInputBase<SvCore::Resources::ResourceRef<T>>(p_resourceRef, p_callback)
 	{
 		m_name = p_name;
+		m_displayResource = p_displayResource;
 
 		m_allResources = std::make_shared<PanelPopupMenuButton>(PanelPopupMenuButton(
-			"Swap",
+			m_name,
 			[this]() { this->GetAllResources(); },
 			[this]() { this->m_allResources->m_items.clear(); }
 		));
@@ -38,9 +45,10 @@ namespace SvEditor::PanelItems
 	{
 		this->m_getRef = std::move(p_other.m_getRef);
 		this->m_name = std::move(p_other.m_name);
+		this->m_displayResource = std::move(p_other.m_displayResource);
 
 		m_allResources = std::make_shared<PanelPopupMenuButton>(PanelPopupMenuButton(
-			"Swap",
+			m_name,
 			[this]() { this->GetAllResources(); },
 			[this]() { this->m_allResources->m_items.clear(); }
 		));
@@ -51,9 +59,10 @@ namespace SvEditor::PanelItems
 	{
 		this->m_getRef = p_other.m_getRef;
 		this->m_name = p_other.m_name;
+		this->m_displayResource = p_other.m_displayResource;
 
 		m_allResources = std::make_shared<PanelPopupMenuButton>(PanelPopupMenuButton(
-			"Swap",
+			m_name,
 			[this]() { this->GetAllResources(); },
 			[this]() { this->m_allResources->m_items.clear(); }
 		));
@@ -64,16 +73,16 @@ namespace SvEditor::PanelItems
 	{
 		static auto flag = ImGuiInputTextFlags_ReadOnly;
 		
-		ImGui::Text(m_name.c_str());
-		ImGui::SameLine();
-
-		std::string resourceName = this->GetRef().GetPath();
-
-		ImGui::PushID(resourceName.c_str());
-		ImGui::InputText("##", &resourceName[0], resourceName.size(), flag);
-		ImGui::PopID();
-
 		m_allResources->DisplayAndUpdatePanel();
+
+		if (m_displayResource)
+		{
+			ImGui::SameLine();
+			std::string resourceName = this->GetRef().GetPath();
+			ImGui::PushID(resourceName.c_str());
+			ImGui::InputText("##", &resourceName[0], resourceName.size(), flag);
+			ImGui::PopID();
+		}
 	}
 
 	template<class T>
@@ -94,6 +103,8 @@ namespace SvEditor::PanelItems
 			m_allResources->m_items.emplace_back(std::make_unique<MenuButton>(MenuButton(
 				name, [this, resource](char) mutable {
 					this->GetRef() = resource;
+					if (this->m_callback)
+						this->m_callback(resource);
 				}
 			)));
 		}

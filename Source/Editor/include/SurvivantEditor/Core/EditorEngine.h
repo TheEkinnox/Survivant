@@ -6,6 +6,7 @@
 #include "SurvivantApp/Core/GameInstance.h"
 #include "SurvivantCore/Events/Event.h"
 #include <SurvivantCore/Utility/Timer.h>
+#include <SurvivantCore/Build/BuildSetup.h>
 
 #include "Transform.h"
 
@@ -23,16 +24,20 @@ namespace SvEditor::Core
 	class EditorEngine : public SvApp::Core::IEngine
 	{
 	public:
+		class OnCreateBuildGame : public SvCore::Events::Event<std::string /*p_buildFileName*/, SvCore::Build::BuildSetup /*p_buildInfo*/> {};
+		class OnRunBuildGame : public SvCore::Events::Event<std::string /*p_buildFileName*/> {};
+
 		EditorEngine() = default;
 		~EditorEngine() = default;
 
 		// Inherited via IEngine
-		void Update() override;
 		void Init() override;
+		void Update() override;
 		void BakeLights() override;
 		bool ChangeScene(const std::string& p_scenePath) override;
+		bool ChangeCamera(const SvCore::ECS::EntityHandle& p_camera) override;
 		float GetDeltaTime() override;
-		bool	IsPlayInEditor()override;
+		bool IsPlayInEditor()override;
 
 
 		void RenderWorlds();

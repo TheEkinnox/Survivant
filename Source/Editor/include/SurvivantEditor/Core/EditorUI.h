@@ -39,7 +39,9 @@ namespace SvEditor::Core
 
 		void InitWindow(SvApp::Window* p_window);
 
-		void InitGamePanel(const WorldContext::WorldCreator& p_worldCreator, const std::array<std::function<void()>, 3> p_playPauseFrameCallbacks);
+		void InitGamePanel(
+			const WorldContext::WorldCreator& p_worldCreator, 
+			const std::array<std::function<void()>, 3> p_playPauseFrameCallbacks);
 		void InitScenePanel(std::weak_ptr<WorldContext> p_world);
 		void InitHierarchyPanel(std::weak_ptr<WorldContext> p_world);
 
@@ -58,6 +60,7 @@ namespace SvEditor::Core
 		std::shared_ptr<Panel> CreateGamePanel();
 		std::shared_ptr<Panel> CreateScenePanel();
 		std::shared_ptr<Panel> CreateHierarchyPanel();
+		std::shared_ptr<Panel> CreateBuildPanel();
 
 		void TryCreateSavePanel();
 

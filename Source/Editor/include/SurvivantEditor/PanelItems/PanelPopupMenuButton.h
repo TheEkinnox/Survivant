@@ -19,6 +19,7 @@ namespace SvEditor::PanelItems
 
 		PanelPopupMenuButton(const std::string& p_name, 
 			Callback p_onOpen = nullptr, Callback p_onClose = nullptr);
+
 		~PanelPopupMenuButton() = default;
 		//PanelPopupMenuButton(const PanelPopupMenuButton& p_other);
 		//PanelPopupMenuButton(PanelPopupMenuButton&& p_other) noexcept;
@@ -36,6 +37,11 @@ namespace SvEditor::PanelItems
 		Callback		m_onClose;
 
 	private:
+		using Id = size_t;
+
+		//static Ids;
+
 		std::string		m_name;
+		Id				m_id;
 	};
 }

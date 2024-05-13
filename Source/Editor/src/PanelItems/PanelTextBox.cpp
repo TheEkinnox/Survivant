@@ -98,6 +98,45 @@ namespace SvEditor::PanelItems
         UpdateFilteredItems();
     }
 
+    void PanelTextBox::Remove(const std::string& p_toRemove)
+    {
+        for (auto it = m_items.begin(); it != m_items.end(); ++it)
+        {
+            auto& textable = (*it);
+
+            if (textable->GetLength() == p_toRemove.length() &&
+                textable->GetString() == p_toRemove)
+            {
+                m_items.erase(it);
+                return;
+            }
+        }
+    }
+
+    void PanelTextBox::Remove(size_t p_toRemove)
+    {
+        if (0 <= p_toRemove && p_toRemove >= m_items.size())
+            return;
+
+        m_items.erase(m_items.begin() + p_toRemove);
+    }
+
+    int PanelTextBox::Contains(const std::string& p_contains)
+    {
+        for (int i = 0; i < m_items.size(); ++i)
+        {
+            auto& textable = m_items[i];
+
+            if (textable->GetLength() == p_contains.length() &&
+                textable->GetString() == p_contains)
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
     void PanelTextBox::AddItem(const std::shared_ptr<ITextable>& item, bool p_willScrollToBottom)
     {
         m_items.push_back(item);
@@ -173,16 +212,16 @@ namespace SvEditor::PanelItems
         ImGui::EndChild();
     }
 
-    PanelTextDisplay::DefaultText::DefaultText(const std::string& p_string) : 
+    DefaultText::DefaultText(const std::string& p_string) : 
         m_string(p_string)
     {}
 
-    void PanelTextDisplay::DefaultText::DisplayAndUpdatePanel()
+    void DefaultText::DisplayAndUpdatePanel()
     {
         ImGui::TextWrapped(m_string.c_str());
     }
 
-    std::string PanelTextDisplay::DefaultText::GetString(size_t p_len) const
+    std::string DefaultText::GetString(size_t p_len) const
     {
         if (p_len == 0)
             return m_string;
@@ -190,12 +229,12 @@ namespace SvEditor::PanelItems
         return std::string(m_string, 0, p_len);
     }
 
-    size_t PanelTextDisplay::DefaultText::GetLength() const
+    size_t DefaultText::GetLength() const
     {
         return m_string.size();
     }
 
-    const std::string& PanelTextDisplay::DefaultText::GetString()
+    const std::string& DefaultText::GetString()
     {
         return m_string;
     }

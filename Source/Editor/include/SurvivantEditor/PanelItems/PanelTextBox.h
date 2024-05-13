@@ -14,6 +14,23 @@ namespace SvEditor::PanelItems
 {
 	using namespace Interfaces;
 
+	class DefaultText : public ITextable
+	{
+	public:
+		DefaultText(const std::string& p_string);
+		~DefaultText() = default;
+
+		// Inherited via ITextable
+		void DisplayAndUpdatePanel() override;
+
+		std::string			GetString(size_t p_len) const override;
+		const std::string&	GetString() override;
+		size_t				GetLength() const override;
+
+	private:
+		std::string m_string;
+	};
+
 	class PanelTextBox : public IPanelable
 	{
 	public:
@@ -37,6 +54,9 @@ namespace SvEditor::PanelItems
 		/// </summary>
 		/// <param name="p_filter"></param>
 		void AddOrRemoveFilter(const std::string& p_filter);
+		void Remove(const std::string& p_toRemove);
+		void Remove(size_t p_toRemove);
+		int Contains(const std::string& p_contains);
 
 		void AddItem(const std::shared_ptr<ITextable>& item, bool p_willScrollToBottom = false);
 		void Clear();
@@ -56,23 +76,6 @@ namespace SvEditor::PanelItems
 	class PanelTextDisplay : public IPanelable
 	{
 	public:
-		class DefaultText : public ITextable
-		{
-		public:
-			DefaultText(const std::string& p_string);
-			~DefaultText() = default;
-
-			// Inherited via ITextable
-			void DisplayAndUpdatePanel() override;
-
-			std::string			GetString(size_t p_len) const override;
-			const std::string&	GetString() override;
-			size_t				GetLength() const override;
-
-		private:
-			std::string m_string;
-		};
-
 		PanelTextDisplay(const std::shared_ptr<ITextable>& p_item);
 		~PanelTextDisplay() = default;
 

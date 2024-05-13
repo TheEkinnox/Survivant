@@ -445,7 +445,7 @@ namespace SvEditor::Core
 		auto component = PanelResourceDisplay(p_resource, "Re",
 			PanelResourceDisplay::Items({
 					std::make_shared<PanelTextDisplay>(PanelTextDisplay(
-						std::make_shared<PanelTextDisplay::DefaultText>(PanelTextDisplay::DefaultText(
+						std::make_shared<DefaultText>(DefaultText(
 							rawJson
 						))
 					))

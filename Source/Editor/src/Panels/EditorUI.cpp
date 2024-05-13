@@ -19,6 +19,7 @@
 #include "SurvivantEditor/Panels/SavePanel.h"
 #include "SurvivantEditor/Panels/ScenePanel.h"
 #include "SurvivantEditor/Panels/TestPanel.h"
+#include "SurvivantEditor/Panels/BuildPanel.h"
 #include "SurvivantEditor/PanelItems/PanelButton.h"
 
 
@@ -144,9 +145,6 @@ namespace SvEditor::Core
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-
-        //bool b = true;
-        //ImGui::ShowDemoWindow(&b);
     }
 
     void EditorUI::RenderPanels()
@@ -272,6 +270,9 @@ namespace SvEditor::Core
 
         Menu& menu5 = menuList.emplace_back("Panels");
 
+        menu5.m_items.emplace_back(std::make_unique<MenuButton>(
+            "Build",
+            [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateBuildPanel); }));
         menu5.m_items.emplace_back(std::make_unique<MenuButton>(
             "Console",
             [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateConsolePanel); }));
@@ -424,6 +425,19 @@ namespace SvEditor::Core
 
         return m_currentPanels.insert(
             { HierarchyPanel::NAME, std::make_shared<HierarchyPanel>() }).first->second;
+    }
+
+    std::shared_ptr<Panel> EditorUI::CreateBuildPanel()
+    {
+        auto panel = m_currentPanels.find(BuildPanel::NAME);
+        if (panel != m_currentPanels.end())
+        {
+            m_main->ForceFocus(BuildPanel::NAME);
+            return panel->second;
+        }
+
+        return m_currentPanels.insert(
+            { BuildPanel::NAME, std::make_shared<BuildPanel>() }).first->second;
     }
 
     void EditorUI::Layout1(int p_dockspaceId)
