@@ -9,7 +9,11 @@ local transform
 local last_mouse_pos
 
 function FreeLook:OnInit()
-    transform = self.owner:GetOrCreate("Transform")
+    transform = self.owner:GetOrCreate(Transform)
+
+    if not CAM_TRANSFORM then
+        CAM_TRANSFORM = transform
+    end
 end
 
 function FreeLook:OnStart()
