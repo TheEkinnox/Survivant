@@ -1,3 +1,4 @@
+---@class UtilityTest : Script
 local UtilityTest = {}
 
 local start_frame = 0

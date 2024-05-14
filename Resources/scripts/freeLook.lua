@@ -1,3 +1,4 @@
+---@class FreeLook : Script
 local FreeLook = {
     move_speed = 3,
     rotation_speed = Degree.new(90),

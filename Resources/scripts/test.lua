@@ -1,3 +1,4 @@
+---@class Test : Script
 local Test = {
     max_tick = 0,
     test_bool = false

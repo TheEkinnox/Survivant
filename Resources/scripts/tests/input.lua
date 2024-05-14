@@ -1,3 +1,4 @@
+---@class InputTest : Script
 local InputTest = {}
 
 local key_up_time = 0
@@ -5,9 +6,6 @@ local key_up_frames = 0
 
 local mouse_up_time = 0
 local mouse_up_frames = 0
-
-function InputTest:OnInit()
-end
 
 function InputTest:OnStart()
     print("mousePos: " .. Input.mousePos)

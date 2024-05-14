@@ -1,3 +1,4 @@
+---@class MathTest : Script
 local MathTest = {}
 
 local function TestAngles()

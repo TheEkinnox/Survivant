@@ -1,3 +1,4 @@
+---@class %%script : Script
 local %%script = {}
 
 -- OnInit is called when the script is added
