@@ -28,6 +28,7 @@ using namespace LibMath;
 using namespace SvApp;
 
 using namespace SvCore::ECS;
+using namespace SvCore::Events;
 using namespace SvCore::Resources;
 using namespace SvCore::Utility;
 
@@ -49,8 +50,27 @@ constexpr Radian CAM_ROTATION_SPEED = 90_deg;
 
 constexpr size_t TEST_SCRIPTS_COUNT = 250;
 
+constexpr int WINDOW_WIDTH  = 1024;
+constexpr int WINDOW_HEIGHT = 768;
+
 namespace SvTest
 {
+    TestApp::TestApp()
+    {
+        m_resizeListenerId = EventManager::GetInstance().AddListenner<Window::OnFrameBufferSize>(
+            [this](const int p_width, const int p_height)
+            {
+                m_windowSize = { p_width, p_height };
+                IRenderAPI::GetCurrent().SetViewport(PosT::zero(), m_windowSize);
+            }
+        );
+    }
+
+    TestApp::~TestApp()
+    {
+        EventManager::GetInstance().RemoveListenner<Window::OnFrameBufferSize>(m_resizeListenerId);
+    }
+
     void TestApp::Init()
     {
         SvCore::Debug::Logger::GetInstance().SetFile("debug.log");
@@ -59,7 +79,8 @@ namespace SvTest
         ASSERT(SetWorkingDirectory(GetApplicationDirectory()), "Failed to update working directory");
         SV_LOG("Current working directory: \"%s\"", GetWorkingDirectory().c_str());
 
-        m_window = std::make_unique<Window>("Survivant - Test", 1024, 768, 512, 384);
+        m_window = std::make_unique<Window>("Survivant - Test", WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
+        m_windowSize = { WINDOW_WIDTH, WINDOW_HEIGHT };
 
         IRenderAPI& renderAPI = IRenderAPI::SetCurrent(EGraphicsAPI::OPENGL);
         renderAPI.Init(true)
@@ -394,9 +415,12 @@ namespace SvTest
         SceneView<CameraComponent>                       cameras(m_scene);
         SceneView<const ModelComponent, const Transform> renderables(m_scene);
 
+        const float aspect = static_cast<float>(m_windowSize.m_x) / static_cast<float>(m_windowSize.m_y);
+
         for (const auto camEntity : cameras)
         {
             CameraComponent& cam = *cameras.Get<CameraComponent>(camEntity);
+            cam.SetAspect(aspect);
 
             if (const Transform* transform = m_scene.Get<const Transform>(camEntity))
             {
