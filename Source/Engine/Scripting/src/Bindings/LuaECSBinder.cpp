@@ -153,26 +153,26 @@ namespace SvScripting::Bindings
                 data[p_key] = p_value;
                 typeInfo.FromLua(component, data);
             },
+            "owner", sol::readonly_property(
+                [](const ComponentHandle& p_self)
+                {
+                    return p_self ? p_self.m_owner : EntityHandle{};
+                }
+            ),
             "self", sol::property(
                 [&p_luaState](const ComponentHandle& p_self) -> sol::userdata
                 {
                     if (!p_self.m_owner)
                         return make_object_userdata(p_luaState, sol::nil);
 
-                    void* component = p_self.m_owner.GetScene()->GetStorage(p_self.m_typeId).FindRaw(p_self.m_owner);
-                    return LuaTypeRegistry::GetInstance().GetTypeInfo(p_self.m_typeId).ToLua(component, p_luaState);
+                    return LuaTypeRegistry::GetInstance().GetTypeInfo(p_self.m_typeId).ToLua(p_self.Get(), p_luaState);
                 },
                 [](const ComponentHandle& p_self, const sol::userdata& p_value)
                 {
-                    if (!p_self.m_owner)
+                    if (!p_self)
                         return;
 
-                    void* component = p_self.m_owner.GetScene()->GetStorage(p_self.m_typeId).FindRaw(p_self.m_owner);
-
-                    if (!component)
-                        return;
-
-                    LuaTypeRegistry::GetInstance().GetTypeInfo(p_self.m_typeId).FromLua(component, p_value);
+                    LuaTypeRegistry::GetInstance().GetTypeInfo(p_self.m_typeId).FromLua(p_self.Get(), p_value);
                 }
             )
         );
@@ -203,6 +203,12 @@ namespace SvScripting::Bindings
                 if (p_self)
                     p_self.m_table[p_key] = p_value;
             },
+            "owner", sol::readonly_property(
+                [](const LuaScriptHandle& p_self)
+                {
+                    return p_self ? p_self.m_owner : EntityHandle{};
+                }
+            ),
             "table", sol::readonly_property(
                 [](const LuaScriptHandle& p_self) -> sol::table
                 {
