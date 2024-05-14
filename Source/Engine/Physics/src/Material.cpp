@@ -40,7 +40,7 @@ namespace SvPhysics
             return false;
 
         p_writer.Key("restitution");
-        if (!CHECK(p_writer.Double(m_restitution), "Failed to write physics material restitution coefficiant"))
+        if (!CHECK(p_writer.Double(m_restitution), "Failed to write physics material restitution coefficient"))
             return false;
 
         return CHECK(p_writer.EndObject(), "Failed to serialize physics material");
