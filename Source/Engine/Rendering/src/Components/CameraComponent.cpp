@@ -181,6 +181,9 @@ namespace SvRendering::Components
 
     CameraComponent& CameraComponent::SetProjectionType(const EProjectionType p_projectionType)
     {
+        if (m_projectionType == p_projectionType)
+            return *this;
+
         m_projectionType = p_projectionType;
         m_isDirty        = true;
         return *this;
@@ -188,6 +191,9 @@ namespace SvRendering::Components
 
     CameraComponent& CameraComponent::SetClearColor(const Color& p_color)
     {
+        if (static_cast<const Vector4&>(m_clearColor) == static_cast<const Vector4&>(p_color))
+            return *this;
+
         m_clearColor = p_color;
         m_isDirty    = true;
         return *this;
@@ -195,9 +201,7 @@ namespace SvRendering::Components
 
     CameraComponent& CameraComponent::SetClearColor(const float p_r, const float p_g, const float p_b, const float p_a)
     {
-        SetClearColor({ p_r, p_g, p_b, p_a });
-        m_isDirty = true;
-        return *this;
+        return SetClearColor({ p_r, p_g, p_b, p_a });
     }
 
     Color CameraComponent::GetClearColor() const
@@ -215,8 +219,7 @@ namespace SvRendering::Components
         bool color, depth, stencil;
         GetClearMask(color, depth, stencil);
 
-        renderAPI.Clear(color, depth, stencil);
-        renderAPI.SetClearColor(old);
+        renderAPI.Clear(color, depth, stencil).SetClearColor(old);
     }
 
     uint8_t CameraComponent::GetClearMask() const
@@ -226,6 +229,9 @@ namespace SvRendering::Components
 
     CameraComponent& CameraComponent::SetClearMask(const uint8_t p_clearMask)
     {
+        if (m_clearMask == p_clearMask)
+            return *this;
+
         m_clearMask = p_clearMask;
         m_isDirty   = true;
         return *this;
@@ -254,10 +260,7 @@ namespace SvRendering::Components
 
     CameraComponent& CameraComponent::SetClearMask(const bool p_clearColor, const bool p_clearDepth, const bool p_clearStencil)
     {
-        m_clearMask = PackClearMask(p_clearColor, p_clearDepth, p_clearStencil);
-
-        m_isDirty = true;
-        return *this;
+        return SetClearMask(PackClearMask(p_clearColor, p_clearDepth, p_clearStencil));
     }
 
     LayerMask CameraComponent::GetCullingMask() const
@@ -267,6 +270,9 @@ namespace SvRendering::Components
 
     CameraComponent& CameraComponent::SetCullingMask(const LayerMask p_cullingMask)
     {
+        if (m_cullingMask == p_cullingMask)
+            return *this;
+
         m_cullingMask = p_cullingMask;
         m_isDirty     = true;
         return *this;
@@ -279,6 +285,9 @@ namespace SvRendering::Components
 
     CameraComponent& CameraComponent::SetAspect(const float p_aspect)
     {
+        if (floatEquals(m_aspect, p_aspect))
+            return *this;
+
         m_aspect  = p_aspect;
         m_isDirty = true;
         return *this;
@@ -291,6 +300,9 @@ namespace SvRendering::Components
 
     CameraComponent& CameraComponent::SetFovY(const Radian& p_fovY)
     {
+        if (m_fovY == p_fovY)
+            return *this;
+
         m_fovY    = p_fovY;
         m_isDirty = true;
         return *this;
@@ -303,6 +315,9 @@ namespace SvRendering::Components
 
     CameraComponent& CameraComponent::SetPerspectiveNear(const float p_zNear)
     {
+        if (floatEquals(m_perspectiveNear, p_zNear))
+            return *this;
+
         m_perspectiveNear = p_zNear;
         m_isDirty         = true;
         return *this;
@@ -315,6 +330,9 @@ namespace SvRendering::Components
 
     CameraComponent& CameraComponent::SetPerspectiveFar(const float p_zFar)
     {
+        if (floatEquals(m_perspectiveFar, p_zFar))
+            return *this;
+
         m_perspectiveFar = p_zFar;
         m_isDirty        = true;
         return *this;
@@ -322,10 +340,10 @@ namespace SvRendering::Components
 
     CameraComponent& CameraComponent::SetPerspective(const Radian& p_fovY, const float p_zNear, const float p_zFar)
     {
-        m_projectionType  = EProjectionType::PERSPECTIVE;
-        m_perspectiveNear = p_zNear;
-        m_perspectiveFar  = p_zFar;
-        m_fovY            = p_fovY;
+        SetProjectionType(EProjectionType::PERSPECTIVE);
+        SetPerspectiveNear(p_zNear);
+        SetPerspectiveFar(p_zFar);
+        SetFovY(p_fovY);
 
         return *this;
     }
@@ -337,6 +355,9 @@ namespace SvRendering::Components
 
     CameraComponent& CameraComponent::SetOrthographicSize(const float p_size)
     {
+        if (floatEquals(m_orthographicSize, p_size))
+            return *this;
+
         m_orthographicSize = p_size;
         m_isDirty          = true;
         return *this;
@@ -349,6 +370,9 @@ namespace SvRendering::Components
 
     CameraComponent& CameraComponent::SetOrthographicNear(const float p_zNear)
     {
+        if (floatEquals(m_orthographicNear, p_zNear))
+            return *this;
+
         m_orthographicNear = p_zNear;
         m_isDirty          = true;
         return *this;
@@ -361,6 +385,9 @@ namespace SvRendering::Components
 
     CameraComponent& CameraComponent::SetOrthographicFar(const float p_zFar)
     {
+        if (floatEquals(m_orthographicFar, p_zFar))
+            return *this;
+
         m_orthographicFar = p_zFar;
         m_isDirty         = true;
         return *this;
@@ -368,12 +395,11 @@ namespace SvRendering::Components
 
     CameraComponent& CameraComponent::SetOrthographic(const float p_size, const float p_zNear, const float p_zFar)
     {
-        m_projectionType   = EProjectionType::ORTHOGRAPHIC;
-        m_orthographicSize = p_size;
-        m_orthographicNear = p_zNear;
-        m_orthographicFar  = p_zFar;
+        SetProjectionType(EProjectionType::ORTHOGRAPHIC);
+        SetOrthographicSize(p_size);
+        SetOrthographicNear(p_zNear);
+        SetOrthographicFar(p_zFar);
 
-        m_isDirty = true;
         return *this;
     }
 
