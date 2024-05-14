@@ -238,18 +238,23 @@ namespace SvRendering::Components
         p_stencil = p_mask & SV_CLEAR_STENCIL_BIT;
     }
 
+    uint8_t CameraComponent::PackClearMask(const bool p_color, const bool p_depth, const bool p_stencil)
+    {
+        return static_cast<uint8_t>(
+            p_color << SV_CLEAR_COLOR_OFFSET |
+            p_depth << SV_CLEAR_DEPTH_OFFSET |
+            p_stencil << SV_CLEAR_STENCIL_OFFSET
+        );
+    }
+
     void CameraComponent::GetClearMask(bool& p_clearColor, bool& p_clearDepth, bool& p_clearStencil) const
     {
         BreakClearMask(m_clearMask, p_clearColor, p_clearDepth, p_clearStencil);
     }
 
-    CameraComponent& CameraComponent::SetClearMask(bool p_clearColor, bool p_clearDepth, bool p_clearStencil)
+    CameraComponent& CameraComponent::SetClearMask(const bool p_clearColor, const bool p_clearDepth, const bool p_clearStencil)
     {
-        m_clearMask = static_cast<uint8_t>(
-            p_clearColor << SV_CLEAR_COLOR_OFFSET |
-            p_clearDepth << SV_CLEAR_DEPTH_OFFSET |
-            p_clearStencil << SV_CLEAR_STENCIL_OFFSET
-        );
+        m_clearMask = PackClearMask(p_clearColor, p_clearDepth, p_clearStencil);
 
         m_isDirty = true;
         return *this;
