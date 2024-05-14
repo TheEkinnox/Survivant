@@ -8,6 +8,13 @@ local mouse_up_time = 0
 local mouse_up_frames = 0
 
 function InputTest:OnStart()
+    if INPUT_TEST then
+        Debug.LogWarning("Input test already exists in E" .. INPUT_TEST.owner .. " - Removing from E" .. self.owner)
+        self.owner:RemoveScript("scripts.tests.input")
+        return
+    end
+
+    INPUT_TEST = self
     print("mousePos: " .. Input.mousePos)
 end
 
@@ -17,7 +24,11 @@ function InputTest:OnUpdate(deltaTime)
         key_up_frames = key_up_frames + 1
     elseif Input.IsKeyDown(EKey.SPACE) then
         if key_up_frames > 0 then
-            print("Space pressed after " .. key_up_time .. "s (" .. key_up_frames .. " frames)")
+            local avgFrameTime = Time.time / Time.frameCount
+
+            print("Space pressed after " .. key_up_time .. "s (" .. key_up_frames .. " frames) - " ..
+                    "Frametime: " .. deltaTime .. " (" .. math.round(1 / deltaTime) .. "fps) - " ..
+                    "Avg. frametime: " .. avgFrameTime .. " (" .. math.round(1 / avgFrameTime) .. "fps)")
 
             key_up_time = 0
             key_up_frames = 0

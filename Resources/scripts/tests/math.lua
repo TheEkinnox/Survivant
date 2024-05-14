@@ -118,6 +118,13 @@ local function TestVectors()
 end
 
 function MathTest:OnInit()
+    if MATH_TEST then
+        Debug.LogWarning("Math test already exists in E" .. MATH_TEST.owner .. " - Removing from E" .. self.owner)
+        self.owner:RemoveScript("scripts.tests.math")
+        return
+    end
+
+    MATH_TEST = self
     TestAngles()
     TestQuaternion()
     TestMatrix()

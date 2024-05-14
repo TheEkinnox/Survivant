@@ -92,7 +92,7 @@ local function UpdateKeyboardRotation(self, deltaTime)
     end
 end
 
-local function UpdateMouseRotation(self, deltaTime)
+local function UpdateMouseRotation(self)
     local mouseDelta = Input.mousePos - last_mouse_pos
     last_mouse_pos = Input.mousePos
 
@@ -118,7 +118,7 @@ end
 
 function FreeLook:OnUpdate(deltaTime)
     UpdatePosition(self, deltaTime)
-    UpdateMouseRotation(self, deltaTime)
+    UpdateMouseRotation(self)
     UpdateKeyboardRotation(self, deltaTime)
 end
 

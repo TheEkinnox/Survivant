@@ -16,6 +16,13 @@ local function SetTimeScale(timeScale)
 end
 
 function UtilityTest:OnInit()
+    if UTILITY_TEST then
+        Debug.LogWarning("Utility test already exists in E" .. UTILITY_TEST.owner .. " - Removing from E" .. self.owner)
+        self.owner:RemoveScript("scripts.tests.utility")
+        return
+    end
+
+    UTILITY_TEST = self
     Debug.Log("[LUA TEST] debug log")
     Debug.LogWarning("[LUA TEST] warning log")
     Debug.LogError("[LUA TEST] lua error log")
@@ -48,7 +55,7 @@ function UtilityTest:OnUpdate(deltaTime)
     elseif frame_count == 6 then
         SetTimeScale(1)
     elseif frame_count == 9 then
-        self.owner:RemoveScript("scripts.utilityTest")
+        self.owner:RemoveScript("scripts.tests.utility")
     end
 end
 
