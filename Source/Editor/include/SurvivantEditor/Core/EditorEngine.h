@@ -1,12 +1,13 @@
 //RuntimeEngine.h
 #pragma once
 
+#include "SurvivantEditor/RuntimeBuild/BuildConfig.h"
+
 #include "SurvivantApp/Core/IEngine.h"
 #include "SurvivantApp/Inputs/InputManager.h"
 #include "SurvivantApp/Core/GameInstance.h"
 #include "SurvivantCore/Events/Event.h"
 #include <SurvivantCore/Utility/Timer.h>
-#include <SurvivantCore/Build/BuildSetup.h>
 
 #include "Transform.h"
 
@@ -24,7 +25,7 @@ namespace SvEditor::Core
 	class EditorEngine : public SvApp::Core::IEngine
 	{
 	public:
-		class OnCreateBuildGame : public SvCore::Events::Event<std::string /*p_buildFileName*/, SvCore::Build::BuildSetup /*p_buildInfo*/> {};
+		class OnCreateBuildGame : public SvCore::Events::Event<std::string /*p_buildFileName*/, SvEditor::RuntimeBuild::BuildConfig /*p_buildInfo*/> {};
 		class OnRunBuildGame : public SvCore::Events::Event<std::string /*p_buildFileName*/> {};
 
 		EditorEngine() = default;

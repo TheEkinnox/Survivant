@@ -1,5 +1,6 @@
 #include "SurvivantEditor/Core/EngineApp.h"
 
+#include "SurvivantEditor/RuntimeBuild/BuildManager.h"
 
 #include "SurvivantApp/Inputs/InputManager.h"
 #include <SurvivantCore/Debug/Assertion.h>
@@ -10,7 +11,6 @@
 #include "SurvivantEditor/Core/EditorUI.h"
 #include "SurvivantEditor/Core/InspectorItemManager.h"
 #include "SurvivantScripting/LuaContext.h"
-#include "SurvivantCore/Build/BuildManager.h"
 
 #include <memory>
 

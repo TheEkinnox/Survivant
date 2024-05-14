@@ -2,8 +2,8 @@
 #include "SurvivantEditor/Core/EditorEngine.h"
 
 #include "SurvivantEditor/Core/EditorWindow.h"
+#include "SurvivantEditor/RuntimeBuild/BuildManager.h"
 
-#include <SurvivantCore/Build/BuildManager.h>
 #include <SurvivantCore/Debug/Assertion.h>
 
 #include "SurvivantApp/Core/TempDefaultScene.h"
@@ -14,7 +14,7 @@ namespace SvEditor::Core
 {
 	void EditorEngine::Init()
 	{
-		using namespace SvCore::Build;
+		using namespace RuntimeBuild;
 
 		s_engine = this;
 
@@ -28,7 +28,7 @@ namespace SvEditor::Core
 
 		//setup events
 		SV_EVENT_MANAGER().AddListenner<OnCreateBuildGame>(OnCreateBuildGame::EventDelegate(
-			[](std::string p_buildFileName, BuildSetup p_buildInfo) 
+			[](std::string p_buildFileName, BuildConfig p_buildInfo)
 			{ BuildManager::GetInstance().CreateBuild(p_buildFileName, p_buildInfo); }));
 
 		SV_EVENT_MANAGER().AddListenner<OnRunBuildGame>(OnRunBuildGame::EventDelegate(
