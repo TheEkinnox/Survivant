@@ -53,7 +53,7 @@ namespace SvApp::Core
 		~RenderingContext() = default;
 
 		void Render(Scene* p_scene);
-		intptr_t GetTextureId(ETextureType p_renderType);
+		void* GetTextureId(ETextureType p_renderType);
 		SvCore::ECS::Entity GetEntityIdValue(const Vec2& p_uv, Scene* p_scene);
 
 		/// <summary>
@@ -63,7 +63,6 @@ namespace SvApp::Core
 		void AddRenderPass(ERenderType p_renderType);
 
 		CameraInfo		GetCameraInfo();
-		
 
 		Vec2&		CameraMoveInput();
 		Vec2&		CameraRotateInput();

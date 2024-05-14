@@ -61,14 +61,14 @@ namespace SvRendering::RHI
          * \param p_other The texture to copy
          * \return A reference to the modified texture
          */
-        OpenGLTexture& operator=(const OpenGLTexture& p_other);
+        OpenGLTexture& operator=(const OpenGLTexture& p_other) = default;
 
         /**
          * \brief Moves the given texture into this one
          * \param p_other The texture to move
          * \return A reference to the modified texture
          */
-        OpenGLTexture& operator=(OpenGLTexture&& p_other) noexcept;
+        OpenGLTexture& operator=(OpenGLTexture&& p_other) noexcept = default;
 
         /**
          * \brief Gets or creates a white 1x1 texture
@@ -95,6 +95,19 @@ namespace SvRendering::RHI
         void Unbind(uint8_t p_slot) override;
 
         /**
+         * \brief Gets the texture's internal handle
+         * \return The texture's handle
+         */
+        virtual void* GetHandle();
+
+        /**
+         * \brief Resizes the texture if the underlying graphics api allows it
+         * \param p_width The texture's new width
+         * \param p_height The texture's new height
+         */
+        void Resize(int p_width, int p_height) override;
+
+        /**
          * \brief Generates mipmaps for the texture
          */
         void GenerateMipmap() override;
@@ -107,5 +120,17 @@ namespace SvRendering::RHI
 
     private:
         uint32_t m_id = 0;
+
+        /**
+         * \brief Copies the given texture into this one
+         * \param p_other The texture to copy
+         */
+        void Copy(const ITexture& p_other) override;
+
+        /**
+         * \brief Moves the given texture into this one
+         * \param p_other The texture to move
+         */
+        void Move(ITexture&& p_other) override;
     };
 }

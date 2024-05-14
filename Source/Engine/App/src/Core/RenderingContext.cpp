@@ -20,6 +20,8 @@ namespace SvApp::Core
 
     void RenderingContext::Render(Scene* p_scene)
     {
+        IRenderAPI::GetCurrent().SetViewport(PosT::zero(), m_viewport);
+
         for (size_t i = 0; i < m_frameBuffers.size(); i++)
         {
             m_frameBuffers[i]->Bind();
@@ -41,23 +43,22 @@ namespace SvApp::Core
                 }
             }
 
-
             m_frameBuffers[i]->Unbind();
         }
     }
 
-    intptr_t RenderingContext::GetTextureId(ETextureType p_renderType)
+    void* RenderingContext::GetTextureId(const ETextureType p_renderType)
     {
         ASSERT(!m_frameTextures.empty(), "World has no textures");
 
         for (size_t i = 0; i < m_textureTypeBuffer.size(); i++)
         {
             if (m_textureTypeBuffer[i] == p_renderType)
-                return static_cast<intptr_t>(dynamic_cast<OpenGLTexture&>(*m_frameTextures[i]).GetId());
+                return m_frameTextures[i]->GetHandle();
         }
 
         ASSERT(false, "Rendering context does not contain render type");
-        return static_cast<intptr_t>(dynamic_cast<OpenGLTexture&>(*m_frameTextures[0]).GetId());
+        return m_frameTextures[0]->GetHandle();
     }
 
     SvCore::ECS::Entity RenderingContext::GetEntityIdValue(const Vec2& p_uv, Scene* p_scene)
@@ -80,7 +81,7 @@ namespace SvApp::Core
         int val;
 
         IRenderAPI::GetCurrent().ReadPixels(
-            p_uv * LibMath::Vector2(800, 600), DimensionsT(1, 1), EPixelDataFormat::RED_INT, EPixelDataType::INT, &val);
+            p_uv * m_viewport, { 1, 1 }, EPixelDataFormat::RED_INT, EPixelDataType::INT, &val);
 
         idBuff->Unbind();
 
@@ -91,24 +92,34 @@ namespace SvApp::Core
     {
         using namespace ToRemove;
 
-        auto camInfo = m_mainCamera.GetCamInfo();
-        if (!(camInfo.first && camInfo.second))
+        const auto [cam, transform] = m_mainCamera.GetCamInfo();
+        if (!(cam && transform))
             return;
 
-        IRenderAPI::GetCurrent().Clear(true, true, true);
-        DrawMainCameraScene(p_scene, *camInfo.first, *camInfo.second);
+        DrawMainCameraScene(p_scene, *cam, *transform);
+    }
+
+    void RenderingContext::IdRender(Scene& p_scene)
+    {
+        using namespace ToRemove;
+
+        const auto [cam, transform] = m_mainCamera.GetCamInfo();
+        if (!(cam && transform))
+            return;
+
+        DrawMainCameraScene(p_scene, *cam, *transform, true);
     }
 
     void RenderingContext::SceneRender(Scene& p_scene)
     {
         using namespace ToRemove;
 
-        auto camInfo = m_mainCamera.GetCamInfo();
-        if (!(camInfo.first && camInfo.second))
+        const auto [cam, transform] = m_mainCamera.GetCamInfo();
+        if (!(cam && transform))
             return;
 
         IRenderAPI::GetCurrent().Clear(true, true, true);
-        DrawSelectedMainCameraScene(p_scene, *camInfo.first, *camInfo.second, s_editorSelectedEntity);
+        DrawSelectedMainCameraScene(p_scene, *cam, *transform, s_editorSelectedEntity);
     }
 
     void RenderingContext::AddRenderPass(ERenderType p_type)
@@ -146,11 +157,11 @@ namespace SvApp::Core
     }
 
     void RenderingContext::Resize(const Vec2& p_size)
-    {        
+    {
         //textures
         m_viewport = p_size;
-        for (size_t i = 0; i < m_frameTextures.size(); i++)
-            *m_frameTextures[i] = *CreateTexture(m_textureTypeBuffer[i]);
+        for (const auto& frameTexture : m_frameTextures)
+            frameTexture->Resize(m_viewport.m_x, m_viewport.m_y);
 
         //camera
         auto [cam, trans] = m_mainCamera.GetCamInfo();
@@ -200,7 +211,7 @@ namespace SvApp::Core
 
         color->Bind(0);
 
-        auto frameBuffer = m_frameBuffers.emplace_back(IFrameBuffer::Create()).get();
+        auto& frameBuffer = m_frameBuffers.emplace_back(IFrameBuffer::Create());
         frameBuffer->Attach(*color, EFrameBufferAttachment::COLOR);
         frameBuffer->Attach(*depth, EFrameBufferAttachment::DEPTH);
     }
@@ -230,13 +241,12 @@ namespace SvApp::Core
         switch (p_type)
         {
         case ETextureType::COLOR:   return ITexture::Create(m_viewport.m_x, m_viewport.m_y, EPixelDataFormat::RGB);
-        case ETextureType::DEPTH:   return ITexture::Create(m_viewport.m_x, m_viewport.m_y, 
+        case ETextureType::DEPTH:   return ITexture::Create(m_viewport.m_x, m_viewport.m_y,
                                                             EPixelDataFormat::DEPTH_COMPONENT);
-        case ETextureType::ID:      return ITexture::Create(m_viewport.m_x, m_viewport.m_y, 
-                                                            EPixelDataFormat::RED_INT_32, EPixelDataFormat::RED_INT, 
+        case ETextureType::ID:      return ITexture::Create(m_viewport.m_x, m_viewport.m_y,
+                                                            EPixelDataFormat::RED_INT_32, EPixelDataFormat::RED_INT,
                                                             EPixelDataType::UNSIGNED_INT);
         default: return nullptr;
         }
-        
     }
 }

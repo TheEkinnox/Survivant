@@ -57,6 +57,7 @@ namespace SvCore::Resources
         static_assert(std::is_same_v<T, U> || std::is_base_of_v<T, U> || std::is_base_of_v<U, T>,
             "Attempted to convert to an incompatible resource type");
 
+        // Required for invalid conversions from IResource (can't just check for nullptr since it's a valid value)
         ASSERT((void*)p_other.m_resource == (void*)m_resource, "Attempted to convert to an incompatible resource type");
 
         p_other.m_resource = nullptr;
@@ -112,7 +113,7 @@ namespace SvCore::Resources
     template <class T>
     bool ResourceRef<T>::operator==(const ResourceRef& p_other) const
     {
-        return m_path == p_other.m_path;
+        return m_path.empty() && p_other.m_path.empty() ? m_resource == p_other.m_resource : m_path == p_other.m_path;
     }
 
     template <class T>
@@ -137,6 +138,7 @@ namespace SvCore::Resources
     template <typename U>
     bool ResourceRef<T>::CanCastTo() const
     {
+        // DON'T check if T is a base of U (refs to IResource would evaluate to true even for incompatible resource types)
         if constexpr (std::is_same_v<T, U> || std::is_base_of_v<U, T>)
             return true;
         else
@@ -187,8 +189,11 @@ namespace SvCore::Resources
     {
         p_writer.StartObject();
 
+        std::string path = Utility::Replace(m_path, "\\", "/");
+        Utility::ReplaceInPlace(path, "//", "/");
+
         p_writer.Key("path");
-        p_writer.String(m_path.c_str(), static_cast<rapidjson::SizeType>(m_path.size()));
+        p_writer.String(path.c_str(), static_cast<rapidjson::SizeType>(path.size()));
 
         return p_writer.EndObject();
     }
@@ -211,7 +216,7 @@ namespace SvCore::Resources
         if constexpr (!std::is_same_v<T, IResource>)
             (*this) = { m_path };
 
-        return CHECK(basePath == m_path, "Unable to deserialize resource ref - Failed to load resource");
+        return CHECK(basePath.empty() == m_path.empty(), "Unable to deserialize resource ref - Failed to load resource");
     }
 
     inline GenericResourceRef::GenericResourceRef(std::string p_type, const std::string& p_path, IResource* p_resource)
@@ -286,8 +291,11 @@ namespace SvCore::Resources
         p_writer.Key("type");
         p_writer.String(m_type.c_str(), static_cast<rapidjson::SizeType>(m_type.size()));
 
+        std::string path = Utility::Replace(m_path, "\\", "/");
+        Utility::ReplaceInPlace(path, "//", "/");
+
         p_writer.Key("path");
-        p_writer.String(m_path.c_str(), static_cast<rapidjson::SizeType>(m_path.size()));
+        p_writer.String(path.c_str(), static_cast<rapidjson::SizeType>(path.size()));
 
         return p_writer.EndObject();
     }
@@ -306,6 +314,6 @@ namespace SvCore::Resources
         const std::string basePath = m_path;
 
         (*this) = { m_type, m_path };
-        return CHECK(basePath == m_path, "Unable to deserialize resource ref - Failed to load resource");
+        return CHECK(basePath.empty() == m_path.empty(), "Unable to deserialize resource ref - Failed to load resource");
     }
 }

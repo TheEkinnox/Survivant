@@ -1,5 +1,6 @@
 #include "SurvivantCore/ECS/EntityHandle.h"
 
+#include "SurvivantCore/ECS/ComponentHandle.h"
 #include "SurvivantCore/ECS/Scene.h"
 #include "SurvivantCore/ECS/Components/Hierarchy.h"
 
@@ -159,6 +160,11 @@ namespace SvCore::ECS
     std::vector<std::pair<TypeId, void*>> EntityHandle::GetComponents() const
     {
         return m_scene ? m_scene->GetComponents(m_entity) : std::vector<std::pair<TypeId, void*>>();
+    }
+
+    std::vector<ComponentHandle> EntityHandle::GetComponentHandles() const
+    {
+        return m_scene ? m_scene->GetComponentHandles(m_entity) : std::vector<ComponentHandle>{};
     }
 
     std::ostream& operator<<(std::ostream& p_stream, const EntityHandle& p_handle)

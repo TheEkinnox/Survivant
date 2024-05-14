@@ -38,7 +38,7 @@ namespace SvCore::Events
 
 	private:
 		std::unordered_map<size_t, EventDelegate>	m_listeners;
-		ListenerId									m_nextId = 0;
+		ListenerId									m_nextId = 1;
 	};
 
 	template<typename ...Args>

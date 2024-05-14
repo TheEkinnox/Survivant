@@ -20,7 +20,6 @@
 #include <SurvivantRendering/RHI/IShaderStorageBuffer.h>
 #include <SurvivantRendering/RHI/ITexture.h>
 #include <SurvivantRendering/RHI/IUniformBuffer.h>
-#include <SurvivantRendering/RHI/OpenGL/OpenGLTexture.h>
 #include <SurvivantRendering/Components/CameraComponent.h>
 
 #include "SurvivantApp/Inputs/InputManager.h"
@@ -209,7 +208,7 @@ namespace ToRemove
 
     void inline DrawModel(const Model& p_model, const Frustum& p_viewFrustum, const Matrix4& p_transform, const Material& p_material)
     {
-        if (!p_viewFrustum.Intersects(TransformBoundingBox(p_model.GetBoundingBox(), p_transform)))
+        if (!p_viewFrustum.intersects(TransformBoundingBox(p_model.GetBoundingBox(), p_transform)))
             return;
 
         BindModelUBO(p_transform);
@@ -258,7 +257,7 @@ namespace ToRemove
     {
         static auto editorSceneShader = CreateEditorSceneShader();
 
-        if (!p_viewFrustum.Intersects(TransformBoundingBox(p_model.GetBoundingBox(), p_transform)))
+        if (!p_viewFrustum.intersects(TransformBoundingBox(p_model.GetBoundingBox(), p_transform)))
             return;
 
         BindModelUBO(p_transform);
@@ -510,7 +509,7 @@ namespace ToRemove
         //magentaMaterial->Save("assets/materials/litWhite.mat");
     }
 
-    std::unique_ptr<IShaderStorageBuffer> inline SetupLightSSBO(const Scene& p_scene)
+    inline void UpdateLightSSBO(const Scene& p_scene, IShaderStorageBuffer& p_lightsSSBO)
     {
         SceneView<const LightComponent> view(p_scene);
         std::vector<Matrix4>            lightMatrices;
@@ -518,28 +517,17 @@ namespace ToRemove
         for (const auto entity : view)
         {
             const LightComponent& light = *view.Get<const LightComponent>(entity);
-
-            switch (light.m_type)
-            {
-            case ELightType::AMBIENT:
-                lightMatrices.emplace_back(light.m_ambient.getMatrix());
-                break;
-            case ELightType::DIRECTIONAL:
-                lightMatrices.emplace_back(light.m_directional.getMatrix());
-                break;
-            case ELightType::POINT:
-                lightMatrices.emplace_back(light.m_point.getMatrix());
-                break;
-            case ELightType::SPOT:
-                lightMatrices.emplace_back(light.m_spot.getMatrix());
-                break;
-            }
+            lightMatrices.emplace_back(light.GetMatrix(p_scene.Get<Transform>(entity)));
         }
 
-        std::unique_ptr<IShaderStorageBuffer> lightsSSBO = IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, 0);
-        lightsSSBO->Bind();
-        lightsSSBO->SetData(lightMatrices.data(), lightMatrices.size());
+        p_lightsSSBO.Bind();
+        p_lightsSSBO.SetData(lightMatrices.data(), lightMatrices.size());
+    }
 
+    std::unique_ptr<IShaderStorageBuffer> inline SetupLightSSBO(const Scene& p_scene)
+    {
+        std::unique_ptr<IShaderStorageBuffer> lightsSSBO = IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, 0);
+        UpdateLightSSBO(p_scene, *lightsSSBO);
         return lightsSSBO;
     }
 
@@ -832,7 +820,8 @@ namespace ToRemove
 
         k.emplace(InputManager::KeyboardKeyType{ EKey::R, EKeyState::RELEASED, {} }, [](const char)
             {
-                GameInfo::gameCamera.Get<Transform>()->setAll(INITIAL_CAM_POS, Quaternion::identity(), Vector3::one());
+                if (Transform* transform = GameInfo::gameCamera.Get<Transform>())
+                    transform->setAll(INITIAL_CAM_POS, Quaternion::identity(), Vector3::one());
             });
 
         return bindings;

@@ -1,5 +1,6 @@
 #include "SurvivantCore/ECS/Scene.h"
 
+#include "SurvivantCore/ECS/ComponentHandle.h"
 #include "SurvivantCore/ECS/ComponentRegistry.h"
 
 #include <ranges>
@@ -22,7 +23,7 @@ namespace SvCore::ECS
     bool Scene::Save(const std::string& p_fileName)
     {
         JsonStringBuffer buffer;
-        JsonWriter              writer(buffer);
+        JsonWriter       writer(buffer);
 
         if (!ToJson(writer) || !ASSUME(writer.IsComplete(), "Failed to save scene - Generated json is incomplete"))
             return false;
@@ -227,6 +228,22 @@ namespace SvCore::ECS
         {
             if (auto component = storage->FindRaw(p_owner))
                 components.emplace_back(id, component);
+        }
+
+        return components;
+    }
+
+    std::vector<ComponentHandle> Scene::GetComponentHandles(const Entity p_owner) const
+    {
+        std::vector<ComponentHandle> components;
+        components.reserve(m_components.size());
+
+        EntityHandle handle(const_cast<Scene*>(this), p_owner);
+
+        for (const auto& [id, storage] : m_components)
+        {
+            if (storage->Contains(p_owner))
+                components.emplace_back(handle, id);
         }
 
         return components;

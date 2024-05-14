@@ -78,7 +78,7 @@ namespace SvCore::ECS
         for (Transform* childTransform : childTransforms)
         {
             Transform* newParent = transform ? transform : parentTransform;
-            childTransform->setParent(newParent, parentTransform == nullptr);
+            childTransform->setParent(newParent, newParent == nullptr);
         }
     }
 

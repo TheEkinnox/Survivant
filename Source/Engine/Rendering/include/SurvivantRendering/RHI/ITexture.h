@@ -70,6 +70,12 @@ namespace SvRendering::RHI
         bool Save(const std::string& p_fileName) override;
 
         /**
+         * \brief Gets the texture's internal handle
+         * \return The texture's handle
+         */
+        virtual void* GetHandle() = 0;
+
+        /**
          * \brief Binds the texture to the current context
          * \param p_slot The slot the texture should be bound to
          */
@@ -80,6 +86,13 @@ namespace SvRendering::RHI
          * \param p_slot The slot the texture is bound to
          */
         virtual void Unbind(uint8_t p_slot) = 0;
+
+        /**
+         * \brief Resizes the texture if the underlying graphics api allows it
+         * \param p_width The texture's new width
+         * \param p_height The texture's new height
+         */
+        virtual void Resize(int p_width, int p_height) = 0;
 
         /**
          * \brief Generates mipmaps for the texture
@@ -157,10 +170,13 @@ namespace SvRendering::RHI
                                                 Enums::EPixelDataFormat p_format, Enums::EPixelDataType p_dataType);
 
     protected:
-        unsigned char*             m_data     = nullptr;
-        int                        m_width    = 0;
-        int                        m_height   = 0;
-        uint8_t                    m_channels = 0;
+        unsigned char*             m_data           = nullptr;
+        int                        m_width          = 0;
+        int                        m_height         = 0;
+        uint8_t                    m_channels       = 0;
+        Enums::EPixelDataFormat    m_internalFormat = Enums::EPixelDataFormat::RGBA;
+        Enums::EPixelDataFormat    m_dataFormat     = Enums::EPixelDataFormat::RGB;
+        Enums::EPixelDataType      m_dataType       = Enums::EPixelDataType::FLOAT;
         Resources::TextureMetaData m_loadInfo;
 
         /**
@@ -172,9 +188,24 @@ namespace SvRendering::RHI
          * \brief Creates a texture with the given width, height and pixel format
          * \param p_width The texture's width
          * \param p_height The texture's height
-         * \param p_format The texture's pixel format
+         * \param p_internalFormat The texture's internal format
+         * \param p_dataFormat The texture's pixel format
+         * \param p_dataType The texture's data type
          */
-        ITexture(int p_width, int p_height, Enums::EPixelDataFormat p_format);
+        ITexture(int p_width, int p_height, Enums::EPixelDataFormat p_internalFormat, Enums::EPixelDataFormat p_dataFormat,
+                 Enums::EPixelDataType p_dataType);
+
+        /**
+         * \brief Copies the given texture into this one
+         * \param p_other The texture to copy
+         */
+        virtual void Copy(const ITexture& p_other) = 0;
+
+        /**
+         * \brief Moves the given texture into this one
+         * \param p_other The texture to move
+         */
+        virtual void Move(ITexture&& p_other) = 0;
     };
 }
 
@@ -182,4 +213,7 @@ namespace SvCore::Resources
 {
     template <>
     SvRendering::RHI::ITexture* CreateResource<SvRendering::RHI::ITexture>();
+
+    template <>
+    SvRendering::RHI::ITexture* GetDefaultResource<SvRendering::RHI::ITexture>();
 }

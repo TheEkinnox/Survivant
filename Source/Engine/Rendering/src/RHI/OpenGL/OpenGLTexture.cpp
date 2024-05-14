@@ -67,22 +67,28 @@ namespace SvRendering::RHI
     }
 
     OpenGLTexture::OpenGLTexture(const int p_width, const int p_height, const EPixelDataFormat p_format)
-        : OpenGLTexture(p_width, p_height, p_format, Enums::EPixelDataType::FLOAT)
-    {}
+        : OpenGLTexture(p_width, p_height, p_format, EPixelDataType::FLOAT)
+    {
+    }
 
-    OpenGLTexture::OpenGLTexture(int p_width, int p_height, Enums::EPixelDataFormat p_format, Enums::EPixelDataType p_dataType)
+    OpenGLTexture::OpenGLTexture(
+        const int p_width, const int p_height, const EPixelDataFormat p_format, const EPixelDataType p_dataType)
         : OpenGLTexture(p_width, p_height, p_format, p_format, p_dataType)
-    {}
+    {
+    }
 
-    OpenGLTexture::OpenGLTexture(int p_width, int p_height, Enums::EPixelDataFormat p_internalFormat, Enums::EPixelDataFormat p_format, Enums::EPixelDataType p_dataType)
-        : ITexture(p_width, p_height, p_format)
+    OpenGLTexture::OpenGLTexture(const int              p_width, const int                       p_height,
+                                 const EPixelDataFormat p_internalFormat, const EPixelDataFormat p_format,
+                                 const EPixelDataType   p_dataType)
+        : ITexture(p_width, p_height, p_internalFormat, p_format, p_dataType)
     {
         glGenTextures(1, &m_id);
         glBindTexture(GL_TEXTURE_2D, m_id);
 
         const GLenum texFormat = OpenGLAPI::ToGLEnum(p_format);
         const GLenum intFormat = OpenGLAPI::ToGLEnum(p_internalFormat);
-        glTexImage2D(GL_TEXTURE_2D, 0, static_cast<GLint>(intFormat), m_width, m_height, 0, texFormat, OpenGLAPI::ToGLEnum(p_dataType), nullptr);
+        glTexImage2D(GL_TEXTURE_2D, 0, static_cast<GLint>(intFormat), m_width, m_height, 0, texFormat,
+            OpenGLAPI::ToGLEnum(p_dataType), nullptr);
     }
 
     OpenGLTexture::OpenGLTexture(const OpenGLTexture& p_other)
@@ -97,7 +103,10 @@ namespace SvRendering::RHI
         glGenTextures(1, &m_id);
         glBindTexture(GL_TEXTURE_2D, m_id);
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GetGLFormat(m_channels), GL_FLOAT, nullptr);
+        const GLint  internalFormat = static_cast<GLint>(OpenGLAPI::ToGLEnum(m_internalFormat));
+        const GLenum dataFormat     = OpenGLAPI::ToGLEnum(m_dataFormat);
+
+        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, m_width, m_height, 0, dataFormat, OpenGLAPI::ToGLEnum(m_dataType), nullptr);
 
         glCopyImageSubData(p_other.m_id, GL_TEXTURE_2D, 0, 0, 0, 0,
             m_id, GL_TEXTURE_2D, 0, 0, 0, 0,
@@ -117,58 +126,18 @@ namespace SvRendering::RHI
             glDeleteTextures(1, &m_id);
     }
 
-    OpenGLTexture& OpenGLTexture::operator=(const OpenGLTexture& p_other)
-    {
-        if (this == &p_other)
-            return *this;
-
-        ITexture::operator=(p_other);
-
-        if (m_id != 0)
-            glDeleteTextures(1, &m_id);
-
-        if (p_other.m_id == 0)
-        {
-            m_id = 0;
-            return *this;
-        }
-
-        glGenTextures(1, &m_id);
-        glBindTexture(GL_TEXTURE_2D, m_id);
-
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GetGLFormat(m_channels), GL_FLOAT, nullptr);
-
-        glCopyImageSubData(p_other.m_id, GL_TEXTURE_2D, 0, 0, 0, 0,
-            m_id, GL_TEXTURE_2D, 0, 0, 0, 0,
-            m_width, m_height, 1
-        );
-
-        return *this;
-    }
-
-    OpenGLTexture& OpenGLTexture::operator=(OpenGLTexture&& p_other) noexcept
-    {
-        if (m_id != 0)
-            glDeleteTextures(1, &m_id);
-
-        m_id = p_other.m_id;
-
-        p_other.m_id = 0;
-
-        ITexture::operator=(std::move(p_other));
-
-        return *this;
-    }
-
     OpenGLTexture& OpenGLTexture::GetDefault()
     {
         static OpenGLTexture texture;
 
         if (texture.m_id == 0)
         {
-            texture.m_width    = 1;
-            texture.m_height   = 1;
-            texture.m_channels = 3;
+            texture.m_width          = 1;
+            texture.m_height         = 1;
+            texture.m_channels       = 3;
+            texture.m_internalFormat = EPixelDataFormat::RGBA;
+            texture.m_dataFormat     = EPixelDataFormat::RGB;
+            texture.m_dataType       = EPixelDataType::UNSIGNED_BYTE;
 
             glGenTextures(1, &texture.m_id);
             glBindTexture(GL_TEXTURE_2D, texture.m_id);
@@ -178,6 +147,7 @@ namespace SvRendering::RHI
 
             texture.SetWrapModes(ETextureWrapMode::REPEAT, ETextureWrapMode::REPEAT);
             texture.SetFilters(ETextureFilter::NEAREST, ETextureFilter::NEAREST);
+            glBindTexture(GL_TEXTURE_2D, 0);
         }
 
         return texture;
@@ -196,8 +166,11 @@ namespace SvRendering::RHI
                 return false;
         }
 
+        const GLint  internalFormat = static_cast<GLint>(OpenGLAPI::ToGLEnum(m_internalFormat));
+        const GLenum dataFormat     = OpenGLAPI::ToGLEnum(m_dataFormat);
+
         glBindTexture(GL_TEXTURE_2D, m_id);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GetGLFormat(m_channels), GL_UNSIGNED_BYTE, m_data);
+        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, m_width, m_height, 0, dataFormat, OpenGLAPI::ToGLEnum(m_dataType), m_data);
 
         glBindTexture(GL_TEXTURE_2D, 0);
         return true;
@@ -218,6 +191,25 @@ namespace SvRendering::RHI
         glBindTextureUnit(p_slot, 0);
     }
 
+    void* OpenGLTexture::GetHandle()
+    {
+        return reinterpret_cast<void*>(static_cast<uintptr_t>(GetId()));
+    }
+
+    void OpenGLTexture::Resize(const int p_width, const int p_height)
+    {
+        ASSERT(!m_data, "Resizing texture resource is not supported");
+        m_width  = p_width;
+        m_height = p_height;
+
+        const GLint  internalFormat = static_cast<GLint>(OpenGLAPI::ToGLEnum(m_internalFormat));
+        const GLenum dataFormat     = OpenGLAPI::ToGLEnum(m_dataFormat);
+
+        glBindTexture(GL_TEXTURE_2D, m_id);
+        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, m_width, m_height, 0, dataFormat, OpenGLAPI::ToGLEnum(m_dataType), nullptr);
+        // glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
     void OpenGLTexture::GenerateMipmap()
     {
         glGenerateMipmap(GL_TEXTURE_2D);
@@ -226,5 +218,53 @@ namespace SvRendering::RHI
     uint32_t OpenGLTexture::GetId() const
     {
         return m_id;
+    }
+
+    void OpenGLTexture::Copy(const ITexture& p_other)
+    {
+        const OpenGLTexture& other = dynamic_cast<const OpenGLTexture&>(p_other);
+
+        if (this == &other)
+            return;
+
+        ITexture::Copy(p_other);
+
+        if (m_id != 0)
+            glDeleteTextures(1, &m_id);
+
+        if (other.m_id == 0)
+        {
+            m_id = 0;
+            return;
+        }
+
+        glGenTextures(1, &m_id);
+        glBindTexture(GL_TEXTURE_2D, m_id);
+
+        const GLint  internalFormat = static_cast<GLint>(OpenGLAPI::ToGLEnum(m_internalFormat));
+        const GLenum dataFormat     = OpenGLAPI::ToGLEnum(m_dataFormat);
+
+        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, m_width, m_height, 0, dataFormat, OpenGLAPI::ToGLEnum(m_dataType), nullptr);
+
+        glCopyImageSubData(other.m_id, GL_TEXTURE_2D, 0, 0, 0, 0,
+            m_id, GL_TEXTURE_2D, 0, 0, 0, 0,
+            m_width, m_height, 1
+        );
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    void OpenGLTexture::Move(ITexture&& p_other)
+    {
+        OpenGLTexture& other = dynamic_cast<OpenGLTexture&>(p_other);
+
+        if (m_id != 0)
+            glDeleteTextures(1, &m_id);
+
+        m_id = other.m_id;
+
+        other.m_id = 0;
+
+        ITexture::Move(std::move(p_other));
     }
 }

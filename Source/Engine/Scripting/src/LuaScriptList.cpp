@@ -59,8 +59,8 @@ namespace SvScripting
         if (p_script.empty())
             return {};
 
-        if (!CHECK(!m_scripts.contains(p_script), "Attempted to add script \"%s\" to entity \"%llu:%u\" more than once",
-                p_script.c_str(), m_owner.GetEntity().GetIndex(), m_owner.GetEntity().GetVersion()))
+        if (!CHECK(!m_scripts.contains(p_script), "Attempted to add script \"%s\" to entity \"%s\" more than once",
+                p_script.c_str(), m_owner.GetEntity().GetString().c_str()))
             return {};
 
         LuaScriptHandle handle = LuaContext::GetInstance().AddScript(p_script, m_owner, p_hint);
@@ -83,8 +83,11 @@ namespace SvScripting
     {
         LuaContext& context = LuaContext::GetInstance();
 
-        for (const auto& script : m_scripts | std::views::keys)
+        for (auto& [script, table] : m_scripts)
+        {
             context.RemoveScript(script, m_owner);
+            table.abandon();
+        }
 
         m_scripts.clear();
     }
@@ -195,8 +198,16 @@ namespace SvCore::ECS
 
         LuaContext& context = LuaContext::GetInstance();
 
-        for (const auto& [script, hint] : p_component.m_scripts)
+        auto scripts = p_component.m_scripts; // Necessary copy - Scripts can be removed during initialization
+
+        for (const auto& [script, hint] : scripts)
+        {
+            // Don't register removed scripts
+            if (!p_component.m_scripts.contains(script))
+                continue;
+
             context.AddScript(script, p_entity, hint);
+        }
     }
 
     template <>

@@ -4,12 +4,13 @@
 
 namespace SvCore::ECS
 {
+    struct ComponentHandle;
     class Scene;
 
     class EntityHandle final
     {
     public:
-        enum class EComponentSearchOrigin
+        enum class EComponentSearchOrigin : uint8_t
         {
             ROOT,
             PARENT,
@@ -269,6 +270,12 @@ namespace SvCore::ECS
          * \return The components owned by the entity
          */
         std::vector<std::pair<Utility::TypeId, void*>> GetComponents() const;
+
+        /**
+         * \brief Gets handles to all the components owned by the linked entity
+         * \return Handles to the components owned by the entity
+         */
+        std::vector<ComponentHandle> GetComponentHandles() const;
 
     private:
         Scene* m_scene;

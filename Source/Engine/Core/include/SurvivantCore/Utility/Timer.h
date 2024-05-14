@@ -60,6 +60,12 @@ namespace SvCore::Utility
         void Tick();
 
         /**
+         * \brief Resets the timer's delta time and time scale
+         * \param p_timeScale The timer's new time scale
+         */
+        void Refresh(float p_timeScale = 1.f);
+
+        /**
          * \brief Resets the timer with the given time scale
          * \param p_timeScale The timer's new time scale
          */
@@ -114,10 +120,11 @@ namespace SvCore::Utility
 
         uint64_t m_frameCount = 0;
 
-        float m_time         = 0.f;
-        float m_unscaledTime = 0.f;
-        float m_deltaTime    = 0.f;
-        float m_timeScale    = 1.f;
+        float m_time          = 0.f;
+        float m_unscaledTime  = 0.f;
+        float m_deltaTime     = 0.f;
+        float m_timeScale     = 1.f;
+        float m_nextTimeScale = 1.f;
 
         bool m_isFirstUpdate = true;
     };

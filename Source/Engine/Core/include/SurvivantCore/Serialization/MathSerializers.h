@@ -4,6 +4,9 @@
 #include <Transform.h>
 #include <Vector.h>
 
+#include <Geometry/BoundingBox.h>
+#include <Geometry/BoundingSphere.h>
+
 namespace SvCore::Serialization
 {
     /* Transform */
@@ -68,4 +71,18 @@ namespace SvCore::Serialization
 
     template <>
     bool FromJson(LibMath::Matrix4&, const JsonValue&);
+
+    /* Bounding Box */
+    template <>
+    bool ToJson(const LibMath::BoundingBox&, JsonWriter&);
+
+    template <>
+    bool FromJson(LibMath::BoundingBox&, const JsonValue&);
+
+    /* Bounding Sphere */
+    template <>
+    bool ToJson(const LibMath::BoundingSphere&, JsonWriter&);
+
+    template <>
+    bool FromJson(LibMath::BoundingSphere&, const JsonValue&);
 }

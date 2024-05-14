@@ -40,6 +40,11 @@ namespace SvRendering::RHI
         OpenGLFrameBuffer& operator=(OpenGLFrameBuffer&& p_other) noexcept;
 
         /**
+         * \brief Binds the default OpenGL frame buffer
+         */
+        static void BindDefault();
+
+        /**
          * \brief Binds the frame buffer
          */
         void Bind() override;
