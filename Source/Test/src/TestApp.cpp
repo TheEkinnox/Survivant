@@ -84,7 +84,7 @@ namespace SvTest
         LuaContext& luaContext = LuaContext::GetInstance();
         luaContext.Init();
 
-        Timer::GetInstance().Reset();
+        Timer::GetInstance().Refresh();
         MakeScene();
 
         Timer&        timer = Timer::GetInstance();
@@ -207,6 +207,8 @@ namespace SvTest
     void TestApp::MakeScene()
     {
         m_scene.Clear();
+        Timer::GetInstance().Refresh();
+
         LuaContext& luaContext = LuaContext::GetInstance();
         luaContext.Reload();
 
