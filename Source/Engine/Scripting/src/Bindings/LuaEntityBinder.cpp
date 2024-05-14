@@ -220,7 +220,7 @@ namespace SvScripting::Bindings
             },
             "Has", sol::overload(
                 hasComponent,
-                [](const EntityHandle& p_self, const sol::userdata& p_type)
+                [](const EntityHandle& p_self, const sol::table& p_type)
                 {
                     if (!p_type.valid())
                         return false;
@@ -230,7 +230,7 @@ namespace SvScripting::Bindings
             ),
             "Get", sol::overload(
                 getComponent,
-                [](const EntityHandle& p_self, const sol::userdata& p_type) -> ComponentHandle
+                [](const EntityHandle& p_self, const sol::table& p_type) -> ComponentHandle
                 {
                     if (!p_type.valid())
                         return {};
@@ -240,7 +240,7 @@ namespace SvScripting::Bindings
             ),
             "GetOrCreate", sol::overload(
                 getOrCreate,
-                [](const EntityHandle& p_self, const sol::userdata& p_type) -> ComponentHandle
+                [](const EntityHandle& p_self, const sol::table& p_type) -> ComponentHandle
                 {
                     if (!p_type.valid())
                         return {};
@@ -250,7 +250,7 @@ namespace SvScripting::Bindings
             ),
             "GetInParent", sol::overload(
                 getInParent,
-                [](const EntityHandle& p_self, const sol::userdata& p_type) -> ComponentHandle
+                [](const EntityHandle& p_self, const sol::table& p_type) -> ComponentHandle
                 {
                     if (!p_type.valid())
                         return {};
@@ -260,7 +260,7 @@ namespace SvScripting::Bindings
             ),
             "GetInChildren", sol::overload(
                 getInChildren,
-                [](const EntityHandle& p_self, const sol::userdata& p_type) -> ComponentHandle
+                [](const EntityHandle& p_self, const sol::table& p_type) -> ComponentHandle
                 {
                     if (!p_type.valid())
                         return {};
@@ -270,7 +270,7 @@ namespace SvScripting::Bindings
             ),
             "GetInHierarchy", sol::overload(
                 getInHierarchy,
-                [](const EntityHandle& p_self, const sol::userdata& p_type, const SearchOrigin p_searchOrigin)
+                [](const EntityHandle& p_self, const sol::table& p_type, const SearchOrigin p_searchOrigin)
                 -> ComponentHandle
                 {
                     if (!p_type.valid())
@@ -281,7 +281,7 @@ namespace SvScripting::Bindings
             ),
             "Remove", sol::overload(
                 removeComponent,
-                [](const EntityHandle& p_self, const sol::userdata& p_type)
+                [](const EntityHandle& p_self, const sol::table& p_type)
                 {
                     if (!p_type.valid())
                         return;
