@@ -18,7 +18,7 @@ namespace SvApp::Core
     {
     }
 
-    void RenderingContext::Render(Scene& p_scene)
+    void RenderingContext::Render(Scene* p_scene)
     {
         IRenderAPI::GetCurrent().SetViewport(PosT::zero(), m_viewport);
 
@@ -26,13 +26,21 @@ namespace SvApp::Core
         {
             m_frameBuffers[i]->Bind();
 
-            switch (m_renderTypes[i])
+            if (p_scene == nullptr)
             {
-            case ERenderType::GAME:     GameRender(p_scene);     break;
-            case ERenderType::SCENE:    SceneRender(p_scene);     break;
-            case ERenderType::ID:       IdRender(p_scene);      break;
-            default:
-                break;
+                IRenderAPI::GetCurrent().SetClearColor(Color::black);
+                IRenderAPI::GetCurrent().Clear(true, false, false);
+            }
+            else
+            {
+                switch (m_renderTypes[i])
+                {
+                case ERenderType::GAME:     GameRender(*p_scene);     break;
+                case ERenderType::SCENE:    SceneRender(*p_scene);     break;
+                case ERenderType::ID:       IdRender(*p_scene);      break;
+                default:
+                    break;
+                }
             }
 
             m_frameBuffers[i]->Unbind();
@@ -110,6 +118,7 @@ namespace SvApp::Core
         if (!(cam && transform))
             return;
 
+        IRenderAPI::GetCurrent().Clear(true, true, true);
         DrawSelectedMainCameraScene(p_scene, *cam, *transform, s_editorSelectedEntity);
     }
 

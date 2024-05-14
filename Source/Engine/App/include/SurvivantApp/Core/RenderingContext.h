@@ -51,7 +51,7 @@ namespace SvApp::Core
 		RenderingContext(SvCore::ECS::EntityHandle p_entity);
 		~RenderingContext() = default;
 
-		void Render(Scene& p_scene);
+		void Render(Scene* p_scene);
 		void* GetTextureId(ETextureType p_renderType);
 		SvCore::ECS::Entity GetEntityIdValue(const Vec2& p_uv, Scene* p_scene);
 

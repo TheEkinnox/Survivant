@@ -5,6 +5,7 @@
 #include "SurvivantApp/Core/GameInstance.h"
 #include "SurvivantApp/Core/IEngine.h"
 #include "SurvivantCore/ECS/EntityHandle.h"
+#include "SurvivantCore/Resources/ResourceManager.h"
 #include "SurvivantRendering/Components/CameraComponent.h"
 
 #include "Transform.h"
@@ -12,39 +13,36 @@
 
 namespace SvApp::Core
 {
-    Scene& Engine::GetCurrentScene()
-    {
-        ASSERT(m_currentScene != nullptr, "There is no current world");
-
-        return *m_currentScene;
-    }
-
-    bool Engine::PrepareSceneChange(WorldContext& /*p_context*/, const std::shared_ptr<Scene>& p_newLevel)
+    bool IEngine::PrepareSceneChange(WorldContext& p_context, WorldContext::SceneRef& p_newLevel, const std::string& p_path)
     {
         //init destination scene
+        using namespace SvCore::Resources;
+
+        //switch and the unload old scene
+        p_context.CurrentScene()->Clear();
+        p_newLevel = ResourceManager::GetInstance().Load<Scene>(p_path);
+
+        if (!p_newLevel)
+            return false;
+
         return p_newLevel->Init();
     }
 
-    bool Engine::CommitSceneChange(WorldContext& p_context, const std::shared_ptr<Scene>& p_newLevel)
+    bool IEngine::CommitSceneChange(WorldContext& p_context, const WorldContext::SceneRef& p_newLevel)
     {
-        //switch and the unload old scene
-        std::shared_ptr<Scene> m_levelToUnload = p_context.CurrentScene();
-        p_context.CurrentScene() = p_newLevel;
-
-        if (m_levelToUnload != nullptr)
-        {
-            //m_levelToUnload->UnloadLevel();
-        }
+        p_context.m_currentSceneRef.reset();
+        p_context.m_currentSceneRef = std::make_shared<WorldContext::SceneRef>(p_newLevel);
+        p_context.BakeLighting();
 
         return true;
     }
 
-    std::weak_ptr<WorldContext>& Engine::GetWorldContextRef(GameInstance& p_instance)
+    std::weak_ptr<WorldContext>& IEngine::GetWorldContextRef(GameInstance& p_instance)
     {
         return p_instance.m_worldContext;
     }
 
-    std::shared_ptr<WorldContext> Engine::CreateNewWorldContext(WorldContext::EWorldType p_worldType)
+    std::shared_ptr<WorldContext> IEngine::CreateNewWorldContext(WorldContext::EWorldType p_worldType)
     {
         using namespace LibMath;
         using namespace SvCore::ECS;

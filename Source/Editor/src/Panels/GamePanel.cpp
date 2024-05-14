@@ -25,6 +25,13 @@ namespace SvEditor::Panels
 
 		m_world = s_worldCreator({ 0, 0 });
 		m_image.SetTexture(m_world->m_renderingContext->GetTextureId(RenderingContext::ETextureType::COLOR));
+			
+		m_onResize.AddListener([this](const LibMath::Vector2& p_size)
+			{
+				m_world->m_renderingContext->Resize(p_size);
+				m_world->Render();
+				SV_LOG(SvCore::Utility::FormatString("Size = %f, %f", p_size.m_x, p_size.m_y).c_str());
+			});
 	}
 
 	GamePanel::~GamePanel()
@@ -52,7 +59,8 @@ namespace SvEditor::Panels
 			else if (val == -1)
 				flags = ERenderFlags(flags | DefaultInputs);
 
-			//m_world->Render();
+			if (IsWindowDifferentSize(m_imageSize))
+				m_onResize.Invoke(m_imageSize);
 
 			m_buttons.DisplayAndUpdatePanel();
 			m_image.DisplayAndUpdatePanel();

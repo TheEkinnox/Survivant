@@ -41,6 +41,4 @@ namespace SvEditor::PanelItems
 
         ImGui::PopID();
     }
-
-
 }

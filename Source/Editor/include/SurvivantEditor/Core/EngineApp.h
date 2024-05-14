@@ -31,7 +31,7 @@ namespace SvEditor::Core
 		OnPIE m_onStopInEditor;
 
 		EngineApp();
-		~EngineApp() override = default;
+		~EngineApp() override;
 
 		// Inherited via IApp
 		void Init() override;

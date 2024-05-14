@@ -5,6 +5,7 @@
 #include "SurvivantEditor/Interfaces/IPanelable.h"
 #include "SurvivantEditor/Interfaces/IInspectorable.h"
 #include "SurvivantEditor/PanelItems/PanelComponent.h"
+#include "SurvivantEditor/PanelItems/PanelPopupMenuButton.h"
 #include "SurvivantEditor/PanelItems/PanelButton.h"
 
 #include "Vector/Vector3.h"
@@ -22,6 +23,10 @@ namespace SvEditor::PanelItems
 		PanelEntity(const SvCore::ECS::EntityHandle& p_entity, const Components& p_component);
 		~PanelEntity() = default;
 
+		PanelEntity(const PanelEntity& p_other);
+		PanelEntity(PanelEntity&& p_other) noexcept;
+		PanelEntity& operator=(const PanelEntity& p_other);
+
 		// Inherited via IPanelable
 		virtual void DisplayAndUpdatePanel() override;
 
@@ -34,10 +39,16 @@ namespace SvEditor::PanelItems
 
 		void AddAndSortComponent(std::shared_ptr<PanelComponent> p_component);
 
+		void GetAllComponents();
+
+		Components::iterator RemoveComponent(const Components::iterator& p_it);
 
 		std::string					m_index;
 		std::string					m_name;
 		SvCore::ECS::EntityHandle	m_entity;
 		Components					m_components;
+		PanelButton					m_remove;
+
+		std::shared_ptr<PanelPopupMenuButton>		m_addComponent;
 	};
 }

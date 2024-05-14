@@ -35,7 +35,6 @@ namespace SvEditor::Panels
 	{
 		static intptr_t tmp = 1;
 		static ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoNavInputs;
-		static bool oldWindowSizeValue = false;
 		bool showWindow = true;
 
 		if (s_world.lock()->m_isVisalbe = ImGui::Begin(m_name.c_str(), &showWindow, window_flags))

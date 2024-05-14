@@ -45,7 +45,7 @@ namespace SvEditor::Panels
 		static inline const std::string SLASH = "/";
 
 		static std::unordered_map<std::string, std::set<std::string>> CreateExtensions();
-		static const inline std::unordered_map<std::string, std::set<std::string>> FileExtensions = CreateExtensions();
+		static inline std::unordered_map<std::string, std::set<std::string>> FileExtensions = CreateExtensions();
 
 		static SvCore::Resources::GenericResourceRef CreateResourceRef(const std::filesystem::path& p_filePath);
 

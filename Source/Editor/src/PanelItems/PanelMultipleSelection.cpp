@@ -8,21 +8,38 @@
 namespace SvEditor::PanelItems
 {
     PanelMultipleSelection::PanelMultipleSelection(
-        const std::string& p_name,
-        const std::vector<std::string>& p_selectable,
-        const Callback& p_callback) :
-        m_name(p_name),
-        m_callback(p_callback)
-    {
-        m_curentSelection = 0;
-        m_count = static_cast<int>(p_selectable.size());
+        const std::string& p_name, const std::vector<std::string>& p_selectable, 
+        int& p_currentSelection, const Callback& p_callback) :
+        PanelMultipleSelection(p_name, p_selectable,
+            GetRefFunc([p_currentSelection]() mutable -> int& { return p_currentSelection; }), p_callback)
+    {}
 
-        m_items = p_selectable;
+    PanelMultipleSelection::PanelMultipleSelection(
+        const std::string& p_name, const std::vector<std::string>& p_selectable, 
+        const GetRefFunc& p_getRef, const Callback& p_callback) :
+        PanelInputBase(p_getRef, p_callback),
+        m_name(p_name),
+        m_count(static_cast<int>(p_selectable.size())),
+        m_items(p_selectable)
+    {
+        m_displayString = GetDisplayString(GetRef());
+    }
+
+    PanelMultipleSelection::PanelMultipleSelection(
+        const std::string& p_name, const std::vector<std::string>& p_selectable, 
+        const GetCopyFunc& p_getCopy, const Callback& p_callback) :
+        PanelInputBase(p_getCopy, p_callback),
+        m_name(p_name),
+        m_count(static_cast<int>(p_selectable.size())),
+        m_items(p_selectable)
+    {
+        m_displayString = GetDisplayString(GetRef());
     }
 
     void PanelMultipleSelection::DisplayAndUpdatePanel()
     {
-        auto oldSelection = m_curentSelection;
+        int& newSelection = GetRef();
+        int oldSelection = newSelection;
 
         ImGui::Text(m_name.c_str());
         ImGui::SameLine();
@@ -33,14 +50,14 @@ namespace SvEditor::PanelItems
             for (int i = 0; i < m_items.size(); i++)
             {
                 int flag = 1 << i;
-                bool is_selected = (m_curentSelection & flag);
+                bool is_selected = (newSelection & flag);
 
                 if (ImGui::Selectable(m_items[i].c_str(), is_selected, ImGuiSelectableFlags_DontClosePopups))
                 {
                     if (is_selected)
-                        m_curentSelection &= ~flag;
+                        newSelection &= ~flag;
                     else
-                        m_curentSelection |= flag;
+                        newSelection |= flag;
                 }
                 if (is_selected)
                     ImGui::SetItemDefaultFocus();
@@ -49,16 +66,16 @@ namespace SvEditor::PanelItems
         }
         ImGui::PopID();
 
-        if (oldSelection != m_curentSelection)
+        if (oldSelection != newSelection)
         {
-            m_displayString = GetDisplayString();
+            m_displayString = GetDisplayString(newSelection);
 
             if (m_callback)
-                m_callback(m_curentSelection);
+                m_callback(newSelection);
         }
     }
 
-    std::string PanelMultipleSelection::GetDisplayString()
+    std::string PanelMultipleSelection::GetDisplayString(int p_selection)
     {
         static const char* Seperator = ", ";
         static const char* EmptyString = "(none)";
@@ -68,7 +85,7 @@ namespace SvEditor::PanelItems
         for (size_t i = 0; i < m_items.size(); i++)
         {
             int flag = 1 << i;
-            if (m_curentSelection & flag)
+            if (p_selection & flag)
             {
                 if (count++ > 0)
                     str += Seperator;

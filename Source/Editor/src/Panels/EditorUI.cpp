@@ -52,9 +52,6 @@ namespace SvEditor::Core
         MainPanel::ChangeLayout l = std::bind(&EditorUI::Layout1, this, std::placeholders::_1);
         m_main->ChangePanelLayout(l);
 
-        //setup InspectorComponents
-        InspectorItemManager::Init();
-
         //TODO : add spawn save m_panel on event close request
         SvCore::Events::EventManager::GetInstance().AddListenner<SvApp::Window::WindowCloseRequest>(
             SvApp::Window::WindowCloseRequest::EventDelegate(std::bind(&EditorUI::TryCreateSavePanel, this)));
@@ -107,15 +104,12 @@ namespace SvEditor::Core
 
         ScenePanel::SetSceneWorld(p_world);
 
-        //                p_world.lock()->m_renderingContext->GetTexture(RenderingContext::ERenderType::ID);
-
-
         ScenePanel::AddClickSceneListenner(
             [p_world](const LibMath::Vector2& p_uv)
             {
-                auto scene = p_world.lock()->CurrentScene().get();
+                auto& scene = p_world.lock()->CurrentScene();
                 auto entity = p_world.lock()->
-                    m_renderingContext->GetEntityIdValue(p_uv, scene);
+                    m_renderingContext->GetEntityIdValue(p_uv, scene.Get());
 
                 SV_LOG(SvCore::Utility::FormatString("ID = %d", entity.GetIndex()).c_str());
 
@@ -123,7 +117,7 @@ namespace SvEditor::Core
                 HierarchyPanel::SelectSelectable(entity);
 
                 auto entityPanel = InspectorItemManager::GetPanelableEntity(
-                    SvCore::ECS::EntityHandle(p_world.lock()->CurrentScene().get(), entity));
+                    SvCore::ECS::EntityHandle(p_world.lock()->CurrentScene().Get(), entity));
                 InspectorPanel::SetInpectorInfo(entityPanel, "Entity");
             });
 
@@ -135,7 +129,7 @@ namespace SvEditor::Core
             });
 
         m_inputs = p_world.lock()->m_inputs;
-        m_main->SetMenuBar(CreateMenuBar());
+        m_main->SetMenuBar(CreateMenuBar(p_world));
     }
 
     void EditorUI::InitHierarchyPanel(std::weak_ptr<WorldContext> p_world)
@@ -151,8 +145,8 @@ namespace SvEditor::Core
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        bool b = true;
-        ImGui::ShowDemoWindow(&b);
+        //bool b = true;
+        //ImGui::ShowDemoWindow(&b);
     }
 
     void EditorUI::RenderPanels()
@@ -208,7 +202,7 @@ namespace SvEditor::Core
         m_main->ForceFocus(ScenePanel::NAME);
     }
 
-    MenuBar EditorUI::CreateMenuBar()
+    MenuBar EditorUI::CreateMenuBar(std::weak_ptr<WorldContext> p_world)
     {
         using namespace SvApp;
 
@@ -216,7 +210,7 @@ namespace SvEditor::Core
         auto& menuList = menuBar.m_menus;
 
         //add menu 'File' to menu list
-        Menu& menu1 = menuList.emplace_back("File");
+        Menu& menu1 = menuList.emplace_back("Test");
         //add buttons to menu that triggers an event
         menu1.m_items.emplace_back(std::make_unique<MenuButton>(
             "New",
@@ -261,24 +255,38 @@ namespace SvEditor::Core
             menu3->m_items.emplace_back(std::make_unique<MenuButton>(
                 "Test",
                 [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateNewTestPanel); }));
-            menu3->m_items.emplace_back(std::make_unique<MenuButton>(
-                "Console",
-                [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateConsolePanel); }));
-            menu3->m_items.emplace_back(std::make_unique<MenuButton>(
-                "Save",
-                [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateSavePanel); }));
-            menu3->m_items.emplace_back(std::make_unique<MenuButton>(
-                "Content",
-                [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateContentPanel); }));
-            menu3->m_items.emplace_back(std::make_unique<MenuButton>(
-                "Inspector",
-                [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateInspectorPanel); }));
 
             menu2.m_items.emplace_back(std::move(menu3));
         }
 
-        Menu& menu4 = menuList.emplace_back(menu2);
-        menu4.SetName("Copy");
+        Menu& menu4 = menuList.emplace_back("Scene");
+        menu4.m_items.emplace_back(std::make_unique<MenuButton>(MenuButton(
+            "Save",
+            [p_world](char) { p_world.lock()->Save(); },
+            InputManager::KeyboardKeyType(EKey::S, EKeyState::PRESSED, EInputModifier::MOD_CONTROL),
+            *m_inputs
+            )));
+
+        Menu& menu5 = menuList.emplace_back("Panels");
+
+        menu5.m_items.emplace_back(std::make_unique<MenuButton>(
+            "Console",
+            [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateConsolePanel); }));
+        menu5.m_items.emplace_back(std::make_unique<MenuButton>(
+            "Content",
+            [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateContentPanel); }));
+        menu5.m_items.emplace_back(std::make_unique<MenuButton>(
+            "Game",
+            [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateGamePanel); }));
+        menu5.m_items.emplace_back(std::make_unique<MenuButton>(
+            "Hierarchy",
+            [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateHierarchyPanel); }));
+        menu5.m_items.emplace_back(std::make_unique<MenuButton>(
+            "Inspector",
+            [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateInspectorPanel); }));
+        menu5.m_items.emplace_back(std::make_unique<MenuButton>(
+            "Scene",
+            [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateScenePanel); }));
 
         return menuBar;
     }

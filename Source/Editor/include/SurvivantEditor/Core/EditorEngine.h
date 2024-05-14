@@ -20,26 +20,28 @@ namespace SvEditor::Core
 {
 	class EditorWindow;
 
-	class EditorEngine : public SvApp::Core::Engine
+	class EditorEngine : public SvApp::Core::IEngine
 	{
 	public:
-
 		EditorEngine() = default;
 		~EditorEngine() = default;
 
-		// Inherited via Engine
+		// Inherited via IEngine
 		void Update() override;
 		void Init() override;
-		void RenderWorlds();
+		void BakeLights() override;
+		bool ChangeScene(const std::string& p_scenePath) override;
+		void RedrawViewports() override;
+		float GetDeltaTime() override;
+		bool	IsPlayInEditor()override;
 
+
+		void RenderWorlds();
 		bool IsRunning();
 
 		void SetupUI(Core::EditorWindow* p_window, const std::array<std::function<void()>, 3> p_playPauseFrameCallbacks);
 
 		//bool StartScene(WorldContext& p_worldContext) override;
-		bool ChangeScene(const std::string& p_sceneName) override;
-		void RedrawViewports() override;
-		float GetDeltaTime() override;
 
 
 		////scene panel, where you mofi
@@ -47,14 +49,16 @@ namespace SvEditor::Core
 		//void CreatePIEWorld();
 
 		//on level switch, will ref new level
-		std::shared_ptr<Scene>* GetCurrentScene();
-		//std::shared_ptr<Engine::WorldContext> GetPIEWorldContext();
+		//Scene* GetGameScene();
+		//std::shared_ptr<IEngine::WorldContext> GetPIEWorldContext();
 		
 		//create PIE after press play
 		std::weak_ptr<GameInstance> CreatePIEGameInstance();
 		void DestroyGameInstance();
 		
 	private:
+		static inline const std::string DEFAULT_SCENE_PATH = "assets/scenes/DefaultScene.scn";
+
 		using Inputs = SvApp::InputManager::InputBindings;
 
 		/// <summary>
@@ -64,24 +68,22 @@ namespace SvEditor::Core
 		/// <param name="p_worldContext">Current world</param>
 		/// <param name="p_scene">Scene to go to</param>
 		/// <returns>-1 if couldnt, 0 if already there, 1 if properly browsed to</returns>
-		int			BrowseToScene(WorldContext& p_worldContext, std::shared_ptr<Scene> p_scene);
+		int			BrowseToScene(WorldContext& p_worldContext, const std::string& p_path);
 		/// <returns>-1 if couldnt, 0 if already there, 1 if properly </returns>
 		int			BrowseToDefaultScene(WorldContext& p_worldContext);
 
 		bool InitializePlayInEditorGameInstance(GameInstance& p_instance);
 
-		std::shared_ptr<WorldContext>	CreateEditorDefaultWorld(std::shared_ptr<Scene> p_inScene);
-		std::shared_ptr<WorldContext>	CreatePIEWorldByDuplication(const WorldContext& p_context, std::shared_ptr<Scene> p_inScene);
+		std::shared_ptr<WorldContext>	CreateEditorDefaultWorld(const WorldContext::SceneRef& p_inScene);
+		std::shared_ptr<WorldContext>	CreatePIEWorldByDuplication(const WorldContext& p_context);
 		std::shared_ptr<Inputs>			CreateEditorInputs();
 
 		SvCore::Utility::Timer			m_time;
 		bool							m_isRunning = true;
 
-
-
 		//always exists
-		std::shared_ptr<WorldContext>			m_editorWorld;
-		std::shared_ptr<SvApp::Core::Scene>		m_editorSelectedScene;
+		std::shared_ptr<WorldContext>	m_editorWorld;
+		WorldContext::SceneRef			m_editorSelectedScene;
 
 		//temporary
 		std::shared_ptr<GameInstance>				m_gameInstance;
