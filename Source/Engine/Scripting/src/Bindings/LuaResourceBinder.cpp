@@ -52,6 +52,20 @@ namespace SvScripting::Bindings
                 data[p_key] = p_value;
                 typeInfo.FromLua(resource, data);
             },
+            sol::meta_function::concatenation, sol::overload(
+                [](const char* p_str, const GenericResourceRef& p_self)
+                {
+                    std::ostringstream oss;
+                    oss << p_str << "{ type: \"" << p_self.GetType() << "\", path: \"" << p_self.GetPath() << "\"}";
+                    return oss.str();
+                },
+                [](const GenericResourceRef& p_self, const char* p_str)
+                {
+                    std::ostringstream oss;
+                    oss << "{ type: \"" << p_self.GetType() << "\", path: \"" << p_self.GetPath() << "\"}" << p_str;
+                    return oss.str();
+                }
+            ),
             "self", sol::property(
                 [&p_luaState](const GenericResourceRef& p_self) -> sol::userdata
                 {
