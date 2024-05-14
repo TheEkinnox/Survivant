@@ -2,10 +2,9 @@
 
 #include "SurvivantScripting/LuaTypeRegistry.h"
 
-#include <SurvivantPhysics/CollisionInfo.h>
 #include <SurvivantPhysics/Material.h>
+#include <SurvivantPhysics/PhysicsContext.h>
 #include <SurvivantPhysics/RigidBody.h>
-#include <SurvivantPhysics/TriggerInfo.h>
 
 using namespace SvPhysics;
 
@@ -27,9 +26,17 @@ namespace SvScripting::Bindings
         BindCapsuleCollider(p_luaState);
     }
 
-    void LuaPhysicsBinder::BindContext(sol::state& /*p_luaState*/)
+    void LuaPhysicsBinder::BindContext(sol::state& p_luaState)
     {
-        // TODO: Physics context lua bindings
+        static constexpr const char* typeName = "Physics";
+
+        sol::usertype logType = p_luaState.new_usertype<PhysicsContext>(
+            typeName,
+            sol::meta_function::construct, sol::no_constructor,
+            "gravity", sol::property(&PhysicsContext::GetGravity, &PhysicsContext::SetGravity)
+        );
+
+        p_luaState[typeName] = &PhysicsContext::GetInstance();
     }
 
     void LuaPhysicsBinder::BindRigidBody(sol::state& p_luaState)
