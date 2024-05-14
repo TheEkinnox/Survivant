@@ -60,6 +60,11 @@ namespace SvRendering::RHI
         return *this;
     }
 
+    void OpenGLFrameBuffer::BindDefault()
+    {
+        glBindBuffer(GL_FRAMEBUFFER, 0);
+    }
+
     void OpenGLFrameBuffer::Bind()
     {
         glBindFramebuffer(GL_FRAMEBUFFER, m_id);
@@ -67,7 +72,7 @@ namespace SvRendering::RHI
 
     void OpenGLFrameBuffer::Unbind()
     {
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        BindDefault();
     }
 
     void OpenGLFrameBuffer::Attach(const ITexture& p_texture, const EFrameBufferAttachment p_attachment)
