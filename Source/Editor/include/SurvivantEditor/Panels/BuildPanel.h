@@ -29,15 +29,10 @@ namespace SvEditor::Panels
 		using SceneSelect = PanelResourceSelector<SvCore::ECS::Scene>;
 		using SelectedScenes = std::vector<SceneSelect::Value>;
 
-		void AddScene(const SceneSelect::Value& p_scene);
-		void RemoveScene(const SceneSelect::Value& p_scene);
-
 		PanelButtonList		m_buttons;
 
-		SelectedScenes		m_scenes;
-		SceneSelect			m_addScene;
-		SceneSelect			m_removeScene;
-		PanelTextBox		m_scenePaths;
+		SceneSelect::Value	m_scene;
+		SceneSelect			m_selectScene;
 
 		std::string			m_buildName; //needs to be before m_selectBuildName bcs of constructor
 		PanelTextInput		m_selectBuildName;

@@ -62,7 +62,6 @@ namespace SvCore::Events
 
 		if (m_events.contains(id))
 			dynamic_cast<T*>(m_events[id].get())->Invoke(p_paramaters...);
-
 	}
 
 	template<class T, typename ...Args>

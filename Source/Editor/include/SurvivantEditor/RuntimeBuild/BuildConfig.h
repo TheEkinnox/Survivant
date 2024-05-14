@@ -7,21 +7,21 @@
 
 namespace SvEditor::RuntimeBuild
 {
-	class BuildConfig
+	class BuildConfig : public SvCore::Resources::IResource
 	{
-	public:
-        using Scenes = std::vector<SvCore::Resources::ResourceRef<SvCore::ECS::Scene>>;
+        REGISTERED_RESOURCE_BODY()
 
+	public:
         /**
          * \brief Creates a default BuildConfig
          */
         BuildConfig() = default;
 
         /**
-         * \brief Creates a BuildConfig with the given scenes
-         * \param p_scenes The BuildConfig's scenes
+         * \brief Creates a BuildConfig with the given scene
+         * \param p_scene The BuildConfig's start scene
          */
-        explicit BuildConfig(const Scenes& p_scenes);
+        explicit BuildConfig(const SvCore::Resources::ResourceRef<SvCore::ECS::Scene>& p_scene);
 
         /**
          * \brief Creates a copy of the given BuildConfig
@@ -54,9 +54,18 @@ namespace SvEditor::RuntimeBuild
          */
         BuildConfig& operator=(BuildConfig&& p_other) noexcept = default;
 
+        // Inherited via IResource
+        bool Init() override;
+        bool Load(const std::string& p_fileName) override;
+        bool Save(const std::string& p_fileName) override;
+
+        bool ToJson(SvCore::Serialization::JsonWriter& p_writer) const;
+        bool FromJson(const SvCore::Serialization::JsonValue& p_json);
+
 	private:
-        Scenes      m_scenes;
-	};
+        SvCore::Resources::ResourceRef<SvCore::ECS::Scene> m_scene;
+
+    };
 }
 
 

@@ -25,8 +25,12 @@ namespace SvEditor::Core
 	class EditorEngine : public SvApp::Core::IEngine
 	{
 	public:
-		class OnCreateBuildGame : public SvCore::Events::Event<std::string /*p_buildFileName*/, SvEditor::RuntimeBuild::BuildConfig /*p_buildInfo*/> {};
-		class OnRunBuildGame : public SvCore::Events::Event<std::string /*p_buildFileName*/> {};
+		class OnCreateBuildGame : public SvCore::Events::Event<
+			std::string /*p_buildFileName*/, 
+			SvEditor::RuntimeBuild::BuildConfig /*p_buildInfo*/> {};
+		class OnCreateBuildAndRun : public SvCore::Events::Event<
+			std::string /*p_buildFileName*/, 
+			SvEditor::RuntimeBuild::BuildConfig /*p_buildInfo*/> {};
 
 		EditorEngine() = default;
 		~EditorEngine() = default;
