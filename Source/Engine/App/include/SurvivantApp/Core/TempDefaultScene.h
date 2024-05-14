@@ -20,7 +20,6 @@
 #include <SurvivantRendering/RHI/IShaderStorageBuffer.h>
 #include <SurvivantRendering/RHI/ITexture.h>
 #include <SurvivantRendering/RHI/IUniformBuffer.h>
-#include <SurvivantRendering/RHI/OpenGL/OpenGLTexture.h>
 #include <SurvivantRendering/Components/CameraComponent.h>
 
 #include "SurvivantApp/Inputs/InputManager.h"
@@ -825,7 +824,8 @@ namespace ToRemove
 
         k.emplace(InputManager::KeyboardKeyType{ EKey::R, EKeyState::RELEASED, {} }, [](const char)
             {
-                GameInfo::gameCamera.Get<Transform>()->setAll(INITIAL_CAM_POS, Quaternion::identity(), Vector3::one());
+                if (Transform* transform = GameInfo::gameCamera.Get<Transform>())
+                    transform->setAll(INITIAL_CAM_POS, Quaternion::identity(), Vector3::one());
             });
 
         return bindings;
