@@ -11,7 +11,7 @@ namespace SvRendering::Components
     {
         SvCore::Resources::ResourceRef<Resources::Model>    m_model;
         SvCore::Resources::ResourceRef<Resources::Material> m_material;
-        Core::LayerMask                                     m_layerMask;
+        Core::LayerMask                                     m_layerMask = Core::Layer::ALL;
     };
 }
 
