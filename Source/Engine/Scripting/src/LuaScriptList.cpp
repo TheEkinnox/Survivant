@@ -195,8 +195,16 @@ namespace SvCore::ECS
 
         LuaContext& context = LuaContext::GetInstance();
 
-        for (const auto& [script, hint] : p_component.m_scripts)
+        auto scripts = p_component.m_scripts; // Necessary copy - Scripts can be removed during initialization
+
+        for (const auto& [script, hint] : scripts)
+        {
+            // Don't register removed scripts
+            if (!p_component.m_scripts.contains(script))
+                continue;
+
             context.AddScript(script, p_entity, hint);
+        }
     }
 
     template <>

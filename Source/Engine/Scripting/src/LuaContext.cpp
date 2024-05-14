@@ -136,7 +136,8 @@ namespace SvScripting
 
         LuaScriptHandle handle = { GetModuleName(p_script), scriptRef, p_owner, p_hint };
 
-        if (!RegisterScript(handle))
+        // Check for handle validity since scripts might be removed on init
+        if (!RegisterScript(handle) || !handle.m_table.valid())
             return {};
 
         const auto insertIt = std::ranges::find_if_not(m_scripts, [&handle](const LuaScriptHandle& p_other)
