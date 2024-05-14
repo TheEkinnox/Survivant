@@ -30,22 +30,18 @@ using namespace SvCore::Resources;
 using namespace SvCore::Utility;
 
 using namespace SvRendering::RHI;
-using namespace SvRendering::Core;
 using namespace SvRendering::Enums;
-using namespace SvRendering::Geometry;
 using namespace SvRendering::Resources;
 using namespace SvRendering::Components;
 
 using namespace SvScripting;
 
-constexpr const char* UNLIT_SHADER_PATH = "shaders/Unlit.glsl";
-constexpr const char* LIT_SHADER_PATH   = "shaders/Lit.glsl";
-constexpr const char* TEXTURE_PATH      = "textures/grid.png";
+constexpr const char* TEST_SCENE_PATH = "scenes/test_no_scripts.scn";
 
 constexpr float  CAM_MOVE_SPEED     = 3.f;
 constexpr Radian CAM_ROTATION_SPEED = 90_deg;
 
-constexpr size_t TEST_SCRIPTS_COUNT = 250;
+constexpr size_t TEST_SCRIPTS_COUNT = 256;
 
 constexpr int WINDOW_WIDTH  = 1024;
 constexpr int WINDOW_HEIGHT = 768;
@@ -86,12 +82,6 @@ namespace SvTest
 
         SetupInput();
 
-        const ResourceRef<ITexture> texture(TEXTURE_PATH);
-        ASSERT(texture, "Failed to load texture at path \"%s\"", TEXTURE_PATH);
-
-        texture->SetFilters(ETextureFilter::NEAREST, ETextureFilter::NEAREST);
-        texture->SetWrapModes(ETextureWrapMode::REPEAT, ETextureWrapMode::REPEAT);
-
         m_lightsSSBO = IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, 0);
     }
 
@@ -124,7 +114,6 @@ namespace SvTest
         }
 
         luaContext.Stop();
-        m_scene.Clear();
         luaContext.Reset();
     }
 
@@ -224,151 +213,21 @@ namespace SvTest
 
     void TestApp::MakeScene()
     {
-        m_scene.Clear();
+        if (m_scene)
+            m_scene->Clear();
+
         Timer::GetInstance().Refresh();
 
         LuaContext& luaContext = LuaContext::GetInstance();
         luaContext.Reload();
 
-        EntityHandle camEntity = m_scene.Create();
-
-        CameraComponent& cam = camEntity.Make<CameraComponent>();
-        cam.SetClearColor(Color::gray).SetPerspective(90_deg, .01f, 14.f).SetAspect(4.f / 3.f);
-
-        const Vector3 camPos(0.f, 1.8f, 2.f);
-        camEntity.Make<Transform>(camPos, Quaternion::identity(), Vector3::one());
-        camEntity.Make<LuaScriptList>().Add("scripts.freeLook");
-
-        ResourceRef<Model> cube("models/cube.obj");
-        ASSERT(cube, "Failed to load model at path \"%s\"", "models/cube.obj");
-
-        ResourceRef<IShader> unlitShader(UNLIT_SHADER_PATH);
-        ASSERT(unlitShader, "Failed to load shader at path \"%s\"", UNLIT_SHADER_PATH);
-
-        ResourceRef<IShader> litShader(LIT_SHADER_PATH);
-        ASSERT(litShader, "Failed to load shader at path \"%s\"", LIT_SHADER_PATH);
-
-        ResourceRef<ITexture> texture(TEXTURE_PATH);
-        ASSERT(texture, "Failed to load texture at path \"%s\"", TEXTURE_PATH);
-
-        ResourceRef<::Material> whiteMaterial("materials/white.mat");
-        ResourceRef<::Material> redMaterial("materials/red.mat");
-        ResourceRef<::Material> greenMaterial("materials/green.mat");
-        ResourceRef<::Material> blueMaterial("materials/blue.mat");
-        ResourceRef<::Material> yellowMaterial("materials/yellow.mat");
-        ResourceRef<::Material> magentaMaterial("materials/magenta.mat");
-        ResourceRef<::Material> litMaterial("materials/lit.mat");
-
-        EntityHandle whiteCube = m_scene.Create();
-        whiteCube.Make<ModelComponent>(cube, whiteMaterial);
-        whiteCube.Make<Transform>(Vector3(-.75f, .5f, 0.f), Quaternion::identity(), Vector3::one());
-
-        EntityHandle redCube = m_scene.Create();
-        redCube.Make<ModelComponent>(cube, redMaterial);
-        redCube.Make<Transform>(Vector3(.75f, .5f, 0.f), Quaternion::identity(), Vector3::one());
-
-        {
-            LuaScriptList& scripts = redCube.Make<LuaScriptList>();
-            scripts.Add("scripts.rotator");
-            scripts.Add("scripts.temporary");
-        }
-
-        EntityHandle greenCube = m_scene.Create();
-        greenCube.Make<ModelComponent>(cube, greenMaterial);
-        greenCube.Make<Transform>(Vector3(0.f, 1.5f, 0.f), Quaternion::identity(), Vector3::one());
-        greenCube.Make<HierarchyComponent>(redCube.GetEntity());
-
-        EntityHandle yellowCube = m_scene.Create();
-        yellowCube.Make<ModelComponent>(cube, yellowMaterial);
-        yellowCube.Make<Transform>(Vector3(0.f, 1.5f, 0.f), Quaternion::identity(), Vector3::one());
-        yellowCube.Make<HierarchyComponent>(greenCube.GetEntity());
-
-        EntityHandle yellowCube2 = m_scene.Create();
-        yellowCube2.Make<ModelComponent>(cube, yellowMaterial);
-        yellowCube2.Make<Transform>(Vector3(0.f, 1.5f, 0.f), Quaternion::identity(), Vector3::one());
-        yellowCube2.Make<HierarchyComponent>(yellowCube.GetEntity());
-
-        EntityHandle yellowCube3 = m_scene.Create();
-        yellowCube3.Make<ModelComponent>(cube, yellowMaterial);
-        yellowCube3.Make<Transform>(Vector3(0.f, 1.5f, 0.f), Quaternion::identity(), Vector3::one());
-        yellowCube3.Make<HierarchyComponent>(yellowCube2.GetEntity());
-
-        EntityHandle yellowCube4 = m_scene.Create();
-        yellowCube4.Make<ModelComponent>(cube, yellowMaterial);
-        yellowCube4.Make<Transform>(Vector3(0.f, 1.5f, 0.f), Quaternion::identity(), Vector3::one());
-        yellowCube4.Make<HierarchyComponent>(yellowCube3.GetEntity());
-
-        EntityHandle greenCube2 = m_scene.Create();
-        greenCube2.Make<ModelComponent>(cube, greenMaterial);
-        greenCube2.Make<Transform>(Vector3(0.f, 1.5f, 0.f), Quaternion::identity(), Vector3::one());
-        greenCube2.Make<HierarchyComponent>(yellowCube4.GetEntity());
-
-        EntityHandle magentaCube = m_scene.Create();
-        magentaCube.Make<ModelComponent>(cube, magentaMaterial);
-        magentaCube.Make<HierarchyComponent>(greenCube.GetEntity());
-        magentaCube.Make<Transform>(Vector3(1.5f, 1.5f, 0.f), Quaternion::identity(), Vector3::one());
-
-        EntityHandle blueCube = m_scene.Create();
-        blueCube.Make<ModelComponent>(cube, blueMaterial);
-        blueCube.Make<HierarchyComponent>(redCube.GetEntity());
-        blueCube.Make<Transform>(Vector3(-1.5f, 1.5f, 0.f), Quaternion::identity(), Vector3::one());
-
-        EntityHandle magentaCube2 = m_scene.Create();
-        magentaCube2.Make<ModelComponent>(cube, magentaMaterial);
-        magentaCube2.Make<HierarchyComponent>(yellowCube3.GetEntity());
-        magentaCube2.Make<Transform>(Vector3(-1.5f, 1.5f, 0.f), Quaternion::identity(), Vector3::one());
-
-        EntityHandle blueCube2 = m_scene.Create();
-        blueCube2.Make<ModelComponent>(cube, blueMaterial);
-        blueCube2.Make<HierarchyComponent>(magentaCube2.GetEntity());
-        blueCube2.Make<Transform>(Vector3(-1.5f, 1.5f, 0.f), Quaternion::identity(), Vector3::one());
-
-        EntityHandle blueCube3 = m_scene.Create();
-        blueCube3.Make<ModelComponent>(cube, blueMaterial);
-        blueCube3.Make<HierarchyComponent>(greenCube2.GetEntity());
-        blueCube3.Make<Transform>(Vector3(1.5f, 1.5f, 0.f), Quaternion::identity(), Vector3::one());
-
-        EntityHandle magentaCube3 = m_scene.Create();
-        magentaCube3.Make<ModelComponent>(cube, magentaMaterial);
-        magentaCube3.Make<HierarchyComponent>(blueCube3.GetEntity());
-        magentaCube3.Make<Transform>(Vector3(1.5f, 1.5f, 0.f), Quaternion::identity(), Vector3::one());
-
-        EntityHandle litCube = m_scene.Create();
-        litCube.Make<ModelComponent>(cube, litMaterial);
-        litCube.Make<Transform>(camPos + Vector3::front(), Quaternion::identity(), Vector3(1.5f, .5f, .1f));
-
-        EntityHandle litCube2 = m_scene.Create();
-        litCube2.Make<ModelComponent>(cube, litMaterial);
-        litCube2.Make<HierarchyComponent>(blueCube.GetEntity());
-        litCube2.Make<Transform>(Vector3(-1.5f, 1.5f, 0.f), Quaternion::identity(), Vector3::one());
-
-        EntityHandle litCube3 = m_scene.Create();
-        litCube3.Make<ModelComponent>(cube, litMaterial);
-        litCube3.Make<HierarchyComponent>(litCube2.GetEntity());
-        litCube3.Make<Transform>(Vector3(1.5f, 1.5f, 0.f), Quaternion::identity(), Vector3::one());
-
-        EntityHandle litCube4 = m_scene.Create();
-        litCube4.Make<ModelComponent>(cube, litMaterial);
-        litCube4.Make<HierarchyComponent>(magentaCube.GetEntity());
-        litCube4.Make<Transform>(Vector3(1.5f, 1.5f, 0.f), Quaternion::identity(), Vector3::one());
-
-        EntityHandle litCube5 = m_scene.Create();
-        litCube5.Make<ModelComponent>(cube, litMaterial);
-        litCube5.Make<HierarchyComponent>(litCube4.GetEntity());
-        litCube5.Make<Transform>(Vector3(-1.5f, 1.5f, 0.f), Quaternion::identity(), Vector3::one());
-
-        m_scene.Create().Make<LightComponent>(Light(Color::lime));
-        m_scene.Create().Make<LightComponent>(DirectionalLight{ Color::magenta, Vector3::back() });
-        m_scene.Create().Set<LightComponent>(PointLight{ Color::red, Vector3{ -1, 1, 1 }, Attenuation(16) });
-
-        SpotLight spot{ Color(0.f, 1.f, 0.f, 3.f), camPos, Vector3::front(), Attenuation(10), Cutoff{ cos(0_deg), cos(30_deg) } };
-        m_scene.Create().Make<LightComponent>(spot);
+        m_scene = ResourceManager::GetInstance().Load<Scene>(m_scene.GetPath());
 
         UpdateLightSSBO();
 
         for (size_t i = 0; i < TEST_SCRIPTS_COUNT; ++i)
         {
-            LuaScriptList& scripts = m_scene.Create().Make<LuaScriptList>();
+            LuaScriptList& scripts = m_scene->Create().Make<LuaScriptList>();
             scripts.Add("scripts/test.lua");
 
             ASSERT(luaContext.IsValid());
@@ -379,7 +238,7 @@ namespace SvTest
 
     void TestApp::UpdateLightSSBO() const
     {
-        SceneView<const LightComponent> view(m_scene);
+        SceneView<const LightComponent> view(*m_scene);
         std::vector<Matrix4>            lightMatrices;
 
         for (const auto entity : view)
@@ -407,10 +266,10 @@ namespace SvTest
         m_lightsSSBO->SetData(lightMatrices.data(), lightMatrices.size());
     }
 
-    void TestApp::DrawScene()
+    void TestApp::DrawScene() const
     {
-        SceneView<CameraComponent>                       cameras(m_scene);
-        SceneView<const ModelComponent, const Transform> renderables(m_scene);
+        SceneView<CameraComponent>                       cameras(*m_scene);
+        SceneView<const ModelComponent, const Transform> renderables(*m_scene);
 
         const float aspect = static_cast<float>(m_windowSize.m_x) / static_cast<float>(m_windowSize.m_y);
 
@@ -419,7 +278,7 @@ namespace SvTest
             CameraComponent& cam = *cameras.Get<CameraComponent>(camEntity);
             cam.SetAspect(aspect);
 
-            if (const Transform* transform = m_scene.Get<const Transform>(camEntity))
+            if (const Transform* transform = m_scene->Get<const Transform>(camEntity))
             {
                 cam.Recalculate(transform->getWorldMatrix().inverse());
                 BindCamUBO(cam->GetViewProjection(), transform->getWorldPosition());
