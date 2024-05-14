@@ -6,8 +6,8 @@ using namespace SvRendering::Geometry;
 
 namespace SvRendering::Resources
 {
-    Mesh::Mesh(std::vector<Vertex> vertices, std::vector<uint32_t> indices)
-        : m_vertices(std::move(vertices)), m_indices(std::move(indices))
+    Mesh::Mesh(std::vector<Vertex> p_vertices, std::vector<uint32_t> p_indices)
+        : m_vertices(std::move(p_vertices)), m_indices(std::move(p_indices))
     {
         m_boundingBox =
         {
@@ -22,19 +22,24 @@ namespace SvRendering::Resources
         }
     }
 
-    Mesh::Mesh(const Mesh& other)
-        : Mesh(other.m_vertices, other.m_indices)
+    Mesh::Mesh(std::vector<Vertex> p_vertices, std::vector<uint32_t> p_indices, BoundingBox p_boundingBox)
+        : m_vertices(std::move(p_vertices)), m_indices(std::move(p_indices)), m_boundingBox(std::move(p_boundingBox))
+    {
+    }
+
+    Mesh::Mesh(const Mesh& p_other)
+        : Mesh(p_other.m_vertices, p_other.m_indices)
     {
         Init();
     }
 
-    Mesh& Mesh::operator=(const Mesh& other)
+    Mesh& Mesh::operator=(const Mesh& p_other)
     {
-        if (this == &other)
+        if (this == &p_other)
             return *this;
 
-        m_vertices = other.m_vertices;
-        m_indices  = other.m_indices;
+        m_vertices = p_other.m_vertices;
+        m_indices  = p_other.m_indices;
 
         Init();
 
