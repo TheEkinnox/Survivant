@@ -113,7 +113,7 @@ namespace SvCore::Resources
     template <class T>
     bool ResourceRef<T>::operator==(const ResourceRef& p_other) const
     {
-        return m_path == p_other.m_path;
+        return m_path.empty() && p_other.m_path.empty() ? m_resource == p_other.m_resource : m_path == p_other.m_path;
     }
 
     template <class T>
