@@ -4,6 +4,7 @@
 #include "SurvivantScripting/Bindings/LuaECSBinder.h"
 #include "SurvivantScripting/Bindings/LuaInputBinder.h"
 #include "SurvivantScripting/Bindings/LuaMathBinder.h"
+#include "SurvivantScripting/Bindings/LuaRenderingBinder.h"
 #include "SurvivantScripting/Bindings/LuaResourceBinder.h"
 #include "SurvivantScripting/Bindings/LuaUtilityBinder.h"
 
@@ -311,6 +312,7 @@ namespace SvScripting
         Bindings::LuaMathBinder::Bind(p_luaState);
         Bindings::LuaInputBinder::Bind(p_luaState);
         Bindings::LuaUtilityBinder::Bind(p_luaState);
+        Bindings::LuaRenderingBinder::Bind(p_luaState);
         Bindings::LuaResourceBinder::Bind(p_luaState);
     }
 }
