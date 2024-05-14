@@ -319,7 +319,7 @@ namespace SvRendering::Components
 
         float m_aspect;
 
-        bool m_isActive;
+        bool m_isActive = true;
         bool m_isDirty;
 
         /**
