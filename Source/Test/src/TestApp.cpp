@@ -265,16 +265,16 @@ namespace SvTest
             switch (light.m_type)
             {
             case ELightType::AMBIENT:
-                lightMatrices.emplace_back(light.m_ambient.getMatrix());
+                lightMatrices.emplace_back(light.m_ambient.GetMatrix());
                 break;
             case ELightType::DIRECTIONAL:
-                lightMatrices.emplace_back(light.m_directional.getMatrix());
+                lightMatrices.emplace_back(light.m_directional.GetMatrix());
                 break;
             case ELightType::POINT:
-                lightMatrices.emplace_back(light.m_point.getMatrix());
+                lightMatrices.emplace_back(light.m_point.GetMatrix());
                 break;
             case ELightType::SPOT:
-                lightMatrices.emplace_back(light.m_spot.getMatrix());
+                lightMatrices.emplace_back(light.m_spot.GetMatrix());
                 break;
             }
         }

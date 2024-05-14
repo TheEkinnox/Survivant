@@ -25,6 +25,24 @@ namespace SvRendering::Components
     {
     }
 
+    Matrix4 LightComponent::GetMatrix(const Transform* p_transform) const
+    {
+        switch (m_type)
+        {
+        case ELightType::AMBIENT:
+            return m_ambient.GetMatrix();
+        case ELightType::DIRECTIONAL:
+            return m_directional.GetMatrix(p_transform);
+        case ELightType::POINT:
+            return m_point.GetMatrix(p_transform);
+        case ELightType::SPOT:
+            return m_spot.GetMatrix(p_transform);
+        default:
+            ASSERT(false, "Invalid light type");
+            return {};
+        }
+    }
+
     bool SerializeAmbient(const Core::Light& p_light, SvCore::Serialization::JsonWriter& p_writer)
     {
         p_writer.StartObject();

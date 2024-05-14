@@ -13,7 +13,7 @@ namespace SvRendering::Core
     {
     }
 
-    Matrix4 Light::getMatrix() const
+    Matrix4 Light::GetMatrix(const Transform*) const
     {
         Matrix4 lightMat;
 
@@ -32,13 +32,17 @@ namespace SvRendering::Core
     {
     }
 
-    Matrix4 DirectionalLight::getMatrix() const
+    Matrix4 DirectionalLight::GetMatrix(const Transform* p_transform) const
     {
-        Matrix4 lightMat(Light::getMatrix());
+        Matrix4 lightMat(Light::GetMatrix());
+        Vector3 dir = m_direction;
 
-        lightMat(1, 0) = m_direction.m_x;
-        lightMat(2, 0) = m_direction.m_y;
-        lightMat(3, 0) = m_direction.m_z;
+        if (p_transform)
+            dir.rotate(p_transform->getWorldRotation());
+
+        lightMat(1, 0) = dir.m_x;
+        lightMat(2, 0) = dir.m_y;
+        lightMat(3, 0) = dir.m_z;
 
         lightMat(3, 3) = static_cast<float>(ELightType::DIRECTIONAL);
 
@@ -61,13 +65,15 @@ namespace SvRendering::Core
     {
     }
 
-    Matrix4 PointLight::getMatrix() const
+    Matrix4 PointLight::GetMatrix(const Transform* p_transform) const
     {
-        Matrix4 lightMat(Light::getMatrix());
+        Matrix4 lightMat(Light::GetMatrix());
 
-        lightMat(1, 1) = m_position.m_x;
-        lightMat(2, 1) = m_position.m_y;
-        lightMat(3, 1) = m_position.m_z;
+        const Vector3 pos = p_transform ? (p_transform->getWorldMatrix() * Vector4(m_position, 0.f)).xyz() : m_position;
+
+        lightMat(1, 1) = pos.m_x;
+        lightMat(2, 1) = pos.m_y;
+        lightMat(3, 1) = pos.m_z;
 
         lightMat(1, 2) = m_attenuationData.m_constant;
         lightMat(2, 2) = m_attenuationData.m_linear;
@@ -85,17 +91,24 @@ namespace SvRendering::Core
     {
     }
 
-    Matrix4 SpotLight::getMatrix() const
+    Matrix4 SpotLight::GetMatrix(const Transform* p_transform) const
     {
-        Matrix4 lightMat(Light::getMatrix());
+        Matrix4 lightMat(Light::GetMatrix());
 
-        lightMat(1, 0) = m_direction.m_x;
-        lightMat(2, 0) = m_direction.m_y;
-        lightMat(3, 0) = m_direction.m_z;
+        Vector3 dir = m_direction;
 
-        lightMat(1, 1) = m_position.m_x;
-        lightMat(2, 1) = m_position.m_y;
-        lightMat(3, 1) = m_position.m_z;
+        if (p_transform)
+            dir.rotate(p_transform->getWorldRotation());
+
+        lightMat(1, 0) = dir.m_x;
+        lightMat(2, 0) = dir.m_y;
+        lightMat(3, 0) = dir.m_z;
+
+        const Vector3 pos = p_transform ? (p_transform->getWorldMatrix() * Vector4(m_position, 0.f)).xyz() : m_position;
+
+        lightMat(1, 1) = pos.m_x;
+        lightMat(2, 1) = pos.m_y;
+        lightMat(3, 1) = pos.m_z;
 
         lightMat(1, 2) = m_attenuationData.m_constant;
         lightMat(2, 2) = m_attenuationData.m_linear;

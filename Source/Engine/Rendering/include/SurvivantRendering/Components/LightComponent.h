@@ -26,6 +26,13 @@ namespace SvRendering::Components
 
         LightComponent& operator=(const LightComponent& p_other)     = default;
         LightComponent& operator=(LightComponent&& p_other) noexcept = default;
+
+        /**
+         * \brief Gets the light's information packed into a matrix
+         * \param p_transform The (optional) transform to apply to the light
+         * \return The light's information packed into a matrix
+         */
+        LibMath::Matrix4 GetMatrix(const LibMath::Transform* p_transform) const;
     };
 
     /**

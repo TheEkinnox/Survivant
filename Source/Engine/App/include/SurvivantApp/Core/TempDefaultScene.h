@@ -517,7 +517,7 @@ namespace ToRemove
         p_scene.Create().Make<LightComponent>(spot);
     }
 
-    std::unique_ptr<IShaderStorageBuffer> inline SetupLightSSBO(const Scene& p_scene)
+    inline void UpdateLightSSBO(const Scene& p_scene, IShaderStorageBuffer& p_lightsSSBO)
     {
         SceneView<const LightComponent> view(p_scene);
         std::vector<Matrix4>            lightMatrices;
@@ -525,28 +525,17 @@ namespace ToRemove
         for (const auto entity : view)
         {
             const LightComponent& light = *view.Get<const LightComponent>(entity);
-
-            switch (light.m_type)
-            {
-            case ELightType::AMBIENT:
-                lightMatrices.emplace_back(light.m_ambient.getMatrix());
-                break;
-            case ELightType::DIRECTIONAL:
-                lightMatrices.emplace_back(light.m_directional.getMatrix());
-                break;
-            case ELightType::POINT:
-                lightMatrices.emplace_back(light.m_point.getMatrix());
-                break;
-            case ELightType::SPOT:
-                lightMatrices.emplace_back(light.m_spot.getMatrix());
-                break;
-            }
+            lightMatrices.emplace_back(light.GetMatrix(p_scene.Get<Transform>(entity)));
         }
 
-        std::unique_ptr<IShaderStorageBuffer> lightsSSBO = IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, 0);
-        lightsSSBO->Bind();
-        lightsSSBO->SetData(lightMatrices.data(), lightMatrices.size());
+        p_lightsSSBO.Bind();
+        p_lightsSSBO.SetData(lightMatrices.data(), lightMatrices.size());
+    }
 
+    std::unique_ptr<IShaderStorageBuffer> inline SetupLightSSBO(const Scene& p_scene)
+    {
+        std::unique_ptr<IShaderStorageBuffer> lightsSSBO = IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, 0);
+        UpdateLightSSBO(p_scene, *lightsSSBO);
         return lightsSSBO;
     }
 

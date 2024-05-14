@@ -1,6 +1,7 @@
 #pragma once
 #include "SurvivantRendering/Core/Color.h"
 
+#include <Transform.h>
 #include <Matrix/Matrix4.h>
 #include <Vector/Vector3.h>
 
@@ -29,7 +30,7 @@ namespace SvRendering::Core
          and the light type in the fourth row's fourth column
          * \return A matrix containing the light's data
          */
-        virtual LibMath::Matrix4 getMatrix() const;
+        virtual LibMath::Matrix4 GetMatrix(const LibMath::Transform* = nullptr) const;
     };
 
     struct DirectionalLight final : Light
@@ -50,9 +51,10 @@ namespace SvRendering::Core
          * \brief Creates a matrix storing the light's color in the first row,\n
          the direction in the remaining space of the first column,\n
          and the light type in the fourth row's fourth column
+         * \param p_transform The (optional) transform to apply to the light
          * \return A matrix containing the light's data
          */
-        LibMath::Matrix4 getMatrix() const override;
+        LibMath::Matrix4 GetMatrix(const LibMath::Transform* p_transform = nullptr) const override;
     };
 
     struct Attenuation
@@ -86,9 +88,10 @@ namespace SvRendering::Core
          the position in the remaining space of the second column,\n
          the attenuation data in the remaining space of the third column,\n
          and the light type in the fourth row's fourth column
+         * \param p_transform The (optional) transform to apply to the light
          * \return A matrix containing the light's data
          */
-        LibMath::Matrix4 getMatrix() const override;
+        LibMath::Matrix4 GetMatrix(const LibMath::Transform* p_transform = nullptr) const override;
     };
 
     struct Cutoff
@@ -123,8 +126,9 @@ namespace SvRendering::Core
          the attenuation data in the remaining space of the third column,\n
          the cutoff data in the remaining space of the fourth column,\n
          and the light type in the fourth row's fourth column
+         * \param p_transform The (optional) transform to apply to the light
          * \return A matrix containing the light's data
          */
-        LibMath::Matrix4 getMatrix() const override;
+        LibMath::Matrix4 GetMatrix(const LibMath::Transform* p_transform = nullptr) const override;
     };
 }
