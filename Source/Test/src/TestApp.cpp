@@ -8,6 +8,8 @@
 #include <SurvivantCore/Utility/FileSystem.h>
 #include <SurvivantCore/Utility/Timer.h>
 
+#include <SurvivantPhysics/PhysicsContext.h>
+
 #include <SurvivantRendering/Components/CameraComponent.h>
 #include <SurvivantRendering/Components/LightComponent.h>
 #include <SurvivantRendering/Components/ModelComponent.h>
@@ -34,7 +36,11 @@ using namespace SvRendering::Enums;
 using namespace SvRendering::Resources;
 using namespace SvRendering::Components;
 
+using namespace SvPhysics;
+
 using namespace SvScripting;
+
+using Material = SvRendering::Resources::Material;
 
 constexpr const char* TEST_SCENE_PATH = "scenes/test_no_scripts.scn";
 
@@ -89,6 +95,9 @@ namespace SvTest
     {
         RunSceneTests();
 
+        PhysicsContext& physicsContext = PhysicsContext::GetInstance();
+        physicsContext.Init();
+
         LuaContext& luaContext = LuaContext::GetInstance();
         luaContext.Init();
 
@@ -105,7 +114,10 @@ namespace SvTest
             timer.Tick();
             m_window->Update();
 
-            luaContext.Update(timer.GetDeltaTime());
+            const float deltaTime = timer.GetDeltaTime();
+
+            luaContext.Update(deltaTime);
+            physicsContext.Update(deltaTime);
 
             IRenderAPI::GetCurrent().Clear(true, true, true);
             DrawScene();
@@ -113,6 +125,7 @@ namespace SvTest
             m_window->EndRender();
         }
 
+        physicsContext.Reset();
         luaContext.Stop();
         luaContext.Reset();
     }
@@ -213,10 +226,14 @@ namespace SvTest
 
     void TestApp::MakeScene()
     {
+        PhysicsContext& physicsContext = PhysicsContext::GetInstance();
+        physicsContext.Reset();
+
         if (m_scene)
             m_scene->Clear();
 
         Timer::GetInstance().Refresh();
+        physicsContext.Init();
 
         LuaContext& luaContext = LuaContext::GetInstance();
         luaContext.Reload();
@@ -342,7 +359,7 @@ namespace SvTest
     }
 
     void TestApp::DrawModel(
-        const Model& p_model, const Frustum& p_viewFrustum, const Matrix4& p_transform, const Material& p_material)
+        const Model& p_model, const Frustum& p_viewFrustum, const Matrix4& p_transform, const ::Material& p_material)
     {
         if (!p_viewFrustum.intersects(TransformBoundingBox(p_model.GetBoundingBox(), p_transform)))
             return;
