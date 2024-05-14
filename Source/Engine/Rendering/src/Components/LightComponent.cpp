@@ -339,12 +339,12 @@ namespace SvRendering::Components
     }
 }
 
-namespace SvCore::ECS
+namespace SvCore::Serialization
 {
     using namespace SvRendering::Components;
 
     template <>
-    bool ComponentRegistry::ToJson(const LightComponent& p_component, Serialization::JsonWriter& p_writer, const EntitiesMap&)
+    bool ToJson(const LightComponent& p_component, JsonWriter& p_writer)
     {
         p_writer.StartObject();
 
@@ -371,7 +371,7 @@ namespace SvCore::ECS
     }
 
     template <>
-    bool ComponentRegistry::FromJson(LightComponent& p_out, const Serialization::JsonValue& p_json, Scene*)
+    bool FromJson(LightComponent& p_out, const JsonValue& p_json)
     {
         if (!CHECK(p_json.IsObject(), "Unable to deserialize light - Json value should be an object"))
             return false;

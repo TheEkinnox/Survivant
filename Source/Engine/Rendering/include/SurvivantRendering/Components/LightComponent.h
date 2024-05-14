@@ -2,7 +2,7 @@
 #include "SurvivantRendering/Core/Light.h"
 #include "SurvivantRendering/Enums/ELightType.h"
 
-#include <SurvivantCore/ECS/ComponentRegistry.h>
+#include <SurvivantCore/Serialization/MathSerializers.h>
 
 namespace SvRendering::Components
 {
@@ -132,13 +132,11 @@ namespace SvRendering::Components
     bool DeserializeSpot(Core::SpotLight& p_out, const SvCore::Serialization::JsonValue& p_json);
 }
 
-namespace SvCore::ECS
+namespace SvCore::Serialization
 {
     template <>
-    bool ComponentRegistry::ToJson(
-        const SvRendering::Components::LightComponent&, Serialization::JsonWriter&, const EntitiesMap&);
+    bool ToJson(const SvRendering::Components::LightComponent&, JsonWriter&);
 
     template <>
-    bool ComponentRegistry::FromJson(
-        SvRendering::Components::LightComponent&, const Serialization::JsonValue&, Scene*);
+    bool FromJson(SvRendering::Components::LightComponent&, const JsonValue&);
 }

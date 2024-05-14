@@ -3,7 +3,7 @@
 #include "SurvivantRendering/Resources/Material.h"
 #include "SurvivantRendering/Resources/Model.h"
 
-#include <SurvivantCore/ECS/ComponentRegistry.h>
+#include <SurvivantCore/Serialization/Serializer.h>
 
 namespace SvRendering::Components
 {
@@ -15,12 +15,11 @@ namespace SvRendering::Components
     };
 }
 
-namespace SvCore::ECS
+namespace SvCore::Serialization
 {
     template <>
-    bool ComponentRegistry::ToJson(
-        const SvRendering::Components::ModelComponent&, Serialization::JsonWriter&, const EntitiesMap&);
+    bool ToJson(const SvRendering::Components::ModelComponent&, JsonWriter&);
 
     template <>
-    bool ComponentRegistry::FromJson(SvRendering::Components::ModelComponent&, const Serialization::JsonValue&, Scene*);
+    bool FromJson(SvRendering::Components::ModelComponent&, const JsonValue&);
 }

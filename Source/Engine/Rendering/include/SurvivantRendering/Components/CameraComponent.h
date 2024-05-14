@@ -1,10 +1,10 @@
 #pragma once
-#include "SurvivantCore/ECS/ComponentRegistry.h"
-
-#include "SurvivantRendering/Enums/EProjectionType.h"
 #include "SurvivantRendering/Core/Camera.h"
 #include "SurvivantRendering/Core/Color.h"
 #include "SurvivantRendering/Core/Layer.h"
+#include "SurvivantRendering/Enums/EProjectionType.h"
+
+#include <SurvivantCore/Serialization/MathSerializers.h>
 
 namespace SvRendering::Components
 {
