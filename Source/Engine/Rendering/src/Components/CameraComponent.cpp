@@ -29,6 +29,9 @@ namespace SvRendering::Components
         p_writer.Key("type");
         p_writer.String(typeString.c_str(), static_cast<rapidjson::SizeType>(typeString.size()));
 
+        p_writer.Key("active");
+        p_writer.Bool(m_isActive);
+
         p_writer.Key("clear_mask");
         p_writer.Uint(m_clearMask);
 
@@ -72,6 +75,13 @@ namespace SvRendering::Components
             return false;
 
         m_projectionType = StringToProjectionType({ it->value.GetString(), it->value.GetStringLength() });
+
+        it = p_json.FindMember("active");
+
+        if (!CHECK(it != p_json.MemberEnd() && it->value.IsBool(), "Unable to deserialize camera component's is active flag"))
+            return false;
+
+        m_isActive = it->value.GetBool();
 
         it = p_json.FindMember("clear_mask");
 
@@ -146,6 +156,16 @@ namespace SvRendering::Components
 
         m_orthographicFar = it->value.GetFloat();
         return true;
+    }
+
+    bool CameraComponent::IsActive() const
+    {
+        return m_isActive;
+    }
+
+    void CameraComponent::SetActive(const bool p_isActive)
+    {
+        m_isActive = p_isActive;
     }
 
     void CameraComponent::Recalculate(const Matrix4& p_view)

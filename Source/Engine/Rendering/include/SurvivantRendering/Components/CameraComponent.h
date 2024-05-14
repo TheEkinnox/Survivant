@@ -81,6 +81,18 @@ namespace SvRendering::Components
         bool FromJson(const SvCore::Serialization::JsonValue& p_json);
 
         /**
+         * \brief Checks whether the camera component is currently active or not
+         * \return True if the camera component is currently active. False otherwise
+         */
+        bool IsActive() const;
+
+        /**
+         * \brief Sets the camera component's active flag
+         * \param p_isActive The camera component's new active flag value
+         */
+        void SetActive(bool p_isActive);
+
+        /**
          * \brief Recalculates the camera's view-projection matrix
          * \param p_view The camera's view matrix
          */
@@ -297,7 +309,9 @@ namespace SvRendering::Components
         float m_orthographicFar;
 
         float m_aspect;
-        bool  m_isDirty;
+
+        bool m_isActive;
+        bool m_isDirty;
 
         /**
          * \brief Recalculates the camera's projection matrix
