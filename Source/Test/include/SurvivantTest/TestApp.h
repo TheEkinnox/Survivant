@@ -1,4 +1,6 @@
 #pragma once
+#include "SurvivantRendering/Core/Renderer.h"
+
 #include <SurvivantApp/Core/IApp.h>
 #include <SurvivantApp/Windows/Window.h>
 
@@ -35,13 +37,13 @@ namespace SvTest
         LibMath::Vector2                                   m_moveInput, m_rotateInput;
         LibMath::Vector2I                                  m_windowSize;
 
+        std::unique_ptr<SvRendering::Core::Renderer>            m_renderer;
         std::unique_ptr<SvRendering::RHI::IShaderStorageBuffer> m_lightsSSBO;
 
         SvApp::Window::OnFrameBufferSize::ListenerId m_resizeListenerId;
 
         void SetupInput();
         void MakeScene();
-        void UpdateLightSSBO() const;
         void DrawScene() const;
 
         static void BindCamUBO(const LibMath::Matrix4& p_viewProj, const LibMath::Vector3& p_viewPos);

@@ -3,24 +3,16 @@
 #include "SurvivantTest/ResourceRegistrations.h"
 #include "SurvivantTest/SceneTest.h"
 
-#include <SurvivantCore/ECS/SceneView.h>
-#include <SurvivantCore/ECS/Components/Hierarchy.h>
 #include <SurvivantCore/Utility/FileSystem.h>
 #include <SurvivantCore/Utility/Timer.h>
 
 #include <SurvivantPhysics/PhysicsContext.h>
 
-#include <SurvivantRendering/Components/CameraComponent.h>
-#include <SurvivantRendering/Components/LightComponent.h>
-#include <SurvivantRendering/Components/ModelComponent.h>
-#include <SurvivantRendering/Core/Camera.h>
+#include <SurvivantRendering/Core/Renderer.h>
 #include <SurvivantRendering/RHI/IRenderAPI.h>
-#include <SurvivantRendering/RHI/IUniformBuffer.h>
 
 #include <SurvivantScripting/LuaContext.h>
 #include <SurvivantScripting/LuaScriptList.h>
-
-#include <Transform.h>
 
 using namespace LibMath;
 
@@ -31,6 +23,7 @@ using namespace SvCore::Events;
 using namespace SvCore::Resources;
 using namespace SvCore::Utility;
 
+using namespace SvRendering::Core;
 using namespace SvRendering::RHI;
 using namespace SvRendering::Enums;
 using namespace SvRendering::Resources;
@@ -88,7 +81,8 @@ namespace SvTest
 
         SetupInput();
 
-        m_lightsSSBO = IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, 0);
+        m_renderer   = std::make_unique<Renderer>();
+        m_lightsSSBO = Renderer::SetupLightSSBO(nullptr);
     }
 
     void TestApp::Run()
@@ -119,7 +113,6 @@ namespace SvTest
             luaContext.Update(deltaTime);
             physicsContext.Update(deltaTime);
 
-            IRenderAPI::GetCurrent().Clear(true, true, true);
             DrawScene();
 
             m_window->EndRender();
@@ -238,9 +231,7 @@ namespace SvTest
         LuaContext& luaContext = LuaContext::GetInstance();
         luaContext.Reload();
 
-        m_scene = ResourceManager::GetInstance().Load<Scene>(m_scene.GetPath());
-
-        UpdateLightSSBO();
+        m_scene = ResourceManager::GetInstance().Load<Scene>(TEST_SCENE_PATH);
 
         for (size_t i = 0; i < TEST_SCRIPTS_COUNT; ++i)
         {
@@ -253,129 +244,16 @@ namespace SvTest
         luaContext.Start();
     }
 
-    void TestApp::UpdateLightSSBO() const
-    {
-        SceneView<const LightComponent> view(*m_scene);
-        std::vector<Matrix4>            lightMatrices;
-
-        for (const auto entity : view)
-        {
-            const LightComponent& light = *view.Get<const LightComponent>(entity);
-
-            switch (light.m_type)
-            {
-            case ELightType::AMBIENT:
-                lightMatrices.emplace_back(light.m_ambient.GetMatrix());
-                break;
-            case ELightType::DIRECTIONAL:
-                lightMatrices.emplace_back(light.m_directional.GetMatrix());
-                break;
-            case ELightType::POINT:
-                lightMatrices.emplace_back(light.m_point.GetMatrix());
-                break;
-            case ELightType::SPOT:
-                lightMatrices.emplace_back(light.m_spot.GetMatrix());
-                break;
-            }
-        }
-
-        m_lightsSSBO->Bind();
-        m_lightsSSBO->SetData(lightMatrices.data(), lightMatrices.size());
-    }
-
     void TestApp::DrawScene() const
     {
-        SceneView<CameraComponent>                       cameras(*m_scene);
-        SceneView<const ModelComponent, const Transform> renderables(*m_scene);
+        Scene* scene = m_scene.Get();
+        Renderer::UpdateLightSSBO(scene, *m_lightsSSBO);
 
-        const float aspect = static_cast<float>(m_windowSize.m_x) / static_cast<float>(m_windowSize.m_y);
-
-        for (const auto camEntity : cameras)
-        {
-            CameraComponent& cam = *cameras.Get<CameraComponent>(camEntity);
-            cam.SetAspect(aspect);
-
-            if (const Transform* transform = m_scene->Get<const Transform>(camEntity))
-            {
-                cam.Recalculate(transform->getWorldMatrix().inverse());
-                BindCamUBO(cam->GetViewProjection(), transform->getWorldPosition());
-            }
-            else
-            {
-                cam.Recalculate(Matrix4(1.f));
-                BindCamUBO(cam->GetViewProjection(), Vector3::zero());
-            }
-
-            cam.Clear();
-            const Frustum camFrustum = cam->GetFrustum();
-
-            for (const auto modelEntity : renderables)
-            {
-                const auto [model, transform] = renderables.Get(modelEntity);
-                ASSERT(model->m_model && model->m_material);
-                DrawModel(*model->m_model, camFrustum, transform->getWorldMatrix(), *model->m_material);
-            }
-        }
-    }
-
-    void TestApp::BindCamUBO(const Matrix4& p_viewProj, const Vector3& p_viewPos)
-    {
-        static std::unique_ptr<IUniformBuffer> camBuffer = IUniformBuffer::Create(EAccessMode::DYNAMIC_DRAW, 0);
-
-        struct CameraUBO
-        {
-            Matrix4 m_viewProjection;
-            Vector3 m_viewPos;
+        Renderer::RenderInfo renderInfo{
+            .m_aspect = static_cast<float>(m_windowSize.m_x) / static_cast<float>(m_windowSize.m_y),
+            .m_scene = scene
         };
 
-        CameraUBO ubo
-        {
-            p_viewProj.transposed(),
-            p_viewPos
-        };
-
-        camBuffer->SetData(&ubo, 1);
-        camBuffer->Bind();
-    }
-
-    void TestApp::BindModelUBO(const Matrix4& p_modelMat)
-    {
-        static std::unique_ptr<IUniformBuffer> modelBuffer = IUniformBuffer::Create(EAccessMode::DYNAMIC_DRAW, 1);
-
-        struct ModelUBO
-        {
-            Matrix4 m_modelMat;
-            Matrix4 m_normalMat;
-        };
-
-        ModelUBO ubo
-        {
-            p_modelMat.transposed(),
-            p_modelMat.inverse()
-        };
-
-        modelBuffer->SetData(&ubo, 1);
-        modelBuffer->Bind();
-    }
-
-    void TestApp::DrawModel(
-        const Model& p_model, const Frustum& p_viewFrustum, const Matrix4& p_transform, const ::Material& p_material)
-    {
-        if (!p_viewFrustum.intersects(TransformBoundingBox(p_model.GetBoundingBox(), p_transform)))
-            return;
-
-        BindModelUBO(p_transform);
-
-        p_material.Bind();
-        p_material.GetShader().SetUniformMat4("sv_modelMat", p_transform);
-        p_material.GetShader().SetUniformMat4("sv_normalMat", p_transform.transposed().inverse());
-
-        for (size_t i = 0; i < p_model.GetMeshCount(); ++i)
-        {
-            const Mesh& mesh = p_model.GetMesh(i);
-
-            mesh.Bind();
-            IRenderAPI::GetCurrent().DrawElements(EPrimitiveType::TRIANGLES, mesh.GetIndexCount());
-        }
+        m_renderer->Render(renderInfo);
     }
 }
