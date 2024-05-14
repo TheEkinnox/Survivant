@@ -15,7 +15,7 @@ namespace SvRendering::Core
         Color m_color = Color::white;
 
         Light() = default;
-        Light(const Color& color);
+        Light(const Color& p_color);
 
         Light(const Light&) = default;
         Light(Light&&)      = default;
@@ -38,7 +38,7 @@ namespace SvRendering::Core
         LibMath::Vector3 m_direction;
 
         DirectionalLight() = default;
-        DirectionalLight(const Light& light, const LibMath::Vector3& direction);
+        DirectionalLight(const Light& p_light, const LibMath::Vector3& p_direction);
 
         DirectionalLight(const DirectionalLight&) = default;
         DirectionalLight(DirectionalLight&&)      = default;
@@ -64,8 +64,8 @@ namespace SvRendering::Core
         float m_quadratic = 0;
 
         Attenuation() = default;
-        explicit Attenuation(float range);
-        Attenuation(float constant, float linear, float quadratic);
+        explicit Attenuation(float p_range);
+        Attenuation(float p_constant, float p_linear, float p_quadratic);
     };
 
     struct PointLight final : Light
@@ -74,7 +74,7 @@ namespace SvRendering::Core
         Attenuation      m_attenuationData;
 
         PointLight() = default;
-        PointLight(const Light& light, const LibMath::Vector3& position, const Attenuation& attenuationData);
+        PointLight(const Light& p_light, const LibMath::Vector3& p_position, const Attenuation& p_attenuationData);
 
         PointLight(const PointLight&) = default;
         PointLight(PointLight&&)      = default;
@@ -109,8 +109,8 @@ namespace SvRendering::Core
         Cutoff      m_cutoff{ 0, 0 };
 
         SpotLight() = default;
-        SpotLight(const Light&       light, const LibMath::Vector3& position, const LibMath::Vector3& direction,
-                  const Attenuation& attenuation, const Cutoff&     cutoff);
+        SpotLight(const Light&       p_light, const LibMath::Vector3& p_position, const LibMath::Vector3& p_direction,
+                  const Attenuation& p_attenuation, const Cutoff&     p_cutoff);
 
         SpotLight(const SpotLight&) = default;
         SpotLight(SpotLight&&)      = default;

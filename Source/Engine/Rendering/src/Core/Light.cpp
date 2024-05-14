@@ -8,8 +8,8 @@ using namespace SvRendering::Enums;
 
 namespace SvRendering::Core
 {
-    Light::Light(const Color& color)
-        : m_color(color)
+    Light::Light(const Color& p_color)
+        : m_color(p_color)
     {
     }
 
@@ -27,8 +27,8 @@ namespace SvRendering::Core
         return lightMat;
     }
 
-    DirectionalLight::DirectionalLight(const Light& light, const Vector3& direction)
-        : Light(light), m_direction(direction)
+    DirectionalLight::DirectionalLight(const Light& p_light, const Vector3& p_direction)
+        : Light(p_light), m_direction(p_direction)
     {
     }
 
@@ -49,19 +49,18 @@ namespace SvRendering::Core
         return lightMat;
     }
 
-    Attenuation::Attenuation(const float range)
-        : Attenuation(1.f, 4.5f / range, 75.f / (range * range))
+    Attenuation::Attenuation(const float p_range)
+        : Attenuation(1.f, 4.5f / p_range, 75.f / (p_range * p_range))
     {
     }
 
-    Attenuation::Attenuation(const float constant, const float linear, const float quadratic)
-        : m_constant(constant), m_linear(linear), m_quadratic(quadratic)
+    Attenuation::Attenuation(const float p_constant, const float p_linear, const float p_quadratic)
+        : m_constant(p_constant), m_linear(p_linear), m_quadratic(p_quadratic)
     {
     }
 
-    PointLight::PointLight(const Light&           light, const Vector3& position,
-                           const Attenuation& attenuationData)
-        : Light(light), m_position(position), m_attenuationData(attenuationData)
+    PointLight::PointLight(const Light& p_light, const Vector3& p_position, const Attenuation& p_attenuationData)
+        : Light(p_light), m_position(p_position), m_attenuationData(p_attenuationData)
     {
     }
 
@@ -84,10 +83,10 @@ namespace SvRendering::Core
         return lightMat;
     }
 
-    SpotLight::SpotLight(const Light&           light, const Vector3&          position, const Vector3& direction,
-                         const Attenuation& attenuation, const Cutoff& cutoff)
-        : Light(light), m_position(position), m_direction(direction),
-        m_attenuationData(attenuation), m_cutoff(cutoff)
+    SpotLight::SpotLight(const Light&       p_light, const Vector3&      p_position, const Vector3& p_direction,
+                         const Attenuation& p_attenuation, const Cutoff& p_cutoff)
+        : Light(p_light), m_position(p_position), m_direction(p_direction),
+        m_attenuationData(p_attenuation), m_cutoff(p_cutoff)
     {
     }
 

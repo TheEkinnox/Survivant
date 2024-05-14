@@ -136,9 +136,9 @@ namespace SvCore::ECS
 {
     template <>
     bool ComponentRegistry::ToJson(
-        const SvRendering::Components::LightComponent&, SvCore::Serialization::JsonWriter&, const EntitiesMap&);
+        const SvRendering::Components::LightComponent&, Serialization::JsonWriter&, const EntitiesMap&);
 
     template <>
     bool ComponentRegistry::FromJson(
-        SvRendering::Components::LightComponent&, const SvCore::Serialization::JsonValue&, Scene*);
+        SvRendering::Components::LightComponent&, const Serialization::JsonValue&, Scene*);
 }
