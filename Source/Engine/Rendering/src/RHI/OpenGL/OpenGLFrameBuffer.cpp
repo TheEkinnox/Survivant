@@ -62,7 +62,7 @@ namespace SvRendering::RHI
 
     void OpenGLFrameBuffer::BindDefault()
     {
-        glBindBuffer(GL_FRAMEBUFFER, 0);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
     void OpenGLFrameBuffer::Bind()
