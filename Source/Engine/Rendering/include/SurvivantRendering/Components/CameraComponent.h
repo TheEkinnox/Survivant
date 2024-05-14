@@ -154,6 +154,15 @@ namespace SvRendering::Components
 
         /**
          * \brief Breaks the buffer clearing mask into separate values
+         * \param p_mask The input clear mask
+         * \param p_color The output clear color flag
+         * \param p_depth The output clear depth flag
+         * \param p_stencil The output clear stencil flag
+         */
+        static void BreakClearMask(uint8_t p_mask, bool& p_color, bool& p_depth, bool& p_stencil);
+
+        /**
+         * \brief Breaks the buffer clearing mask into separate values
          * \param p_clearColor The output target for whether the color buffer should be cleared
          * \param p_clearDepth The output target for whether the depth buffer should be cleared
          * \param p_clearStencil The output target for whether the stencil buffer should be cleared

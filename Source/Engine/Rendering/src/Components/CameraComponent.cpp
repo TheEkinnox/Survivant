@@ -231,11 +231,16 @@ namespace SvRendering::Components
         return *this;
     }
 
+    void CameraComponent::BreakClearMask(const uint8_t p_mask, bool& p_color, bool& p_depth, bool& p_stencil)
+    {
+        p_color   = p_mask & SV_CLEAR_COLOR_BIT;
+        p_depth   = p_mask & SV_CLEAR_DEPTH_BIT;
+        p_stencil = p_mask & SV_CLEAR_STENCIL_BIT;
+    }
+
     void CameraComponent::GetClearMask(bool& p_clearColor, bool& p_clearDepth, bool& p_clearStencil) const
     {
-        p_clearColor   = m_clearMask & SV_CLEAR_COLOR_BIT;
-        p_clearDepth   = m_clearMask & SV_CLEAR_DEPTH_BIT;
-        p_clearStencil = m_clearMask & SV_CLEAR_STENCIL_BIT;
+        BreakClearMask(m_clearMask, p_clearColor, p_clearDepth, p_clearStencil);
     }
 
     CameraComponent& CameraComponent::SetClearMask(bool p_clearColor, bool p_clearDepth, bool p_clearStencil)
