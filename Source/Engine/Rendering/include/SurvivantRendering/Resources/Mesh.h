@@ -12,11 +12,19 @@ namespace SvRendering::Resources
     {
     public:
         /**
-         * \brief Creates a mesh with the given vertices and indices
+         * \brief Creates a mesh with the given vertices and indices and calculates its bounding box
          * \param p_vertices The mesh's vertices
          * \param p_indices The mesh's indices
          */
         Mesh(std::vector<Geometry::Vertex> p_vertices, std::vector<uint32_t> p_indices);
+
+        /**
+         * \brief Creates a mesh with the given vertices, indices and bounding box
+         * \param p_vertices The mesh's vertices
+         * \param p_indices The mesh's indices
+         * \param p_boundingBox The mesh's bounding box
+         */
+        Mesh(std::vector<Geometry::Vertex> p_vertices, std::vector<uint32_t> p_indices, LibMath::BoundingBox p_boundingBox);
 
         /**
          * \brief Creates a copy of the given mesh
