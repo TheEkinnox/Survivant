@@ -18,6 +18,7 @@ add_subdirectory(Dependencies)
 
 set(CMAKE_FOLDER ${PROJECT_NAME})
 add_subdirectory(Resources)
+add_subdirectory(LuaAPI)
 add_subdirectory(Source)
 
 if (MSVC AND DEFINED STARTUP_PROJECT)
