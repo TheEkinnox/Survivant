@@ -11,7 +11,7 @@ namespace SvPhysics
     public:
         float m_staticFriction  = .6f;
         float m_dynamicFriction = .6f;
-        float m_restitution     = 1.f;
+        float m_restitution     = 0.f;
 
         /**
          * \brief Creates a default physics material
