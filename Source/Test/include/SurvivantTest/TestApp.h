@@ -30,9 +30,9 @@ namespace SvTest
         void Run() override;
 
     private:
-        std::unique_ptr<SvApp::Window> m_window;
-        SvCore::ECS::Scene             m_scene;
-        LibMath::Vector2               m_moveInput, m_rotateInput;
+        std::unique_ptr<SvApp::Window>                     m_window;
+        SvCore::Resources::ResourceRef<SvCore::ECS::Scene> m_scene;
+        LibMath::Vector2                                   m_moveInput, m_rotateInput;
         LibMath::Vector2I                                  m_windowSize;
 
         std::unique_ptr<SvRendering::RHI::IShaderStorageBuffer> m_lightsSSBO;
@@ -42,7 +42,7 @@ namespace SvTest
         void SetupInput();
         void MakeScene();
         void UpdateLightSSBO() const;
-        void DrawScene();
+        void DrawScene() const;
 
         static void BindCamUBO(const LibMath::Matrix4& p_viewProj, const LibMath::Vector3& p_viewPos);
         static void BindModelUBO(const LibMath::Matrix4& p_modelMat);

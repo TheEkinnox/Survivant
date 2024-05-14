@@ -12,10 +12,7 @@
 #include <SurvivantRendering/Components/LightComponent.h>
 #include <SurvivantRendering/Components/ModelComponent.h>
 #include <SurvivantRendering/Core/Camera.h>
-#include <SurvivantRendering/Enums/ETextureFilter.h>
-#include <SurvivantRendering/Enums/ETextureWrapMode.h>
 #include <SurvivantRendering/RHI/IRenderAPI.h>
-#include <SurvivantRendering/RHI/ITexture.h>
 #include <SurvivantRendering/RHI/IUniformBuffer.h>
 
 #include <SurvivantScripting/LuaContext.h>
