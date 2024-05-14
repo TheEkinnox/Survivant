@@ -5,7 +5,7 @@
 namespace SvCore::Utility
 {
     Timer::Timer(const float p_timeScale)
-        : m_timeScale(p_timeScale)
+        : m_timeScale(p_timeScale), m_nextTimeScale(p_timeScale)
     {
     }
 
@@ -17,6 +17,8 @@ namespace SvCore::Utility
 
     void Timer::Tick()
     {
+        m_timeScale = m_nextTimeScale;
+
         if (m_isFirstUpdate)
         {
             m_currentTime = clock::now();
@@ -41,6 +43,7 @@ namespace SvCore::Utility
     {
         m_isFirstUpdate = true;
         m_timeScale     = p_timeScale;
+        m_nextTimeScale = m_timeScale;
     }
 
     float Timer::GetTime() const
@@ -70,7 +73,7 @@ namespace SvCore::Utility
 
     void Timer::SetTimeScale(const float p_timeScale)
     {
-        m_timeScale = p_timeScale;
+        m_nextTimeScale = p_timeScale;
     }
 
     uint64_t Timer::GetFrameCount() const
