@@ -83,8 +83,11 @@ namespace SvScripting
     {
         LuaContext& context = LuaContext::GetInstance();
 
-        for (const auto& script : m_scripts | std::views::keys)
+        for (auto& [script, table] : m_scripts)
+        {
             context.RemoveScript(script, m_owner);
+            table.abandon();
+        }
 
         m_scripts.clear();
     }
