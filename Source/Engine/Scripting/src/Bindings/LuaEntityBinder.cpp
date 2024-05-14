@@ -213,6 +213,17 @@ namespace SvScripting::Bindings
 
                 return script->Add(p_name);
             },
+            "RequireScript", [](EntityHandle& p_self, const std::string& p_name) -> LuaScriptHandle
+            {
+                LuaScriptList* scriptList = p_self.Get<LuaScriptList>();
+
+                std::unordered_map<std::string, sol::table> scripts;
+
+                if (!scriptList)
+                    scriptList = &p_self.Make<LuaScriptList>();
+
+                return scriptList->Contains(p_name) ? scriptList->Get(p_name) : scriptList->Add(p_name);
+            },
             "RemoveScript", [](EntityHandle& p_self, const std::string& p_name)
             {
                 if (LuaScriptList* script = p_self.Get<LuaScriptList>())
