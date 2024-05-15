@@ -11,7 +11,7 @@
 
 namespace SvEditor::PanelItems
 {
-	class PanelComponent : Interfaces::IPanelable
+	class PanelComponent : public Interfaces::IPanelable
 	{
 	public:
 		using Items = std::vector<std::shared_ptr<Interfaces::IPanelable>>;

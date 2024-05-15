@@ -63,7 +63,7 @@ namespace SvEditor::PanelItems
 	inline void PanelResourceSelector<T>::DisplayAndUpdatePanel()
 	{
 		static auto flag = ImGuiInputTextFlags_ReadOnly;
-		
+
 		ImGui::Text(m_name.c_str());
 		ImGui::SameLine();
 
@@ -94,6 +94,9 @@ namespace SvEditor::PanelItems
 			m_allResources->m_items.emplace_back(std::make_unique<MenuButton>(MenuButton(
 				name, [this, resource](char) mutable {
 					this->GetRef() = resource;
+
+				    if (this->m_callback)
+				        this->m_callback(resource);
 				}
 			)));
 		}

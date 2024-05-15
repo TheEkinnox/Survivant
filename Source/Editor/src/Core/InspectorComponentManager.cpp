@@ -10,7 +10,6 @@
 #include "SurvivantRendering/Components/LightComponent.h"
 #include "SurvivantRendering/Components/ModelComponent.h"
 #include "SurvivantRendering/Resources/Material.h"
-#include "SurvivantRendering/Resources/Mesh.h"
 #include "SurvivantRendering/Resources/Model.h"
 #include "SurvivantRendering/RHI/IShader.h"
 #include "SurvivantRendering/RHI/ITexture.h"
@@ -98,7 +97,7 @@ namespace SvEditor::Core
 		PanelableResource panel = nullptr;
 
 		if (info.Has(CREATE_RESOURCE))
-			panel = info.Call<PanelableResource>(CREATE_COMPONENT, (void*)&p_resource).value_or(nullptr);
+			panel = info.Call<PanelableResource>(CREATE_RESOURCE, (void*)&p_resource).value_or(nullptr);
 
 		return panel;
 	}
@@ -161,14 +160,14 @@ namespace SvEditor::Core
 					PanelUInt32Input::GetCopyFunc([entity = p_entity]() mutable -> uint32_t { return
 						static_cast<uint32_t>(entity.Get<HierarchyComponent>()->GetParent().GetIndex()); }),
 					PanelUInt32Input::Callback([entity = p_entity](const uint32_t& p_index) mutable {
-						entity.SetParent(entity.GetScene()->Find(static_cast<Entity::Index>(p_index)));  
+						entity.SetParent(entity.GetScene()->Find(static_cast<Entity::Index>(p_index)));
 						//HierarchyPanel::s_isDirty = true;
 						})
 				)),
 				std::make_shared<PanelButton>(PanelButton(
 					"Remove Parent",
 					PanelButton::OnButtonPressEvent::EventDelegate([entity = p_entity]() mutable {
-						entity.SetParent(EntityHandle()); 
+						entity.SetParent(EntityHandle());
 						//HierarchyPanel::s_isDirty = true;
 						})
 					))
@@ -229,7 +228,7 @@ namespace SvEditor::Core
 		auto component = PanelComponent(ComponentRegistry::GetInstance().GetRegisteredTypeName<CameraComponent>(),
 			PanelComponent::Items({
 				std::make_shared<PanelMultipleSelection>(PanelMultipleSelection(
-					"Clear Mask   ", { "Color", "Depth", "Stencil" }, 
+					"Clear Mask   ", { "Color", "Depth", "Stencil" },
 					[entity = p_entity]() -> int {
 							return static_cast<int>(entity.Get<CameraComponent>()->GetClearMask());
 					},
@@ -241,7 +240,7 @@ namespace SvEditor::Core
 					"Color        ",
 					[entity = p_entity]() mutable -> Vector4 { return static_cast<Vector4>(
 						entity.Get<CameraComponent>()->GetClearColor()); },
-					[entity = p_entity](const Vector4& p_value) mutable { 
+					[entity = p_entity](const Vector4& p_value) mutable {
 						entity.Get<CameraComponent>()->SetClearColor(p_value); }
 				)),
 				std::make_shared<PanelUInt32Input>(PanelUInt32Input(
@@ -414,15 +413,14 @@ namespace SvEditor::Core
 
 		auto component = PanelResourceDisplay(p_resource, "Ma",
 			PanelResourceDisplay::Items({
-					std::make_shared<PanelResourceSelector<IShader>>(PanelResourceSelector<IShader>(
+					std::make_shared<PanelResourceSelector<IShader>>(
 						"Material ", [resource]() mutable -> ResourceRef<IShader>&{
-							static ResourceRef<IShader> ref;
-							*ref = resource->GetShader();
+							static ResourceRef<IShader> ref = resource->GetShaderRef();
 							return ref; },
 						[resource](PanelResourceSelector<IShader>::CallbackParams p_params) {
 							resource->SetShader(p_params);
 						}
-					))
+					)
 				}));
 
 		return std::make_shared<PanelResourceDisplay>(std::move(component));

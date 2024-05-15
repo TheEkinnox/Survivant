@@ -14,8 +14,8 @@ namespace SvEditor::PanelItems
 	{
 	public:
 		using Value =				T;
-		using GetRefFunc =			std::function<T&()>;	
-		using GetCopyFunc =			std::function<T()>;	
+		using GetRefFunc =			std::function<T&()>;
+		using GetCopyFunc =			std::function<T()>;
 		using CallbackParams =		std::conditional_t<SvCore::Utility::IsEmpty<Params...>,
 			const T&, const std::tuple<Params...>&>;
 		//using CopyValue = std::conditional_t<SvCore::Utility::IsEmpty<Params...>,
