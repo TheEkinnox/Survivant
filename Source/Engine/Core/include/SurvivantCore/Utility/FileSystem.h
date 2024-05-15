@@ -38,6 +38,13 @@ namespace SvCore::Utility
     std::string AppendPath(const std::string& p_root, const std::string& p_path);
 
     /**
+     * \brief Checks whether the given path is an absolute path or not
+     * \param p_path The path to check
+     * \return True if the path is absolute, false otherwise
+     */
+    bool IsAbsolutePath(const std::string& p_path);
+
+    /**
      * \brief Converts the given path to an absolute path
      * \param p_path The path to convert to an absolute path
      * \return The absolute path

@@ -201,7 +201,8 @@ namespace SvCore::Resources
         if (p_path.empty())
             return {};
 
-        p_path = Utility::GetAbsolutePath(GetFullPath(p_path));
+        if (!Utility::IsAbsolutePath(p_path))
+            p_path = Utility::GetAbsolutePath(GetFullPath(p_path));
 
         size_t bestMatch = 0;
 
