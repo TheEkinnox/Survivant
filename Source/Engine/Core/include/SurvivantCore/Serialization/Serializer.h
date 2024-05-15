@@ -2,15 +2,17 @@
 #include <string>
 
 #include <rapidjson/document.h>
-#include <rapidjson/writer.h>
 #include <rapidjson/ostreamwrapper.h>
+#include <rapidjson/prettywriter.h>
 
 namespace SvCore::Serialization
 {
     using JsonStringBuffer = rapidjson::StringBuffer;
     using JsonWriter = rapidjson::Writer<JsonStringBuffer>;
+    using JsonPrettyWriter = rapidjson::PrettyWriter<JsonStringBuffer>;
     using JsonOStream = rapidjson::OStreamWrapper;
     using JsonFileWriter = rapidjson::Writer<JsonOStream>;
+    using JsonPrettyFileWriter = rapidjson::PrettyWriter<JsonOStream>;
     using JsonDocument = rapidjson::Document;
     using JsonValue = rapidjson::Value;
 
