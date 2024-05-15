@@ -6,9 +6,12 @@ namespace SvEditor::PanelItems
     class PanelSeparator final : public Interfaces::IPanelable
     {
     public:
-        PanelSeparator() = default;
+        PanelSeparator(std::string p_text = {});
         ~PanelSeparator() override = default;
 
         void DisplayAndUpdatePanel() override;
+
+    private:
+        std::string m_text;
     };
 }
