@@ -68,7 +68,8 @@ namespace SvApp::Core
 		Vec2&		CameraMoveInput();
 		Vec2&		CameraRotateInput();
 		void		UpdateCameraInput();
-		void		Resize(const Vec2& p_size);
+		void		Resize(const LibMath::TVector2<int>& p_size);
+		void		ResetCameraAspect();
 
 		static void DefaultFBGameRendering(SvCore::ECS::EntityHandle& p_cameraEntity);
 

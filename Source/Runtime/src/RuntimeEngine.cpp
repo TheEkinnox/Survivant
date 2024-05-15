@@ -53,7 +53,6 @@ namespace SvRuntime
 		world->m_owningGameInstance = nullptr;
 
 		world->m_lightsSSBO = IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, 0);
-		world->m_viewport = { 0, 0 };
 
 		
 		return world;
@@ -100,13 +99,10 @@ namespace SvRuntime
 
 	void RuntimeEngine::SetViewport(const LibMath::TVector2<int>& p_size)
 	{
-		m_world->m_viewport = p_size;
-
 		IRenderAPI::GetCurrent().SetViewport( { 0, 0 }, p_size);
 
 		//camera
 		auto cam = m_camera.Get<CameraComponent>();
-
 		if (cam)
 			cam->SetAspect(static_cast<float>(p_size.m_x) / static_cast<float>(p_size.m_y));
 	}

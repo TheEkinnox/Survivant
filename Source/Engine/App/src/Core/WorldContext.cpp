@@ -94,11 +94,13 @@ namespace SvApp::Core
     void WorldContext::SetCamera(const SvRendering::Components::CameraComponent& p_cam, const LibMath::Transform& p_trans)
     {
         m_renderingContext->m_mainCamera.SetCamera(p_cam, p_trans);
+        m_renderingContext->ResetCameraAspect();
     }
 
     void WorldContext::SetCamera(const SvCore::ECS::EntityHandle& p_camera)
     {
         m_renderingContext->m_mainCamera.SetEntity(p_camera);
+        m_renderingContext->ResetCameraAspect();
     }
 
     void WorldContext::SetInputs()

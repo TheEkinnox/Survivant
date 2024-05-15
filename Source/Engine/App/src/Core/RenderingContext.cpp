@@ -145,16 +145,21 @@ namespace SvApp::Core
         m_mainCamera.UpdateInput();
     }
 
-    void RenderingContext::Resize(const Vec2& p_size)
+    void RenderingContext::Resize(const LibMath::TVector2<int>& p_size)
     {        
         //textures
         m_viewport = p_size;
         for (size_t i = 0; i < m_frameTextures.size(); i++)
             *m_frameTextures[i] = *CreateTexture(m_textureTypeBuffer[i]);
+        
+        ResetCameraAspect();
+    }
 
-        //camera
+    void RenderingContext::ResetCameraAspect()
+    {
         auto [cam, trans] = m_mainCamera.GetCamInfo();
-        cam->SetAspect(static_cast<float>(m_viewport.m_x) / static_cast<float>(m_viewport.m_y));
+        if (cam)
+            cam->SetAspect(static_cast<float>(m_viewport.m_x) / static_cast<float>(m_viewport.m_y));
     }
 
     void RenderingContext::DefaultFBGameRendering(EntityHandle& p_cameraEntity)

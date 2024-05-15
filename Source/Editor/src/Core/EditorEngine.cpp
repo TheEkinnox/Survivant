@@ -232,7 +232,6 @@ namespace SvEditor::Core
 		world->m_owningGameInstance = nullptr;
 
 		world->m_lightsSSBO = IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, 0);
-		world->m_viewport = { 800, 600 };
 		world->CurrentScene() = p_inScene;
 		CameraComponent cam;
 		cam.SetPerspective(90_deg, .01f, 14.f);
