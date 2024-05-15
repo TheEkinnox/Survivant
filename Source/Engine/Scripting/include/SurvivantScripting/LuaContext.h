@@ -159,9 +159,10 @@ namespace SvScripting
         /**
          * \brief Gets the given module's path
          * \param p_module The target module
+         * \param p_fromGetName Whether the function was called from GetModuleName
          * \return The module's path
          */
-        static const std::string& GetModulePath(std::string p_module);
+        static std::string GetModulePath(std::string p_module, bool p_fromGetName = false);
 
     private:
         using ListenerId = SvCore::Events::Event<>::ListenerId;

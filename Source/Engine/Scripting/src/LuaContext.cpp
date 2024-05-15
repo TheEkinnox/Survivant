@@ -251,15 +251,16 @@ namespace SvScripting
 
         const std::string base = p_module;
 
+        p_module = ResourceManager::GetInstance().GetRelativePath(GetModulePath(p_module, true));
+
         for (const auto& extension : EXTENSIONS)
         {
             if (p_module.ends_with(extension))
+            {
                 p_module = p_module.substr(0, p_module.size() - strlen(extension));
+                break;
+            }
         }
-
-        ReplaceInPlace(p_module, ".", "/");
-
-        p_module = ResourceManager::GetInstance().GetRelativePath(p_module);
 
         ReplaceInPlace(p_module, "/", ".");
         ReplaceInPlace(p_module, "\\", ".");
@@ -267,7 +268,7 @@ namespace SvScripting
         return (s_moduleNames[base] = p_module);
     }
 
-    const std::string& LuaContext::GetModulePath(std::string p_module)
+    std::string LuaContext::GetModulePath(std::string p_module, const bool p_fromGetName)
     {
         static std::string empty;
 
@@ -276,21 +277,32 @@ namespace SvScripting
 
         const auto it = s_modulePaths.find(p_module);
 
-        if (it != s_modulePaths.end())
-            return it->second;
+        const ResourceManager& resourceManager = ResourceManager::GetInstance();
+
+        if (it != s_modulePaths.end() && PathExists(it->second))
+            return resourceManager.GetFullPath(it->second);
 
         const std::string base = p_module;
 
-        p_module = Replace(GetModuleName(p_module), ".", "/");
+        p_module = resourceManager.GetFullPath(p_module);
 
-        const ResourceManager& resourceManager = ResourceManager::GetInstance();
+        if (PathExists(p_module))
+        {
+            s_modulePaths[base] = resourceManager.GetRelativePath(p_module);
+            return p_module;
+        }
+
+        p_module = Replace(p_fromGetName ? p_module : GetModuleName(p_module), ".", "/");
 
         for (const auto& extension : EXTENSIONS)
         {
             std::string path(resourceManager.GetFullPath(p_module + extension));
 
             if (PathExists(path))
-                return (s_modulePaths[base] = path);
+            {
+                s_modulePaths[base] = resourceManager.GetRelativePath(path);
+                return path;
+            }
         }
 
         return empty;
