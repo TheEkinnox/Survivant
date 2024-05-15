@@ -49,6 +49,11 @@ namespace SvCore::Utility
         return std::filesystem::path(p_root).append(p_path).make_preferred().string();
     }
 
+    bool IsAbsolutePath(const std::string& p_path)
+    {
+        return std::filesystem::path(p_path).is_absolute();
+    }
+
     std::string GetAbsolutePath(const std::string& p_path)
     {
         return std::filesystem::absolute(p_path).string();
