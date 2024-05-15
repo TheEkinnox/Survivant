@@ -25,7 +25,7 @@ namespace SvRendering::Resources
     bool Material::Save(const std::string& p_fileName)
     {
         JsonStringBuffer buffer;
-        JsonWriter              writer(buffer);
+        JsonWriter       writer(buffer);
 
         if (!ToJson(writer) || !ASSUME(writer.IsComplete(), "Failed to save material - Generated json is incomplete"))
             return false;
@@ -91,6 +91,11 @@ namespace SvRendering::Resources
     {
         ASSERT(m_shader, "Missing material shader");
         return *m_shader;
+    }
+
+    ResourceRef<IShader> Material::GetShaderRef() const
+    {
+        return m_shader;
     }
 
     void Material::SetShader(const ResourceRef<IShader>& p_shader)
