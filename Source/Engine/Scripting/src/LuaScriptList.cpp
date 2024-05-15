@@ -92,6 +92,11 @@ namespace SvScripting
         m_scripts.clear();
     }
 
+    size_t LuaScriptList::size() const
+    {
+        return m_scripts.size();
+    }
+
     sol::optional<sol::object> LuaObjectFromJson(lua_State* p_luaState, const JsonValue& p_json, Scene* p_scene)
     {
         if (!CHECK(p_luaState, "Unable to deserialize lua object - No lua state"))
@@ -309,6 +314,9 @@ namespace SvCore::ECS
             const sol::type valType = value.get_type();
 
             if (valType == sol::type::function || valType == sol::type::thread)
+                continue;
+
+            if (key.is<std::string>() && LuaScriptList::s_ignoredFields.contains(key.as<const std::string&>()))
                 continue;
 
             p_writer.StartObject();
