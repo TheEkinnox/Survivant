@@ -39,7 +39,7 @@ namespace SvApp::Core
 		static inline IEngine* s_engine = nullptr;
 
 	protected:
-		static inline std::string DEFAULT_SCENE_PATH = "assets/scenes/DefaultScene.scn";
+		static inline std::string DEFAULT_SCENE_PATH = "assets/scenes/test.scn";
 
 		/// <summary>
 		/// Changes current level of given world

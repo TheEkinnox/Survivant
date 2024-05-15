@@ -14,7 +14,7 @@
 #include "SurvivantRendering/Resources/Model.h"
 #include "SurvivantRendering/RHI/IShader.h"
 #include "SurvivantRendering/RHI/ITexture.h"
-#include "SurvivantScripting/LuaScript.h"
+#include "SurvivantScripting/LuaScriptList.h"
 
 #include "SurvivantEditor/Panels/HierarchyPanel.h"
 #include "SurvivantEditor/PanelItems/PanelButton.h"
@@ -62,6 +62,10 @@ namespace SvEditor::Core
 		CHECK(AddComponentToPanelable<LightComponent>(&AddComponentLight, "Light"),					"Couldn't init component type : Light");
 		CHECK(AddComponentToPanelable<ModelComponent>(&AddComponentModel, "Model"),					"Couldn't init component type : Model");
 		CHECK(AddComponentToPanelable<CameraComponent>(&AddComponentCamera, "Camera"),				"Couldn't init component type : Camera");
+
+		CHECK(AddComponentToPanelable<LuaScriptList>(&AddComponentTransform, "ScriptList"),				"Couldn't init component type : ScriptList");
+	
+		
 	}
 
 	InspectorItemManager::PanelableEntity InspectorItemManager::GetPanelableEntity(

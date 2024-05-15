@@ -1,1 +1,0 @@
-{"entities":1,"components":[{"type":"Model","data":[{"owner":0,"data":{"model":{"path":"assets/models/Sting-Sword-lowpoly.obj"},"material":{"path":"assets/materials/unlitYellow.mat"}}}]},{"type":"Tag","data":[{"owner":0,"data":"Test"}]},{"type":"Transform","data":[{"owner":0,"data":{"position":"{0,0,0}","rotation":"{0,0,0,1}","scale":"{1,1,1}"}}]}]}

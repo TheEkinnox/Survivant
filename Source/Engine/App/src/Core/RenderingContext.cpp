@@ -188,19 +188,6 @@ namespace SvApp::Core
             DrawMainCameraScene(*p_cameraEntity.GetScene(), *camInfo.m_cam, *camInfo.m_trans);
     }
 
-    void RenderingContext::IdRender(Scene& p_scene)
-    {
-        using namespace ToRemove;
-
-        auto camInfo = m_mainCamera.GetCamInfo();
-        if (!(camInfo.first && camInfo.second))
-            return;
-
-        IRenderAPI::GetCurrent().Clear(true, true, true);
-
-        DrawMainCameraScene(p_scene, *camInfo.first, *camInfo.second, true);
-    }
-
     void RenderingContext::AddColorRenderPass()
     {
         std::shared_ptr<ITexture> color = m_frameTextures.emplace_back(CreateTexture(ETextureType::COLOR));
