@@ -118,7 +118,7 @@ local function TestVectors()
 end
 
 function MathTest:OnInit()
-    if MATH_TEST then
+    if MATH_TEST and MATH_TEST ~= self then
         Debug.LogWarning("Math test already exists in E" .. MATH_TEST.owner .. " - Removing from E" .. self.owner)
         self.owner:RemoveScript("scripts.tests.math")
         return

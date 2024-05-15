@@ -8,7 +8,7 @@ local mouse_up_time = 0
 local mouse_up_frames = 0
 
 function InputTest:OnStart()
-    if INPUT_TEST then
+    if INPUT_TEST and INPUT_TEST ~= self then
         Debug.LogWarning("Input test already exists in E" .. INPUT_TEST.owner .. " - Removing from E" .. self.owner)
         self.owner:RemoveScript("scripts.tests.input")
         return
