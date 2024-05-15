@@ -1,7 +1,7 @@
 //BuildManager.h
 #pragma once
 
-#include "BuildConfig.h"
+#include <SurvivantApp/Core/BuildConfig.h>
 #include <SurvivantCore/Resources/ResourceRef.h>
 
 #include <string>
@@ -16,8 +16,8 @@ namespace SvEditor::RuntimeBuild
 
 		static BuildManager& GetInstance();
 
-		std::string		CreateBuild(const std::string& p_buildName, BuildConfig p_setup);
-		std::string		CreateAndRunBuild(const std::string& p_buildName, BuildConfig p_setup);
+		std::string		CreateBuild(const std::string& p_buildName, SvApp::Core::BuildConfig p_setup);
+		std::string		CreateAndRunBuild(const std::string& p_buildName, SvApp::Core::BuildConfig p_setup);
 		void			RunBuild(std::string p_buildFilePath);
 
 	private:

@@ -29,14 +29,14 @@ namespace SvEditor::Core
 		//setup events
 		SV_EVENT_MANAGER().AddListenner<OnCreateBuildGame>(OnCreateBuildGame::EventDelegate(
 			[](	const std::string& p_buildFileName,
-				const SvEditor::RuntimeBuild::BuildConfig& p_buildInfo)
+				const SvApp::Core::BuildConfig& p_buildInfo)
 			{ 
 				BuildManager::GetInstance().CreateBuild(p_buildFileName, p_buildInfo); 
 			}));
 
 		SV_EVENT_MANAGER().AddListenner<OnCreateBuildAndRun>(OnCreateBuildAndRun::EventDelegate(
 			[](	const std::string& p_buildFileName,
-				const SvEditor::RuntimeBuild::BuildConfig& p_buildInfo)
+				const SvApp::Core::BuildConfig& p_buildInfo)
 			{ 
 				BuildManager::GetInstance().CreateAndRunBuild(p_buildFileName, p_buildInfo);
 			}));

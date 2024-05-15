@@ -1,12 +1,12 @@
 //BuildConfig.cpp
-#include "SurvivantEditor/RuntimeBuild/BuildConfig.h"
+#include "SurvivantApp/Core/BuildConfig.h"
 
 #include <SurvivantCore/Debug/Assertion.h>
 
 using namespace SvCore::Resources;
 using namespace SvCore::Serialization;
 
-namespace SvEditor::RuntimeBuild
+namespace SvApp::Core
 {
 	BuildConfig::BuildConfig(const SvCore::Resources::ResourceRef<SvCore::ECS::Scene>& p_scenes)
 	{

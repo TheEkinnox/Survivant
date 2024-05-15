@@ -37,7 +37,7 @@ namespace SvEditor::RuntimeBuild
         return s_instance;
     }
 
-    std::string BuildManager::CreateBuild(const std::string& p_buildName, BuildConfig p_setup)
+    std::string BuildManager::CreateBuild(const std::string& p_buildName, SvApp::Core::BuildConfig p_setup)
     {
         using namespace SvCore::Utility;
         namespace fs = std::filesystem;
@@ -91,7 +91,7 @@ namespace SvEditor::RuntimeBuild
         return buildFilePath;
     }
 
-    std::string BuildManager::CreateAndRunBuild(const std::string& p_buildName, BuildConfig p_setup)
+    std::string BuildManager::CreateAndRunBuild(const std::string& p_buildName, SvApp::Core::BuildConfig p_setup)
     {
         auto path = CreateBuild(p_buildName, p_setup);
 

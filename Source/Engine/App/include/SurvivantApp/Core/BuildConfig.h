@@ -5,7 +5,7 @@
 #include <SurvivantCore/Resources/ResourceRef.h>
 #include <SurvivantCore/ECS/Scene.h>
 
-namespace SvEditor::RuntimeBuild
+namespace SvApp::Core
 {
 	class BuildConfig : public SvCore::Resources::IResource
 	{

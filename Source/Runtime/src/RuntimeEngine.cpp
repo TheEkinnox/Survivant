@@ -62,7 +62,7 @@ namespace SvRuntime
 
 	WorldContext::SceneRef RuntimeEngine::GetStartScene()
 	{
-		ASSERT(false, "GetStartScene not implemented");
+		
 		return WorldContext::SceneRef();
 	}
 
