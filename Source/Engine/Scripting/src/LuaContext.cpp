@@ -101,12 +101,12 @@ namespace SvScripting
             return false;
 
         if (!CHECK(p_handle.m_script, "Attempted to register unloaded script \"%s\"", p_handle.m_script.GetPath().c_str()))
-            return (m_isValid = false);
+            return false;
 
         const std::string_view source = p_handle.m_script->GetSource();
 
         if (source.empty())
-            return (m_isValid = false);
+            return false;
 
         const auto result = m_state->safe_script(source, &sol::script_pass_on_error, p_handle.m_script.GetPath());
 
@@ -114,12 +114,12 @@ namespace SvScripting
         {
             [[maybe_unused]] const sol::error err = result;
             CHECK(false, "Failed to register script \"%s\" - %s", p_handle.m_script.GetPath().c_str(), err.what());
-            return (m_isValid = false);
+            return false;
         }
 
         if (!CHECK(result.return_count() == 1 && result[0].is<sol::table>(),
                 "Failed to register script \"%s\" - Invalid return", p_handle.m_script.GetPath().c_str()))
-            return (m_isValid = false);
+            return false;
 
         sol::table resultTable = result[0].as<sol::table>();
 
