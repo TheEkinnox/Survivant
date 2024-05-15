@@ -3,10 +3,9 @@
 
 #include "SurvivantCore/Debug/Assertion.h"
 #include "SurvivantRuntime/RuntimeWindow.h"
+#include "SurvivantApp/Core/BuildConfig.h"
 
 #include "SurvivantApp/Core/TempDefaultScene.h"
-
-
 
 namespace SvRuntime
 {
@@ -62,8 +61,15 @@ namespace SvRuntime
 
 	WorldContext::SceneRef RuntimeEngine::GetStartScene()
 	{
-		
-		return WorldContext::SceneRef();
+		using namespace SvApp::Core;
+		static std::string configFilePath = "buildConfig.txt";
+
+		auto& rm = ResourceManager::GetInstance();
+
+		auto config = rm.Load<BuildConfig>(configFilePath);
+		auto scene = rm.Load<Scene>(config->m_scene.GetPath());
+
+		return scene;
 	}
 
 	void RuntimeEngine::UpdateGame()
@@ -74,7 +80,7 @@ namespace SvRuntime
 	bool RuntimeEngine::InitializeGameInstance()
 	{
 		m_world->m_owningGameInstance = m_game.get();
-		//m_world->CurrentScene() = GetStartScene();
+		m_world->CurrentScene() = GetStartScene();
 		BrowseToDefaultScene(*m_world);
 
 		m_world->m_inputs = ToRemove::SetupGameInputs();
