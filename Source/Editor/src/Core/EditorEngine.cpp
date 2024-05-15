@@ -1,11 +1,11 @@
 //EditorEngine.cpp
 
 #include "SurvivantEditor/Core/EditorEngine.h"
-
-#include "SurvivantCore/Debug/Assertion.h"
 #include "SurvivantEditor/Core/EditorWindow.h"
 
-#include "SurvivantApp/Core/TempDefaultScene.h"
+#include <SurvivantApp/Core/TempDefaultScene.h>
+
+#include <SurvivantCore/Debug/Assertion.h>
 
 
 using namespace SvApp::Core;
@@ -59,7 +59,7 @@ namespace SvEditor::Core
 	std::shared_ptr<WorldContext> EditorEngine::CreatePIEWorldByDuplication(const WorldContext& p_context)
 	{
 		auto pieWorld =				IEngine::CreateNewWorldContext(WorldContext::EWorldType::PIE);
-		pieWorld->m_lightsSSBO =	IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, 0);
+		pieWorld->m_lightsSSBO =	IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, Renderer::LIGHT_SSBO_INDEX);
 		pieWorld->m_viewport =		p_context.m_viewport;
 
 		//pieWorld->Render();
@@ -225,7 +225,7 @@ namespace SvEditor::Core
 		auto world = CreateNewWorldContext(WorldContext::EWorldType::EDITOR);
 		world->m_owningGameInstance = nullptr;
 
-		world->m_lightsSSBO = IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, 0);
+		world->m_lightsSSBO = IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, Renderer::LIGHT_SSBO_INDEX);
 		world->m_viewport = { 800, 600 };
 		world->CurrentScene() = p_inScene;
 		CameraComponent cam;
@@ -233,7 +233,7 @@ namespace SvEditor::Core
 		cam.SetClearColor(Color::lightGray);
 		world->SetOwningCamera(cam, Transform({ 0.f, 1.8f, 2.f }, Quaternion::identity(), Vector3::one()));
 		world->m_inputs = CreateEditorInputs();
-		
+
 		//load and render
 		//world->Save();
 		world->BakeLighting();
@@ -254,7 +254,6 @@ namespace SvEditor::Core
 
 		pieWorld->m_inputs = ToRemove::SetupGameInputs();
 		pieWorld->SetSceneCamera();
-		pieWorld->BakeLighting();
 		pieWorld->SetInputs();
 		pieWorld->BakeLighting();
 
