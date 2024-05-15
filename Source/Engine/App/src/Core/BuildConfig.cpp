@@ -55,6 +55,6 @@ namespace SvApp::Core
 	bool BuildConfig::FromJson(const SvCore::Serialization::JsonValue& p_json)
 	{
 		auto it = p_json.FindMember("scene");
-		return CHECK(it != p_json.MemberEnd(), "Unable to deserialize BuildConfig - Missing scene") || !m_scene.FromJson(it->value);
+		return CHECK(it != p_json.MemberEnd(), "Unable to deserialize BuildConfig - Missing scene") && m_scene.FromJson(it->value);
 	}
 }
