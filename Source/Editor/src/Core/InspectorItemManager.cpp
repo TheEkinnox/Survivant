@@ -20,7 +20,6 @@
 #include "SurvivantEditor/PanelItems/PanelColorInput.h"
 #include "SurvivantEditor/PanelItems/PanelComponent.h"
 #include "SurvivantEditor/PanelItems/PanelFloatInput.h"
-#include "SurvivantEditor/PanelItems/PanelIntInput.h"
 #include "SurvivantEditor/PanelItems/PanelMultipleSelection.h"
 #include "SurvivantEditor/PanelItems/PanelResourceSelector.h"
 #include "SurvivantEditor/PanelItems/PanelSelectionDisplay.h"
@@ -30,14 +29,10 @@
 #include "SurvivantEditor/PanelItems/PanelUInt32Input.h"
 #include "SurvivantEditor/PanelItems/PanelVec2Input.h"
 #include "SurvivantEditor/PanelItems/PanelVec3Input.h"
-#include "SurvivantEditor/PanelItems/PanelCheckbox.h"
-#include "SurvivantEditor/PanelItems/PanelDoubleInput.h"
-#include "SurvivantEditor/PanelItems/PanelSeparator.h"
+#include "SurvivantEditor/PanelItems/PanelScript.h"
+#include "SurvivantEditor/PanelItems/PanelScriptList.h"
 
-#include "SurvivantScripting/LuaScriptList.h"
-#include "SurvivantScripting/LuaTypeRegistry.h"
-
-#include "Transform.h"
+#include <Transform.h>
 
 using namespace LibMath;
 using namespace SvCore::ECS;
@@ -409,210 +404,10 @@ namespace SvEditor::Core
 		return std::make_shared<PanelComponent>(std::move(component));
 	}
 
-	namespace
-	{
-		bool AddLuaUserTypeToPanel(
-			PanelComponent::Items& p_items, sol::table p_table, const std::string& p_key, const std::string& p_displayName)
-		{
-			using namespace SvCore::Utility;
-			const std::string typeString = p_table[p_key]["__type"]["name"];
-
-			if (typeString.empty())
-				return false;
-
-			const auto&  luaTypes = LuaTypeRegistry::GetInstance();
-			const TypeId typeId   = luaTypes.GetRegisteredTypeId(typeString);
-
-			if (typeId == 0)
-				return false;
-
-			if (typeId == LuaTypeRegistry::GetTypeId<Vector2>())
-			{
-				p_items.emplace_back(std::make_shared<PanelVec2Input>(p_displayName,
-					[p_table, p_key]() mutable -> Vector2&
-					{
-						return *p_table[p_key].get<Vector2*>();
-					}
-				));
-
-				return true;
-			}
-
-			if (typeId == LuaTypeRegistry::GetTypeId<Vector3>())
-			{
-				p_items.emplace_back(std::make_shared<PanelVec3Input>(p_displayName,
-					[p_table, p_key]() mutable -> Vector3&
-					{
-						return *p_table[p_key].get<Vector3*>();
-					}
-				));
-
-				return true;
-			}
-
-			if (typeId == LuaTypeRegistry::GetTypeId<Transform>())
-			{
-				p_items.emplace_back(std::make_shared<PanelTransformInput>(
-					[p_table, p_key]() mutable -> Transform& {
-						return *p_table[p_key].get<Transform*>();
-					}
-				));
-
-				return true;
-			}
-
-			return false;
-		}
-
-		void AddLuaTableToPanel(PanelComponent::Items& p_items, sol::table p_table, const std::string& p_prefix = {})
-		{
-			using namespace SvCore::Serialization;
-			using namespace SvCore::Utility;
-
-			for (auto [key, value] : p_table)
-			{
-				if (key.get_type() != sol::type::string)
-					continue;
-
-				const std::string keyStr = key.as<const std::string&>();
-
-				if (keyStr.empty() || keyStr[0] == '_' || LuaScriptList::s_ignoredFields.contains(keyStr))
-					continue;
-
-				switch (value.get_type())
-				{
-				case sol::type::string:
-				{
-					p_items.emplace_back(std::make_shared<PanelTextInput>(p_prefix + keyStr,
-						[p_table, keyStr]() mutable
-						{
-							return p_table[keyStr].get<std::string&>();
-						},
-						[p_table, keyStr](const std::tuple<PanelTextInput*>& p_textInput) mutable
-						{
-							const std::string& str = std::get<0>(p_textInput)->GetText();
-							p_table[keyStr]		= str;
-						}
-					));
-
-					break;
-				}
-				case sol::type::number:
-				{
-					if (value.is<int>())
-						p_items.emplace_back(std::make_shared<PanelIntInput>(p_prefix + keyStr,
-							[p_table, keyStr]() mutable
-							{
-								return p_table[keyStr].get<int>();
-							},
-							[p_table, keyStr](const int p_value) mutable
-							{
-								p_table[keyStr] = p_value;
-							}
-						));
-					else
-						p_items.emplace_back(std::make_shared<PanelDoubleInput>(p_prefix + keyStr,
-							[p_table, keyStr]() mutable
-							{
-								return p_table[keyStr].get<double>();
-							},
-							[p_table, keyStr](const double p_value) mutable
-							{
-								p_table[keyStr] = p_value;
-							}
-						));
-
-					break;
-				}
-				case sol::type::boolean:
-				{
-					p_items.emplace_back(std::make_shared<PanelCheckbox>(p_prefix + keyStr,
-						[p_table, keyStr]() mutable
-						{
-							return p_table[keyStr].get<bool>();
-						},
-						[p_table, keyStr](const bool p_value) mutable
-						{
-							p_table[keyStr] = p_value;
-						}
-					));
-
-					break;
-				}
-				case sol::type::table:
-				{
-					AddLuaTableToPanel(p_items, value.as<sol::table>(), p_prefix + keyStr + ".");
-					break;
-				}
-				case sol::type::userdata:
-				{
-					if (!AddLuaUserTypeToPanel(p_items, p_table, keyStr, p_prefix + keyStr))
-						AddLuaTableToPanel(p_items, value.as<sol::table>(), p_prefix + keyStr + ".");
-					break;
-				}
-				case sol::type::lightuserdata:
-				case sol::type::none:
-				case sol::type::lua_nil:
-				case sol::type::thread:
-				case sol::type::function:
-				case sol::type::poly:
-				default:
-					break;
-				}
-			}
-		}
-
-		std::shared_ptr<PanelComponent> MakeScriptPanelComponent(LuaScriptHandle p_script)
-		{
-			using namespace SvCore::ECS;
-
-			PanelComponent::Items items;
-
-			items.emplace_back(std::make_shared<PanelButton>("Remove Script",
-				[p_script]() mutable
-				{
-					p_script.m_owner.Get<LuaScriptList>()->Remove(p_script.m_name);
-				}
-			));
-
-			ComponentRegistry::EntitiesMap entitiesMap;
-			AddLuaTableToPanel(items, p_script.m_table);
-
-			return std::make_shared<PanelComponent>(p_script.m_name, items);
-		}
-	}
-
 	InspectorItemManager::PanelableComponent InspectorItemManager::AddComponentScriptList(
 		const SvCore::ECS::EntityHandle& p_entity)
 	{
-		using namespace SvCore::Resources;
-
-		PanelComponent::Items items;
-
-		if (const LuaScriptList* scripts = p_entity.Get<LuaScriptList>())
-		{
-			items.reserve(scripts->size() + 1);
-
-			for (const auto& name : *scripts)
-				items.emplace_back(MakeScriptPanelComponent(scripts->Get(name)));
-
-		    items.emplace_back(std::make_shared<PanelSeparator>());
-
-			items.emplace_back((std::make_shared<PanelResourceSelector<LuaScript>>(
-				"Add Script ", []() -> ResourceRef<LuaScript>& {
-					static ResourceRef<LuaScript> empty;
-				    empty = {};
-					return empty;
-				},
-				[p_entity](const ResourceRef<LuaScript>& p_script)
-				{
-					LuaScriptList* list = const_cast<LuaScriptList*>(p_entity.Get<LuaScriptList>());
-					list->Add(p_script.GetPath());
-				}
-			)));
-		}
-
-		return std::make_shared<PanelComponent>("Scripts", std::move(items));
+		return std::make_shared<PanelScriptList>("Scripts", p_entity);
 	}
 
 	InspectorItemManager::PanelableResource InspectorItemManager::AddResourceMaterial(

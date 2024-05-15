@@ -3,6 +3,7 @@
 #include "SurvivantCore/ECS/ComponentHandle.h"
 #include "SurvivantCore/ECS/Scene.h"
 #include "SurvivantCore/ECS/Components/Hierarchy.h"
+#include "SurvivantCore/ECS/Components/TagComponent.h"
 
 using namespace SvCore::Serialization;
 using namespace SvCore::Utility;
@@ -59,6 +60,19 @@ namespace SvCore::ECS
         const HierarchyComponent* hierarchy = Get<HierarchyComponent>();
 
         return { m_scene, hierarchy ? hierarchy->GetParent() : NULL_ENTITY };
+    }
+
+    std::string EntityHandle::GetDisplayName() const
+    {
+        if (!*this)
+            return "None";
+
+        if (const TagComponent* tag = Get<TagComponent>())
+            return tag->m_tag;
+
+        std::ostringstream str;
+        str << m_entity;
+        return str.str();
     }
 
     void EntityHandle::SetParent(const EntityHandle p_parent)

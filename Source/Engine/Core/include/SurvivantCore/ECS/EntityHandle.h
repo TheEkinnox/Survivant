@@ -98,6 +98,12 @@ namespace SvCore::ECS
         EntityHandle GetParent() const;
 
         /**
+         * \brief Gets the entity's display name
+         * \return The entity's display name
+         */
+        std::string GetDisplayName() const;
+
+        /**
          * \brief Sets the linked entity's parent
          * \param p_parent The entity's new parent
          */
