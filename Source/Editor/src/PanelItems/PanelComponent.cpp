@@ -12,20 +12,23 @@ namespace SvEditor::PanelItems
         m_items(p_items),
         m_isActive(true),
         m_prio(p_prio)
-    {        
-    }
+    {}
 
     void PanelComponent::DisplayAndUpdatePanel()
 	{
-        static ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_DefaultOpen;
+        static ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen;
 
+        //ImGui::Text("   "); ImGui::SameLine();
         bool open = ImGui::CollapsingHeader(m_name.c_str(), &m_isActive, flags);
 
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 20);
+        ImGui::BeginGroup();
         if (open)
         {
             for (auto& item : m_items)
                 item->DisplayAndUpdatePanel();
         }
+        ImGui::EndGroup();
 	}
 
     bool PanelComponent::NeedToRemove()const

@@ -1,12 +1,12 @@
 //BuildConfig.cpp
-#include "SurvivantEditor/RuntimeBuild/BuildConfig.h"
+#include "SurvivantApp/Core/BuildConfig.h"
 
 #include <SurvivantCore/Debug/Assertion.h>
 
 using namespace SvCore::Resources;
 using namespace SvCore::Serialization;
 
-namespace SvEditor::RuntimeBuild
+namespace SvApp::Core
 {
 	BuildConfig::BuildConfig(const SvCore::Resources::ResourceRef<SvCore::ECS::Scene>& p_scenes)
 	{
@@ -55,6 +55,6 @@ namespace SvEditor::RuntimeBuild
 	bool BuildConfig::FromJson(const SvCore::Serialization::JsonValue& p_json)
 	{
 		auto it = p_json.FindMember("scene");
-		return CHECK(it != p_json.MemberEnd(), "Unable to deserialize BuildConfig - Missing scene") || !m_scene.FromJson(it->value);
+		return CHECK(it != p_json.MemberEnd(), "Unable to deserialize BuildConfig - Missing scene") && m_scene.FromJson(it->value);
 	}
 }

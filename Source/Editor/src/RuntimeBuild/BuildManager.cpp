@@ -37,7 +37,7 @@ namespace SvEditor::RuntimeBuild
         return s_instance;
     }
 
-    std::string BuildManager::CreateBuild(const std::string& p_buildName, BuildConfig p_setup)
+    std::string BuildManager::CreateBuild(const std::string& p_buildName, SvApp::Core::BuildConfig p_setup)
     {
         using namespace SvCore::Utility;
         namespace fs = std::filesystem;
@@ -49,7 +49,7 @@ namespace SvEditor::RuntimeBuild
         }
 
         std::string buildDirPath = m_downloadPath + "\\" + p_buildName;
-        if (!PathExists(buildDirPath) && CreateDirectoryA(buildDirPath.data(), NULL))
+        if (!PathExists(buildDirPath) && !CreateDirectoryA(buildDirPath.c_str(), NULL))
         {
             SV_LOG_ERROR("Can't Create Build, can't create directory for Build: %s", buildDirPath.c_str());
             return {};
@@ -61,15 +61,15 @@ namespace SvEditor::RuntimeBuild
             return {};
         }
 
-        //std::string buildFilePath = buildDirPath + "\\" + p_buildName + ".exe";
-        //if (!CopyFileA(RuntimeBuildFileName.data(), buildFilePath.data(), TRUE))
-        //{
-        //    SV_LOG_ERROR("Can't Create Build, Can't copy file: %s", buildFilePath.c_str());
-        //    return {};
-        //}
+        std::string buildFilePath = buildDirPath + "\\" + p_buildName + ".exe";
+        if (!CopyFileA(RuntimeBuildLocalPath.data(), buildFilePath.c_str(), TRUE))
+        {
+            SV_LOG_ERROR("Can't Create Build, Can't copy file RuntimeBuild: %s", buildFilePath.c_str());
+            return {};
+        }
 
-        fs::path assetsSource = std::filesystem::current_path() / AssetsDirName;
-        fs::path assetsPath = fs::path(buildDirPath) / AssetsDirName;
+        fs::path assetsSource = std::filesystem::current_path() / AssetsDirLocalPath;
+        fs::path assetsPath = fs::path(buildDirPath) / AssetsDirLocalPath;
         try
         {
             fs::create_directories(assetsPath); // Recursively create assetsPath directory
@@ -80,16 +80,18 @@ namespace SvEditor::RuntimeBuild
             SV_LOG_ERROR("Can't Create Build, can't copy Assets folder: %s", e.what());
         }
 
-        if (!p_setup.Save(buildDirPath))
+        fs::path configPath = fs::path(buildDirPath) / BuildConfigFileName;
+        if (!p_setup.Save(configPath.string()))
         {
-            SV_LOG_ERROR("Can't Create Build, can't save BuildConfig: %s", buildDirPath.c_str());
+            SV_LOG_ERROR("Can't Create Build, can't save BuildConfig: %s", configPath.c_str());
             return {};
         }
 
-        return {};
+        SV_LOG("Successfully created Build: %s", buildFilePath.c_str());
+        return buildFilePath;
     }
 
-    std::string BuildManager::CreateAndRunBuild(const std::string& p_buildName, BuildConfig p_setup)
+    std::string BuildManager::CreateAndRunBuild(const std::string& p_buildName, SvApp::Core::BuildConfig p_setup)
     {
         auto path = CreateBuild(p_buildName, p_setup);
 
@@ -102,7 +104,7 @@ namespace SvEditor::RuntimeBuild
 
     void BuildManager::RunBuild(std::string p_buildFilePath)
     {
-        LPSTR path = p_buildFilePath.data();
+        p_buildFilePath.resize(MAX_PATH);
 
         STARTUPINFOA  si;
         PROCESS_INFORMATION  pi;
@@ -112,7 +114,7 @@ namespace SvEditor::RuntimeBuild
         ZeroMemory(&pi, sizeof(pi));
 
         if(!CreateProcessA(
-            NULL, path, NULL,
+            NULL, p_buildFilePath.data(), NULL,
             NULL, NULL, FALSE, 0, NULL,
             &si, &pi))  
         {
@@ -120,10 +122,12 @@ namespace SvEditor::RuntimeBuild
             return;
         }
 
-        // Wait until child process exits.
-        WaitForSingleObject(pi.hProcess, INFINITE);
+        //Wait until child process exits.
+        //WaitForSingleObject(pi.hProcess, INFINITE);
 
         CloseHandle(pi.hProcess);
         CloseHandle(pi.hThread);
+
+        SV_LOG("Successfully run Build: %s", p_buildFilePath.c_str());
     }
 }

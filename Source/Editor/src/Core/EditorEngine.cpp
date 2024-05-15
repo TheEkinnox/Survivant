@@ -29,14 +29,14 @@ namespace SvEditor::Core
 		//setup events
 		SV_EVENT_MANAGER().AddListenner<OnCreateBuildGame>(OnCreateBuildGame::EventDelegate(
 			[](	const std::string& p_buildFileName,
-				const SvEditor::RuntimeBuild::BuildConfig& p_buildInfo)
+				const SvApp::Core::BuildConfig& p_buildInfo)
 			{ 
 				BuildManager::GetInstance().CreateBuild(p_buildFileName, p_buildInfo); 
 			}));
 
 		SV_EVENT_MANAGER().AddListenner<OnCreateBuildAndRun>(OnCreateBuildAndRun::EventDelegate(
 			[](	const std::string& p_buildFileName,
-				const SvEditor::RuntimeBuild::BuildConfig& p_buildInfo)
+				const SvApp::Core::BuildConfig& p_buildInfo)
 			{ 
 				BuildManager::GetInstance().CreateAndRunBuild(p_buildFileName, p_buildInfo);
 			}));
@@ -232,7 +232,6 @@ namespace SvEditor::Core
 		world->m_owningGameInstance = nullptr;
 
 		world->m_lightsSSBO = IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, 0);
-		world->m_viewport = { 800, 600 };
 		world->CurrentScene() = p_inScene;
 		CameraComponent cam;
 		cam.SetPerspective(90_deg, .01f, 14.f);

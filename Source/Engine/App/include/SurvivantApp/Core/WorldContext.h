@@ -64,7 +64,6 @@ namespace SvApp::Core
 
 		EWorldType				m_worldType = EWorldType::NONE;
 		GameInstance*			m_owningGameInstance = nullptr;
-		LibMath::TVector2<int>	m_viewport = LibMath::Vector2(1, 1);
 
 		std::shared_ptr<InputManager::InputBindings>				m_inputs;
 		std::shared_ptr<RenderingContext>							m_renderingContext;

@@ -13,8 +13,7 @@
 namespace SvEditor::PanelItems
 {
     PanelEntity::PanelEntity(const SvCore::ECS::EntityHandle& p_entity, const Components& p_component) :
-        m_entity(p_entity),
-        m_remove("Remove", [p_entity]() { p_entity.GetScene()->Remove(p_entity); })
+        m_entity(p_entity)
     {
         m_index = "(" + std::to_string(p_entity.GetEntity().GetIndex()) + ')';
         m_addComponent = std::make_shared<PanelPopupMenuButton>(PanelPopupMenuButton(
@@ -26,18 +25,20 @@ namespace SvEditor::PanelItems
         m_components.reserve(p_component.size());
         for (auto& component : p_component)
             AddAndSortComponent(component);
+
+        m_buttons.m_buttons.emplace_back("Duplicate", [e = m_entity]() { e.GetScene()->Create(e); });
+        m_buttons.m_buttons.emplace_back("Remove", [e = m_entity]() { e.GetScene()->Destroy(e); });
     }
 
-    PanelEntity::PanelEntity(const PanelEntity& p_other) :
-        m_remove("", []() {})
+    PanelEntity::PanelEntity(const PanelEntity& p_other)
     {
         *this = p_other;
     }
 
-    PanelEntity::PanelEntity(PanelEntity&& p_other) noexcept :
-        m_remove("", []() { })
+    PanelEntity::PanelEntity(PanelEntity&& p_other) noexcept 
     {
-        this->m_remove = PanelButton("Remove", [e = p_other.m_entity]() { e.GetScene()->Remove(e.GetEntity()); });
+        m_buttons.m_buttons.emplace_back("Duplicate", [e = p_other.m_entity]() { e.GetScene()->Create(e); });
+        m_buttons.m_buttons.emplace_back("Remove", [e = p_other.m_entity]() { e.GetScene()->Destroy(e); });
         this->m_addComponent = std::make_shared<PanelPopupMenuButton>(PanelPopupMenuButton(
             "Add Component",
             [this]() { GetAllComponents(); },
@@ -52,7 +53,8 @@ namespace SvEditor::PanelItems
 
     PanelEntity& PanelEntity::operator=(const PanelEntity& p_other)
     {
-        this->m_remove = PanelButton("Remove", [e = p_other.m_entity]() { e.GetScene()->Remove(e); });
+        m_buttons.m_buttons.emplace_back("Duplicate", [e = p_other.m_entity]() { e.GetScene()->Create(e); });
+        m_buttons.m_buttons.emplace_back("Remove", [e = p_other.m_entity]() { e.GetScene()->Destroy(e); });
         this->m_addComponent = std::make_shared<PanelPopupMenuButton>(PanelPopupMenuButton(
             "Add Component",
             [this]() { GetAllComponents(); },
@@ -72,7 +74,15 @@ namespace SvEditor::PanelItems
         if (!m_entity)
             return;
 
-        m_remove.DisplayAndUpdatePanel();
+        m_buttons.DisplayAndUpdatePanel();
+
+        if (!m_entity) //can remove entity in m_buttons
+            return;
+
+        auto& style = ImGui::GetStyle();
+        auto prev = style.WindowPadding.x;
+        style.WindowPadding.x = 30;
+
         for (auto it = m_components.begin(); it != m_components.end();)
         {
             ImGui::Separator();
@@ -84,6 +94,8 @@ namespace SvEditor::PanelItems
             else
                 ++it;
         }
+        style.WindowPadding.x = prev;
+
         ImGui::Separator();
         m_addComponent->DisplayAndUpdatePanel();
 	}
