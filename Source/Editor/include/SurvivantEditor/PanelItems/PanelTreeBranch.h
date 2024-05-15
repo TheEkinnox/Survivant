@@ -18,18 +18,19 @@ namespace SvEditor::PanelItems
 	class PanelTreeBranch : public ISelectable
 	{
 	public:
+		using ValueT = T;
 		using BranchCallback = std::function<bool(PanelTreeBranch&)>;
 		using PriorityFunc = std::function<size_t(const PanelTreeBranch&)>;
 		using Children = std::map<ISelectable::SelectablePrioKey, std::shared_ptr<PanelTreeBranch>>;
-		
+
 		PanelTreeBranch(
 			const std::string& p_name,
 			bool p_hideLeafs = true,
 			const T& p_value = T());
 
 		PanelTreeBranch(
-			const std::string& p_name, 
-			const Children& p_branches, 
+			const std::string& p_name,
+			const Children& p_branches,
 			bool p_hideLeafs = true,
 			const T& p_value = T());
 		~PanelTreeBranch();
@@ -54,7 +55,7 @@ namespace SvEditor::PanelItems
 
 		Children&	SetBranches(const Children& p_branches);
 		Children&	SetBranches(
-			const std::vector<std::shared_ptr<PanelTreeBranch>>& p_branches = 
+			const std::vector<std::shared_ptr<PanelTreeBranch>>& p_branches =
 			std::vector<std::shared_ptr<PanelTreeBranch>>());
 		void			AddBranch(const std::shared_ptr<PanelTreeBranch>& p_branch, size_t p_prio);
 		void			AddBranch(const std::shared_ptr<PanelTreeBranch>& p_branch, const PriorityFunc& p_prioFunc = nullptr);

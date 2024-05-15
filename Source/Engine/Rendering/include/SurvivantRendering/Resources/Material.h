@@ -101,6 +101,12 @@ namespace SvRendering::Resources
         RHI::IShader& GetShader() const;
 
         /**
+         * \brief Gets the material's shader ref
+         * \return The material's shader resource reference
+         */
+        SvCore::Resources::ResourceRef<RHI::IShader> GetShaderRef() const;
+
+        /**
          * \brief Sets the material's shader to the given value
          * \param p_shader The material's new shader's resource reference
          */

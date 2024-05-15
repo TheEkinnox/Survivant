@@ -111,7 +111,7 @@ local function MakeSim(self)
 end
 
 function PhysicsTest:OnStart()
-    if PHYSICS_TEST then
+    if PHYSICS_TEST and PHYSICS_TEST ~= self then
         Debug.LogWarning("Physics test already exists in E" .. PHYSICS_TEST.owner .. " - Removing from E" .. self.owner)
         self.owner:RemoveScript("scripts.tests.physics")
         return

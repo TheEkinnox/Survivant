@@ -9,6 +9,7 @@ namespace SvCore::Resources
     ResourceRef<T>::ResourceRef(std::string p_path, T* p_resource)
         : m_path(std::move(p_path)), m_resource(p_resource), m_refCount(p_resource ? new RefCountT(1) : nullptr)
     {
+        Utility::ReplaceInPlace(m_path, "\\", "/");
     }
 
     template <class T>
@@ -189,11 +190,8 @@ namespace SvCore::Resources
     {
         p_writer.StartObject();
 
-        std::string path = Utility::Replace(m_path, "\\", "/");
-        Utility::ReplaceInPlace(path, "//", "/");
-
         p_writer.Key("path");
-        p_writer.String(path.c_str(), static_cast<rapidjson::SizeType>(path.size()));
+        p_writer.String(m_path.c_str(), static_cast<rapidjson::SizeType>(m_path.size()));
 
         return p_writer.EndObject();
     }
@@ -291,11 +289,8 @@ namespace SvCore::Resources
         p_writer.Key("type");
         p_writer.String(m_type.c_str(), static_cast<rapidjson::SizeType>(m_type.size()));
 
-        std::string path = Utility::Replace(m_path, "\\", "/");
-        Utility::ReplaceInPlace(path, "//", "/");
-
         p_writer.Key("path");
-        p_writer.String(path.c_str(), static_cast<rapidjson::SizeType>(path.size()));
+        p_writer.String(m_path.c_str(), static_cast<rapidjson::SizeType>(m_path.size()));
 
         return p_writer.EndObject();
     }

@@ -10,7 +10,6 @@
 #include "SurvivantRendering/Components/LightComponent.h"
 #include "SurvivantRendering/Components/ModelComponent.h"
 #include "SurvivantRendering/Resources/Material.h"
-#include "SurvivantRendering/Resources/Mesh.h"
 #include "SurvivantRendering/Resources/Model.h"
 #include "SurvivantRendering/RHI/IShader.h"
 #include "SurvivantRendering/RHI/ITexture.h"
@@ -105,7 +104,7 @@ namespace SvEditor::Core
 		PanelableResource panel = nullptr;
 
 		if (info.Has(CREATE_RESOURCE))
-			panel = info.Call<PanelableResource>(CREATE_COMPONENT, (void*)&p_resource).value_or(nullptr);
+			panel = info.Call<PanelableResource>(CREATE_RESOURCE, (void*)&p_resource).value_or(nullptr);
 
 		return panel;
 	}
@@ -627,15 +626,14 @@ namespace SvEditor::Core
 
 		auto component = PanelResourceDisplay(p_resource, "Ma",
 			PanelResourceDisplay::Items({
-					std::make_shared<PanelResourceSelector<IShader>>(PanelResourceSelector<IShader>(
+					std::make_shared<PanelResourceSelector<IShader>>(
 						"Material ", [resource]() mutable -> ResourceRef<IShader>&{
-							static ResourceRef<IShader> ref;
-							*ref = resource->GetShader();
+							static ResourceRef<IShader> ref = resource->GetShaderRef();
 							return ref; },
 						[resource](PanelResourceSelector<IShader>::CallbackParams p_params) {
 							resource->SetShader(p_params);
 						}
-					))
+					)
 				}));
 
 		return std::make_shared<PanelResourceDisplay>(std::move(component));
