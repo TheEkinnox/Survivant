@@ -79,6 +79,10 @@ namespace SvEditor::PanelItems
         if (!m_entity) //can remove entity in m_buttons
             return;
 
+        auto& style = ImGui::GetStyle();
+        auto prev = style.WindowPadding.x;
+        style.WindowPadding.x = 30;
+
         for (auto it = m_components.begin(); it != m_components.end();)
         {
             ImGui::Separator();
@@ -90,6 +94,8 @@ namespace SvEditor::PanelItems
             else
                 ++it;
         }
+        style.WindowPadding.x = prev;
+
         ImGui::Separator();
         m_addComponent->DisplayAndUpdatePanel();
 	}

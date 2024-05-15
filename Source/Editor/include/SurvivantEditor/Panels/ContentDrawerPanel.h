@@ -8,6 +8,7 @@
 #include "SurvivantEditor/Panels/Panel.h"
 #include "SurvivantEditor/PanelItems/PanelSelectionBox.h"
 #include "SurvivantEditor/PanelItems/PanelTreeBranch.h"
+#include "SurvivantCore/Utility/TypeRegistry.h"
 
 #include <filesystem>
 #include <functional>
@@ -23,7 +24,7 @@ namespace SvEditor::Panels
 	class ContentDrawerPanel : public Panel
 	{
 	public:
-		using ResourceBranch = PanelTreeBranch<SvCore::Resources::GenericResourceRef>;
+		using ResourceBranch = PanelTreeBranch<std::string>;
 
 		ContentDrawerPanel();
 		~ContentDrawerPanel();
@@ -37,6 +38,8 @@ namespace SvEditor::Panels
 		static constexpr char NAME[] = "ContentDrawer";
 
 	private:
+		using TypedStrings = std::unordered_map<std::string, std::set<std::string>>;
+
 		void SetupTree();
 		void SetupBranches(std::shared_ptr<ResourceBranch> p_parent, const std::filesystem::path& p_filePath);
 
@@ -44,13 +47,16 @@ namespace SvEditor::Panels
 		static inline const std::string DOUBLE_SLASH = "\\";
 		static inline const std::string SLASH = "/";
 
-		static std::unordered_map<std::string, std::set<std::string>> CreateExtensions();
-		static inline std::unordered_map<std::string, std::set<std::string>> FileExtensions = CreateExtensions();
+		static TypedStrings CreateExtensions();
+		static inline TypedStrings s_fileExtensions;
+		static inline TypedStrings s_existingPaths;
 
-		static SvCore::Resources::GenericResourceRef CreateResourceRef(const std::filesystem::path& p_filePath);
+		static std::string GetType(const std::filesystem::path& p_filePath);
+		static SvCore::Resources::GenericResourceRef GetResourceRef(
+			const std::string& p_type,
+			const std::filesystem::path& p_filePath);
 
-
-		std::shared_ptr<ResourceBranch>	m_tree;
-		PanelSelectionBox				m_grid;
+		std::shared_ptr<ResourceBranch>		m_tree;
+		PanelSelectionBox					m_grid;
 	};
 }

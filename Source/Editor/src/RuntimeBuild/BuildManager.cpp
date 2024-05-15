@@ -49,7 +49,7 @@ namespace SvEditor::RuntimeBuild
         }
 
         std::string buildDirPath = m_downloadPath + "\\" + p_buildName;
-        if (!PathExists(buildDirPath) && CreateDirectoryA(buildDirPath.data(), NULL))
+        if (!PathExists(buildDirPath) && !CreateDirectoryA(buildDirPath.c_str(), NULL))
         {
             SV_LOG_ERROR("Can't Create Build, can't create directory for Build: %s", buildDirPath.c_str());
             return {};
@@ -62,7 +62,7 @@ namespace SvEditor::RuntimeBuild
         }
 
         std::string buildFilePath = buildDirPath + "\\" + p_buildName + ".exe";
-        if (!CopyFileA(RuntimeBuildLocalPath.data(), buildFilePath.data(), TRUE))
+        if (!CopyFileA(RuntimeBuildLocalPath.data(), buildFilePath.c_str(), TRUE))
         {
             SV_LOG_ERROR("Can't Create Build, Can't copy file RuntimeBuild: %s", buildFilePath.c_str());
             return {};
@@ -104,7 +104,7 @@ namespace SvEditor::RuntimeBuild
 
     void BuildManager::RunBuild(std::string p_buildFilePath)
     {
-        LPSTR path = p_buildFilePath.data();
+        p_buildFilePath.resize(MAX_PATH);
 
         STARTUPINFOA  si;
         PROCESS_INFORMATION  pi;
@@ -114,7 +114,7 @@ namespace SvEditor::RuntimeBuild
         ZeroMemory(&pi, sizeof(pi));
 
         if(!CreateProcessA(
-            NULL, path, NULL,
+            NULL, p_buildFilePath.data(), NULL,
             NULL, NULL, FALSE, 0, NULL,
             &si, &pi))  
         {

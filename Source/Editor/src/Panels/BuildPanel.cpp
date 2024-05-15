@@ -18,7 +18,7 @@ namespace SvEditor::Panels
         m_selectScene("Start Scene",
             SceneSelect::Ref([this]() -> SceneSelect::Value& { return m_scene; })),
         m_buildName("SvBuild"),
-        m_selectBuildName("Build Name", m_buildName)
+        m_selectBuildName("Build Name", [this]() -> std::string& { return m_buildName; })
     {
         m_name = NAME;
         //m_scene = SvCore::Resources::GetDefaultResource<SvCore::ECS::Scene>();

@@ -55,8 +55,8 @@ namespace SvEditor::Core
 		static PanelableComponent AddComponentLight(const SvCore::ECS::EntityHandle& p_entity);
 		static PanelableComponent AddComponentModel(const SvCore::ECS::EntityHandle& p_entity);
 
-		static PanelableResource AddResourceMaterial(const SvCore::Resources::GenericResourceRef& p_resource);
 		static PanelableResource AddResourceDefault(const SvCore::Resources::GenericResourceRef& p_resource);
+		static PanelableResource AddResourceMaterial(const SvCore::Resources::GenericResourceRef& p_resource);
 
 		static std::string GetEntityName(const SvCore::ECS::EntityHandle& p_entity);
 	};
