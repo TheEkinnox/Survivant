@@ -6,7 +6,7 @@
 #include "SurvivantEditor/Interfaces/IInspectorable.h"
 #include "SurvivantEditor/PanelItems/PanelComponent.h"
 #include "SurvivantEditor/PanelItems/PanelPopupMenuButton.h"
-#include "SurvivantEditor/PanelItems/PanelButton.h"
+#include "SurvivantEditor/PanelItems/PanelButtonList.h"
 
 #include "Vector/Vector3.h"
 
@@ -47,7 +47,7 @@ namespace SvEditor::PanelItems
 		std::string					m_name;
 		SvCore::ECS::EntityHandle	m_entity;
 		Components					m_components;
-		PanelButton					m_remove;
+		PanelButtonList				m_buttons;
 
 		std::shared_ptr<PanelPopupMenuButton>		m_addComponent;
 	};

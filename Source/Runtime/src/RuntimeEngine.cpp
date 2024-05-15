@@ -82,7 +82,7 @@ namespace SvRuntime
 		m_world->m_owningGameInstance = m_game.get();
 		m_world->CurrentScene() = GetStartScene();
 		BrowseToDefaultScene(*m_world);
-
+		
 		m_world->m_inputs = ToRemove::SetupGameInputs();
 		m_world->SetCamera(m_world->GetFirstCamera()); //dont use cam un rendering context
 		m_world->BakeLighting();

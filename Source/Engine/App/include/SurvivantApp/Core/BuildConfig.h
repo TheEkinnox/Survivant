@@ -62,9 +62,7 @@ namespace SvApp::Core
         bool ToJson(SvCore::Serialization::JsonWriter& p_writer) const;
         bool FromJson(const SvCore::Serialization::JsonValue& p_json);
 
-	private:
         SvCore::Resources::ResourceRef<SvCore::ECS::Scene> m_scene;
-
     };
 }
 
