@@ -51,7 +51,7 @@ namespace SvCore::Resources
         if (p_type.empty() || p_path.empty())
             return {};
 
-        const std::string key = GetFullPath(p_path);
+        const std::string key = GetRelativePath(p_path);
 
         IResource* resource = nullptr;
         const auto it       = m_resources.find(key);
@@ -86,7 +86,7 @@ namespace SvCore::Resources
         if (p_type.empty() || p_path.empty())
             return {};
 
-        const auto it = m_resources.find(GetFullPath(p_path));
+        const auto it = m_resources.find(GetRelativePath(p_path));
 
         if (it == m_resources.end())
             return {};
@@ -149,7 +149,7 @@ namespace SvCore::Resources
 
     void ResourceManager::Remove(const std::string& p_path)
     {
-        m_resources.erase(GetFullPath(p_path));
+        m_resources.erase(GetRelativePath(p_path));
     }
 
     void ResourceManager::Clear()
@@ -219,6 +219,7 @@ namespace SvCore::Resources
                 bestMatch = absSearchPath.size() + 1;
         }
 
+        CHECK(bestMatch > 0, "Resource \"%s\" is not in a known search path", p_path.c_str());
         return p_path.substr(bestMatch);
     }
 
