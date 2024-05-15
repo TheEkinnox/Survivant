@@ -31,9 +31,8 @@ namespace SvEditor::Panels
 
         m_buttons.m_buttons.emplace_back(PanelButton("Build and Run", [this]()
             {
-                //auto temp = SvEditor::RuntimeBuild::BuildManager::BuildConfigRef("", new BuildConfig(m_scene));
-                //SV_EVENT_MANAGER().Invoke<Core::EditorEngine::OnCreateBuildAndRun>(
-                //    m_buildName, temp);
+                SV_EVENT_MANAGER().Invoke<Core::EditorEngine::OnCreateBuildAndRun>(
+                    m_buildName, BuildConfig(m_scene));
             }));
     }
 

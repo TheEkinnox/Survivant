@@ -21,9 +21,9 @@ namespace SvEditor::RuntimeBuild
 		void			RunBuild(std::string p_buildFilePath);
 
 	private:
-
-		static constexpr std::string_view RuntimeBuildFileName = "SurvivantRuntime.exe";
-		static constexpr std::string_view AssetsDirName = "assets";
+		static constexpr std::string_view RuntimeBuildLocalPath = "runtime\\Debug\\SurvivantRuntime.exe";
+		static constexpr std::string_view BuildConfigFileName = "buildConfig.txt";
+		static constexpr std::string_view AssetsDirLocalPath = "assets";
 		static constexpr std::string_view DefaultDownloadPath = "C:\\Users\\USER_NAME\\Downloads";
 		static inline std::string DefaultUserName = "USER_NAME"; //cant be constexpr bcs need to be std::string 
 
