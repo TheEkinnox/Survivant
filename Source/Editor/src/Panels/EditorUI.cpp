@@ -29,6 +29,8 @@
 #include "backends/imgui_impl_opengl3.h"
 #include "imgui_internal.h"
 
+#include "SurvivantApp/Core/IEngine.h"
+
 namespace SvEditor::Core
 {
     using namespace MenuItems;
@@ -258,36 +260,132 @@ namespace SvEditor::Core
         }
 
         Menu& menu4 = menuList.emplace_back("Scene");
+
         menu4.m_items.emplace_back(std::make_unique<MenuButton>(MenuButton(
             "Save",
-            [p_world](char) { p_world.lock()->Save(); },
+            [p_world](char)
+            {
+                auto& engine = SV_ENGINE();
+                if (engine->IsPlayInEditor())
+                {
+                    SV_LOG_WARNING("Can't save scene during play mode");
+                    return;
+                }
+
+                p_world.lock()->Save();
+                SV_LOG("Scene saved successfully");
+            },
             InputManager::KeyboardKeyType(EKey::S, EKeyState::PRESSED, EInputModifier::MOD_CONTROL),
             *m_inputs
-            )));
+        )));
+
+        menu4.m_items.emplace_back(std::make_unique<MenuButton>(MenuButton(
+            "Reload",
+            [p_world](char)
+            {
+                auto& engine = SV_ENGINE();
+                if (engine->IsPlayInEditor())
+                {
+                    SV_LOG_WARNING("Can't reload scene during play mode");
+                    return;
+                }
+
+                engine->ChangeScene(p_world.lock()->CurrentScene().GetPath());
+                SV_LOG("Scene reloaded successfully");
+            },
+            InputManager::KeyboardKeyType(EKey::R, EKeyState::PRESSED, EInputModifier::MOD_CONTROL),
+            *m_inputs
+        )));
+
+        Menu& entityMenu = menuList.emplace_back("Entity");
+
+        entityMenu.m_items.emplace_back(std::make_unique<MenuButton>(
+            "Add New",
+            [p_world](char)
+            {
+                if (const auto& scene = p_world.lock()->CurrentScene())
+                    scene->Create();
+            },
+            InputManager::KeyboardKeyType(EKey::N, EKeyState::PRESSED, EInputModifier::MOD_CONTROL),
+            *m_inputs
+        ));
+
+        entityMenu.m_items.emplace_back(std::make_unique<MenuButton>(
+            "Duplicate selected",
+            [p_world](char)
+            {
+                const auto                      world = p_world.lock();
+                SvCore::ECS::Scene*             scene = world->CurrentScene().Get();
+                const SvCore::ECS::EntityHandle entity(scene, world->m_renderingContext->s_editorSelectedEntity);
+                (void)entity.Copy();
+            },
+            InputManager::KeyboardKeyType(EKey::D, EKeyState::PRESSED, EInputModifier::MOD_CONTROL),
+            *m_inputs
+        ));
+
+        entityMenu.m_items.emplace_back(std::make_unique<MenuButton>(
+            "Remove selected",
+            [p_world](char)
+            {
+                const auto                      world = p_world.lock();
+                SvCore::ECS::Scene*             scene = world->CurrentScene().Get();
+                SvCore::ECS::EntityHandle entity(scene, world->m_renderingContext->s_editorSelectedEntity);
+                entity.Destroy();
+            },
+            InputManager::KeyboardKeyType(EKey::DEL, EKeyState::PRESSED, EInputModifier()),
+            *m_inputs
+        ));
 
         Menu& menu5 = menuList.emplace_back("Panels");
 
         menu5.m_items.emplace_back(std::make_unique<MenuButton>(
             "Build",
-            [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateBuildPanel); }));
+            [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateBuildPanel); },
+            InputManager::KeyboardKeyType(EKey::B, EKeyState::PRESSED, EInputModifier::MOD_ALT),
+            *m_inputs
+        ));
+
         menu5.m_items.emplace_back(std::make_unique<MenuButton>(
             "Console",
-            [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateConsolePanel); }));
+            [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateConsolePanel); },
+            InputManager::KeyboardKeyType(EKey::C, EKeyState::PRESSED, EInputModifier::MOD_ALT),
+            *m_inputs
+        ));
+
         menu5.m_items.emplace_back(std::make_unique<MenuButton>(
-            "Content",
-            [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateContentPanel); }));
+            "Assets",
+            [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateContentPanel); },
+            InputManager::KeyboardKeyType(EKey::A, EKeyState::PRESSED, EInputModifier::MOD_ALT),
+            *m_inputs
+        ));
+
         menu5.m_items.emplace_back(std::make_unique<MenuButton>(
             "Game",
-            [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateGamePanel); }));
+            [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateGamePanel); },
+            InputManager::KeyboardKeyType(EKey::G, EKeyState::PRESSED, EInputModifier::MOD_ALT),
+            *m_inputs
+        ));
+
         menu5.m_items.emplace_back(std::make_unique<MenuButton>(
             "Hierarchy",
-            [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateHierarchyPanel); }));
+            [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateHierarchyPanel); },
+            InputManager::KeyboardKeyType(EKey::H, EKeyState::PRESSED, EInputModifier::MOD_ALT),
+            *m_inputs
+        ));
+
         menu5.m_items.emplace_back(std::make_unique<MenuButton>(
             "Inspector",
-            [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateInspectorPanel); }));
+            [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateInspectorPanel); },
+            InputManager::KeyboardKeyType(EKey::I, EKeyState::PRESSED, EInputModifier::MOD_ALT),
+            *m_inputs
+        ));
+
         menu5.m_items.emplace_back(std::make_unique<MenuButton>(
             "Scene",
-            [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateScenePanel); }));
+            [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateScenePanel); },
+            InputManager::KeyboardKeyType(EKey::S, EKeyState::PRESSED, EInputModifier::MOD_ALT),
+            *m_inputs
+        ));
 
         return menuBar;
     }
