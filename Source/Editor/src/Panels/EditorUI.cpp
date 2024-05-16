@@ -122,9 +122,11 @@ namespace SvEditor::Core
 
                 HierarchyPanel::ToggleSelectable(entity);
 
-                auto entityPanel = InspectorItemManager::GetPanelableEntity(
-                    SvCore::ECS::EntityHandle(p_world.lock()->CurrentScene().Get(), currentSelected));
-                InspectorPanel::SetInpectorInfo(entityPanel, "Entity");
+                //auto entityPanel = InspectorItemManager::GetPanelableEntity(
+                //    SvCore::ECS::EntityHandle(p_world.lock()->CurrentScene().Get(), currentSelected));
+
+                //does this in ToggleSelectable
+                //InspectorPanel::SetInpectorInfo(entityPanel, "Entity");
             });
         
         ScenePanel::AddResizeListenner(

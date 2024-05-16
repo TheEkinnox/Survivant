@@ -48,7 +48,7 @@ namespace SvEditor::Panels
                 using namespace Core;
 
                 auto entityPanel = InspectorItemManager::GetPanelableEntity(
-                    EntityHandle(s_getCurrentScene().lock()->Get(), {}));
+                    EntityHandle());
 
                 InspectorPanel::SetInpectorInfo(entityPanel, "Entity");
                 ScenePanel::SelectEntity({});
@@ -170,7 +170,7 @@ namespace SvEditor::Panels
         auto name = FormatString("Entity(%d)", p_childEntity.GetEntity().GetIndex());
 
         return std::make_shared<HierarchyBranch>(
-            name, false, p_childEntity.GetEntity());
+            name, false, p_childEntity.GetEntity().GetIndex());
     }
 
     void HierarchyPanel::AddEntityBranch(
