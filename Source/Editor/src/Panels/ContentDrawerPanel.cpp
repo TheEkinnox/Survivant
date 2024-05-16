@@ -31,6 +31,13 @@ namespace SvEditor::Panels
     {
         m_name = NAME;
 
+        m_buttonList.m_buttons.reserve(1);
+        m_buttonList.m_buttons.emplace_back(PanelButton("Refresh", [this]() {  
+                SetupTree(); 
+                m_tree->ForceCloseChildreen(true);
+                m_tree->Select();
+            }));
+
         SetupTree();
 
         // setup folder callbacks
@@ -52,8 +59,6 @@ namespace SvEditor::Panels
 
                 return true; 
             };
-
-        m_tree->SetAllPriority(&ResourceBranch::HasChildreenPriority);
     }
 
     ContentDrawerPanel::~ContentDrawerPanel()
@@ -78,7 +83,10 @@ namespace SvEditor::Panels
         //tree
         {
             if (ImGui::BeginChild("ChildL", ImVec2(treeWidth, ImGui::GetContentRegionAvail().y), child_flags, window_flags))
+            {
+                m_buttonList.DisplayAndUpdatePanel();
                 m_tree.get()->DisplayAndUpdatePanel();
+            }
 
             ImGui::EndChild();
         }
@@ -87,9 +95,7 @@ namespace SvEditor::Panels
         auto pos = ImGui::GetCursorPos();
         ImGui::Button("##", ImVec2(5, ImGui::GetContentRegionAvail().y));
         if (ImGui::IsItemHovered())
-        {
             ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
-        }
 
         if (ImGui::IsItemActive())
         {
@@ -152,6 +158,7 @@ namespace SvEditor::Panels
         m_tree = std::make_shared<ResourceBranch>(root.filename().string());
 
         SetupBranches(m_tree, root);
+        m_tree->SetAllPriority(&ResourceBranch::HasChildreenPriority);
     }
 
     void ContentDrawerPanel::SetupBranches(

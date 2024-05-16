@@ -1,14 +1,16 @@
 //ContentDrawerPanel.h
 #pragma once
 
-#include "SurvivantCore/Utility/UnusedIdGenerator.h"
-#include "SurvivantCore/Resources/IResource.h"
-#include "SurvivantCore/Resources/ResourceRef.h"
 #include "SurvivantEditor/Interfaces/IPanelable.h"
 #include "SurvivantEditor/Panels/Panel.h"
+#include "SurvivantEditor/PanelItems/PanelButtonList.h"
 #include "SurvivantEditor/PanelItems/PanelSelectionBox.h"
 #include "SurvivantEditor/PanelItems/PanelTreeBranch.h"
-#include "SurvivantCore/Utility/TypeRegistry.h"
+
+#include <SurvivantCore/Utility/UnusedIdGenerator.h>
+#include <SurvivantCore/Resources/IResource.h>
+#include <SurvivantCore/Resources/ResourceRef.h>
+#include <SurvivantCore/Utility/TypeRegistry.h>
 
 #include <filesystem>
 #include <functional>
@@ -59,5 +61,6 @@ namespace SvEditor::Panels
 
 		std::shared_ptr<ResourceBranch>		m_tree;
 		PanelSelectionBox					m_grid;
+		PanelButtonList						m_buttonList;
 	};
 }
