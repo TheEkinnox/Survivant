@@ -126,6 +126,16 @@ namespace SvCore::ECS
         return child;
     }
 
+    EntityHandle EntityHandle::AddChild() const
+    {
+        if (!*this)
+            return {};
+
+        EntityHandle child = m_scene->Create();
+        child.SetParent(*this);
+        return child;
+    }
+
     std::vector<EntityHandle> EntityHandle::GetChildren() const
     {
         const HierarchyComponent* hierarchy = Get<HierarchyComponent>();

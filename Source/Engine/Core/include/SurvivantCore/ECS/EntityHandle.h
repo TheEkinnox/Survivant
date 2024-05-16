@@ -135,6 +135,11 @@ namespace SvCore::ECS
         EntityHandle GetChild(size_t p_index) const;
 
         /**
+         * \brief Sets the linked entity's parent
+         */
+        EntityHandle AddChild() const;
+
+        /**
          * \brief Gets the entity's children
          * \return A vector of the entity's children
          */
