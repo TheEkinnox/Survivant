@@ -90,6 +90,27 @@ namespace SvCore::ECS
         Set<HierarchyComponent>(tmp);
     }
 
+    void EntityHandle::SetParent(const EntityHandle p_parent, const bool p_keepWorld)
+    {
+        LibMath::Transform* transform = Get<LibMath::Transform>();
+
+        if (!transform)
+            return SetParent(p_parent);
+
+        if (p_keepWorld)
+        {
+            const LibMath::Matrix4 world = transform->getWorldMatrix();
+            SetParent(p_parent);
+            transform->setWorldMatrix(world);
+        }
+        else
+        {
+            const LibMath::Matrix4 local = transform->getMatrix();
+            SetParent(p_parent);
+            transform->setMatrix(local);
+        }
+    }
+
     EntityHandle EntityHandle::GetNextSibling() const
     {
         const HierarchyComponent* hierarchy = Get<HierarchyComponent>();

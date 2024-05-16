@@ -110,6 +110,13 @@ namespace SvCore::ECS
         void SetParent(EntityHandle p_parent);
 
         /**
+         * \brief Sets the linked entity's parent
+         * \param p_parent The entity's new parent
+         * \param p_keepWorld Whether the entity should keep its current world transform
+         */
+        void SetParent(EntityHandle p_parent, bool p_keepWorld);
+
+        /**
          * \brief Gets the entity's next sibling
          * \return A handle to the entity's next sibling if found or to NULL_ENTITY otherwise
          */
