@@ -27,7 +27,7 @@ namespace SvCore::Utility
      * \param p_path The path to convert
      * \return The converted path
      */
-    std::string MakePreferred(const std::string& p_path);
+    std::string MakePreferred(const std::string& p_path) noexcept;
 
     /**
      * \brief Appends the given path to the given root
@@ -35,26 +35,26 @@ namespace SvCore::Utility
      * \param p_path The path to append to the root
      * \return The concatenated paths
      */
-    std::string AppendPath(const std::string& p_root, const std::string& p_path);
+    std::string AppendPath(const std::string& p_root, const std::string& p_path) noexcept;
 
     /**
      * \brief Checks whether the given path is an absolute path or not
      * \param p_path The path to check
      * \return True if the path is absolute, false otherwise
      */
-    bool IsAbsolutePath(const std::string& p_path);
+    bool IsAbsolutePath(const std::string& p_path) noexcept;
 
     /**
      * \brief Converts the given path to an absolute path
      * \param p_path The path to convert to an absolute path
      * \return The absolute path
      */
-    std::string GetAbsolutePath(const std::string& p_path);
+    std::string GetAbsolutePath(const std::string& p_path) noexcept;
 
     /**
      * \brief Checks whether the given file path exists
      * \param p_path The path to check
      * \return True if the path exists. False otherwise
      */
-    bool PathExists(const std::string& p_path);
+    bool PathExists(const std::string& p_path) noexcept;
 }
