@@ -81,7 +81,6 @@ namespace SvEditor::PanelItems
 		// Inherited via ISelectable
 		void				SetSelectedState(bool p_isSelected)override;
 
-
 		enum class EForceState
 		{
 			NOTHING,

@@ -43,8 +43,20 @@ namespace SvEditor::Panels
                 return false; 
             };
 
+        SvCore::Events::Event<>::EventDelegate clearFunc = []()
+            {
+                using namespace Core;
+
+                auto entityPanel = InspectorItemManager::GetPanelableEntity(
+                    EntityHandle(s_getCurrentScene().lock()->Get(), {}));
+
+                InspectorPanel::SetInpectorInfo(entityPanel, "Entity");
+                ScenePanel::SelectEntity({});
+            };
+
         HierarchyBranch::s_branchesOnSelect =   selectFunc;
         HierarchyBranch::s_leavesOnSelect =     selectFunc;
+        HierarchyBranch::s_onClearSelected.AddListener(clearFunc);
     }
 
     HierarchyPanel::~HierarchyPanel()

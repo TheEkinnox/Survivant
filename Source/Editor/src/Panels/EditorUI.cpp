@@ -71,13 +71,13 @@ namespace SvEditor::Core
         SvEditor::Core::IUI::m_currentUI = this;
 
         //Propagate selection
-        ISelectable::m_onSelected.AddListener([this](ISelectable* p_selected) 
+        ISelectable::s_onSelected.AddListener([this](ISelectable* p_selected) 
             { 
             if (m_selected)
                 m_selected->ClearSelection(); 
             m_selected = p_selected; 
             });
-        ISelectable::m_onClearSelected.AddListener([this]() { m_selected = nullptr; });
+        ISelectable::s_onClearSelected.AddListener([this]() { m_selected = nullptr; });
     }
 
     void EditorUI::InitWindow(SvApp::Window* p_window)
@@ -117,6 +117,8 @@ namespace SvEditor::Core
                 auto& currentSelected = p_world.lock()->m_renderingContext->s_editorSelectedEntity;
                 if (currentSelected == entity)
                     currentSelected = SvCore::ECS::NULL_ENTITY;
+                else
+                    currentSelected = entity;
 
                 HierarchyPanel::ToggleSelectable(entity);
 
