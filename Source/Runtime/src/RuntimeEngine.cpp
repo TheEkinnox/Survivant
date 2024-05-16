@@ -56,7 +56,7 @@ namespace SvRuntime
 		world->m_lightsSSBO = IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, 0);
 		world->m_viewport = { 0, 0 };
 
-		
+
 		return world;
 	}
 
@@ -88,9 +88,17 @@ namespace SvRuntime
 		return true;
 	}
 
-	void RuntimeEngine::Render()
+	void RuntimeEngine::Render() const
 	{
-		RenderingContext::DefaultFBGameRendering(m_camera);
+		Scene* scene = m_world->CurrentScene().Get();
+		Renderer::UpdateLightSSBO(scene, *m_world->m_lightsSSBO);
+
+		Renderer::RenderInfo renderInfo{
+			.m_aspect = static_cast<float>(m_world->m_viewport.m_x) / static_cast<float>(m_world->m_viewport.m_y),
+			.m_scene = scene
+		};
+
+		m_world->m_renderingContext->GetRenderer().Render(renderInfo);
 	}
 
 	void RuntimeEngine::SetViewport(const LibMath::TVector2<int>& p_size)

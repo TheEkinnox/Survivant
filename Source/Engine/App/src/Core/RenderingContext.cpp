@@ -211,22 +211,6 @@ namespace SvApp::Core
         return m_renderer;
     }
 
-        struct
-        {
-            CameraComponent*    m_cam;
-            Transform*          m_trans;
-        }camInfo
-        {
-            .m_cam = p_cameraEntity.Get<CameraComponent>(),
-            .m_trans = p_cameraEntity.Get<Transform>()
-        };
-        
-        IRenderAPI::GetCurrent().Clear(true, true, true);
-
-        if (camInfo.m_cam && camInfo.m_trans)
-            DrawMainCameraScene(*p_cameraEntity.GetScene(), *camInfo.m_cam, *camInfo.m_trans);
-    }
-
     void RenderingContext::AddColorRenderPass()
     {
         std::shared_ptr<ITexture> color = m_frameTextures.emplace_back(CreateTexture(ETextureType::COLOR));

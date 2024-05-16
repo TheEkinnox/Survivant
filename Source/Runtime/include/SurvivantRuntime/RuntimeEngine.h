@@ -38,13 +38,13 @@ namespace SvRuntime
 		bool	IsPlayInEditor()override;
 
 		bool	IsRunning();
-		
+
 		//create PIE after press play
-		void	DestroyGameInstance();
-		void	UpdateGame();
-		void	Render();
-		void	SetViewport(const LibMath::TVector2<int>& p_size);
-		
+		void DestroyGameInstance();
+		void UpdateGame();
+		void Render() const;
+		void SetViewport(const LibMath::TVector2<int>& p_size);
+
 	private:
 		bool InitializeGameInstance();
 
