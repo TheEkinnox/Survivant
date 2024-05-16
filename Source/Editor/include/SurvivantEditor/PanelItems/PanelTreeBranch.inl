@@ -293,7 +293,7 @@ namespace SvEditor::PanelItems
         auto cliks = ImGui::GetMouseClickedCount(0);
 
         if (hov && cliks == 1)
-            Select();
+            ToggleSelection();
 
         else if (hov && cliks == 2)
             Open();

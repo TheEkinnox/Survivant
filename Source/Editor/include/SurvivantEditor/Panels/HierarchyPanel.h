@@ -32,7 +32,7 @@ namespace SvEditor::Panels
 		ERenderFlags Render() override;
 
 		static void SetCurrentSceneGetter(const CurrentSceneGetter& p_getCurrentScene);
-		static void SelectSelectable(const SvCore::ECS::Entity::Id& p_entity);
+		static void ToggleSelectable(const SvCore::ECS::Entity::Id& p_entity);
 
 		bool m_isDirty = false;
 		static constexpr char NAME[] = "Hierarchy";

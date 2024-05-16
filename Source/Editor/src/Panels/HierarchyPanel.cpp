@@ -247,7 +247,7 @@ namespace SvEditor::Panels
         s_getCurrentScene = p_getCurrentScene;
     }
 
-    void HierarchyPanel::SelectSelectable(const SvCore::ECS::Entity::Id& p_entity)
+    void HierarchyPanel::ToggleSelectable(const SvCore::ECS::Entity::Id& p_entity)
     {
         auto it = s_entities.find(p_entity);
 
@@ -260,7 +260,9 @@ namespace SvEditor::Panels
             return;
         }
 
-        it->second->Select();
+        auto& [id, branch] = *it;
+        if (branch)
+            branch->ToggleSelection();
     }
 
 }

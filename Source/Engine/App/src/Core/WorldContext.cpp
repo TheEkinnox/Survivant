@@ -47,7 +47,9 @@ namespace SvApp::Core
 
     void WorldContext::Save()
     {
-        CurrentScene()->Save(CurrentScene().GetPath());
+        auto& scene = CurrentScene();
+        scene->Save(scene.GetPath());
+        SV_LOG("Saved Scene: %s", scene.GetPath().c_str());
     }
 
     void WorldContext::BakeLighting()

@@ -44,7 +44,7 @@ namespace SvEditor::Interfaces
 		virtual void				DisplayAndUpdatePopupMenu() = 0;
 		virtual bool				GetSelectedState() = 0;
 
-		void						ClearSelection() { 
+		void ClearSelection() { 
 			
 			auto prevState = GetSelectedState();
 			SetSelectedState(false); 
@@ -52,6 +52,16 @@ namespace SvEditor::Interfaces
 			if (prevState)
 				m_onClearSelected.Invoke(); 
 		};
+
+		bool ToggleSelection()
+		{
+			if (GetSelectedState())
+				ClearSelection();
+			else
+				Select();
+
+			return GetSelectedState();
+		}
 
 		inline static SvCore::Events::Event<ISelectable*>	m_onOpened;
 		inline static SvCore::Events::Event<ISelectable*>	m_onSelected;

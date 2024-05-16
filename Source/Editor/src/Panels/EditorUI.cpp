@@ -114,11 +114,14 @@ namespace SvEditor::Core
 
                 SV_LOG(SvCore::Utility::FormatString("ID = %d", entity.GetIndex()).c_str());
 
-                p_world.lock()->m_renderingContext->s_editorSelectedEntity = entity;
-                HierarchyPanel::SelectSelectable(entity);
+                auto& currentSelected = p_world.lock()->m_renderingContext->s_editorSelectedEntity;
+                if (currentSelected == entity)
+                    currentSelected = SvCore::ECS::NULL_ENTITY;
+
+                HierarchyPanel::ToggleSelectable(entity);
 
                 auto entityPanel = InspectorItemManager::GetPanelableEntity(
-                    SvCore::ECS::EntityHandle(p_world.lock()->CurrentScene().Get(), entity));
+                    SvCore::ECS::EntityHandle(p_world.lock()->CurrentScene().Get(), currentSelected));
                 InspectorPanel::SetInpectorInfo(entityPanel, "Entity");
             });
         
