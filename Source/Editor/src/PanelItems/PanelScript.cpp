@@ -181,8 +181,8 @@ namespace SvEditor::PanelItems
                         },
                         [p_table, key](const std::tuple<PanelTextInput*>& p_textInput) mutable
                         {
-                            const std::string& str = std::get<0>(p_textInput)->GetText();
-                            p_table[key]           = str;
+                            auto& [input] = p_textInput;
+                            p_table[key]  = input->GetUpdatedText();
                         }
                     ));
 
