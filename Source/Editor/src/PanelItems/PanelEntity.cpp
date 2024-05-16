@@ -16,7 +16,9 @@ namespace SvEditor::PanelItems
 {
     PanelEntity::PanelEntity(const SvCore::ECS::EntityHandle& p_entity, const Components& p_component) :
         m_entity(p_entity),
-        m_remove("Remove", [p_entity]() { p_entity.GetScene()->Remove(p_entity); }),
+        m_remove("Remove", [this]() { m_entity.Destroy(); }),
+        m_addChild("Add Child", [this]() { (void)m_entity.AddChild(); }),
+        m_duplicate("Duplicate", [this]() { (void)m_entity.Copy(); }),
         m_luaScripts(std::make_unique<PanelScriptList>(p_entity))
     {
         m_index = "(" + std::to_string(p_entity.GetEntity().GetIndex()) + ')';
@@ -31,14 +33,12 @@ namespace SvEditor::PanelItems
             AddAndSortComponent(component);
     }
 
-    PanelEntity::PanelEntity(const PanelEntity& p_other) :
-        m_remove("", []() {})
+    PanelEntity::PanelEntity(const PanelEntity& p_other)
     {
         *this = p_other;
     }
 
-    PanelEntity::PanelEntity(PanelEntity&& p_other) noexcept :
-        m_remove("", []() { })
+    PanelEntity::PanelEntity(PanelEntity&& p_other) noexcept
     {
         *this = std::move(p_other);
     }
@@ -48,7 +48,10 @@ namespace SvEditor::PanelItems
         if (&p_other == this)
             return *this;
 
-        this->m_remove = PanelButton("Remove", [e = p_other.m_entity]() { e.GetScene()->Remove(e); });
+        this->m_remove = PanelButton("Remove", [this]() { m_entity.Destroy(); });
+        this->m_addChild = PanelButton("Add Child", [this]() { (void)m_entity.AddChild(); });
+        this->m_duplicate = PanelButton("Duplicate", [this]() { (void)m_entity.Copy(); });
+
         this->m_addComponent = std::make_shared<PanelPopupMenuButton>(PanelPopupMenuButton(
             "Add Component",
             [this]() { GetAllComponents(); },
@@ -70,7 +73,10 @@ namespace SvEditor::PanelItems
         if (&p_other == this)
             return *this;
 
-        this->m_remove = PanelButton("Remove", [e = p_other.m_entity]() { e.GetScene()->Remove(e.GetEntity()); });
+        this->m_remove = PanelButton("Remove", [this]() { m_entity.Destroy(); });
+        this->m_addChild = PanelButton("Add Child", [this]() { (void)m_entity.AddChild(); });
+        this->m_duplicate = PanelButton("Duplicate", [this]() { (void)m_entity.Copy(); });
+
         this->m_addComponent = std::make_shared<PanelPopupMenuButton>(PanelPopupMenuButton(
             "Add Component",
             [this]() { GetAllComponents(); },
@@ -92,6 +98,14 @@ namespace SvEditor::PanelItems
             return;
 
         m_remove.DisplayAndUpdatePanel();
+
+        ImGui::SameLine();
+
+        m_addChild.DisplayAndUpdatePanel();
+
+        ImGui::SameLine();
+
+        m_duplicate.DisplayAndUpdatePanel();
 
         ImGui::SeparatorText("Components");
 

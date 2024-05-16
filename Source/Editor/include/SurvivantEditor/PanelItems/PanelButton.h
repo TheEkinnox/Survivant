@@ -13,8 +13,12 @@ namespace SvEditor::PanelItems
 	public:
 		class OnButtonPressEvent : public SvCore::Events::Event<> {};
 
-		PanelButton(const std::string& p_name, const OnButtonPressEvent::EventDelegate& p_callback = nullptr) :
-			m_name(p_name)
+		PanelButton() : PanelButton("")
+		{
+		}
+
+		PanelButton(std::string p_name, const OnButtonPressEvent::EventDelegate& p_callback = nullptr) :
+			m_name(std::move(p_name))
 		{
 			if (p_callback != nullptr)
 				m_callback.AddListener(p_callback);
@@ -25,7 +29,7 @@ namespace SvEditor::PanelItems
 			m_callback(p_event)
 		{}
 
-		~PanelButton() = default;
+		~PanelButton() override = default;
 
 		void DisplayAndUpdatePanel()override;
 
