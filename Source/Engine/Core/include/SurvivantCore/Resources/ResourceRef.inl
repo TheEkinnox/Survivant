@@ -2,6 +2,7 @@
 #include "SurvivantCore/Resources/ResourceManager.h"
 #include "SurvivantCore/Resources/ResourceRef.h"
 #include "SurvivantCore/Resources/ResourceRegistry.h"
+#include "SurvivantCore/Utility/FileSystem.h"
 
 namespace SvCore::Resources
 {
@@ -168,6 +169,38 @@ namespace SvCore::Resources
     const std::string& ResourceRef<T>::GetPath() const
     {
         return m_path;
+    }
+
+    template <class T>
+    bool ResourceRef<T>::Export(const std::string& p_path)
+    {
+        if (!m_resource)
+            return false;
+
+        const ResourceManager&      resourceManager = ResourceManager::GetInstance();
+        const std::filesystem::path fullPath        = resourceManager.GetFullPath(m_path);
+
+        std::error_code err;
+        if (!p_path.empty())
+        {
+            const std::filesystem::path path(resourceManager.GetFullPath(p_path));
+
+            const bool shouldCopy = !equivalent(fullPath, p_path) && exists(fullPath);
+
+            if (shouldCopy && !(
+                CHECK(std::filesystem::create_directories(path.parent_path()) || err.value() == 0,
+                    "Failed to create directories for \"%s\" - %s", path.string().c_str(), err.message().c_str()) &&
+                CHECK(std::filesystem::copy_file(fullPath, path, err),
+                    "Failed to copy resource from \"%s\" to \"%s\":\n%s", fullPath.c_str(), p_path.c_str(), err.message().c_str())))
+                return false;
+        }
+        else if (!CHECK(std::filesystem::create_directories(fullPath.parent_path(), err) || err.value() == 0,
+                "Failed to create directories for \"%s\" - %s", fullPath.c_str(), err.message().c_str()))
+        {
+            return false;
+        }
+
+        return static_cast<IResource*>(m_resource)->Save(p_path.empty() ? fullPath.string() : p_path);
     }
 
     template <class T>

@@ -141,6 +141,13 @@ namespace SvCore::Resources
         const std::string& GetPath() const;
 
         /**
+         * \brief Exports the resource to the target path
+         * \param p_path The target export path
+         * \return True on success. False otherwise.
+         */
+        bool Export(const std::string& p_path = "");
+
+        /**
          * \brief Resets the resource reference
          */
         void Reset();
