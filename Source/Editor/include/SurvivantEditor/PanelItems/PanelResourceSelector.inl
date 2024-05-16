@@ -1,9 +1,12 @@
 //PanelResourceSelector.inl
 #pragma once
 
-#include "SurvivantCore/Resources/ResourceManager.h"
 #include "SurvivantEditor/MenuItems/MenuButton.h"
 #include "SurvivantEditor/PanelItems/PanelResourceSelector.h"
+#include "SurvivantEditor/Panels/ContentDrawerPanel.h"
+
+#include <SurvivantCore/Resources/ResourceRegistry.h>
+#include <SurvivantCore/Resources/ResourceManager.h>
 
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
@@ -90,9 +93,11 @@ namespace SvEditor::PanelItems
 	inline void PanelResourceSelector<T>::GetAllResources()
 	{
 		using namespace SvCore::Resources;
-		auto& rm = ResourceManager::GetInstance();
+		using namespace SvEditor::Panels;
 
-		std::vector<ResourceRef<T>> all = rm.GetAll<T>();
+		auto& rr = ResourceRegistry::GetInstance();
+
+		auto all = ContentDrawerPanel::GetAllFilePaths(rr.GetRegisteredTypeName<T>());
 
 		m_allResources->m_items.clear();
 		m_allResources->m_items.reserve(all.size() + 1);
@@ -105,12 +110,11 @@ namespace SvEditor::PanelItems
 			}
 		)));
 
-		for (ResourceRef<T>& resource : all)
+		for (const std::string& resourcePath : all)
 		{
-			std::string name = resource.GetPath();
-
 			m_allResources->m_items.emplace_back(std::make_unique<MenuButton>(MenuButton(
-				name, [this, resource](char) mutable {
+				resourcePath, [this, resourcePath](char) mutable {
+					ResourceRef<T> resource = ResourceManager::GetInstance().Load<T>(resourcePath);
 					this->GetRef() = resource;
 					if (this->m_callback)
 						this->m_callback(resource);

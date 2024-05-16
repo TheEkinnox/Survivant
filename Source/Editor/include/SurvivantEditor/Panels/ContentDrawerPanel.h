@@ -37,11 +37,10 @@ namespace SvEditor::Panels
 
 		static constexpr char NAME[] = "ContentDrawer";
 
+		static std::set<std::string> GetAllFilePaths(const std::string& p_type);
+
 	private:
 		using TypedStrings = std::unordered_map<std::string, std::set<std::string>>;
-
-		void SetupTree();
-		void SetupBranches(std::shared_ptr<ResourceBranch> p_parent, const std::filesystem::path& p_filePath);
 
 		static constexpr char DIRECTORY_PATH[] = "assets";
 		static inline const std::string DOUBLE_SLASH = "\\";
@@ -52,9 +51,11 @@ namespace SvEditor::Panels
 		static inline TypedStrings s_existingPaths;
 
 		static std::string GetType(const std::filesystem::path& p_filePath);
-		static SvCore::Resources::GenericResourceRef GetResourceRef(
-			const std::string& p_type,
-			const std::filesystem::path& p_filePath);
+		static std::string FormatPath(const std::filesystem::path& p_filePath);
+
+
+		void SetupTree();
+		void SetupBranches(std::shared_ptr<ResourceBranch> p_parent, const std::filesystem::path& p_filePath);
 
 		std::shared_ptr<ResourceBranch>		m_tree;
 		PanelSelectionBox					m_grid;
