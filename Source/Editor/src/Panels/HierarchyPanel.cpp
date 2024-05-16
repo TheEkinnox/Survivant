@@ -88,6 +88,16 @@ namespace SvEditor::Panels
                 //RemoveEntity(p_handle);
             });
 
+        if (!oldScene.expired())
+        {
+            auto& oldRef = *oldScene.lock()->Get();
+            oldRef.GetStorage<Entity>().m_onAdd.RemoveListener(m_onModifEntity[0]);
+            oldRef.GetStorage<Entity>().m_onRemove.RemoveListener(m_onModifEntity[1]);
+            oldRef.GetStorage<SvCore::ECS::HierarchyComponent>().m_onAdd.RemoveListener(m_onModifHierarchy[0]);
+            oldRef.GetStorage<SvCore::ECS::HierarchyComponent>().m_onRemove.RemoveListener(m_onModifHierarchy[1]);
+            oldRef.GetStorage<SvCore::ECS::HierarchyComponent>().m_onChange.RemoveListener(m_onModifHierarchy[2]);
+        }
+
         //tag dirty on hierarchy change
         m_onModifHierarchy[0] = GetScene().GetStorage<SvCore::ECS::HierarchyComponent>().m_onAdd.AddListener(
             [this](EntityHandle, SvCore::ECS::HierarchyComponent)
@@ -103,17 +113,7 @@ namespace SvEditor::Panels
             [this](EntityHandle, SvCore::ECS::HierarchyComponent)
             {
                 m_isDirty = true;
-            }); 
-
-        if (!oldScene.expired())
-        {
-            auto& oldRef = *oldScene.lock()->Get();
-            oldRef.GetStorage<Entity>().m_onAdd.RemoveListener(m_onModifEntity[0]);
-            oldRef.GetStorage<Entity>().m_onRemove.RemoveListener(m_onModifEntity[1]);
-            oldRef.GetStorage<SvCore::ECS::HierarchyComponent>().m_onAdd.RemoveListener(m_onModifHierarchy[0]);
-            oldRef.GetStorage<SvCore::ECS::HierarchyComponent>().m_onRemove.RemoveListener(m_onModifHierarchy[1]);
-            oldRef.GetStorage<SvCore::ECS::HierarchyComponent>().m_onChange.RemoveListener(m_onModifHierarchy[2]);
-        }
+            });
     }
 
     void HierarchyPanel::SetupTree()
