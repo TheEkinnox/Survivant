@@ -47,6 +47,8 @@ namespace SvEditor::PanelItems
 		SvCore::ECS::EntityHandle	m_entity;
 		Components					m_components;
 		PanelButton					m_remove;
+		PanelButton					m_addChild;
+		PanelButton					m_duplicate;
 
 		std::shared_ptr<PanelPopupMenuButton>	m_addComponent;
 		std::unique_ptr<PanelScriptList>		m_luaScripts;
