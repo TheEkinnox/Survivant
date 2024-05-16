@@ -162,8 +162,12 @@ namespace SvEditor::Core
 			PanelComponent::Items({
 				std::make_shared<PanelUInt32Input>(PanelUInt32Input(
 					"Parent      ",
-					PanelUInt32Input::GetCopyFunc([entity = p_entity]() mutable -> uint32_t { return
-						static_cast<uint32_t>(entity.Get<HierarchyComponent>()->GetParent().GetIndex()); }),
+					PanelUInt32Input::GetCopyFunc([entity = p_entity]() mutable -> uint32_t {
+					    if(HierarchyComponent* hierarchy = entity.Get<HierarchyComponent>())
+					        return static_cast<uint32_t>(hierarchy->GetParent().GetIndex());
+
+					    return static_cast<uint32_t>(NULL_ENTITY.GetIndex());
+				    }),
 					PanelUInt32Input::Callback([entity = p_entity](const uint32_t& p_index) mutable {
 						entity.SetParent(entity.GetScene()->Find(static_cast<Entity::Index>(p_index)));
 						//HierarchyPanel::s_isDirty = true;
