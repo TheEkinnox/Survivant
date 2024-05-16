@@ -7,19 +7,16 @@ namespace SvApp::Core
 {
     RenderingContext::RenderingContext(
         const MainCamera::Cam& p_cam, const LibMath::Transform& p_trans):
-        m_mainCamera(p_cam, p_trans)
+        m_renderer(std::make_unique<Renderer>()), m_mainCamera(p_cam, p_trans)
     {
     }
-    RenderingContext::RenderingContext(SvCore::ECS::EntityHandle p_entity) :
-        m_mainCamera(p_entity)
+    RenderingContext::RenderingContext(const SvCore::ECS::EntityHandle p_entity) :
+        m_renderer(std::make_unique<Renderer>()), m_mainCamera(p_entity)
     {
     }
 
     void RenderingContext::Render(Scene* p_scene)
     {
-        if (!m_renderer)
-            m_renderer = std::make_unique<Renderer>();
-
         IRenderAPI::GetCurrent().SetViewport(PosT::zero(), m_viewport);
 
         for (size_t i = 0; i < m_frameBuffers.size(); i++)
