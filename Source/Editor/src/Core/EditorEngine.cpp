@@ -110,35 +110,10 @@ namespace SvEditor::Core
 		using namespace SvCore;
 		using namespace SvApp;
 		using namespace Events;
-		using AddEvent = Events::Event<int, int>;
-		class ToggleEvent : public Events::Event<> {};
 
-		InputManager& im = InputManager::GetInstance();
 		std::shared_ptr<EditorEngine::Inputs> input = std::make_shared<EditorEngine::Inputs>();
 
 		auto& k = input->m_keyCallbacks;
-		auto& m = input->m_mouseKeyCallbacks;
-
-		EventManager& em = EventManager::GetInstance();
-		AddEvent::EventDelegate printAdd = [](int i, int j) { std::cout << "Add = " << i + j << std::endl; };
-		//ToggleEvent::EventDelegate toggle = std::bind(&SvApp::Window::ToggleFullScreenMode, &window);
-		em.AddListenner<AddEvent>(printAdd);
-		//em.AddListenner<ToggleEvent>(toggle);
-
-		//cant put MODS bsc of imgui
-		InputManager::KeyboardKeyType   a(EKey::A, EKeyState::RELEASED, EInputModifier());
-		InputManager::KeyboardKeyType   b(EKey::B, EKeyState::PRESSED, EInputModifier());
-		InputManager::MouseKeyType      mouse(EMouseButton::MOUSE_1, EMouseButtonState::PRESSED, EInputModifier());
-		InputManager::KeyboardKeyType   space(EKey::SPACE, EKeyState::PRESSED, EInputModifier());
-
-		auto test = [](char p_c) { return std::tuple<int, int>{ p_c, 10 }; };
-		//k.emplace(a, im.CreateInputEventBinding<AddEvent>(a, &AddInputTranslate));
-		//k.emplace(b, im.CreateInputEventBinding<AddEvent>(a, &AddInputTranslate));
-		k.emplace(space, im.CreateInputEventBinding<AddEvent>(space, &AddInputTranslate));
-		k.emplace(InputManager::KeyboardKeyType{ EKey::ESCAPE, EKeyState::PRESSED, EInputModifier() },
-			[this](char) { m_isRunning = false; });
-
-		m.emplace(mouse, im.CreateInputEventBinding<AddEvent>(mouse, &AddMouseTranslate));
 
 		//move camera in scene
 		k.emplace(InputManager::KeyboardKeyType{ EKey::W, EKeyState::PRESSED, EInputModifier() }, [this](const char)
