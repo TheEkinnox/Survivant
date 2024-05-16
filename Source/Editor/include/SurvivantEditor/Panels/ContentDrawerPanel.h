@@ -37,22 +37,22 @@ namespace SvEditor::Panels
 
 		static constexpr char NAME[] = "ContentDrawer";
 
-		static std::set<std::string> GetAllFilePaths(const std::string& p_type);
+		static std::vector<std::string> GetAllFilePaths(const std::string& p_type);
 
 	private:
-		using TypedStrings = std::unordered_map<std::string, std::set<std::string>>;
+		using TypeExtensions = std::unordered_map<std::string, std::set<std::string>>;
+		using TypeToBranch = std::unordered_map<std::string, std::vector<std::weak_ptr<ResourceBranch>>>;
 
 		static constexpr char DIRECTORY_PATH[] = "assets";
 		static inline const std::string DOUBLE_SLASH = "\\";
 		static inline const std::string SLASH = "/";
 
-		static TypedStrings CreateExtensions();
-		static inline TypedStrings s_fileExtensions;
-		static inline TypedStrings s_existingPaths;
+		static TypeExtensions CreateExtensions();
+		static inline TypeExtensions	s_fileExtensions;
+		static inline TypeToBranch		s_typedFiles;
 
 		static std::string GetType(const std::filesystem::path& p_filePath);
 		static std::string FormatPath(const std::filesystem::path& p_filePath);
-
 
 		void SetupTree();
 		void SetupBranches(std::shared_ptr<ResourceBranch> p_parent, const std::filesystem::path& p_filePath);

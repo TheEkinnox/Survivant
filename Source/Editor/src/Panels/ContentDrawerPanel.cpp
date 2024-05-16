@@ -147,7 +147,7 @@ namespace SvEditor::Panels
             }
         }
 
-        s_existingPaths.clear();
+        s_typedFiles.clear();
         s_fileExtensions = CreateExtensions();
         m_tree = std::make_shared<ResourceBranch>(root.filename().string());
 
@@ -173,10 +173,10 @@ namespace SvEditor::Panels
             p_parent->AddBranch(ptrBranch);
 
             if (!type.empty())
-                s_existingPaths[type].emplace(std::string(FormatPath(path)));
+                s_typedFiles[type].emplace_back(std::weak_ptr<ResourceBranch>(ptrBranch));
 
             if (dirEntry.is_directory())
-                directories.push_back({ ptrBranch, path });
+                directories.emplace_back(directory_ptr_and_path(ptrBranch, path));
         }
 
         for (auto& pair : directories)
@@ -209,7 +209,7 @@ namespace SvEditor::Panels
         return path;
     }
 
-    ContentDrawerPanel::TypedStrings ContentDrawerPanel::CreateExtensions()
+    ContentDrawerPanel::TypeExtensions ContentDrawerPanel::CreateExtensions()
     {
         using namespace SvCore::Resources;
         using namespace SvCore::ECS;
@@ -219,7 +219,7 @@ namespace SvEditor::Panels
 
         auto& rr = ResourceRegistry::GetInstance();
 
-        TypedStrings extensions;
+        TypeExtensions extensions;
         {
             
             auto& set = extensions.insert({ 
@@ -306,13 +306,20 @@ namespace SvEditor::Panels
         //can display other items
         return false;
     }
-    std::set<std::string> ContentDrawerPanel::GetAllFilePaths(const std::string& p_type)
+
+    std::vector<std::string> ContentDrawerPanel::GetAllFilePaths(const std::string& p_type)
     {
-        auto it = s_existingPaths.find(p_type);
-        if (it == s_existingPaths.end())
+        auto it = s_typedFiles.find(p_type);
+        if (it == s_typedFiles.end())
             return {};
 
-        auto& [type, paths] = *it;
+        auto& [type, branches] = *it;
+        std::vector<std::string> paths;
+        paths.reserve(branches.size());
+
+        for (auto& branch : branches)
+            paths.emplace_back(std::string(branch.lock()->GetPath()));
+
         return paths;
     }
 }
