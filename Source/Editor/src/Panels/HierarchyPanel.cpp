@@ -11,8 +11,7 @@
 #include "SurvivantEditor/Panels/ScenePanel.h"
 #include "SurvivantEditor/Panels/InspectorPanel.h"
 
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_opengl3.h"
+#include <imgui.h>
 
 using namespace SvCore::ECS;
 using namespace SvCore::Utility;
@@ -30,7 +29,7 @@ namespace SvEditor::Panels
 
         //propagate selection
         auto selectFunc = [](HierarchyBranch& p_branch)
-            { 
+            {
                 using namespace Core;
 
                 auto val = p_branch.GetValue();
@@ -40,7 +39,7 @@ namespace SvEditor::Panels
                 InspectorPanel::SetInpectorInfo(entityPanel, "Entity");
                 ScenePanel::SelectEntity(val);
                 p_branch.ForceOpenParents();
-                return false; 
+                return false;
             };
 
         HierarchyBranch::s_branchesOnSelect =   selectFunc;
@@ -155,14 +154,12 @@ namespace SvEditor::Panels
     std::shared_ptr<HierarchyPanel::HierarchyBranch> HierarchyPanel::CreateEntityBranch(
         const SvCore::ECS::EntityHandle& p_childEntity)
     {
-        auto name = FormatString("Entity(%d)", p_childEntity.GetEntity().GetIndex());
-
         return std::make_shared<HierarchyBranch>(
-            name, false, p_childEntity.GetEntity());
+            p_childEntity.GetDisplayName(), false, p_childEntity.GetEntity());
     }
 
     void HierarchyPanel::AddEntityBranch(
-        HierarchyBranch& p_parent, 
+        HierarchyBranch& p_parent,
         std::shared_ptr<HierarchyBranch> p_childBranch)
     {
         auto prio = SIZE_MAX - p_parent.GetChildren().size();
