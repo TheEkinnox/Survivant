@@ -191,6 +191,7 @@ namespace SvScripting::Bindings
             "previousSibling", sol::readonly_property(&EntityHandle::GetPreviousSibling),
             "childCount", sol::readonly_property(&EntityHandle::GetChildCount),
             "GetChild", &EntityHandle::GetChild,
+            "AddChild", &EntityHandle::AddChild,
             "children", sol::readonly_property(&EntityHandle::GetChildren),
             "HasScript", [](const EntityHandle& p_self, const std::string& p_name) -> bool
             {
