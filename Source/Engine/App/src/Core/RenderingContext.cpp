@@ -110,6 +110,7 @@ namespace SvApp::Core
             {
                 Vector4& colorRef = p_drawInfo.m_material->GetProperty<Vector4>("u_tint");
                 colorRef *= g_darkenColor;
+                p_drawInfo.m_material->Bind();
             }
         }
 
@@ -119,6 +120,7 @@ namespace SvApp::Core
             {
                 Vector4& colorRef = p_drawInfo.m_material->GetProperty<Vector4>("u_tint");
                 colorRef /= g_darkenColor;
+                p_drawInfo.m_material->Bind();
             }
         }
     }
