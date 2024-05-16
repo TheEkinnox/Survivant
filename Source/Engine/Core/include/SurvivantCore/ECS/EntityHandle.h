@@ -270,6 +270,13 @@ namespace SvCore::ECS
          */
         std::vector<std::pair<Utility::TypeId, void*>> GetComponents() const;
 
+        /**
+         * \brief Duplicate the linked entity
+         * \param New parent of the duplicated entity or current parent if NULL_ENTITY
+         * \return A Handle to a the duplicated entity
+         */
+        EntityHandle Duplicate(const Entity& p_newParent = NULL_ENTITY) const;
+
     private:
         Scene* m_scene;
         Entity m_entity;

@@ -2,6 +2,7 @@
 
 #include "SurvivantCore/ECS/Scene.h"
 #include "SurvivantCore/ECS/Components/Hierarchy.h"
+#include "SurvivantCore/Resources/ResourceRegistry.h"
 
 using namespace SvCore::Serialization;
 using namespace SvCore::Utility;
@@ -159,6 +160,28 @@ namespace SvCore::ECS
     std::vector<std::pair<TypeId, void*>> EntityHandle::GetComponents() const
     {
         return m_scene ? m_scene->GetComponents(m_entity) : std::vector<std::pair<TypeId, void*>>();
+    }
+
+    EntityHandle EntityHandle::Duplicate(const Entity& p_newParent) const
+    {
+        auto newEntity = m_scene->Create();
+        TypeId HeirarchyType = Resources::ResourceRegistry::GetInstance().GetTypeId<HierarchyComponent>();
+
+        for (auto& [type, component] : this->GetComponents())
+        {
+            if (type != HeirarchyType && !m_scene->GetStorage(type).Copy(m_entity, newEntity))
+            {
+                SV_LOG("Can't copy (%d) component", type);
+            }
+        }
+        //set parent and reset Hierarchy
+        newEntity.Set<HierarchyComponent>(
+            HierarchyComponent(p_newParent != NULL_ENTITY ? EntityHandle(m_scene, p_newParent) : GetParent()));
+
+        for (auto& child : GetChildren())
+            child.Duplicate(newEntity);
+
+        return newEntity;
     }
 
     std::ostream& operator<<(std::ostream& p_stream, const EntityHandle& p_handle)
