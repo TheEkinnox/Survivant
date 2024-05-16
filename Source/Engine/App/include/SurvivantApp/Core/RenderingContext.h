@@ -69,6 +69,8 @@ namespace SvApp::Core
 		void		UpdateCameraInput();
 		void		Resize(const Vec2& p_size);
 
+		const SvRendering::Core::Renderer& GetRenderer() const;
+
 		static void DefaultFBGameRendering(SvCore::ECS::EntityHandle& p_cameraEntity);
 
 		static inline SvCore::ECS::Entity s_editorSelectedEntity = SvCore::ECS::NULL_ENTITY;
@@ -83,7 +85,7 @@ namespace SvApp::Core
 		void		AddDefaultRenderPass();
 		TexturePtr	CreateTexture(const ETextureType& p_type);
 
-		std::unique_ptr<SvRendering::Core::Renderer> m_renderer;
+		SvRendering::Core::Renderer m_renderer;
 
 		LibMath::TVector2<int>		m_viewport = LibMath::Vector2(800, 600);
 		MainCamera					m_mainCamera;

@@ -7,11 +7,11 @@ namespace SvApp::Core
 {
     RenderingContext::RenderingContext(
         const MainCamera::Cam& p_cam, const LibMath::Transform& p_trans):
-        m_renderer(std::make_unique<Renderer>()), m_mainCamera(p_cam, p_trans)
+        m_mainCamera(p_cam, p_trans)
     {
     }
     RenderingContext::RenderingContext(const SvCore::ECS::EntityHandle p_entity) :
-        m_renderer(std::make_unique<Renderer>()), m_mainCamera(p_entity)
+        m_mainCamera(p_entity)
     {
     }
 
@@ -91,7 +91,7 @@ namespace SvApp::Core
 
     void RenderingContext::GameRender(Renderer::RenderInfo& p_renderInfo) const
     {
-        m_renderer->Render(p_renderInfo);
+        m_renderer.Render(p_renderInfo);
     }
 
     namespace
@@ -141,7 +141,7 @@ namespace SvApp::Core
         const uint8_t clearMask           = CameraComponent::PackClearMask(true, true, false);
         p_renderInfo.m_clearFlagsOverride = &clearMask;
 
-        m_renderer->Render(p_renderInfo);
+        m_renderer.Render(p_renderInfo);
     }
 
     void RenderingContext::SceneRender(Renderer::RenderInfo& p_renderInfo)
@@ -155,7 +155,7 @@ namespace SvApp::Core
         p_renderInfo.m_onAfterDraw  = &OnAfterSceneDraw;
 
         IRenderAPI::GetCurrent().Clear(true, true, true);
-        m_renderer->Render(p_renderInfo);
+        m_renderer.Render(p_renderInfo);
     }
 
     void RenderingContext::AddRenderPass(ERenderType p_type)
@@ -206,9 +206,10 @@ namespace SvApp::Core
             cam->SetAspect(static_cast<float>(m_viewport.m_x) / static_cast<float>(m_viewport.m_y));
     }
 
-    void RenderingContext::DefaultFBGameRendering(EntityHandle& p_cameraEntity)
+    const Renderer& RenderingContext::GetRenderer() const
     {
-        using namespace ToRemove;
+        return m_renderer;
+    }
 
         struct
         {
