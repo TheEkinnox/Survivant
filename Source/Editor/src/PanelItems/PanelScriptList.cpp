@@ -24,8 +24,9 @@ namespace SvEditor::PanelItems
         }
     }
 
-    PanelScriptList::PanelScriptList(const std::string& p_name, const EntityHandle& p_entity, const size_t p_priority)
-        : PanelComponent(p_name, {}, p_priority), m_entity(p_entity)
+    PanelScriptList::PanelScriptList(const EntityHandle& p_entity, const size_t p_priority)
+        : PanelComponent(ComponentRegistry::GetInstance().GetRegisteredTypeName<LuaScriptList>(), {}, p_priority),
+        m_entity(p_entity)
     {
         m_newScriptSelector = std::make_unique<PanelResourceSelector<LuaScript>>(
             "Add Script ",
@@ -34,6 +35,7 @@ namespace SvEditor::PanelItems
                 empty = {};
                 return empty;
             },
+            false,
             [this](const ResourceRef<LuaScript>& p_script)
             {
                 LuaScriptList* scriptList = m_entity.Get<LuaScriptList>();
@@ -41,16 +43,12 @@ namespace SvEditor::PanelItems
                 if (!scriptList)
                     scriptList = &m_entity.Make<LuaScriptList>();
 
-                const std::string script = p_script.GetPath();
+                const std::string& script = p_script.GetPath();
 
                 if (!scriptList->Contains(script))
-                {
                     AddScript(scriptList->Add(script));
-                }
                 else
-                {
                     SV_LOG_WARNING("Entity %s already contains script \"%s\"", m_entity.GetDisplayName().c_str(), script.c_str());
-                }
             }
         );
 
@@ -59,19 +57,25 @@ namespace SvEditor::PanelItems
 
     void PanelScriptList::DisplayAndUpdatePanel()
     {
-        static constexpr ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_DefaultOpen;
-
-        if (!m_entity || !ImGui::CollapsingHeader(m_name.c_str(), &m_isActive, flags))
+        if (!m_entity)
             return;
 
-        m_newScriptSelector->DisplayAndUpdatePanel();
+        DisplayList();
 
         ImGui::Spacing();
         ImGui::Separator();
         ImGui::Spacing();
 
-        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + PADDING);
-        ImGui::BeginGroup();
+        DisplayAddScript();
+    }
+
+    void PanelScriptList::DisplayList()
+    {
+        if (!m_entity || m_items.empty())
+            return;
+
+        ImGui::PushID(m_name.c_str());
+        ImGui::SeparatorText("Scripts");
 
         size_t currentIndex = 0;
         for (auto it = m_items.begin(); it != m_items.end(); ++currentIndex)
@@ -99,7 +103,15 @@ namespace SvEditor::PanelItems
                 it = m_items.erase(it);
         }
 
-        ImGui::EndGroup();
+        ImGui::PopID();
+    }
+
+    void PanelScriptList::DisplayAddScript() const
+    {
+        if (!m_entity)
+            return;
+
+        m_newScriptSelector->DisplayAndUpdatePanel();
     }
 
     void PanelScriptList::Init()

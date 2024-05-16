@@ -74,10 +74,13 @@ namespace SvEditor::Core
 		std::vector<PanelableComponent> panelables;
 		panelables.reserve(components.size());
 
-		for (auto& [type, component] : components)
+		for (auto& type : components | std::views::keys)
 		{
-			auto panel = GetPanelableComponent(type, p_entity);
-			if (panel)
+			// Scripts are handled by the entity's panel
+			if (type == ComponentRegistry::GetTypeId<LuaScriptList>())
+				continue;
+
+			if (auto panel = GetPanelableComponent(type, p_entity))
 				panelables.emplace_back(panel);
 		}
 
@@ -407,7 +410,7 @@ namespace SvEditor::Core
 	InspectorItemManager::PanelableComponent InspectorItemManager::AddComponentScriptList(
 		const SvCore::ECS::EntityHandle& p_entity)
 	{
-		return std::make_shared<PanelScriptList>("Scripts", p_entity);
+		return std::make_shared<PanelScriptList>(p_entity);
 	}
 
 	InspectorItemManager::PanelableResource InspectorItemManager::AddResourceMaterial(

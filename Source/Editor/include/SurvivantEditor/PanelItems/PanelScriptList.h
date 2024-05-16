@@ -10,14 +10,14 @@ namespace SvEditor::PanelItems
     class PanelScriptList final : public PanelComponent
     {
     public:
-        PanelScriptList(const std::string& p_name, const SvCore::ECS::EntityHandle& p_entity, size_t p_priority = 0);
+        explicit PanelScriptList(const SvCore::ECS::EntityHandle& p_entity, size_t p_priority = 0);
         ~PanelScriptList() override = default;
 
         void DisplayAndUpdatePanel() override;
+        void DisplayList();
+        void DisplayAddScript() const;
 
     private:
-        static constexpr int PADDING = 12;
-
         void Init();
         void AddScript(const SvScripting::LuaScriptHandle& p_script);
 
