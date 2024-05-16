@@ -11,8 +11,13 @@ namespace SvEditor::PanelItems
 
     void PanelDisabledTextInput::DisplayAndUpdatePanel()
     {
+        ImGui::Text("%s", m_name.c_str());
+        ImGui::SameLine();
+
+        ImGui::PushID(m_name.c_str());
         ImGui::BeginDisabled();
-        ImGui::InputText(m_name.c_str(), m_string.data(), m_string.size());
+        ImGui::InputText("##", m_string.data(), m_string.size(), ImGuiInputTextFlags_ReadOnly);
         ImGui::EndDisabled();
+        ImGui::PopID();
     }
 }
