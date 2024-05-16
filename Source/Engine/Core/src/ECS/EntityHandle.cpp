@@ -67,17 +67,17 @@ namespace SvCore::ECS
         if (!*this)
             return "None";
 
-        if (const TagComponent* tag = Get<TagComponent>())
+        if (const TagComponent* tag = Get<TagComponent>(); tag && tag->m_tag.empty())
             return tag->m_tag;
 
         std::ostringstream str;
-        str << m_entity;
+        str << "Entity " << m_entity;
         return str.str();
     }
 
     void EntityHandle::SetParent(const EntityHandle p_parent)
     {
-        HierarchyComponent* hierarchy = Get<HierarchyComponent>();
+        const HierarchyComponent* hierarchy = Get<HierarchyComponent>();
 
         if (!hierarchy)
         {
@@ -85,7 +85,7 @@ namespace SvCore::ECS
             return;
         }
 
-        auto tmp = *hierarchy;
+        HierarchyComponent tmp = *hierarchy;
         tmp.SetParent(p_parent);
         Set<HierarchyComponent>(tmp);
     }
