@@ -70,7 +70,7 @@ namespace SvRendering::Resources
          */
         bool Init() override;
 
-        bool Save(const std::string&) override
+        bool Save(const std::string&, const bool) override
         {
             return true;
         }

@@ -188,15 +188,28 @@ namespace SvRendering::RHI
         return m_loadInfo.FromJson(LoadJsonFile(metaPath));
     }
 
-    bool ITexture::Save(const std::string& p_fileName)
+    bool ITexture::Save(const std::string& p_path, const bool p_pretty)
     {
         JsonStringBuffer buffer;
-        JsonWriter       writer(buffer);
 
-        if (!m_loadInfo.ToJson(writer) || !ASSUME(writer.IsComplete(), "Failed to save texture data - Produced json is incomplete"))
-            return false;
+        if (!p_pretty)
+        {
+            JsonWriter writer(buffer);
 
-        const std::string metaPath = GetMetaPath(p_fileName);
+            if (!m_loadInfo.ToJson(writer) ||
+                !ASSUME(writer.IsComplete(), "Failed to save texture meta data - Generated json is incomplete"))
+                return false;
+        }
+        else
+        {
+            JsonPrettyWriter writer(buffer);
+
+            if (!m_loadInfo.ToJson(writer) ||
+                !ASSUME(writer.IsComplete(), "Failed to save texture meta data - Generated json is incomplete"))
+                return false;
+        }
+
+        const std::string metaPath = GetMetaPath(p_path);
         std::ofstream     fs(metaPath);
 
         if (!CHECK(fs.is_open(), "Unable to open texture meta file at path \"%s\"", metaPath.c_str()))

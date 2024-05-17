@@ -172,7 +172,7 @@ namespace SvCore::Resources
     }
 
     template <class T>
-    bool ResourceRef<T>::Export(const std::string& p_path)
+    bool ResourceRef<T>::Export(const bool p_pretty, const std::string& p_path)
     {
         if (!m_resource)
             return false;
@@ -200,7 +200,7 @@ namespace SvCore::Resources
             return false;
         }
 
-        return static_cast<IResource*>(m_resource)->Save(p_path.empty() ? fullPath.string() : p_path);
+        return static_cast<IResource*>(m_resource)->Save(p_path.empty() ? fullPath.string() : p_path, p_pretty);
     }
 
     template <class T>

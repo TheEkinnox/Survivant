@@ -75,10 +75,11 @@ namespace SvRendering::Resources
 
         /**
          * \brief Saves the material at the given path
-         * \param p_fileName The material's path
+         * \param p_path The material's path
+         * \param p_pretty Whether the output should be human-friendly
          * \return True on success. False otherwise
          */
-        bool Save(const std::string& p_fileName) override;
+        bool Save(const std::string& p_path, bool p_pretty = false) override;
 
         /**
          * \brief Serializes the material to json

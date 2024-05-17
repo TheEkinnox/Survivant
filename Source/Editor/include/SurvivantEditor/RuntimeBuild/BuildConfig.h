@@ -57,7 +57,7 @@ namespace SvEditor::RuntimeBuild
         // Inherited via IResource
         bool Init() override;
         bool Load(const std::string& p_fileName) override;
-        bool Save(const std::string& p_fileName) override;
+        bool Save(const std::string& p_path, bool p_pretty = false) override;
 
         bool ToJson(SvCore::Serialization::JsonWriter& p_writer) const;
         bool FromJson(const SvCore::Serialization::JsonValue& p_json);

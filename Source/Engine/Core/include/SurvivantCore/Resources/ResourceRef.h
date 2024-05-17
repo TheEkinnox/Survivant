@@ -142,10 +142,11 @@ namespace SvCore::Resources
 
         /**
          * \brief Exports the resource to the target path
+         * \param p_pretty Whether the output should be human-friendly
          * \param p_path The target export path
-         * \return True on success. False otherwise.
+         * \return True on success. False otherwise
          */
-        bool Export(const std::string& p_path = "");
+        bool Export(bool p_pretty = false, const std::string& p_path = "");
 
         /**
          * \brief Resets the resource reference
