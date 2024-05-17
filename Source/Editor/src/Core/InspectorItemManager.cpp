@@ -14,10 +14,10 @@
 #include "SurvivantRendering/Resources/Model.h"
 #include "SurvivantRendering/RHI/IShader.h"
 #include "SurvivantRendering/RHI/ITexture.h"
-#include "SurvivantScripting/LuaScriptList.h"
 
 #include "SurvivantEditor/Panels/HierarchyPanel.h"
 #include "SurvivantEditor/PanelItems/PanelButton.h"
+#include "SurvivantEditor/PanelItems/PanelCheckbox.h"
 #include "SurvivantEditor/PanelItems/PanelColorInput.h"
 #include "SurvivantEditor/PanelItems/PanelComponent.h"
 #include "SurvivantEditor/PanelItems/PanelFloatInput.h"
@@ -30,8 +30,14 @@
 #include "SurvivantEditor/PanelItems/PanelUInt32Input.h"
 #include "SurvivantEditor/PanelItems/PanelVec2Input.h"
 #include "SurvivantEditor/PanelItems/PanelVec3Input.h"
-#include "SurvivantEditor/PanelItems/PanelScript.h"
 #include "SurvivantEditor/PanelItems/PanelScriptList.h"
+
+#include <SurvivantPhysics/RigidBody.h>
+#include <SurvivantPhysics/Collider/BoxCollider.h>
+#include <SurvivantPhysics/Collider/CapsuleCollider.h>
+#include <SurvivantPhysics/Collider/SphereCollider.h>
+
+#include <SurvivantScripting/LuaScriptList.h>
 
 #include <Transform.h>
 
@@ -43,6 +49,10 @@ using namespace SvRendering::Enums;
 using namespace SvRendering::Resources;
 using namespace SvRendering::RHI;
 using namespace SvScripting;
+using namespace SvPhysics;
+
+using Material = SvRendering::Resources::Material;
+using PhysicsMaterial = SvPhysics::Material;
 
 namespace SvEditor::Core
 {
@@ -51,19 +61,28 @@ namespace SvEditor::Core
 		//resources
 		CHECK(AddResourceToPanelable<Scene>(&AddResourceDefault, "Scene"),			"Couldn't init resource type : Scene");
 		CHECK(AddResourceToPanelable<Model>(&AddResourceDefault, "Model"),			"Couldn't init resource type : Model");
-		CHECK(AddResourceToPanelable<Material>(&AddResourceDefault, "Material"),	"Couldn't init resource type : Material");
+		CHECK(AddResourceToPanelable<::Material>(&AddResourceDefault, "Material"),	"Couldn't init resource type : Material");
 		CHECK(AddResourceToPanelable<LuaScript>(&AddResourceDefault, "Script"),		"Couldn't init resource type : Script");
 		CHECK(AddResourceToPanelable<IShader>(&AddResourceDefault, "Shader"),		"Couldn't init resource type : Shader");
 		CHECK(AddResourceToPanelable<ITexture>(&AddResourceDefault, "Texture"),		"Couldn't init resource type : Texture");
+
+		CHECK(AddResourceToPanelable<PhysicsMaterial>(&AddResourceDefault, "PhysicsMaterial"),	"Couldn't init resource type : Physics Material");
 
 		//components
 		CHECK(AddComponentToPanelable<Transform>(&AddComponentTransform, "Transform"),				"Couldn't init component type : Transform");
 		CHECK(AddComponentToPanelable<HierarchyComponent>(&AddComponentHierarchy, "Hierarchy"),		"Couldn't init component type : Hierarchy");
 		CHECK(AddComponentToPanelable<TagComponent>(&AddComponentTag, "Tag"),						"Couldn't init component type : Tag");
+
 		CHECK(AddComponentToPanelable<LightComponent>(&AddComponentLight, "Light"),					"Couldn't init component type : Light");
 		CHECK(AddComponentToPanelable<ModelComponent>(&AddComponentModel, "Model"),					"Couldn't init component type : Model");
 		CHECK(AddComponentToPanelable<CameraComponent>(&AddComponentCamera, "Camera"),				"Couldn't init component type : Camera");
+
 		CHECK(AddComponentToPanelable<LuaScriptList>(&AddComponentScriptList, "ScriptList"),		"Couldn't init component type : ScriptList");
+
+		CHECK(AddComponentToPanelable<RigidBody>(&AddComponentRigidBody, "RigidBody"),						"Couldn't init component type : RigidBody");
+		CHECK(AddComponentToPanelable<BoxCollider>(&AddComponentBoxCollider, "BoxCollider"),				"Couldn't init component type : BoxCollider");
+		CHECK(AddComponentToPanelable<SphereCollider>(&AddComponentSphereCollider, "SphereCollider"),		"Couldn't init component type : SphereCollider");
+		CHECK(AddComponentToPanelable<CapsuleCollider>(&AddComponentCapsuleCollider, "CapsuleCollider"),	"Couldn't init component type : CapsuleCollider");
 	}
 
 	InspectorItemManager::PanelableEntity InspectorItemManager::GetPanelableEntity(
@@ -400,8 +419,8 @@ namespace SvEditor::Core
 						"Model    ", [entity = p_entity]() mutable -> ResourceRef<Model>& { return
 							entity.Get<ModelComponent>()->m_model; }
 					)),
-					std::make_shared<PanelResourceSelector<Material>>(PanelResourceSelector<Material>(
-						"Material ", [entity = p_entity]() mutable -> ResourceRef<Material>&{ return
+					std::make_shared<PanelResourceSelector<::Material>>(PanelResourceSelector<::Material>(
+						"Material ", [entity = p_entity]() mutable -> ResourceRef<::Material>&{ return
 							entity.Get<ModelComponent>()->m_material; }
 					))
 				}));
@@ -410,9 +429,150 @@ namespace SvEditor::Core
 	}
 
 	InspectorItemManager::PanelableComponent InspectorItemManager::AddComponentScriptList(
-		const SvCore::ECS::EntityHandle& p_entity)
+		const EntityHandle& p_entity)
 	{
 		return std::make_shared<PanelScriptList>(p_entity);
+	}
+
+	InspectorItemManager::PanelableComponent InspectorItemManager::AddComponentRigidBody(const EntityHandle& p_entity)
+	{
+		const std::string typeName = ComponentRegistry::GetInstance().GetRegisteredTypeName<RigidBody>();
+
+		return std::make_shared<PanelComponent>(typeName, PanelComponent::Items({
+			std::make_shared<PanelFloatInput>("Mass\t\t",
+				[p_entity]
+				{
+					return p_entity.Get<RigidBody>()->GetMass();
+				},
+				[entity = p_entity](const float p_value) mutable
+				{
+					entity.Get<RigidBody>()->SetMass(p_value);
+				}
+			),
+			std::make_shared<PanelCheckbox>("Is Kinematic\t\t",
+				[p_entity]
+				{
+					return p_entity.Get<RigidBody>()->IsKinematic();
+				},
+				[entity = p_entity](const bool p_value) mutable
+				{
+					entity.Get<RigidBody>()->SetKinematic(p_value);
+				}
+			),
+			std::make_shared<PanelCheckbox>("Use Gravity\t\t",
+				[p_entity]
+				{
+					return p_entity.Get<RigidBody>()->CanUseGravity();
+				},
+				[entity = p_entity](const bool p_value) mutable
+				{
+					entity.Get<RigidBody>()->SetUseGravity(p_value);
+				}
+			),
+			std::make_shared<PanelUniqueSelection>("Collision Detection\t",
+				std::vector<std::string>({ "Discrete", "Continuous", "Continuous Speculative" }),
+				[p_entity]
+				{
+					return static_cast<int>(p_entity.Get<RigidBody>()->GetCollisionDetectionMode());
+				},
+				[entity = p_entity](const int p_value) mutable
+				{
+					ECollisionDetectionMode detectionMode;
+					switch (p_value)
+					{
+					case 0:
+						detectionMode = ECollisionDetectionMode::DISCRETE;
+						break;
+					case 1:
+						detectionMode = ECollisionDetectionMode::CONTINUOUS;
+						break;
+					case 2:
+						detectionMode = ECollisionDetectionMode::CONTINUOUS_SPECULATIVE;
+						break;
+					default:
+						ASSERT(false, "Unsupported collision detection mode");
+						return;
+					}
+
+					entity.Get<RigidBody>()->SetCollisionDetectionMode(detectionMode);
+				}
+			)
+		}));
+	}
+
+	namespace
+	{
+		template <typename T>
+		InspectorItemManager::PanelableComponent MakePanelCollider(const EntityHandle& p_entity, PanelComponent::Items&& p_items)
+		{
+			static_assert(std::is_base_of_v<ICollider, T>);
+
+			p_items.emplace(p_items.begin(), std::make_shared<PanelVec3Input>("Offset\t\t",
+				[entity = p_entity]() mutable -> Vector3& {
+					return static_cast<ICollider*>(entity.Get<T>())->m_offset;
+				}
+			));
+
+			p_items.emplace(p_items.begin(), std::make_shared<PanelCheckbox>("Is Trigger\t",
+				[entity = p_entity]() mutable -> bool& {
+					return static_cast<ICollider*>(entity.Get<T>())->m_isTrigger;
+				}
+			));
+
+			p_items.emplace(p_items.begin(), std::make_shared<PanelResourceSelector<PhysicsMaterial>>("Material\t",
+				[entity = p_entity]() mutable -> SvCore::Resources::ResourceRef<PhysicsMaterial>& {
+					return static_cast<ICollider*>(entity.Get<T>())->m_material;
+				}
+			));
+
+			const std::string typeName = ComponentRegistry::GetInstance().GetRegisteredTypeName<T>();
+			return std::make_shared<PanelComponent>(typeName, std::move(p_items));
+		}
+	}
+
+	InspectorItemManager::PanelableComponent InspectorItemManager::AddComponentBoxCollider(
+		const EntityHandle& p_entity)
+	{
+		PanelComponent::Items items
+		({
+			std::make_shared<PanelVec3Input>("Size\t\t", [entity = p_entity]() mutable -> Vector3& {
+				return entity.Get<BoxCollider>()->m_size;
+			})
+		});
+
+		return MakePanelCollider<BoxCollider>(p_entity, std::move(items));
+	}
+
+	InspectorItemManager::PanelableComponent InspectorItemManager::AddComponentSphereCollider(
+		const EntityHandle& p_entity)
+	{
+		PanelComponent::Items items
+		({
+			std::make_shared<PanelFloatInput>("Radius\t\t", [entity = p_entity]() mutable -> float& {
+				return entity.Get<SphereCollider>()->m_radius;
+			})
+		});
+
+		return MakePanelCollider<SphereCollider>(p_entity, std::move(items));
+	}
+
+	InspectorItemManager::PanelableComponent InspectorItemManager::AddComponentCapsuleCollider(
+		const EntityHandle& p_entity)
+	{
+		PanelComponent::Items items
+		({
+			std::make_shared<PanelVec3Input>("Axis\t\t", [entity = p_entity]() mutable -> Vector3& {
+				return entity.Get<CapsuleCollider>()->m_axis;
+			}),
+			std::make_shared<PanelFloatInput>("Height\t\t", [entity = p_entity]() mutable -> float& {
+				return entity.Get<CapsuleCollider>()->m_height;
+			}),
+			std::make_shared<PanelFloatInput>("Radius\t\t", [entity = p_entity]() mutable -> float& {
+				return entity.Get<CapsuleCollider>()->m_radius;
+			})
+		});
+
+		return MakePanelCollider<CapsuleCollider>(p_entity, std::move(items));
 	}
 
 	InspectorItemManager::PanelableResource InspectorItemManager::AddResourceMaterial(
@@ -422,7 +582,7 @@ namespace SvEditor::Core
 		using namespace SvRendering::RHI;
 		using namespace SvCore::Resources;
 
-		ResourceRef<Material> resource = p_resource;
+		ResourceRef<::Material> resource = p_resource;
 
 		auto component = PanelResourceDisplay(p_resource, "Ma",
 			PanelResourceDisplay::Items({
