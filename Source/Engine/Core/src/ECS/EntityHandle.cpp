@@ -77,7 +77,7 @@ namespace SvCore::ECS
 
     void EntityHandle::SetParent(const EntityHandle p_parent)
     {
-        const HierarchyComponent* hierarchy = Get<HierarchyComponent>();
+        HierarchyComponent* hierarchy = Get<HierarchyComponent>();
 
         if (!hierarchy)
         {
@@ -85,9 +85,8 @@ namespace SvCore::ECS
             return;
         }
 
-        HierarchyComponent tmp = *hierarchy;
-        tmp.SetParent(p_parent);
-        Set<HierarchyComponent>(tmp);
+        hierarchy->SetParent(p_parent);
+        Set<HierarchyComponent>(*hierarchy);
     }
 
     void EntityHandle::SetParent(const EntityHandle p_parent, const bool p_keepWorld)

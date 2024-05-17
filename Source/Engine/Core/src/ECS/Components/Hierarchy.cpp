@@ -224,10 +224,7 @@ namespace SvCore::ECS
             child = nextSibling;
         }
 
-        HierarchyComponent& copy = *p_to.Get<HierarchyComponent>();
-        copy.m_nextSibling       = NULL_ENTITY;
-        copy.m_previousSibling   = NULL_ENTITY;
-        return copy;
+        return *p_to.Get<HierarchyComponent>();
     }
 
     template <>
