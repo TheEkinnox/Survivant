@@ -1,10 +1,10 @@
 #pragma once
-#include "SurvivantCore/ECS/ComponentRegistry.h"
-
-#include "SurvivantRendering/Enums/EProjectionType.h"
 #include "SurvivantRendering/Core/Camera.h"
 #include "SurvivantRendering/Core/Color.h"
 #include "SurvivantRendering/Core/Layer.h"
+#include "SurvivantRendering/Enums/EProjectionType.h"
+
+#include <SurvivantCore/Serialization/MathSerializers.h>
 
 namespace SvRendering::Components
 {
@@ -81,6 +81,18 @@ namespace SvRendering::Components
         bool FromJson(const SvCore::Serialization::JsonValue& p_json);
 
         /**
+         * \brief Checks whether the camera component is currently active or not
+         * \return True if the camera component is currently active. False otherwise
+         */
+        bool IsActive() const;
+
+        /**
+         * \brief Sets the camera component's active flag
+         * \param p_isActive The camera component's new active flag value
+         */
+        void SetActive(bool p_isActive);
+
+        /**
          * \brief Recalculates the camera's view-projection matrix
          * \param p_view The camera's view matrix
          */
@@ -139,6 +151,24 @@ namespace SvRendering::Components
          * \return A reference to the modified component
          */
         CameraComponent& SetClearMask(uint8_t p_clearMask);
+
+        /**
+         * \brief Breaks the buffer clearing mask into separate values
+         * \param p_mask The input clear mask
+         * \param p_color The output clear color flag
+         * \param p_depth The output clear depth flag
+         * \param p_stencil The output clear stencil flag
+         */
+        static void BreakClearMask(uint8_t p_mask, bool& p_color, bool& p_depth, bool& p_stencil);
+
+        /**
+         * \brief Packs the buffer clearing flags into a mask
+         * \param p_color The clear color flag
+         * \param p_depth The clear depth flag
+         * \param p_stencil The clear stencil flag
+         * \return The resulting clear mask
+         */
+        static uint8_t PackClearMask(bool p_color, bool p_depth, bool p_stencil);
 
         /**
          * \brief Breaks the buffer clearing mask into separate values
@@ -297,7 +327,9 @@ namespace SvRendering::Components
         float m_orthographicFar;
 
         float m_aspect;
-        bool  m_isDirty;
+
+        bool m_isActive = true;
+        bool m_isDirty;
 
         /**
          * \brief Recalculates the camera's projection matrix

@@ -11,7 +11,7 @@ namespace SvEditor::PanelItems
 	{
 	public:
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="p_selectable">Displayed options</param>
 		/// <param name="p_callback">callback with all selected flags as a parameter</param>
@@ -31,7 +31,7 @@ namespace SvEditor::PanelItems
 			const GetCopyFunc& p_getCopy,
 			const Callback& p_callback);
 
-		~PanelUniqueSelection() = default;
+		~PanelUniqueSelection() override = default;
 
 		virtual void DisplayAndUpdatePanel() override;
 

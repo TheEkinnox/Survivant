@@ -5,6 +5,19 @@
 
 namespace SvRendering::RHI
 {
+    void IFrameBuffer::BindDefault()
+    {
+        switch (IRenderAPI::GetCurrent().GetBackend())
+        {
+        case EGraphicsAPI::OPENGL:
+            return OpenGLFrameBuffer::BindDefault();
+        case EGraphicsAPI::NONE:
+        default:
+            ASSERT(false, "Failed to bind default frame buffer - Unsupported graphics api");
+            return;
+        }
+    }
+
     std::unique_ptr<IFrameBuffer> IFrameBuffer::Create()
     {
         switch (IRenderAPI::GetCurrent().GetBackend())

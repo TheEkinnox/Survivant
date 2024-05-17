@@ -31,17 +31,28 @@ namespace SvCore::Resources
             return nullptr;
         }
     }
+
+    template <>
+    ITexture* GetDefaultResource<ITexture>()
+    {
+        return &ITexture::GetDefault();
+    }
 }
 
 namespace SvRendering::RHI
 {
-    ITexture::ITexture(const int p_width, const int p_height, const EPixelDataFormat p_format)
-        : m_width(p_width), m_height(p_height), m_channels(ToChannelCount(p_format))
+    ITexture::ITexture(
+        const int p_width, const int p_height, const EPixelDataFormat p_internalFormat, const EPixelDataFormat p_dataFormat,
+        const EPixelDataType p_dataType)
+        : m_width(p_width), m_height(p_height), m_channels(ToChannelCount(p_dataFormat)),
+        m_internalFormat(p_internalFormat), m_dataFormat(p_dataFormat), m_dataType(p_dataType)
     {
     }
 
     ITexture::ITexture(const ITexture& p_other)
-        : IResource(p_other), m_width(p_other.m_width), m_height(p_other.m_height), m_channels(p_other.m_channels)
+        : IResource(p_other), m_width(p_other.m_width), m_height(p_other.m_height), m_channels(p_other.m_channels),
+        m_internalFormat(p_other.m_internalFormat), m_dataFormat(p_other.m_dataFormat), m_dataType(p_other.m_dataType),
+        m_loadInfo(p_other.m_loadInfo)
     {
         if (p_other.m_data == nullptr)
         {
@@ -55,8 +66,8 @@ namespace SvRendering::RHI
 
     ITexture::ITexture(ITexture&& p_other) noexcept
         : IResource(std::forward<IResource&&>(p_other)), m_data(p_other.m_data), m_width(p_other.m_width),
-        m_height(p_other.m_height),
-        m_channels(p_other.m_channels)
+        m_height(p_other.m_height), m_channels(p_other.m_channels), m_internalFormat(p_other.m_internalFormat),
+        m_dataFormat(p_other.m_dataFormat), m_dataType(p_other.m_dataType), m_loadInfo(p_other.m_loadInfo)
     {
         p_other.m_data = nullptr;
     }
@@ -69,46 +80,57 @@ namespace SvRendering::RHI
 
     ITexture& ITexture::operator=(const ITexture& p_other)
     {
-        if (&p_other == this)
-            return *this;
-
-        m_width    = p_other.m_width;
-        m_height   = p_other.m_height;
-        m_channels = p_other.m_channels;
-        m_loadInfo = p_other.m_loadInfo;
-
-        if (m_data != nullptr)
-            stbi_image_free(m_data);
-
-        if (p_other.m_data == nullptr)
-        {
-            m_data = nullptr;
-            return *this;
-        }
-
-        m_data = stbi_load_from_memory(p_other.m_data, p_other.m_width * p_other.m_height * p_other.m_channels, &m_width, &m_height,
-            reinterpret_cast<int*>(&m_channels), 0);
-
+        Copy(p_other);
         return *this;
     }
 
     ITexture& ITexture::operator=(ITexture&& p_other) noexcept
     {
+        Move(std::move(p_other));
+        return *this;
+    }
+
+    void ITexture::Copy(const ITexture& p_other)
+    {
         if (&p_other == this)
-            return *this;
+            return;
+
+        m_width          = p_other.m_width;
+        m_height         = p_other.m_height;
+        m_channels       = p_other.m_channels;
+        m_internalFormat = p_other.m_internalFormat;
+        m_dataFormat     = p_other.m_dataFormat;
+        m_dataType       = p_other.m_dataType;
+        m_loadInfo       = p_other.m_loadInfo;
 
         if (m_data != nullptr)
             stbi_image_free(m_data);
 
-        m_width    = p_other.m_width;
-        m_height   = p_other.m_height;
-        m_channels = p_other.m_channels;
-        m_data     = p_other.m_data;
-        m_loadInfo = p_other.m_loadInfo;
+        if (p_other.m_data)
+            m_data = stbi_load_from_memory(p_other.m_data, p_other.m_width * p_other.m_height * p_other.m_channels, &m_width,
+                &m_height, reinterpret_cast<int*>(&m_channels), 0);
+        else
+            m_data = nullptr;
+    }
+
+    void ITexture::Move(ITexture&& p_other)
+    {
+        if (&p_other == this)
+            return;
+
+        if (m_data != nullptr)
+            stbi_image_free(m_data);
+
+        m_data           = p_other.m_data;
+        m_width          = p_other.m_width;
+        m_height         = p_other.m_height;
+        m_channels       = p_other.m_channels;
+        m_internalFormat = p_other.m_internalFormat;
+        m_dataFormat     = p_other.m_dataFormat;
+        m_dataType       = p_other.m_dataType;
+        m_loadInfo       = p_other.m_loadInfo;
 
         p_other.m_data = nullptr;
-
-        return *this;
     }
 
     ITexture& ITexture::GetDefault()
@@ -136,6 +158,28 @@ namespace SvRendering::RHI
         if (!CHECK(m_data != nullptr, "Unable to load texture from path \"%s\"", p_path.c_str()))
             return false;
 
+        switch (m_channels)
+        {
+        case 1:
+            m_dataFormat = EPixelDataFormat::RED;
+            break;
+        case 2:
+            m_dataFormat = EPixelDataFormat::RG;
+            break;
+        case 3:
+            m_dataFormat = EPixelDataFormat::RGB;
+            break;
+        case 4:
+            m_dataFormat = EPixelDataFormat::RGBA;
+            break;
+        default:
+            ASSERT(false, "Failed to deduce texture format from channel count");
+            break;
+        }
+
+        m_internalFormat = EPixelDataFormat::RGBA;
+        m_dataType       = EPixelDataType::UNSIGNED_BYTE;
+
         const std::string metaPath = GetMetaPath(p_path);
 
         if (!PathExists(metaPath))
@@ -144,15 +188,28 @@ namespace SvRendering::RHI
         return m_loadInfo.FromJson(LoadJsonFile(metaPath));
     }
 
-    bool ITexture::Save(const std::string& p_fileName)
+    bool ITexture::Save(const std::string& p_path, const bool p_pretty)
     {
         JsonStringBuffer buffer;
-        JsonWriter       writer(buffer);
 
-        if (!m_loadInfo.ToJson(writer) || !ASSUME(writer.IsComplete(), "Failed to save texture data - Produced json is incomplete"))
-            return false;
+        if (!p_pretty)
+        {
+            JsonWriter writer(buffer);
 
-        const std::string metaPath = GetMetaPath(p_fileName);
+            if (!m_loadInfo.ToJson(writer) ||
+                !ASSUME(writer.IsComplete(), "Failed to save texture meta data - Generated json is incomplete"))
+                return false;
+        }
+        else
+        {
+            JsonPrettyWriter writer(buffer);
+
+            if (!m_loadInfo.ToJson(writer) ||
+                !ASSUME(writer.IsComplete(), "Failed to save texture meta data - Generated json is incomplete"))
+                return false;
+        }
+
+        const std::string metaPath = GetMetaPath(p_path);
         std::ofstream     fs(metaPath);
 
         if (!CHECK(fs.is_open(), "Unable to open texture meta file at path \"%s\"", metaPath.c_str()))

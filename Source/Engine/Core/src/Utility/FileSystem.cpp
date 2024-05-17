@@ -1,4 +1,6 @@
 #include "SurvivantCore/Utility/FileSystem.h"
+
+#include "SurvivantCore/Debug/Assertion.h"
 #include "SurvivantCore/Utility/LeanWindows.h"
 
 #include <direct.h>
@@ -26,7 +28,8 @@ namespace SvCore::Utility
 
     std::string GetWorkingDirectory()
     {
-        auto tmp = std::filesystem::current_path().string();
+        std::error_code err;
+        auto            tmp = std::filesystem::current_path(err).string();
 
         if (!tmp.ends_with(std::filesystem::path::preferred_separator))
             tmp += std::filesystem::path::preferred_separator;
@@ -39,23 +42,34 @@ namespace SvCore::Utility
         return _chdir(p_directory.c_str()) == 0;
     }
 
-    std::string MakePreferred(const std::string& p_path)
+    std::string MakePreferred(const std::string& p_path) noexcept
     {
         return std::filesystem::path(p_path).make_preferred().string();
     }
 
-    std::string AppendPath(const std::string& p_root, const std::string& p_path)
+    std::string AppendPath(const std::string& p_root, const std::string& p_path) noexcept
     {
         return std::filesystem::path(p_root).append(p_path).make_preferred().string();
     }
 
-    std::string GetAbsolutePath(const std::string& p_path)
+    bool IsAbsolutePath(const std::string& p_path) noexcept
     {
-        return std::filesystem::absolute(p_path).string();
+        return std::filesystem::path(p_path).is_absolute();
     }
 
-    bool PathExists(const std::string& p_path)
+    std::string GetAbsolutePath(const std::string& p_path) noexcept
     {
-        return std::filesystem::exists(p_path);
+        std::error_code err;
+
+        const auto path = std::filesystem::absolute(p_path, err);
+        ASSERT(err.value() == 0, "Failed to get absolute path of \"%s\" - %s", p_path.c_str(), err.message().c_str());
+
+        return path.string();
+    }
+
+    bool PathExists(const std::string& p_path) noexcept
+    {
+        std::error_code err;
+        return std::filesystem::exists(p_path, err);
     }
 }

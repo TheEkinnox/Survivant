@@ -1,8 +1,9 @@
 #pragma once
+#include "SurvivantRendering/Core/Layer.h"
 #include "SurvivantRendering/Resources/Material.h"
 #include "SurvivantRendering/Resources/Model.h"
 
-#include <SurvivantCore/ECS/ComponentRegistry.h>
+#include <SurvivantCore/Serialization/Serializer.h>
 
 namespace SvRendering::Components
 {
@@ -10,15 +11,15 @@ namespace SvRendering::Components
     {
         SvCore::Resources::ResourceRef<Resources::Model>    m_model;
         SvCore::Resources::ResourceRef<Resources::Material> m_material;
+        Core::LayerMask                                     m_layerMask = Core::Layer::ALL;
     };
 }
 
-namespace SvCore::ECS
+namespace SvCore::Serialization
 {
     template <>
-    bool ComponentRegistry::ToJson(
-        const SvRendering::Components::ModelComponent&, SvCore::Serialization::JsonWriter&, const EntitiesMap&);
+    bool ToJson(const SvRendering::Components::ModelComponent&, JsonWriter&);
 
     template <>
-    bool ComponentRegistry::FromJson(SvRendering::Components::ModelComponent&, const SvCore::Serialization::JsonValue&, Scene*);
+    bool FromJson(SvRendering::Components::ModelComponent&, const JsonValue&);
 }

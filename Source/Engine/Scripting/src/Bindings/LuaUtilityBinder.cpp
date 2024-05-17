@@ -23,25 +23,49 @@ namespace SvScripting::Bindings
         sol::usertype logType = p_luaState.new_usertype<Logger>(
             typeName,
             sol::meta_function::construct, sol::no_constructor,
-            "Log", [&p_luaState](const sol::object& p_object)
-            {
-                Logger::GetInstance().Print("%s\n", ELogType::DEBUG_LOG, p_luaState["tostring"](p_object).get<const char*>());
-            },
-            "LogWarning", [&p_luaState](const sol::object& p_object)
-            {
-                Logger::GetInstance().Print("%s\n", ELogType::WARNING_LOG, p_luaState["tostring"](p_object).get<const char*>());
-            },
-            "LogError", [&p_luaState](const sol::object& p_object)
-            {
-                Logger::GetInstance().Print("%s\n", ELogType::ERROR_LOG, p_luaState["tostring"](p_object).get<const char*>());
-            }
+            "Log", sol::overload(
+                [&p_luaState](const sol::object& p_object)
+                {
+                    Logger::GetInstance().Print("%s\n", ELogType::DEBUG_LOG, p_luaState["tostring"](p_object).get<const char*>());
+                },
+                [](const std::string& p_message)
+                {
+                    Logger::GetInstance().Print("%s\n", ELogType::DEBUG_LOG, p_message.c_str());
+                }
+            ),
+            "LogWarning", sol::overload(
+                [&p_luaState](const sol::object& p_object)
+                {
+                    Logger::GetInstance().Print("%s\n", ELogType::WARNING_LOG, p_luaState["tostring"](p_object).get<const char*>());
+                },
+                [](const std::string& p_message)
+                {
+                    Logger::GetInstance().Print("%s\n", ELogType::WARNING_LOG, p_message.c_str());
+                }
+            ),
+            "LogError", sol::overload(
+                [&p_luaState](const sol::object& p_object)
+                {
+                    Logger::GetInstance().Print("%s\n", ELogType::ERROR_LOG, p_luaState["tostring"](p_object).get<const char*>());
+                },
+                [](const std::string& p_message)
+                {
+                    Logger::GetInstance().Print("%s\n", ELogType::ERROR_LOG, p_message.c_str());
+                }
+            )
         );
 
         p_luaState.globals().set_function("print",
-            [&p_luaState](const sol::object& p_object)
-            {
-                Logger::GetInstance().Print("%s\n", ELogType::DEFAULT_LOG, p_luaState["tostring"](p_object).get<const char*>());
-            }
+            sol::overload(
+                [&p_luaState](const sol::object& p_object)
+                {
+                    Logger::GetInstance().Print("%s\n", ELogType::DEFAULT_LOG, p_luaState["tostring"](p_object).get<const char*>());
+                },
+                [](const std::string& p_message)
+                {
+                    Logger::GetInstance().Print("%s\n", ELogType::DEFAULT_LOG, p_message.c_str());
+                }
+            )
         );
     }
 

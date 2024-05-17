@@ -23,8 +23,8 @@ add_subdirectory(LibMath)
 # Add Lua
 add_subdirectory(Lua)
 
-# Add PhysX (TODO)
-# add_subdirectory(PhysX)
+# Add PhysX
+add_subdirectory(PhysX)
 
 # Add RapidJSON
 add_subdirectory(RapidJSON)

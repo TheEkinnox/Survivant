@@ -2,7 +2,7 @@
 #include "SurvivantRendering/Core/Light.h"
 #include "SurvivantRendering/Enums/ELightType.h"
 
-#include <SurvivantCore/ECS/ComponentRegistry.h>
+#include <SurvivantCore/Serialization/MathSerializers.h>
 
 namespace SvRendering::Components
 {
@@ -26,6 +26,13 @@ namespace SvRendering::Components
 
         LightComponent& operator=(const LightComponent& p_other)     = default;
         LightComponent& operator=(LightComponent&& p_other) noexcept = default;
+
+        /**
+         * \brief Gets the light's information packed into a matrix
+         * \param p_transform The (optional) transform to apply to the light
+         * \return The light's information packed into a matrix
+         */
+        LibMath::Matrix4 GetMatrix(const LibMath::Transform* p_transform) const;
     };
 
     /**
@@ -125,13 +132,11 @@ namespace SvRendering::Components
     bool DeserializeSpot(Core::SpotLight& p_out, const SvCore::Serialization::JsonValue& p_json);
 }
 
-namespace SvCore::ECS
+namespace SvCore::Serialization
 {
     template <>
-    bool ComponentRegistry::ToJson(
-        const SvRendering::Components::LightComponent&, SvCore::Serialization::JsonWriter&, const EntitiesMap&);
+    bool ToJson(const SvRendering::Components::LightComponent&, JsonWriter&);
 
     template <>
-    bool ComponentRegistry::FromJson(
-        SvRendering::Components::LightComponent&, const SvCore::Serialization::JsonValue&, Scene*);
+    bool FromJson(SvRendering::Components::LightComponent&, const JsonValue&);
 }

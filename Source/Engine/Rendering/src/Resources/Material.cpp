@@ -22,22 +22,33 @@ namespace SvRendering::Resources
         return FromJson(LoadJsonFile(p_fileName));
     }
 
-    bool Material::Save(const std::string& p_fileName)
+    bool Material::Save(const std::string& p_path, const bool p_pretty)
     {
         JsonStringBuffer buffer;
-        JsonWriter              writer(buffer);
 
-        if (!ToJson(writer) || !ASSUME(writer.IsComplete(), "Failed to save material - Generated json is incomplete"))
-            return false;
+        if (!p_pretty)
+        {
+            JsonWriter writer(buffer);
 
-        std::ofstream fs(p_fileName);
+            if (!ToJson(writer) || !ASSUME(writer.IsComplete(), "Failed to save material - Generated json is incomplete"))
+                return false;
+        }
+        else
+        {
+            JsonPrettyWriter writer(buffer);
 
-        if (!CHECK(fs.is_open(), "Unable to open material file at path \"%s\"", p_fileName.c_str()))
+            if (!ToJson(writer) || !ASSUME(writer.IsComplete(), "Failed to save material - Generated json is incomplete"))
+                return false;
+        }
+
+        std::ofstream fs(p_path);
+
+        if (!CHECK(fs.is_open(), "Unable to open material file at path \"%s\"", p_path.c_str()))
             return false;
 
         fs << std::string_view(buffer.GetString(), buffer.GetLength());
 
-        return CHECK(!fs.bad(), "Failed to write material to \"%s\"", p_fileName.c_str());
+        return CHECK(!fs.bad(), "Failed to write material to \"%s\"", p_path.c_str());
     }
 
     bool Material::ToJson(JsonWriter& p_writer) const
@@ -91,6 +102,11 @@ namespace SvRendering::Resources
     {
         ASSERT(m_shader, "Missing material shader");
         return *m_shader;
+    }
+
+    ResourceRef<IShader> Material::GetShaderRef() const
+    {
+        return m_shader;
     }
 
     void Material::SetShader(const ResourceRef<IShader>& p_shader)

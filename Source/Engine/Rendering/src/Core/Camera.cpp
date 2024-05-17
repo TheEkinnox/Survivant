@@ -1,7 +1,6 @@
 #include "SurvivantRendering/Core/Camera.h"
 
 using namespace LibMath;
-using namespace SvRendering::Geometry;
 
 namespace SvRendering::Core
 {

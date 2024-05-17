@@ -29,7 +29,7 @@ namespace SvEditor::Panels
 		using ResourceBranch = PanelTreeBranch<std::string>;
 
 		ContentDrawerPanel();
-		~ContentDrawerPanel();
+		~ContentDrawerPanel() = default;
 
 		//Panel
 		ERenderFlags Render() override;
@@ -46,8 +46,6 @@ namespace SvEditor::Panels
 		using TypeToBranch = std::unordered_map<std::string, std::vector<std::weak_ptr<ResourceBranch>>>;
 
 		static constexpr char DIRECTORY_PATH[] = "assets";
-		static inline const std::string DOUBLE_SLASH = "\\";
-		static inline const std::string SLASH = "/";
 
 		static TypeExtensions CreateExtensions();
 		static inline TypeExtensions	s_fileExtensions;

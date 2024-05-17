@@ -1,8 +1,9 @@
 #pragma once
-#include "SurvivantRendering/Geometry/BoundingBox.h"
 #include "SurvivantRendering/Resources/Mesh.h"
 
 #include <SurvivantCore/Resources/IResource.h>
+
+#include <Geometry/BoundingBox.h>
 
 #include <string>
 #include <vector>
@@ -69,7 +70,7 @@ namespace SvRendering::Resources
          */
         bool Init() override;
 
-        bool Save(const std::string&) override
+        bool Save(const std::string&, const bool) override
         {
             return true;
         }
@@ -91,10 +92,10 @@ namespace SvRendering::Resources
          * \brief Gets the mesh's bounding box
          * \return The mesh's bounding box
          */
-        Geometry::BoundingBox GetBoundingBox() const;
+        LibMath::BoundingBox GetBoundingBox() const;
 
     private:
-        std::vector<Mesh>     m_meshes;
-        Geometry::BoundingBox m_boundingBox;
+        std::vector<Mesh>    m_meshes;
+        LibMath::BoundingBox m_boundingBox;
     };
 }

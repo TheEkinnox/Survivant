@@ -28,7 +28,7 @@ namespace SvCore::Events
 		void						RemoveListener(const ListenerId& p_id);
 		void						RemoveListeners(const std::vector<ListenerId>& p_id);
 		void						Invoke(Args... p_parameters);
-		
+
 		virtual void	BeforeInvoke() {};
 		virtual void	AfterInvoke() {};
 
@@ -38,7 +38,7 @@ namespace SvCore::Events
 
 	private:
 		std::unordered_map<size_t, EventDelegate>	m_listeners;
-		ListenerId									m_nextId = 0;
+		ListenerId									m_nextId = 1;
 	};
 
 	template<typename ...Args>
@@ -70,6 +70,9 @@ namespace SvCore::Events
 	template<typename ...Args>
 	inline void Event<Args...>::RemoveListener(const ListenerId& p_id)
 	{
+		if (p_id == 0 || p_id >= m_nextId)
+			return;
+
 		m_listeners.erase(p_id);
 	}
 

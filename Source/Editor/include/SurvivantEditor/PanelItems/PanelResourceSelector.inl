@@ -75,7 +75,7 @@ namespace SvEditor::PanelItems
 	inline void PanelResourceSelector<T>::DisplayAndUpdatePanel()
 	{
 		static auto flag = ImGuiInputTextFlags_ReadOnly;
-		
+
 		m_allResources->DisplayAndUpdatePanel();
 
 		if (m_displayResource)
@@ -116,8 +116,9 @@ namespace SvEditor::PanelItems
 				resourcePath, [this, resourcePath](char) mutable {
 					ResourceRef<T> resource = ResourceManager::GetInstance().Load<T>(resourcePath);
 					this->GetRef() = resource;
-					if (this->m_callback)
-						this->m_callback(resource);
+
+				    if (this->m_callback)
+				        this->m_callback(resource);
 				}
 			)));
 		}

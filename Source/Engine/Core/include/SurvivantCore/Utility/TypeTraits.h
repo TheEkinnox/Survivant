@@ -3,6 +3,9 @@
 
 namespace SvCore::Utility
 {
+    template <typename... Args>
+    constexpr bool IsEmpty = sizeof...(Args) == 0;
+
     template <typename T, typename First, typename... Remainder>
     constexpr bool IsOneOf = std::is_same_v<T, First> || IsOneOf<T, Remainder...>;
 
@@ -38,10 +41,4 @@ namespace SvCore::Utility
     std::conditional_t<Size <= 8, uint8_t,
         std::conditional_t<Size <= 16, uint16_t,
             std::conditional_t<Size <= 32, uint32_t, uint64_t>>>;
-
-    template <typename ...Args>
-    constexpr bool IsEmpty = true;
-
-    template <typename ...Args>
-    constexpr bool IsEmpty<Args...> = sizeof...(Args) == 0;
 }

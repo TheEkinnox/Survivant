@@ -1,5 +1,5 @@
 #pragma once
-#include "SurvivantRendering/Geometry/Frustum.h"
+#include <Geometry/Frustum.h>
 
 #include <Matrix/Matrix4.h>
 
@@ -67,10 +67,10 @@ namespace SvRendering::Core
          * \brief Gets the camera's frustum
          * \return The camera's frustum
          */
-        const Geometry::Frustum& GetFrustum() const;
+        const LibMath::Frustum& GetFrustum() const;
 
     private:
-        LibMath::Matrix4  m_viewProjectionMatrix;
-        Geometry::Frustum m_frustum;
+        LibMath::Matrix4 m_viewProjectionMatrix;
+        LibMath::Frustum m_frustum;
     };
 }

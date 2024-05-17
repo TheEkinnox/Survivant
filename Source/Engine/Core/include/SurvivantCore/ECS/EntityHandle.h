@@ -4,12 +4,13 @@
 
 namespace SvCore::ECS
 {
+    struct ComponentHandle;
     class Scene;
 
     class EntityHandle final
     {
     public:
-        enum class EComponentSearchOrigin
+        enum class EComponentSearchOrigin : uint8_t
         {
             ROOT,
             PARENT,
@@ -97,10 +98,23 @@ namespace SvCore::ECS
         EntityHandle GetParent() const;
 
         /**
+         * \brief Gets the entity's display name
+         * \return The entity's display name
+         */
+        std::string GetDisplayName() const;
+
+        /**
          * \brief Sets the linked entity's parent
          * \param p_parent The entity's new parent
          */
         void SetParent(EntityHandle p_parent);
+
+        /**
+         * \brief Sets the linked entity's parent
+         * \param p_parent The entity's new parent
+         * \param p_keepWorld Whether the entity should keep its current world transform
+         */
+        void SetParent(EntityHandle p_parent, bool p_keepWorld);
 
         /**
          * \brief Gets the entity's next sibling
@@ -126,6 +140,11 @@ namespace SvCore::ECS
          * \return A handle to the child if found or to NULL_ENTITY otherwise
          */
         EntityHandle GetChild(size_t p_index) const;
+
+        /**
+         * \brief Sets the linked entity's parent
+         */
+        EntityHandle AddChild() const;
 
         /**
          * \brief Gets the entity's children
@@ -271,11 +290,10 @@ namespace SvCore::ECS
         std::vector<std::pair<Utility::TypeId, void*>> GetComponents() const;
 
         /**
-         * \brief Duplicate the linked entity
-         * \param New parent of the duplicated entity or current parent if NULL_ENTITY
-         * \return A Handle to a the duplicated entity
+         * \brief Gets handles to all the components owned by the linked entity
+         * \return Handles to the components owned by the entity
          */
-        EntityHandle Duplicate(const Entity& p_newParent = NULL_ENTITY) const;
+        std::vector<ComponentHandle> GetComponentHandles() const;
 
     private:
         Scene* m_scene;

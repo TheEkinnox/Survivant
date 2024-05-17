@@ -54,7 +54,7 @@ namespace SvRuntime
 
 		world->m_lightsSSBO = IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, 0);
 
-		
+
 		return world;
 	}
 
@@ -80,7 +80,7 @@ namespace SvRuntime
 	{
 		m_world->m_owningGameInstance = m_game.get();
 		m_world->CurrentScene() = GetStartScene();
-		
+
 		m_world->m_inputs = ToRemove::SetupGameInputs();
 		m_world->SetCamera(m_world->GetFirstCamera()); //dont use cam un rendering context
 		m_world->BakeLighting();
@@ -92,9 +92,17 @@ namespace SvRuntime
 		return true;
 	}
 
-	void RuntimeEngine::Render()
+	void RuntimeEngine::Render() const
 	{
-		RenderingContext::DefaultFBGameRendering(m_camera);
+		Scene* scene = m_world->CurrentScene().Get();
+		Renderer::UpdateLightSSBO(scene, *m_world->m_lightsSSBO);
+
+		Renderer::RenderInfo renderInfo{
+			.m_aspect = m_world->m_renderingContext->GetAspect(),
+			.m_scene = scene
+		};
+
+		m_world->m_renderingContext->GetRenderer().Render(renderInfo);
 	}
 
 	void RuntimeEngine::SetViewport(const LibMath::TVector2<int>& p_size)

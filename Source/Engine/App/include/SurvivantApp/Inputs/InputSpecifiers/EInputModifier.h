@@ -1,16 +1,13 @@
 #pragma once
+#include <cstdint>
 
 namespace SvApp
 {
-#undef MOD_SHIFT
-#undef MOD_CONTROL
-#undef MOD_ALT
+    constexpr uint8_t NUM_INPUT_MODIFIERS = 6;
 
-    constexpr size_t NUM_INPUT_MODIFIERS = 6;
-
-    enum EInputModifier
+    enum EInputModifier : uint8_t
     {
-        MOD_ANY       = -1,
+        MOD_ANY       = 0xff,
         MOD_SHIFT     = 1 << 0,
         MOD_CONTROL   = 1 << 1,
         MOD_ALT       = 1 << 2,
@@ -18,6 +15,4 @@ namespace SvApp
         MOD_CAPS_LOCK = 1 << 4,
         MOD_NUM_LOCK  = 1 << 5
     };
-
-
 }

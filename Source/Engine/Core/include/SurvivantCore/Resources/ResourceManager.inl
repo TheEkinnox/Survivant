@@ -13,7 +13,7 @@ namespace SvCore::Resources
         if (p_path.empty())
             return {};
 
-        const std::string key = GetFullPath(p_path);
+        const std::string key = GetRelativePath(p_path);
 
         T*         resource = nullptr;
         const auto it       = m_resources.find(key);
@@ -25,16 +25,16 @@ namespace SvCore::Resources
             resource = dynamic_cast<T*>(savedResource);
 
             if (!CHECK(!savedResource || resource || it->second->GetReferenceCount() <= 1,
-                    "Unsafe reloading of resource at path \"%s\"", p_path.c_str()))
+                    "Unsafe reloading of resource at path \"%s\"", key.c_str()))
                 return {};
         }
 
         const bool canReuse = resource;
 
-        if (!resource)
+        if (!canReuse)
             resource = CreateResource<T>();
 
-        if (!LoadResource(resource, p_path))
+        if (!LoadResource(resource, key))
         {
             if (it != m_resources.end())
                 m_resources.erase(it);
@@ -42,7 +42,7 @@ namespace SvCore::Resources
             return {};
         }
 
-        return canReuse ? *it->second : *(m_resources[key] = std::make_unique<ResourceRef<IResource>>(p_path, resource));
+        return canReuse ? *it->second : *(m_resources[key] = std::make_unique<ResourceRef<IResource>>(key, resource));
     }
 
     template <typename T>
@@ -53,7 +53,7 @@ namespace SvCore::Resources
         if (p_path.empty())
             return {};
 
-        const auto it = m_resources.find(GetFullPath(p_path));
+        const auto it = m_resources.find(GetRelativePath(p_path));
 
         if (it != m_resources.end())
             return *it->second;

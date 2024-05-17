@@ -30,6 +30,8 @@ namespace SvScripting::Bindings
             typeName, ctor,
             sol::base_classes, sol::bases<ResourceRef<IResource>, ResourceRefBase>(),
             "isValid", sol::readonly_property(&GenericResourceRef::operator bool),
+            "type", sol::readonly_property(&GenericResourceRef::GetType),
+            "path", sol::readonly_property(&GenericResourceRef::GetPath),
             sol::meta_function::index, [&p_luaState](const GenericResourceRef& p_self, const sol::object& p_index) -> sol::object
             {
                 const LuaTypeInfo& typeInfo = LuaTypeRegistry::GetInstance().GetTypeInfo(p_self.GetType());
@@ -50,16 +52,37 @@ namespace SvScripting::Bindings
                 data[p_key] = p_value;
                 typeInfo.FromLua(resource, data);
             },
-            "Set", [](const GenericResourceRef& p_self, const sol::userdata& p_value)
-            {
-                if (!p_self)
-                    return;
+            sol::meta_function::concatenation, sol::overload(
+                [](const char* p_str, const GenericResourceRef& p_self)
+                {
+                    std::ostringstream oss;
+                    oss << p_str << "{ type: \"" << p_self.GetType() << "\", path: \"" << p_self.GetPath() << "\"}";
+                    return oss.str();
+                },
+                [](const GenericResourceRef& p_self, const char* p_str)
+                {
+                    std::ostringstream oss;
+                    oss << "{ type: \"" << p_self.GetType() << "\", path: \"" << p_self.GetPath() << "\"}" << p_str;
+                    return oss.str();
+                }
+            ),
+            "self", sol::property(
+                [&p_luaState](const GenericResourceRef& p_self) -> sol::userdata
+                {
+                    if (!p_self)
+                        return make_object_userdata(p_luaState, sol::nil);
 
-                IResource* resource = p_self.Get();
+                    IResource* resource = p_self.Get();
+                    return LuaTypeRegistry::GetInstance().GetTypeInfo(p_self.GetType()).ToLua(resource, p_luaState);
+                },
+                [](const GenericResourceRef& p_self, const sol::userdata& p_value)
+                {
+                    if (!p_self)
+                        return;
 
-                const LuaTypeInfo& typeInfo = LuaTypeRegistry::GetInstance().GetTypeInfo(p_self.GetType());
-                typeInfo.FromLua(resource, p_value);
-            }
+                    LuaTypeRegistry::GetInstance().GetTypeInfo(p_self.GetType()).FromLua(p_self.Get(), p_value);
+                }
+            )
         );
 
         resourceType["__type"]["name"] = typeName;
@@ -70,7 +93,7 @@ namespace SvScripting::Bindings
 
     void LuaResourceBinder::BindResourceManager(sol::state& p_luaState)
     {
-        static constexpr const char* typeName = "Resources";
+        static constexpr const char* typeName = "ResourceManager";
 
         using Get = GenericResourceRef(ResourceManager::*)(const std::string&, const std::string&) const;
         using GetOrCreate = GenericResourceRef(ResourceManager::*)(const std::string&, const std::string&);

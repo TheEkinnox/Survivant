@@ -2,8 +2,7 @@
 
 #include "SurvivantEditor/PanelItems/PanelUniqueSelection.h"
 
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_opengl3.h"
+#include <imgui.h>
 
 namespace SvEditor::PanelItems
 {
@@ -17,8 +16,8 @@ namespace SvEditor::PanelItems
     {}
 
     PanelUniqueSelection::PanelUniqueSelection(
-        const std::string& p_name, const std::vector<std::string>& p_selectable, 
-        const GetRefFunc& p_getRef, const Callback& p_callback) : 
+        const std::string& p_name, const std::vector<std::string>& p_selectable,
+        const GetRefFunc& p_getRef, const Callback& p_callback) :
         PanelInputBase(p_getRef, p_callback),
         m_name(p_name)
     {

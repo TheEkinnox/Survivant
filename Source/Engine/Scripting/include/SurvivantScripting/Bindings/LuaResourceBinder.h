@@ -11,7 +11,7 @@ namespace SvScripting::Bindings
     {
     public:
         /**
-         * \brief Creates or updates the input bindings in the given lua state
+         * \brief Creates or updates the resource bindings in the given lua state
          * \param p_luaState The target lua state
          */
         static void Bind(sol::state& p_luaState);

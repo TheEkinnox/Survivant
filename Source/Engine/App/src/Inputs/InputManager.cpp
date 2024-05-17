@@ -20,7 +20,7 @@ std::string SvApp::InputManager::KeyBindingToString(const KeyboardKeyType& p_key
 	std::string str;
 	auto& infoRef = p_key.m_inputInfo;
 	EInputModifier keyModif = std::get<2>(infoRef);
-	
+
 	for (size_t i = 0; i < NUM_INPUT_MODIFIERS; i++)
 	{
 		auto modif = EInputModifier(1 << i);
@@ -84,7 +84,7 @@ std::string SvApp::InputManager::KeyNameToString(const EKey& p_name)
 	case EKey::LEFT_BRACKET:
 	case EKey::BACKSLASH:
 	case EKey::RIGHT_BRACKET:
-	case EKey::GRAVE_ACCENT:	return std::string(1, static_cast<char>(p_name));
+	case EKey::GRAVE_ACCENT:	return { 1, static_cast<char>(p_name) };
 	case EKey::WORLD_1:			return "WORLD_1";
 	case EKey::WORLD_2:			return "WORLD_2";
 	case EKey::ESCAPE:			return "ESCAPE";
@@ -105,7 +105,7 @@ std::string SvApp::InputManager::KeyNameToString(const EKey& p_name)
 	case EKey::SCROLL_LOCK:		return "SCROLL_LOCK";
 	case EKey::NUM_LOCK:		return "NUM_LOCK";
 	case EKey::PRINT_SCREEN:	return "PRINT_SCREEN";
-	case EKey::PAUSE:			return "PAUSE"; 
+	case EKey::PAUSE:			return "PAUSE";
 	case EKey::F1 :
 	case EKey::F2 :
 	case EKey::F3 :
@@ -130,7 +130,7 @@ std::string SvApp::InputManager::KeyNameToString(const EKey& p_name)
 	case EKey::F22:
 	case EKey::F23:
 	case EKey::F24:
-	case EKey::F25:				return "F" + std::to_string((static_cast<int>(p_name) % 290) + 1);
+	case EKey::F25:				return "F" + std::to_string(static_cast<int>(p_name) - static_cast<int>(EKey::F1) + 1);
 	case EKey::KP_0:
 	case EKey::KP_1:
 	case EKey::KP_2:
@@ -140,10 +140,10 @@ std::string SvApp::InputManager::KeyNameToString(const EKey& p_name)
 	case EKey::KP_6:
 	case EKey::KP_7:
 	case EKey::KP_8:
-	case EKey::KP_9:			return "KP_" + std::to_string((static_cast<int>(p_name) % 320) + 1);
+	case EKey::KP_9:			return "KP_" + std::to_string(static_cast<int>(p_name) - static_cast<int>(EKey::KP_0));
 	case EKey::KP_DECIMAL:		return "KP_DECIMAL";
 	case EKey::KP_DIVIDE:		return "KP_DIVIDE";
-	case EKey::KP_MULTIPLY:		return "KP_SUBTRACT";
+	case EKey::KP_MULTIPLY:		return "KP_MULTIPLY";
 	case EKey::KP_SUBTRACT:		return "KP_SUBTRACT";
 	case EKey::KP_ADD:			return "KP_ADD";
 	case EKey::KP_ENTER:		return "KP_ENTER";
@@ -164,9 +164,6 @@ std::string SvApp::InputManager::KeyNameToString(const EKey& p_name)
 
 std::string SvApp::InputManager::KeyModifToString(const EInputModifier& p_modif)
 {
-#undef MOD_SHIFT
-#undef MOD_CONTROL
-#undef MOD_ALT
 	switch (p_modif)
 	{
 	case SvApp::EInputModifier::MOD_SHIFT:		return "SHIFT";
@@ -182,10 +179,6 @@ std::string SvApp::InputManager::KeyModifToString(const EInputModifier& p_modif)
 
 EKey SvApp::InputManager::GetModifKey(const EInputModifier& p_modif)
 {
-	//gotat put this if I want to use enum. guess not. guess yes
-#undef MOD_SHIFT
-#undef MOD_CONTROL
-#undef MOD_ALT
 	switch (p_modif)
 	{
 	case SvApp::EInputModifier::MOD_SHIFT:

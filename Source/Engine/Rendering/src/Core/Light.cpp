@@ -8,12 +8,12 @@ using namespace SvRendering::Enums;
 
 namespace SvRendering::Core
 {
-    Light::Light(const Color& color)
-        : m_color(color)
+    Light::Light(const Color& p_color)
+        : m_color(p_color)
     {
     }
 
-    Matrix4 Light::getMatrix() const
+    Matrix4 Light::GetMatrix(const Transform*) const
     {
         Matrix4 lightMat;
 
@@ -27,47 +27,52 @@ namespace SvRendering::Core
         return lightMat;
     }
 
-    DirectionalLight::DirectionalLight(const Light& light, const Vector3& direction)
-        : Light(light), m_direction(direction)
+    DirectionalLight::DirectionalLight(const Light& p_light, const Vector3& p_direction)
+        : Light(p_light), m_direction(p_direction)
     {
     }
 
-    Matrix4 DirectionalLight::getMatrix() const
+    Matrix4 DirectionalLight::GetMatrix(const Transform* p_transform) const
     {
-        Matrix4 lightMat(Light::getMatrix());
+        Matrix4 lightMat(Light::GetMatrix());
+        Vector3 dir = m_direction;
 
-        lightMat(1, 0) = m_direction.m_x;
-        lightMat(2, 0) = m_direction.m_y;
-        lightMat(3, 0) = m_direction.m_z;
+        if (p_transform)
+            dir.rotate(p_transform->getWorldRotation());
+
+        lightMat(1, 0) = dir.m_x;
+        lightMat(2, 0) = dir.m_y;
+        lightMat(3, 0) = dir.m_z;
 
         lightMat(3, 3) = static_cast<float>(ELightType::DIRECTIONAL);
 
         return lightMat;
     }
 
-    Attenuation::Attenuation(const float range)
-        : Attenuation(1.f, 4.5f / range, 75.f / (range * range))
+    Attenuation::Attenuation(const float p_range)
+        : Attenuation(1.f, 4.5f / p_range, 75.f / (p_range * p_range))
     {
     }
 
-    Attenuation::Attenuation(const float constant, const float linear, const float quadratic)
-        : m_constant(constant), m_linear(linear), m_quadratic(quadratic)
+    Attenuation::Attenuation(const float p_constant, const float p_linear, const float p_quadratic)
+        : m_constant(p_constant), m_linear(p_linear), m_quadratic(p_quadratic)
     {
     }
 
-    PointLight::PointLight(const Light&           light, const Vector3& position,
-                           const Attenuation& attenuationData)
-        : Light(light), m_position(position), m_attenuationData(attenuationData)
+    PointLight::PointLight(const Light& p_light, const Vector3& p_position, const Attenuation& p_attenuationData)
+        : Light(p_light), m_position(p_position), m_attenuationData(p_attenuationData)
     {
     }
 
-    Matrix4 PointLight::getMatrix() const
+    Matrix4 PointLight::GetMatrix(const Transform* p_transform) const
     {
-        Matrix4 lightMat(Light::getMatrix());
+        Matrix4 lightMat(Light::GetMatrix());
 
-        lightMat(1, 1) = m_position.m_x;
-        lightMat(2, 1) = m_position.m_y;
-        lightMat(3, 1) = m_position.m_z;
+        const Vector3 pos = p_transform ? (p_transform->getWorldMatrix() * Vector4(m_position, 0.f)).xyz() : m_position;
+
+        lightMat(1, 1) = pos.m_x;
+        lightMat(2, 1) = pos.m_y;
+        lightMat(3, 1) = pos.m_z;
 
         lightMat(1, 2) = m_attenuationData.m_constant;
         lightMat(2, 2) = m_attenuationData.m_linear;
@@ -78,24 +83,31 @@ namespace SvRendering::Core
         return lightMat;
     }
 
-    SpotLight::SpotLight(const Light&           light, const Vector3&          position, const Vector3& direction,
-                         const Attenuation& attenuation, const Cutoff& cutoff)
-        : Light(light), m_position(position), m_direction(direction),
-        m_attenuationData(attenuation), m_cutoff(cutoff)
+    SpotLight::SpotLight(const Light&       p_light, const Vector3&      p_position, const Vector3& p_direction,
+                         const Attenuation& p_attenuation, const Cutoff& p_cutoff)
+        : Light(p_light), m_position(p_position), m_direction(p_direction),
+        m_attenuationData(p_attenuation), m_cutoff(p_cutoff)
     {
     }
 
-    Matrix4 SpotLight::getMatrix() const
+    Matrix4 SpotLight::GetMatrix(const Transform* p_transform) const
     {
-        Matrix4 lightMat(Light::getMatrix());
+        Matrix4 lightMat(Light::GetMatrix());
 
-        lightMat(1, 0) = m_direction.m_x;
-        lightMat(2, 0) = m_direction.m_y;
-        lightMat(3, 0) = m_direction.m_z;
+        Vector3 dir = m_direction;
 
-        lightMat(1, 1) = m_position.m_x;
-        lightMat(2, 1) = m_position.m_y;
-        lightMat(3, 1) = m_position.m_z;
+        if (p_transform)
+            dir.rotate(p_transform->getWorldRotation());
+
+        lightMat(1, 0) = dir.m_x;
+        lightMat(2, 0) = dir.m_y;
+        lightMat(3, 0) = dir.m_z;
+
+        const Vector3 pos = p_transform ? (p_transform->getWorldMatrix() * Vector4(m_position, 0.f)).xyz() : m_position;
+
+        lightMat(1, 1) = pos.m_x;
+        lightMat(2, 1) = pos.m_y;
+        lightMat(3, 1) = pos.m_z;
 
         lightMat(1, 2) = m_attenuationData.m_constant;
         lightMat(2, 2) = m_attenuationData.m_linear;

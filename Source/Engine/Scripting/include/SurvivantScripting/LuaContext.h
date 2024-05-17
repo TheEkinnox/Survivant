@@ -159,11 +159,14 @@ namespace SvScripting
         /**
          * \brief Gets the given module's path
          * \param p_module The target module
+         * \param p_fromGetName Whether the function was called from GetModuleName
          * \return The module's path
          */
-        static const std::string& GetModulePath(std::string p_module);
+        static std::string GetModulePath(std::string p_module, bool p_fromGetName = false);
 
     private:
+        using ListenerId = SvCore::Events::Event<>::ListenerId;
+
         static constexpr const char* EXTENSIONS[] = { ".lua", ".lc" };
 
         inline static std::unordered_map<std::string, std::string> s_moduleNames;
@@ -171,6 +174,9 @@ namespace SvScripting
 
         std::unique_ptr<sol::state>  m_state;
         std::vector<LuaScriptHandle> m_scripts;
+
+        ListenerId m_collisionListenerId;
+        ListenerId m_triggerListenerId;
 
         bool m_isValid, m_hasStarted;
 
@@ -186,6 +192,16 @@ namespace SvScripting
          * \param p_luaState The lua state to bind to
          */
         static void BindUserTypes(sol::state& p_luaState);
+
+        /**
+         * \brief Subscribes the lua context to the physics context's events
+         */
+        void LinkPhysicsEvents();
+
+        /**
+         * \brief Unsubscribes the lua context from the physics context's events
+         */
+        void UnlinkPhysicsEvents();
     };
 }
 

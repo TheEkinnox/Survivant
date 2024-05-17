@@ -11,8 +11,7 @@
 #include "SurvivantEditor/Panels/ScenePanel.h"
 #include "SurvivantEditor/Panels/InspectorPanel.h"
 
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_opengl3.h"
+#include <imgui.h>
 
 using namespace SvCore::ECS;
 using namespace SvCore::Utility;
@@ -30,7 +29,7 @@ namespace SvEditor::Panels
 
         //propagate selection
         auto selectFunc = [](HierarchyBranch& p_branch)
-            { 
+            {
                 using namespace Core;
 
                 auto entity = s_getCurrentScene().lock()->Get()->Find(p_branch.GetValue());
@@ -39,7 +38,7 @@ namespace SvEditor::Panels
                 InspectorPanel::SetInpectorInfo(entityPanel, "Entity");
                 ScenePanel::SelectEntity(entity);
                 p_branch.ForceOpenParents();
-                return false; 
+                return false;
             };
 
         SvCore::Events::Event<>::EventDelegate clearFunc = []()
@@ -94,6 +93,16 @@ namespace SvEditor::Panels
                 m_isDirty = true;
             });
 
+        if (!oldScene.expired())
+        {
+            auto& oldRef = *oldScene.lock()->Get();
+            oldRef.GetStorage<Entity>().m_onAdd.RemoveListener(m_onModifEntity[0]);
+            oldRef.GetStorage<Entity>().m_onRemove.RemoveListener(m_onModifEntity[1]);
+            oldRef.GetStorage<SvCore::ECS::HierarchyComponent>().m_onAdd.RemoveListener(m_onModifHierarchy[0]);
+            oldRef.GetStorage<SvCore::ECS::HierarchyComponent>().m_onRemove.RemoveListener(m_onModifHierarchy[1]);
+            oldRef.GetStorage<SvCore::ECS::HierarchyComponent>().m_onChange.RemoveListener(m_onModifHierarchy[2]);
+        }
+
         //tag dirty on hierarchy change
         m_onModifHierarchy[0] = GetScene().GetStorage<SvCore::ECS::HierarchyComponent>().m_onAdd.AddListener(
             [this](EntityHandle, SvCore::ECS::HierarchyComponent)
@@ -109,17 +118,7 @@ namespace SvEditor::Panels
             [this](EntityHandle, SvCore::ECS::HierarchyComponent)
             {
                 m_isDirty = true;
-            }); 
-
-        if (!oldScene.expired())
-        {
-            auto& oldRef = *oldScene.lock()->Get();
-            oldRef.GetStorage<Entity>().m_onAdd.RemoveListener(m_onModifEntity[0]);
-            oldRef.GetStorage<Entity>().m_onRemove.RemoveListener(m_onModifEntity[1]);
-            oldRef.GetStorage<SvCore::ECS::HierarchyComponent>().m_onAdd.RemoveListener(m_onModifHierarchy[0]);
-            oldRef.GetStorage<SvCore::ECS::HierarchyComponent>().m_onRemove.RemoveListener(m_onModifHierarchy[1]);
-            oldRef.GetStorage<SvCore::ECS::HierarchyComponent>().m_onChange.RemoveListener(m_onModifHierarchy[2]);
-        }
+            });
     }
 
     void HierarchyPanel::SetupTree()
@@ -135,9 +134,7 @@ namespace SvEditor::Panels
 
             auto newBranch = CreateEntityBranch(handle);
             AddEntityBranch(m_tree, newBranch);
-
-            if (handle.GetChildCount() != 0)
-                SetupEntityBranch(*newBranch, handle);
+            SetupEntityBranch(*newBranch, handle);
         }
     }
 
@@ -163,14 +160,12 @@ namespace SvEditor::Panels
     std::shared_ptr<HierarchyPanel::HierarchyBranch> HierarchyPanel::CreateEntityBranch(
         const SvCore::ECS::EntityHandle& p_childEntity)
     {
-        auto name = FormatString("Entity(%d)", p_childEntity.GetEntity().GetIndex());
-
         return std::make_shared<HierarchyBranch>(
-            name, false, p_childEntity.GetEntity().GetIndex());
+            p_childEntity.GetDisplayName(), false, p_childEntity.GetEntity());
     }
 
     void HierarchyPanel::AddEntityBranch(
-        HierarchyBranch& p_parent, 
+        HierarchyBranch& p_parent,
         std::shared_ptr<HierarchyBranch> p_childBranch)
     {
         auto prio = SIZE_MAX - p_parent.GetChildren().size();
