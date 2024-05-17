@@ -188,25 +188,17 @@ namespace SvEditor::Panels
         //    SetupBranches(p_parent.get()->GetChildreens, path);
     }
 
-    std::string ContentDrawerPanel::FormatPath(const std::filesystem::path& p_filePath)
-    {
-        std::string path = p_filePath.string();
+    //std::string ContentDrawerPanel::FormatPath(const std::filesystem::path& p_filePath)
+    //{
+    //    std::string path = p_filePath.string();
 
-        //erase before dirPath
-        auto it = path.find(DIRECTORY_PATH);
-        if (it != std::string::npos)
-            path = path.substr(it);
+    //    //erase before dirPath
+    //    auto it = path.find(DIRECTORY_PATH);
+    //    if (it != std::string::npos)
+    //        path = path.substr(it);
 
-        //replace all DOUBLE_SLASH for SLASH;
-        size_t start_pos = 0;
-        while ((start_pos = path.find(DOUBLE_SLASH, start_pos)) != std::string::npos)
-        {
-            path.replace(start_pos, DOUBLE_SLASH.length(), SLASH);
-            start_pos += SLASH.length();
-        }
-
-        return path;
-    }
+    //    return path;
+    //}
 
     ContentDrawerPanel::TypeExtensions ContentDrawerPanel::CreateExtensions()
     {

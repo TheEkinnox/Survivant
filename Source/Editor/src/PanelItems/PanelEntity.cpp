@@ -149,12 +149,10 @@ namespace SvEditor::PanelItems
     const std::string& PanelEntity::GetName()
     {
         using namespace SvCore::ECS;
+        static std::string name;
 
-        auto val = m_entity.Get<TagComponent>();
-        if (val)
-            return m_name = val->m_tag + m_index;
-
-        return m_index;
+        name = m_entity.GetDisplayName();
+        return name;
     }
 
     void PanelEntity::AddAndSortComponent(std::shared_ptr<PanelComponent> p_component)

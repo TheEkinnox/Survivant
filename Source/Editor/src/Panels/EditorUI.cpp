@@ -117,11 +117,11 @@ namespace SvEditor::Core
 
                 SV_LOG(SvCore::Utility::FormatString("ID = %d", entity.GetIndex()).c_str());
 
-                auto& currentSelected = p_world.lock()->m_renderingContext->s_editorSelectedEntity;
-                if (currentSelected == entity)
-                    currentSelected = {};
-                else
-                    currentSelected = EntityHandle(p_world.lock()->CurrentScene().Get(), entity);
+                //auto& currentSelected = p_world.lock()->m_renderingContext->s_editorSelectedEntity;
+                //if (currentSelected == entity)
+                //    currentSelected = {};
+                //else
+                //    currentSelected = EntityHandle(p_world.lock()->CurrentScene().Get(), entity);
 
                 HierarchyPanel::ToggleSelectable(entity.GetIndex());
 

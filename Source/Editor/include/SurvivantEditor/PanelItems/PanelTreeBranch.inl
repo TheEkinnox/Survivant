@@ -351,6 +351,12 @@ namespace SvEditor::PanelItems
     }
 
     template<typename T>
+    inline void PanelTreeBranch<T>::SetName(const std::string& p_name)
+    {
+        m_name = p_name;
+    }
+
+    template<typename T>
     inline const T& PanelTreeBranch<T>::SetValue(const T& p_value) const
     {
         m_value = p_value;

@@ -52,7 +52,7 @@ namespace SvEditor::Panels
 		static inline TypeToBranch		s_typedFiles;
 
 		static std::string GetType(const std::filesystem::path& p_filePath);
-		static std::string FormatPath(const std::filesystem::path& p_filePath);
+		//static std::string FormatPath(const std::filesystem::path& p_filePath);
 
 		void SetupTree();
 		void SetupBranches(std::shared_ptr<ResourceBranch> p_parent, const std::filesystem::path& p_filePath);
