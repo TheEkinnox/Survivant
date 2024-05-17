@@ -8,7 +8,7 @@
 #include "SurvivantCore/Resources/ResourceRef.h"
 #include "SurvivantRendering/RHI/IShaderStorageBuffer.h"
 #include "SurvivantRendering/RHI/IFrameBuffer.h"
-#include "SurvivantRendering/Components/CameraComponent.h"	
+#include "SurvivantRendering/Components/CameraComponent.h"
 
 #include "Vector/Vector2.h"
 #include "Transform.h"
@@ -46,7 +46,7 @@ namespace SvApp::Core
 
 		void BeginPlay();
 		//void Update();
-		void Save();
+		void Save(bool p_pretty = false);
 		void BakeLighting();
 
 		SvCore::ECS::EntityHandle	GetFirstCamera();

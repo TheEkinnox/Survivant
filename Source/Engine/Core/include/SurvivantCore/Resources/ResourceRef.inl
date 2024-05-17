@@ -177,8 +177,8 @@ namespace SvCore::Resources
         if (!m_resource)
             return false;
 
-        const ResourceManager&      resourceManager = ResourceManager::GetInstance();
-        const std::filesystem::path fullPath        = resourceManager.GetFullPath(m_path);
+        const ResourceManager& resourceManager = ResourceManager::GetInstance();
+        std::filesystem::path  fullPath        = resourceManager.GetFullPath(m_path);
 
         std::error_code err;
         if (!p_path.empty())
@@ -193,6 +193,8 @@ namespace SvCore::Resources
                 CHECK(std::filesystem::copy_file(fullPath, path, err),
                     "Failed to copy resource from \"%s\" to \"%s\":\n%s", fullPath.c_str(), p_path.c_str(), err.message().c_str())))
                 return false;
+
+            fullPath = std::move(path);
         }
         else if (!CHECK(std::filesystem::create_directories(fullPath.parent_path(), err) || err.value() == 0,
                 "Failed to create directories for \"%s\" - %s", fullPath.c_str(), err.message().c_str()))
@@ -200,7 +202,7 @@ namespace SvCore::Resources
             return false;
         }
 
-        return static_cast<IResource*>(m_resource)->Save(p_path.empty() ? fullPath.string() : p_path, p_pretty);
+        return static_cast<IResource*>(m_resource)->Save(fullPath.string(), p_pretty);
     }
 
     template <class T>

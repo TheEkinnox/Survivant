@@ -139,7 +139,7 @@ namespace SvEditor::Panels
 
         s_existingPaths.clear();
         s_fileExtensions = CreateExtensions();
-        m_tree = std::make_shared<ResourceBranch>(root.filename().string());
+        m_tree           = std::make_shared<ResourceBranch>(root.filename().string());
 
         SetupBranches(m_tree, root);
     }
@@ -153,14 +153,14 @@ namespace SvEditor::Panels
 
         for (const auto& dirEntry : directory_iterator(p_filePath))
         {
-            const auto& path  = dirEntry.path();
+            const auto& path = dirEntry.path();
 
-            auto type = GetType(path);
+            auto type      = GetType(path);
             auto ptrBranch = std::make_shared<ResourceBranch>(path.filename().string(), true, type);
             p_parent->AddBranch(ptrBranch);
 
             if (!type.empty())
-                s_existingPaths[type].emplaces(path.string());
+                s_existingPaths[type].emplace(path.string());
 
             if (dirEntry.is_directory())
                 directories.emplace_back(ptrBranch, path);
@@ -253,7 +253,6 @@ namespace SvEditor::Panels
         using namespace SvCore::Resources;
 
         auto path = p_branch.GetName();
-        auto& rr = ResourceRegistry::GetInstance();
 
         const auto it = path.find_last_of('.');
 
@@ -262,8 +261,10 @@ namespace SvEditor::Panels
 
         const auto extension = path.substr(it);
 
-        path = p_branch.GetPathName();
+        path = p_branch.GetPath();
         SV_LOG(std::string("Try to open file, path : " + path).c_str());
+
+        const auto& rr = ResourceRegistry::GetInstance();
 
         if (s_fileExtensions.at(rr.GetRegisteredTypeName<Scene>()).contains(extension)
             && !(SV_ENGINE()->IsPlayInEditor()))

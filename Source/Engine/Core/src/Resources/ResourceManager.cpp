@@ -69,12 +69,14 @@ namespace SvCore::Resources
 
         const bool canReuse = resource;
 
-        if (!resource)
+        if (!canReuse)
             resource = ResourceRegistry::GetInstance().Create(p_type);
 
         if (!LoadResource(resource, key))
         {
-            m_resources.erase(it);
+            if (it != m_resources.end())
+                m_resources.erase(it);
+
             return {};
         }
 

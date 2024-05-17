@@ -31,7 +31,7 @@ namespace SvCore::Resources
 
         const bool canReuse = resource;
 
-        if (!resource)
+        if (!canReuse)
             resource = CreateResource<T>();
 
         if (!LoadResource(resource, key))

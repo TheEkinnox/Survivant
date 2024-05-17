@@ -203,12 +203,17 @@ namespace SvApp::Core
         ResetCameraAspect();
     }
 
+    float RenderingContext::GetAspect() const
+    {
+        return static_cast<float>(m_viewport.m_x) / static_cast<float>(m_viewport.m_y);
+    }
+
     void RenderingContext::ResetCameraAspect()
     {
         auto [cam, trans] = m_mainCamera.GetCamInfo();
 
         if (cam)
-            cam->SetAspect(static_cast<float>(m_viewport.m_x) / static_cast<float>(m_viewport.m_y));
+            cam->SetAspect(GetAspect());
     }
 
     const Renderer& RenderingContext::GetRenderer() const

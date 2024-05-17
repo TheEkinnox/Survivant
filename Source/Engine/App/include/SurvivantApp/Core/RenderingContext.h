@@ -57,7 +57,7 @@ namespace SvApp::Core
 		SvCore::ECS::Entity GetEntityIdValue(const Vec2& p_uv, Scene* p_scene);
 
 		/// <summary>
-		/// Adds coresponding framebuffer, render type and attached texture(s)
+		/// Adds corresponding framebuffer, render type and attached texture(s)
 		/// </summary>
 		/// <param name="p_renderType">Type of render pass</param>
 		void AddRenderPass(ERenderType p_renderType);
@@ -68,6 +68,7 @@ namespace SvApp::Core
 		Vec2&		CameraRotateInput();
 		void		UpdateCameraInput();
 		void		Resize(const LibMath::TVector2<int>& p_size);
+		float		GetAspect() const;
 		void		ResetCameraAspect();
 
 		const SvRendering::Core::Renderer& GetRenderer() const;

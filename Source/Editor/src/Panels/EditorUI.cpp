@@ -272,7 +272,7 @@ namespace SvEditor::Core
                     return;
                 }
 
-                p_world.lock()->Save();
+                p_world.lock()->Save(true);
                 SV_LOG("Scene saved successfully");
             },
             InputManager::KeyboardKeyType(EKey::S, EKeyState::PRESSED, EInputModifier::MOD_CONTROL),
