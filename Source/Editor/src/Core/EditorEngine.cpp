@@ -70,6 +70,9 @@ namespace SvEditor::Core
 		WorldContext::SceneRef scene = GetWorldContextRef(*m_gameInstance).lock()->CurrentScene();
 		m_gameInstance.reset();
 
+		if (!RestoreSceneState())
+			SV_LOG_ERROR("Pre-play scene state couldn't be restored");
+
 		//while playing, loaded new scene, so go back to selected
 		if (scene != m_editorSelectedScene)
 			BrowseToScene(*m_editorWorld, m_editorSelectedScene.GetPath());
@@ -229,6 +232,10 @@ namespace SvEditor::Core
 		auto& pieWorld = *m_PIEWorld.lock();
 
 		pieWorld.m_owningGameInstance = m_gameInstance.get();
+
+		if (!SaveSceneState())
+			return false;
+
 		pieWorld.CurrentScene() = m_editorSelectedScene;
 
 		pieWorld.m_inputs = ToRemove::SetupGameInputs();
@@ -240,6 +247,37 @@ namespace SvEditor::Core
 		m_gameInstance->Init(m_PIEWorld);
 
 		return true;
+	}
+
+	std::string EditorEngine::GetTemporaryScenePath() const
+	{
+		if (!m_editorSelectedScene)
+			return {};
+
+		std::ostringstream oss;
+		oss << m_editorSelectedScene.GetFullPath() << std::format(".{:%m%d%Y-%H%M}.tmp", std::chrono::system_clock::now());
+		return oss.str();
+	}
+
+	bool EditorEngine::SaveSceneState() const
+	{
+		if (!m_editorSelectedScene)
+			return false;
+
+		return m_editorSelectedScene.Export(false, GetTemporaryScenePath());
+	}
+
+	bool EditorEngine::RestoreSceneState()
+	{
+		if (!m_editorSelectedScene)
+			return false;
+
+		const std::string tempPath = GetTemporaryScenePath();
+		std::error_code   err;
+
+		return m_editorSelectedScene->Load(tempPath)
+			&& CHECK(std::filesystem::remove(tempPath, err) || err.value() == 0,
+				"Failed to remove temporary scene data at \"%s\" - %s", tempPath.c_str(), err.message().c_str());
 	}
 
 	void EditorEngine::BakeLights()

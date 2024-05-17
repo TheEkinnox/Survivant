@@ -65,6 +65,10 @@ namespace SvEditor::Core
 
 		bool InitializePlayInEditorGameInstance();
 
+		std::string GetTemporaryScenePath() const;
+		bool		SaveSceneState() const;
+		bool		RestoreSceneState();
+
 		std::shared_ptr<WorldContext>	CreateEditorDefaultWorld(const WorldContext::SceneRef& p_inScene);
 		std::shared_ptr<WorldContext>	CreatePIEWorld();
 		std::shared_ptr<Inputs>			CreateEditorInputs();
