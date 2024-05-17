@@ -67,11 +67,12 @@ namespace SvCore::ECS
         if (!*this)
             return "None";
 
-        if (const TagComponent* tag = Get<TagComponent>(); tag && tag->m_tag.empty())
-            return tag->m_tag;
-
         std::ostringstream str;
-        str << "Entity " << m_entity;
+        if (const TagComponent* tag = Get<TagComponent>(); tag && !tag->m_tag.empty())
+            str << tag->m_tag << " (" << m_entity << ")";
+        else
+            str << "Entity " << m_entity;
+
         return str.str();
     }
 

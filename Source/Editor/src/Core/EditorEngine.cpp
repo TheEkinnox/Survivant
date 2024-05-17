@@ -212,9 +212,9 @@ namespace SvEditor::Core
 		world->m_lightsSSBO = IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, Renderer::LIGHT_SSBO_INDEX);
 		world->CurrentScene() = p_inScene;
 		CameraComponent cam;
-		cam.SetPerspective(90_deg, .01f, 14.f);
+		cam.SetPerspective(90_deg, .01f, 50.f);
 		cam.SetClearColor(Color::lightGray);
-		world->SetCamera(cam, Transform({ 0.f, 1.8f, 2.f }, Quaternion::identity(), Vector3::one()));
+		world->SetCamera(cam, Transform({ 0.f, 0.f, 0.f }, Quaternion::identity(), Vector3::one()));
 		world->m_inputs = CreateEditorInputs();
 
 		//load and render

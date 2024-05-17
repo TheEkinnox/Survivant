@@ -50,6 +50,7 @@ namespace SvEditor::PanelItems
 		const Children&		GetChildren()const;
 		PanelTreeBranch*	GetParent()const;
 		std::string			GetPath()const;
+		void				SetName(const std::string& p_name);
 		const T&			SetValue(const T& p_value)const;
 		const T&			GetValue()const;
 
@@ -81,7 +82,6 @@ namespace SvEditor::PanelItems
 
 		// Inherited via ISelectable
 		void				SetSelectedState(bool p_isSelected)override;
-
 
 		enum class EForceState
 		{

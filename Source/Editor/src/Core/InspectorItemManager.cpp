@@ -297,8 +297,12 @@ namespace SvEditor::Core
 			PanelComponent::Items({
 					std::make_shared<PanelTextInput>(PanelTextInput(
 						"Name ",
-						[entity = p_entity]() mutable -> std::string& { return
-							entity.Get<TagComponent>()->m_tag; }
+						PanelTextInput::GetRefFunc([entity = p_entity]() mutable -> std::string& { return
+							entity.Get<TagComponent>()->m_tag; }),
+						PanelTextInput::Callback([entity = p_entity](PanelTextInput::CallbackParams) mutable {
+							auto tag = entity.Get<TagComponent>(); //refresh
+							entity.Set<TagComponent>(*tag);
+						})
 					))
 				}),
 			Prio);

@@ -48,6 +48,7 @@ namespace SvApp::Core
     void WorldContext::Save(const bool p_pretty)
     {
         CurrentScene().Export(p_pretty);
+        SV_LOG("Saved Scene: %s", CurrentScene().GetPath().c_str());
     }
 
     void WorldContext::BakeLighting()

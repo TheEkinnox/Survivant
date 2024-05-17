@@ -293,7 +293,7 @@ namespace SvEditor::PanelItems
         auto cliks = ImGui::GetMouseClickedCount(0);
 
         if (hov && cliks == 1)
-            Select();
+            ToggleSelection();
 
         else if (hov && cliks == 2)
             Open();
@@ -348,6 +348,12 @@ namespace SvEditor::PanelItems
         }
 
         return path;
+    }
+
+    template<typename T>
+    inline void PanelTreeBranch<T>::SetName(const std::string& p_name)
+    {
+        m_name = p_name;
     }
 
     template<typename T>

@@ -106,7 +106,7 @@ namespace SvApp::Core
 
         void OnBeforeSceneDraw(const Renderer::DrawInfo& p_drawInfo)
         {
-            if (p_drawInfo.m_entity == RenderingContext::s_editorSelectedEntity)
+            if (p_drawInfo.m_entity == RenderingContext::s_editorSelectedEntity.GetEntity())
             {
                 Vector4& colorRef = p_drawInfo.m_material->GetProperty<Vector4>("u_tint");
                 colorRef *= g_darkenColor;
@@ -116,7 +116,7 @@ namespace SvApp::Core
 
         void OnAfterSceneDraw(const Renderer::DrawInfo& p_drawInfo)
         {
-            if (p_drawInfo.m_entity == RenderingContext::s_editorSelectedEntity)
+            if (p_drawInfo.m_entity == RenderingContext::s_editorSelectedEntity.GetEntity())
             {
                 Vector4& colorRef = p_drawInfo.m_material->GetProperty<Vector4>("u_tint");
                 colorRef /= g_darkenColor;

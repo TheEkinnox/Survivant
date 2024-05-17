@@ -73,7 +73,7 @@ namespace SvApp::Core
 
 		const SvRendering::Core::Renderer& GetRenderer() const;
 
-		static inline SvCore::ECS::Entity s_editorSelectedEntity = SvCore::ECS::NULL_ENTITY;
+		static inline SvCore::ECS::EntityHandle s_editorSelectedEntity = {};
 
 	private:
 		void GameRender(SvRendering::Core::Renderer::RenderInfo& p_renderInfo) const;

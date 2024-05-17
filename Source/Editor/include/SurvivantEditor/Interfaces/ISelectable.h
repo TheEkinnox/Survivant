@@ -39,23 +39,33 @@ namespace SvEditor::Interfaces
 
 		virtual const std::string&	GetIcon()override = 0;
 		virtual const std::string&	GetName()override = 0;
-		virtual bool				Open() { m_onOpened.Invoke(this); return false; };
-		virtual bool				Select() { SetSelectedState(true); m_onSelected.Invoke(this); return false; };
+		virtual bool				Open() { s_onOpened.Invoke(this); return false; };
+		virtual bool				Select() { SetSelectedState(true); s_onSelected.Invoke(this); return false; };
 		virtual void				DisplayAndUpdatePopupMenu() = 0;
 		virtual bool				GetSelectedState() = 0;
 
-		void						ClearSelection() { 
+		void ClearSelection() { 
 			
 			auto prevState = GetSelectedState();
 			SetSelectedState(false); 
 
 			if (prevState)
-				m_onClearSelected.Invoke(); 
+				s_onClearSelected.Invoke(); 
 		};
 
-		inline static SvCore::Events::Event<ISelectable*>	m_onOpened;
-		inline static SvCore::Events::Event<ISelectable*>	m_onSelected;
-		inline static SvCore::Events::Event<>				m_onClearSelected;
+		bool ToggleSelection()
+		{
+			if (GetSelectedState())
+				ClearSelection();
+			else
+				Select();
+
+			return GetSelectedState();
+		}
+
+		inline static SvCore::Events::Event<ISelectable*>	s_onOpened;
+		inline static SvCore::Events::Event<ISelectable*>	s_onSelected;
+		inline static SvCore::Events::Event<>				s_onClearSelected;
 
 	protected:
 		virtual void				SetSelectedState(bool p_isSelected) = 0;

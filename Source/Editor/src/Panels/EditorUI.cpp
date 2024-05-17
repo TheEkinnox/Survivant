@@ -73,13 +73,13 @@ namespace SvEditor::Core
         SvEditor::Core::IUI::m_currentUI = this;
 
         //Propagate selection
-        ISelectable::m_onSelected.AddListener([this](ISelectable* p_selected)
-            {
+        ISelectable::s_onSelected.AddListener([this](ISelectable* p_selected) 
+            { 
             if (m_selected)
                 m_selected->ClearSelection();
             m_selected = p_selected;
             });
-        ISelectable::m_onClearSelected.AddListener([this]() { m_selected = nullptr; });
+        ISelectable::s_onClearSelected.AddListener([this]() { m_selected = nullptr; });
     }
 
     void EditorUI::InitWindow(SvApp::Window* p_window)
@@ -102,6 +102,7 @@ namespace SvEditor::Core
     void EditorUI::InitScenePanel(std::weak_ptr<WorldContext> p_world)
     {
         using namespace SvApp::Core;
+        using namespace SvCore::ECS;
         using namespace SvRendering::RHI;
         using namespace SvRendering::Enums;
 
@@ -116,12 +117,19 @@ namespace SvEditor::Core
 
                 SV_LOG(SvCore::Utility::FormatString("ID = %d", entity.GetIndex()).c_str());
 
-                p_world.lock()->m_renderingContext->s_editorSelectedEntity = entity;
-                HierarchyPanel::SelectSelectable(entity);
+                //auto& currentSelected = p_world.lock()->m_renderingContext->s_editorSelectedEntity;
+                //if (currentSelected == entity)
+                //    currentSelected = {};
+                //else
+                //    currentSelected = EntityHandle(p_world.lock()->CurrentScene().Get(), entity);
 
-                auto entityPanel = InspectorItemManager::GetPanelableEntity(
-                    SvCore::ECS::EntityHandle(p_world.lock()->CurrentScene().Get(), entity));
-                InspectorPanel::SetInpectorInfo(entityPanel, "Entity");
+                HierarchyPanel::ToggleSelectable(entity.GetIndex());
+
+                //auto entityPanel = InspectorItemManager::GetPanelableEntity(
+                //    SvCore::ECS::EntityHandle(p_world.lock()->CurrentScene().Get(), currentSelected));
+
+                //does this in ToggleSelectable
+                //InspectorPanel::SetInpectorInfo(entityPanel, "Entity");
             });
 
         ScenePanel::AddResizeListenner(
