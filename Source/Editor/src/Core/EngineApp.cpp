@@ -1,20 +1,26 @@
 #include "SurvivantEditor/Core/EngineApp.h"
 
-#include "SurvivantEditor/RuntimeBuild/BuildManager.h"
+#include "SurvivantEditor/Core/InspectorItemManager.h"
+#include "SurvivantEditor/Panels/HierarchyPanel.h"
 
-#include "SurvivantApp/Inputs/InputManager.h"
+#include <SurvivantApp/Inputs/InputManager.h>
+
 #include <SurvivantCore/Debug/Assertion.h>
 #include <SurvivantCore/Debug/Logger.h>
-#include "SurvivantCore/Events/EventManager.h"
-#include <SurvivantCore/Utility/FileSystem.h>
-#include "SurvivantEditor/Panels/ScenePanel.h"
-#include "SurvivantEditor/Core/EditorUI.h"
-#include "SurvivantEditor/Core/InspectorItemManager.h"
-#include "SurvivantScripting/LuaContext.h"
+#include <SurvivantCore/Resources/ResourceManager.h>
+
+#include <SurvivantPhysics/PhysicsContext.h>
+
+#include <SurvivantRendering/RHI/IRenderAPI.h>
+
+#include <SurvivantScripting/LuaContext.h>
 
 #include <memory>
 
-#include "SurvivantApp/Core/TempDefaultScene.h"
+using namespace SvRendering::RHI;
+using namespace SvRendering::Enums;
+
+using namespace SvCore::Utility;
 
 namespace SvEditor::Core
 {
@@ -26,7 +32,7 @@ namespace SvEditor::Core
 
 	EngineApp::~EngineApp()
 	{
-		m_window.release();
+		m_window.reset();
 	}
 
 	void EngineApp::Init()
@@ -34,7 +40,7 @@ namespace SvEditor::Core
 		m_gameIsPaused = false;
 
 		SvCore::Debug::Logger::GetInstance().SetFile("debug.log");
-		ResourceManager::GetInstance().AddSearchPath("assets");
+        SvCore::Resources::ResourceManager::GetInstance().AddSearchPath("assets");
 
 		//setup InspectorComponents
 		InspectorItemManager::Init();

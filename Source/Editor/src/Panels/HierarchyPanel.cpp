@@ -28,23 +28,25 @@ namespace SvEditor::Panels
         UpdateScene();
 
         //propagate selection
-        auto selectFunc = [](HierarchyBranch& p_branch)
+        auto selectFunc = [this](HierarchyBranch& p_branch)
             {
                 using namespace Core;
 
                 auto entity = s_getCurrentScene().lock()->Get()->Find(p_branch.GetValue());
                 auto entityPanel = InspectorItemManager::GetPanelableEntity(entity);
 
+                m_currentSelected = entity.GetEntity();
                 InspectorPanel::SetInpectorInfo(entityPanel, "Entity");
                 ScenePanel::SelectEntity(entity);
                 p_branch.ForceOpenParents();
                 return false;
             };
 
-        SvCore::Events::Event<>::EventDelegate clearFunc = []()
+        SvCore::Events::Event<>::EventDelegate clearFunc = [this]()
             {
                 using namespace Core;
 
+                m_currentSelected = NULL_ENTITY;
                 auto entityPanel = InspectorItemManager::GetPanelableEntity(
                     EntityHandle());
 
@@ -81,17 +83,22 @@ namespace SvEditor::Panels
     {
         ASSERT(s_getCurrentScene, "Current Scene Getter not set");
 
+        auto oldSelection = m_currentSelected;
         auto oldScene = m_scene;
         m_scene = s_getCurrentScene();
         s_entities.clear();
         m_tree.SetBranches();
         SetupTree();
 
+        if (oldSelection != NULL_ENTITY)
+            ToggleSelectable(oldSelection.GetIndex());
+
         if (!oldScene.expired() && *m_scene.lock()->Get() == *oldScene.lock()->Get())
             return;
 
         if (!oldScene.expired())
             RemoveListeners(*oldScene.lock()->Get());
+
 
         //tag dirty on hierarchy change
         m_onModifEntity[0] = GetScene().GetStorage<Entity>().m_onAdd.AddListener(

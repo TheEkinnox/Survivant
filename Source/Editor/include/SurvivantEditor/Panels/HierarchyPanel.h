@@ -67,6 +67,6 @@ namespace SvEditor::Panels
 		std::array<HierarchyListenerId, 3>		m_onModifHierarchy;
 		std::array<TagComponentListenerId, 3>	m_onModifTag;
 
-		std::weak_ptr<HierarchyBranch>	m_currentSelected;
+		SvCore::ECS::Entity	m_currentSelected;
 	};
 }

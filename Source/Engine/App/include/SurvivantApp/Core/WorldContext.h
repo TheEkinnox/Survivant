@@ -46,7 +46,7 @@ namespace SvApp::Core
 
 		void BeginPlay();
 		//void Update();
-		void Save(bool p_pretty = false);
+		bool Save(bool p_pretty = false);
 		void BakeLighting();
 
 		SvCore::ECS::EntityHandle	GetFirstCamera();

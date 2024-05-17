@@ -73,8 +73,8 @@ namespace SvEditor::Core
         SvEditor::Core::IUI::m_currentUI = this;
 
         //Propagate selection
-        ISelectable::s_onSelected.AddListener([this](ISelectable* p_selected) 
-            { 
+        ISelectable::s_onSelected.AddListener([this](ISelectable* p_selected)
+            {
             if (m_selected)
                 m_selected->ClearSelection();
             m_selected = p_selected;
@@ -280,8 +280,8 @@ namespace SvEditor::Core
                     return;
                 }
 
-                p_world.lock()->Save(true);
-                SV_LOG("Scene saved successfully");
+                if (p_world.lock()->Save(true))
+                    SV_LOG("Scene successfully saved to \"%s\"", p_world.lock()->CurrentScene().GetFullPath().c_str());
             },
             InputManager::KeyboardKeyType(EKey::S, EKeyState::PRESSED, EInputModifier::MOD_CONTROL),
             *m_inputs
