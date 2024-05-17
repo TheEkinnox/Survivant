@@ -2,6 +2,7 @@
 #include "SurvivantCore/Resources/ResourceManager.h"
 #include "SurvivantCore/Resources/ResourceRef.h"
 #include "SurvivantCore/Resources/ResourceRegistry.h"
+#include "SurvivantCore/Utility/FileSystem.h"
 
 namespace SvCore::Resources
 {
@@ -9,6 +10,7 @@ namespace SvCore::Resources
     ResourceRef<T>::ResourceRef(std::string p_path, T* p_resource)
         : m_path(std::move(p_path)), m_resource(p_resource), m_refCount(p_resource ? new RefCountT(1) : nullptr)
     {
+        Utility::ReplaceInPlace(m_path, "\\", "/");
     }
 
     template <class T>
@@ -170,6 +172,46 @@ namespace SvCore::Resources
     }
 
     template <class T>
+    std::string ResourceRef<T>::GetFullPath() const
+    {
+        return ResourceManager::GetInstance().GetFullPath(m_path);
+    }
+
+    template <class T>
+    bool ResourceRef<T>::Export(const bool p_pretty, const std::string& p_path) const
+    {
+        if (!m_resource)
+            return false;
+
+        const ResourceManager& resourceManager = ResourceManager::GetInstance();
+        std::filesystem::path  fullPath        = resourceManager.GetFullPath(m_path);
+
+        std::error_code err;
+        if (!p_path.empty())
+        {
+            const std::filesystem::path path(resourceManager.GetFullPath(p_path));
+
+            const bool shouldCopy = !equivalent(fullPath, p_path) && exists(fullPath);
+
+            if (shouldCopy && !(
+                CHECK(std::filesystem::create_directories(path.parent_path()) || err.value() == 0,
+                    "Failed to create directories for \"%s\" - %s", path.string().c_str(), err.message().c_str()) &&
+                CHECK(std::filesystem::copy_file(fullPath, path, err),
+                    "Failed to copy resource from \"%s\" to \"%s\":\n%s", fullPath.c_str(), p_path.c_str(), err.message().c_str())))
+                return false;
+
+            fullPath = std::move(path);
+        }
+        else if (!CHECK(std::filesystem::create_directories(fullPath.parent_path(), err) || err.value() == 0,
+                "Failed to create directories for \"%s\" - %s", fullPath.c_str(), err.message().c_str()))
+        {
+            return false;
+        }
+
+        return static_cast<IResource*>(m_resource)->Save(fullPath.string(), p_pretty);
+    }
+
+    template <class T>
     void ResourceRef<T>::Reset()
     {
         if (m_refCount && --(*m_refCount) == 0)
@@ -189,11 +231,8 @@ namespace SvCore::Resources
     {
         p_writer.StartObject();
 
-        std::string path = Utility::Replace(m_path, "\\", "/");
-        Utility::ReplaceInPlace(path, "//", "/");
-
         p_writer.Key("path");
-        p_writer.String(path.c_str(), static_cast<rapidjson::SizeType>(path.size()));
+        p_writer.String(m_path.c_str(), static_cast<rapidjson::SizeType>(m_path.size()));
 
         return p_writer.EndObject();
     }
@@ -291,11 +330,8 @@ namespace SvCore::Resources
         p_writer.Key("type");
         p_writer.String(m_type.c_str(), static_cast<rapidjson::SizeType>(m_type.size()));
 
-        std::string path = Utility::Replace(m_path, "\\", "/");
-        Utility::ReplaceInPlace(path, "//", "/");
-
         p_writer.Key("path");
-        p_writer.String(path.c_str(), static_cast<rapidjson::SizeType>(path.size()));
+        p_writer.String(m_path.c_str(), static_cast<rapidjson::SizeType>(m_path.size()));
 
         return p_writer.EndObject();
     }

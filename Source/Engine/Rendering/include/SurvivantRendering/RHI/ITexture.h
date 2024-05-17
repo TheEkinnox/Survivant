@@ -64,10 +64,11 @@ namespace SvRendering::RHI
 
         /**
          * \brief Saves the meta data of the texture at the given path
-         * \param p_fileName The texture file's path
+         * \param p_path The texture file's path
+         * \param p_pretty Whether the output should be human-friendly
          * \return True on success. False otherwise
          */
-        bool Save(const std::string& p_fileName) override;
+        bool Save(const std::string& p_path, bool p_pretty = false) override;
 
         /**
          * \brief Gets the texture's internal handle

@@ -106,10 +106,12 @@ namespace SvCore::ECS
     template <>
     void ComponentTraits::OnRemove(EntityHandle& p_entity, HierarchyComponent& p_component)
     {
-        OnBeforeChange(p_entity, p_component);
+        static HierarchyComponent discard;
+        OnBeforeChange(p_entity, p_component, discard);
 
         EntityHandle child(p_entity.GetScene(), p_component.m_firstChild);
 
+        // Technically the component gets deleted but events, which get called after this, might need the info to be accurate
         p_component.m_parent          = NULL_ENTITY;
         p_component.m_nextSibling     = NULL_ENTITY;
         p_component.m_previousSibling = NULL_ENTITY;
@@ -126,7 +128,7 @@ namespace SvCore::ECS
     }
 
     template <>
-    void ComponentTraits::OnBeforeChange(EntityHandle& p_entity, HierarchyComponent& p_component)
+    void ComponentTraits::OnBeforeChange(EntityHandle& p_entity, HierarchyComponent& p_component, HierarchyComponent& p_newValue)
     {
         Scene* scene = p_entity.GetScene();
         ASSERT(scene);
@@ -149,9 +151,13 @@ namespace SvCore::ECS
         if (HierarchyComponent* nextHierarchy = nextSibling.Get<HierarchyComponent>())
             nextHierarchy->m_previousSibling = prevSibling;
 
+        // Technically the component gets overriden but events, which get called after this, might need the info to be accurate
         p_component.m_parent          = NULL_ENTITY;
         p_component.m_nextSibling     = NULL_ENTITY;
         p_component.m_previousSibling = NULL_ENTITY;
+
+        p_newValue.m_firstChild = p_component.m_firstChild;
+        p_newValue.m_childCount = p_component.m_childCount;
     }
 
     template <>
@@ -167,6 +173,7 @@ namespace SvCore::ECS
 
         if (!parent)
         {
+            p_component.m_parent = NULL_ENTITY;
             LinkTransforms(p_entity);
             return;
         }
@@ -189,6 +196,35 @@ namespace SvCore::ECS
         }
 
         LinkTransforms(p_entity);
+    }
+
+    template <>
+    HierarchyComponent ComponentTraits::Copy(EntityHandle&, HierarchyComponent& p_source, EntityHandle& p_to)
+    {
+        ASSERT(p_to);
+        Scene* scene = p_to.GetScene();
+
+        EntityHandle child(scene, p_source.m_firstChild);
+
+        if (!child)
+            return HierarchyComponent(p_source.m_parent);
+
+        while (child)
+        {
+            const EntityHandle nextSibling = child.GetNextSibling();
+
+            EntityHandle copy = child.Copy();
+
+            HierarchyComponent& copyHierarchy = *copy.Get<HierarchyComponent>();
+            copyHierarchy.m_nextSibling       = NULL_ENTITY;
+            copyHierarchy.m_previousSibling   = NULL_ENTITY;
+
+            copy.SetParent(p_to, true);
+
+            child = nextSibling;
+        }
+
+        return *p_to.Get<HierarchyComponent>();
     }
 
     template <>

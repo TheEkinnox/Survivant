@@ -1,4 +1,6 @@
 #pragma once
+#include "SurvivantCore/Serialization/Serializer.h"
+
 #include <SurvivantCore/Resources/IResource.h>
 
 namespace SvScripting
@@ -64,10 +66,11 @@ namespace SvScripting
 
         /**
          * \brief Saves the meta data of the script at the given path
-         * \param p_fileName The script's path
+         * \param p_path The script's path
+         * \param p_pretty Whether the output should be human-friendly
          * \return True on success. False otherwise
          */
-        bool Save(const std::string& p_fileName) override;
+        bool Save(const std::string& p_path, bool p_pretty = false) override;
 
         /**
          * \brief Gets the lua script's source code
@@ -100,9 +103,9 @@ namespace SvScripting
 
         /**
          * \brief Saves the lua script's meta data to the given path
-         * \param p_path The lua script's meta path
+         * \param p_writer The output json file writer
          * \return True on success. False otherwise
          */
-        bool SaveMeta(const std::string& p_path) const;
+        bool SaveMeta(SvCore::Serialization::JsonFileWriter& p_writer) const;
     };
 }

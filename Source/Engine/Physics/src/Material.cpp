@@ -9,22 +9,33 @@ namespace SvPhysics
         return FromJson(LoadJsonFile(p_fileName));
     }
 
-    bool Material::Save(const std::string& p_fileName)
+    bool Material::Save(const std::string& p_path, const bool p_pretty)
     {
         JsonStringBuffer buffer;
-        JsonWriter       writer(buffer);
 
-        if (!ToJson(writer) || !ASSUME(writer.IsComplete(), "Failed to save physics material - Generated json is incomplete"))
-            return false;
+        if (!p_pretty)
+        {
+            JsonWriter writer(buffer);
 
-        std::ofstream fs(p_fileName);
+            if (!ToJson(writer) || !ASSUME(writer.IsComplete(), "Failed to save physics material - Generated json is incomplete"))
+                return false;
+        }
+        else
+        {
+            JsonPrettyWriter writer(buffer);
 
-        if (!CHECK(fs.is_open(), "Unable to open physics material file at path \"%s\"", p_fileName.c_str()))
+            if (!ToJson(writer) || !ASSUME(writer.IsComplete(), "Failed to save physics material - Generated json is incomplete"))
+                return false;
+        }
+
+        std::ofstream fs(p_path);
+
+        if (!CHECK(fs.is_open(), "Unable to open physics material file at path \"%s\"", p_path.c_str()))
             return false;
 
         fs << std::string_view(buffer.GetString(), buffer.GetLength());
 
-        return CHECK(!fs.bad(), "Failed to write physics material to \"%s\"", p_fileName.c_str());
+        return CHECK(!fs.bad(), "Failed to write physics material to \"%s\"", p_path.c_str());
     }
 
     bool Material::ToJson(JsonWriter& p_writer) const

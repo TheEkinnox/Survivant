@@ -1,8 +1,8 @@
 # Download RapidJSON
 FetchContent_Declare(
 	RapidJSON
-	GIT_REPOSITORY https://github.com/Tencent/rapidjson
-	GIT_TAG origin/master
+	GIT_REPOSITORY https://github.com/mondus/rapidjson
+	GIT_TAG e0444f56ea7b9e897ddb1b95e1c2af6cf3357699
 	GIT_SHALLOW ON
 )
 

@@ -13,7 +13,7 @@ namespace SvCore::Resources
         if (p_path.empty())
             return {};
 
-        const std::string key = GetFullPath(p_path);
+        const std::string key = GetRelativePath(p_path);
 
         T*         resource = nullptr;
         const auto it       = m_resources.find(key);
@@ -31,7 +31,7 @@ namespace SvCore::Resources
 
         const bool canReuse = resource;
 
-        if (!resource)
+        if (!canReuse)
             resource = CreateResource<T>();
 
         if (!LoadResource(resource, key))
@@ -53,7 +53,7 @@ namespace SvCore::Resources
         if (p_path.empty())
             return {};
 
-        const auto it = m_resources.find(GetFullPath(p_path));
+        const auto it = m_resources.find(GetRelativePath(p_path));
 
         if (it != m_resources.end())
             return *it->second;

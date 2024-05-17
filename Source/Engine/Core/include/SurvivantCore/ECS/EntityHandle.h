@@ -98,10 +98,23 @@ namespace SvCore::ECS
         EntityHandle GetParent() const;
 
         /**
+         * \brief Gets the entity's display name
+         * \return The entity's display name
+         */
+        std::string GetDisplayName() const;
+
+        /**
          * \brief Sets the linked entity's parent
          * \param p_parent The entity's new parent
          */
         void SetParent(EntityHandle p_parent);
+
+        /**
+         * \brief Sets the linked entity's parent
+         * \param p_parent The entity's new parent
+         * \param p_keepWorld Whether the entity should keep its current world transform
+         */
+        void SetParent(EntityHandle p_parent, bool p_keepWorld);
 
         /**
          * \brief Gets the entity's next sibling
@@ -127,6 +140,11 @@ namespace SvCore::ECS
          * \return A handle to the child if found or to NULL_ENTITY otherwise
          */
         EntityHandle GetChild(size_t p_index) const;
+
+        /**
+         * \brief Sets the linked entity's parent
+         */
+        EntityHandle AddChild() const;
 
         /**
          * \brief Gets the entity's children

@@ -206,26 +206,6 @@ namespace ToRemove
         modelBuffer->Bind();
     }
 
-    void inline DrawModel(const Model& p_model, const Frustum& p_viewFrustum, const Matrix4& p_transform, const Material& p_material)
-    {
-        if (!p_viewFrustum.intersects(TransformBoundingBox(p_model.GetBoundingBox(), p_transform)))
-            return;
-
-        BindModelUBO(p_transform);
-
-        p_material.Bind();
-        p_material.GetShader().SetUniformMat4("sv_modelMat", p_transform);
-        p_material.GetShader().SetUniformMat4("sv_normalMat", p_transform.transposed().inverse());
-
-        for (size_t i = 0; i < p_model.GetMeshCount(); ++i)
-        {
-            const Mesh& mesh = p_model.GetMesh(i);
-
-            mesh.Bind();
-            IRenderAPI::GetCurrent().DrawElements(EPrimitiveType::TRIANGLES, mesh.GetIndexCount());
-        }
-    }
-
     std::shared_ptr<IShader> inline CreateEditorSceneShader()
     {
         std::shared_ptr<IShader> shader = IShader::Create();
@@ -233,11 +213,6 @@ namespace ToRemove
         ASSERT(shader->Init(), "Failed to initialize shader at path \"%s\"", EDITORSCENE_SHADER_PATH);
 
         return shader;
-    }
-
-    Vector2 inline IdToVec2(const Entity::Id& p_value)
-    {
-        return Vector2((float)((p_value) >> 32), (float)((p_value) & 0xffffffff00000000));
     }
 
     int inline EntityToTextureValue(const Entity& p_entity)
@@ -301,9 +276,9 @@ namespace ToRemove
                 SV_LOG("Added int %d to entity %d:%d", p_val, p_owner.GetIndex(), p_owner.GetVersion());
             };
 
-        const auto onBeforeChangeInt = [](const Entity p_owner, const int& p_val)
+        const auto onBeforeChangeInt = [](const Entity p_owner, const int& p_currentVal, const int& p_newVal)
             {
-                SV_LOG("Changing int %d of entity %d:%d", p_owner.GetIndex(), p_owner.GetVersion(), p_val);
+                SV_LOG("Changing int %d of entity %d:%d to %d", p_owner.GetIndex(), p_owner.GetVersion(), p_currentVal, p_newVal);
             };
 
         const auto onChangeInt = [](const Entity p_owner, const int& p_val)
@@ -529,127 +504,6 @@ namespace ToRemove
         std::unique_ptr<IShaderStorageBuffer> lightsSSBO = IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, 0);
         UpdateLightSSBO(p_scene, *lightsSSBO);
         return lightsSSBO;
-    }
-
-    void inline DrawScene(Scene& p_scene, bool isIdTexture = false)
-    {
-        SceneView<CameraComponent>                                cameras(p_scene);
-        SceneView<const ModelComponent, const Transform> renderables(p_scene);
-
-        for (const auto camEntity : cameras)
-        {
-            auto& camComp = *cameras.Get<CameraComponent>(camEntity);
-            camComp.Clear();
-
-            auto& cam = *camComp;
-
-            if (const Transform* transform = p_scene.Get<const Transform>(camEntity))
-            {
-                camComp.Recalculate(transform->getWorldMatrix().inverse());
-                BindCamUBO(cam.GetViewProjection(), transform->getWorldPosition());
-            }
-            else
-            {
-                BindCamUBO(cam.GetViewProjection(), Vector3::zero());
-            }
-
-            const Frustum camFrustum = cam.GetFrustum();
-
-            for (const auto modelEntity : renderables)
-            {
-                const auto [model, transform] = renderables.Get(modelEntity);
-                if (!(model->m_model && model->m_material))
-                    continue;
-
-                if (isIdTexture)
-                    DrawModelEditorScene(*model->m_model, camFrustum, transform->getWorldMatrix(), *model->m_material, modelEntity);
-                else
-                    DrawModel(*model->m_model, camFrustum, transform->getWorldMatrix(), *model->m_material);
-            }
-        }
-    }
-
-    void inline DrawMainCameraScene(
-        Scene& p_scene, CameraComponent& p_camera, const Transform& p_trans,
-        bool isIdTexture = false)
-    {
-        SceneView<const ModelComponent, const Transform> renderables(p_scene);
-        std::pair<ModelComponent*, Transform*>           selectedModel = { nullptr, nullptr };
-
-        if (isIdTexture)
-        {
-            IRenderAPI::GetCurrent().SetClearColor(Color::black);
-            IRenderAPI::GetCurrent().Clear(true, false, false);
-        }
-        else
-            p_camera.Clear();
-
-        p_camera.Recalculate(p_trans.getWorldMatrix().inverse());
-        auto& cam = *p_camera;
-        BindCamUBO(cam.GetViewProjection(), p_trans.getWorldPosition());
-
-        const Frustum camFrustum = cam.GetFrustum();
-
-        for (const auto modelEntity : renderables)
-        {
-            const auto [model, transform] = renderables.Get(modelEntity);
-            if (!(model->m_model && model->m_material))
-                continue;
-
-            if (isIdTexture)
-                DrawModelEditorScene(*model->m_model, camFrustum, transform->getWorldMatrix(), *model->m_material, modelEntity);
-            else
-                DrawModel(*model->m_model, camFrustum, transform->getWorldMatrix(), *model->m_material);
-        }
-    }
-
-    SvCore::Resources::ResourceRef<Material> inline TempDefaultMaterial()
-    {
-        ResourceRef<IShader> unlitShader(UNLIT_SHADER_PATH);
-        ASSERT(unlitShader, "Failed to load shader at path \"%s\"", UNLIT_SHADER_PATH);
-
-        ResourceRef<Material> whiteMaterial("", new Material(unlitShader));
-        whiteMaterial->GetProperty<ResourceRef<ITexture>>("u_diffuse") = GetTexture();
-        whiteMaterial->GetProperty<Vector4>("u_tint") = Color::white;
-
-        return whiteMaterial;
-    }
-
-    void inline DrawSelectedMainCameraScene(
-        Scene& p_scene, CameraComponent& p_camera, const Transform& p_trans, const Entity& p_entityIndex)
-    {
-        static auto defaultMaterial = TempDefaultMaterial();
-        static auto darkenColor = Vector4(0.3f, 0.3f, 0.3f, 1);
-
-        SceneView<const ModelComponent, const Transform>    renderables(p_scene);
-        std::pair<const ModelComponent*, const Transform*>  selectedModel = { nullptr, nullptr };
-
-        p_camera.Clear();
-        auto& cam = *p_camera;
-        p_camera.Recalculate(p_trans.getWorldMatrix().inverse());
-        BindCamUBO(cam.GetViewProjection(), p_trans.getWorldPosition());
-
-        const Frustum camFrustum = cam.GetFrustum();
-
-        for (const auto modelEntity : renderables)
-        {
-            const auto [model, transform] = renderables.Get(modelEntity);
-            if (!(model->m_model && model->m_material))
-                continue;
-
-            if (p_entityIndex && (modelEntity == p_entityIndex))
-            {
-                auto& colorRef = model->m_material->GetProperty<Vector4>("u_tint");
-                auto oldColor = colorRef;
-
-                colorRef = oldColor * darkenColor;
-                DrawModel(*model->m_model, camFrustum, transform->getWorldMatrix(), *model->m_material);
-
-                colorRef = oldColor;
-            }
-            else
-                DrawModel(*model->m_model, camFrustum, transform->getWorldMatrix(), *model->m_material);
-        }
     }
 
     void inline UpdateTemporaries(SceneView<Temporary>& p_view, const float p_deltaTime)

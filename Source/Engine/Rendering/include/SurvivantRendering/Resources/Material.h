@@ -75,10 +75,11 @@ namespace SvRendering::Resources
 
         /**
          * \brief Saves the material at the given path
-         * \param p_fileName The material's path
+         * \param p_path The material's path
+         * \param p_pretty Whether the output should be human-friendly
          * \return True on success. False otherwise
          */
-        bool Save(const std::string& p_fileName) override;
+        bool Save(const std::string& p_path, bool p_pretty = false) override;
 
         /**
          * \brief Serializes the material to json
@@ -99,6 +100,12 @@ namespace SvRendering::Resources
          * \return A reference to the material's shader
          */
         RHI::IShader& GetShader() const;
+
+        /**
+         * \brief Gets the material's shader ref
+         * \return The material's shader resource reference
+         */
+        SvCore::Resources::ResourceRef<RHI::IShader> GetShaderRef() const;
 
         /**
          * \brief Sets the material's shader to the given value

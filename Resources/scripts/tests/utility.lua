@@ -16,7 +16,7 @@ local function SetTimeScale(timeScale)
 end
 
 function UtilityTest:OnInit()
-    if UTILITY_TEST then
+    if UTILITY_TEST and UTILITY_TEST ~= self then
         Debug.LogWarning("Utility test already exists in E" .. UTILITY_TEST.owner .. " - Removing from E" .. self.owner)
         self.owner:RemoveScript("scripts.tests.utility")
         return

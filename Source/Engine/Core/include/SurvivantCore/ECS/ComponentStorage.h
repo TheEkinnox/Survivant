@@ -137,8 +137,12 @@ namespace SvCore::ECS
 
         Events::Event<EntityHandle, T&> m_onAdd;
         Events::Event<EntityHandle, T&> m_onRemove;
-        Events::Event<EntityHandle, T&> m_onBeforeChange;
+
+        Events::Event<EntityHandle, T& /*current*/, T& /*new*/> m_onBeforeChange;
+
         Events::Event<EntityHandle, T&> m_onChange;
+
+        Events::Event<EntityHandle /*from*/, T& /*source*/, EntityHandle /*to*/, T& /*copy*/> m_onCopy;
 
         /**
          * \brief Creates an empty component storage
@@ -198,7 +202,7 @@ namespace SvCore::ECS
          * \param p_instance The added component instance
          * \return A reference to the created or modified component
          */
-        T& Set(Entity p_owner, const ComponentT& p_instance);
+        T& Set(Entity p_owner, ComponentT p_instance);
 
         /**
          * \brief Creates or modifies the given entity's component of the given type

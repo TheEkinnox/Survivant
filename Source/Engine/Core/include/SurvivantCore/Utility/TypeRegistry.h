@@ -136,6 +136,13 @@ namespace SvCore::Utility
         const TypeInfo& GetTypeInfo() const;
 
         /**
+         * \brief Gets the registered type id for the given type name
+         * \param p_type The target type's registered name
+         * \return The registered name for the given component type
+         */
+        TypeId GetRegisteredTypeId(const std::string& p_type) const;
+
+        /**
          * \brief Gets the registered name for the given type id
          * \param p_typeId The component type's id
          * \return The registered name for the given component type

@@ -45,6 +45,8 @@ namespace LibMath
         : m_position(other.m_position), m_rotation(other.m_rotation), m_scale(other.m_scale), m_matrix(std::move(other.m_matrix)),
         m_parent(nullptr), m_listeners(std::move(other.m_listeners))
     {
+        m_listeners.erase(this);
+
         if (other.m_parent)
             setParent(other.m_parent, false);
         else
@@ -89,6 +91,8 @@ namespace LibMath
         m_scale     = other.m_scale;
         m_matrix    = std::move(other.m_matrix);
         m_listeners = std::move(other.m_listeners);
+
+        m_listeners.erase(this);
 
         if (other.m_parent != m_parent)
             setParent(other.m_parent, false);
@@ -570,7 +574,7 @@ namespace LibMath
 
     inline bool Transform::subscribe(Transform& listener)
     {
-        return m_listeners.insert(&listener).second;
+        return &listener != this && m_listeners.insert(&listener).second;
     }
 
     inline void Transform::broadcast(const ENotificationType notificationType, Transform* newOwner)
@@ -581,7 +585,7 @@ namespace LibMath
 
     inline bool Transform::unsubscribe(Transform& listener)
     {
-        return m_listeners.erase(&listener) != 0;
+        return &listener != this && m_listeners.erase(&listener) != 0;
     }
 
     inline void Transform::updateLocalMatrix()

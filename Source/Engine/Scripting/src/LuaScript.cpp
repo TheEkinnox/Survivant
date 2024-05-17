@@ -36,9 +36,23 @@ namespace SvScripting
         return CHECK(!m_source.empty(), "Unable to load script - Empty source file") && LoadMeta(GetMetaPath(p_fileName));
     }
 
-    bool LuaScript::Save(const std::string& p_fileName)
+    bool LuaScript::Save(const std::string& p_path, const bool p_pretty)
     {
-        return SaveMeta(GetMetaPath(p_fileName));
+        std::ofstream fs(GetMetaPath(p_path));
+
+        if (!CHECK(fs.is_open(), "Unable to open lua script meta file at path \"%s\"", p_path.c_str()))
+            return false;
+
+        JsonOStream jos(fs);
+
+        if (!p_pretty)
+        {
+            JsonFileWriter writer(jos);
+            return SaveMeta(writer) && CHECK(!fs.bad(), "Failed to write lua script meta data to \"%s\"", p_path.c_str());
+        }
+
+        JsonPrettyFileWriter writer(jos);
+        return SaveMeta(writer) && CHECK(!fs.bad(), "Failed to write lua script meta data to \"%s\"", p_path.c_str());
     }
 
     std::string_view LuaScript::GetSource() const
@@ -76,24 +90,14 @@ namespace SvScripting
         return true;
     }
 
-    bool LuaScript::SaveMeta(const std::string& p_path) const
+    bool LuaScript::SaveMeta(JsonFileWriter& p_writer) const
     {
-        std::ofstream fs(p_path);
+        p_writer.StartObject();
 
-        if (!CHECK(fs.is_open(), "Unable to open lua script meta file at path \"%s\"", p_path.c_str()))
-            return false;
+        p_writer.Key("order");
+        p_writer.Int(m_executionOrder);
 
-        JsonOStream    jos(fs);
-        JsonFileWriter writer(jos);
-
-        writer.StartObject();
-
-        writer.Key("order");
-        writer.Int(m_executionOrder);
-
-        if (!writer.EndObject() || !ASSUME(writer.IsComplete(), "Failed to save lua script meta - Generated json is incomplete"))
-            return false;
-
-        return CHECK(!fs.bad(), "Failed to write lua script meta data to \"%s\"", p_path.c_str());
+        return p_writer.EndObject()
+            && ASSUME(p_writer.IsComplete(), "Failed to save lua script meta - Generated json is incomplete");
     }
 }

@@ -101,12 +101,12 @@ namespace SvScripting
             return false;
 
         if (!CHECK(p_handle.m_script, "Attempted to register unloaded script \"%s\"", p_handle.m_script.GetPath().c_str()))
-            return (m_isValid = false);
+            return false;
 
         const std::string_view source = p_handle.m_script->GetSource();
 
         if (source.empty())
-            return (m_isValid = false);
+            return false;
 
         const auto result = m_state->safe_script(source, &sol::script_pass_on_error, p_handle.m_script.GetPath());
 
@@ -114,12 +114,12 @@ namespace SvScripting
         {
             [[maybe_unused]] const sol::error err = result;
             CHECK(false, "Failed to register script \"%s\" - %s", p_handle.m_script.GetPath().c_str(), err.what());
-            return (m_isValid = false);
+            return false;
         }
 
         if (!CHECK(result.return_count() == 1 && result[0].is<sol::table>(),
                 "Failed to register script \"%s\" - Invalid return", p_handle.m_script.GetPath().c_str()))
-            return (m_isValid = false);
+            return false;
 
         sol::table resultTable = result[0].as<sol::table>();
 
@@ -251,15 +251,16 @@ namespace SvScripting
 
         const std::string base = p_module;
 
+        p_module = ResourceManager::GetInstance().GetRelativePath(GetModulePath(p_module, true));
+
         for (const auto& extension : EXTENSIONS)
         {
             if (p_module.ends_with(extension))
+            {
                 p_module = p_module.substr(0, p_module.size() - strlen(extension));
+                break;
+            }
         }
-
-        ReplaceInPlace(p_module, ".", "/");
-
-        p_module = ResourceManager::GetInstance().GetRelativePath(p_module);
 
         ReplaceInPlace(p_module, "/", ".");
         ReplaceInPlace(p_module, "\\", ".");
@@ -267,7 +268,7 @@ namespace SvScripting
         return (s_moduleNames[base] = p_module);
     }
 
-    const std::string& LuaContext::GetModulePath(std::string p_module)
+    std::string LuaContext::GetModulePath(std::string p_module, const bool p_fromGetName)
     {
         static std::string empty;
 
@@ -276,21 +277,32 @@ namespace SvScripting
 
         const auto it = s_modulePaths.find(p_module);
 
-        if (it != s_modulePaths.end())
-            return it->second;
+        const ResourceManager& resourceManager = ResourceManager::GetInstance();
+
+        if (it != s_modulePaths.end() && PathExists(it->second))
+            return resourceManager.GetFullPath(it->second);
 
         const std::string base = p_module;
 
-        p_module = Replace(GetModuleName(p_module), ".", "/");
+        p_module = resourceManager.GetFullPath(p_module);
 
-        const ResourceManager& resourceManager = ResourceManager::GetInstance();
+        if (PathExists(p_module))
+        {
+            s_modulePaths[base] = resourceManager.GetRelativePath(p_module);
+            return p_module;
+        }
+
+        p_module = Replace(p_fromGetName ? p_module : GetModuleName(p_module), ".", "/");
 
         for (const auto& extension : EXTENSIONS)
         {
             std::string path(resourceManager.GetFullPath(p_module + extension));
 
             if (PathExists(path))
-                return (s_modulePaths[base] = path);
+            {
+                s_modulePaths[base] = resourceManager.GetRelativePath(path);
+                return path;
+            }
         }
 
         return empty;

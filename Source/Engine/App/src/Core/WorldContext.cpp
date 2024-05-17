@@ -45,39 +45,14 @@ namespace SvApp::Core
     //    UpdateRotators(rotatorsView, SV_DELTA_TIME());
     //}
 
-    void WorldContext::Save()
+    void WorldContext::Save(const bool p_pretty)
     {
-        CurrentScene()->Save(CurrentScene().GetPath());
+        CurrentScene().Export(p_pretty);
     }
 
     void WorldContext::BakeLighting()
     {
-        SceneView<const LightComponent> view(*CurrentScene());
-        std::vector<Matrix4>            lightMatrices;
-
-        for (const auto entity : view)
-        {
-            const LightComponent& light = *view.Get<const LightComponent>(entity);
-
-            switch (light.m_type)
-            {
-            case ELightType::AMBIENT:
-                lightMatrices.emplace_back(light.m_ambient.GetMatrix());
-                break;
-            case ELightType::DIRECTIONAL:
-                lightMatrices.emplace_back(light.m_directional.GetMatrix());
-                break;
-            case ELightType::POINT:
-                lightMatrices.emplace_back(light.m_point.GetMatrix());
-                break;
-            case ELightType::SPOT:
-                lightMatrices.emplace_back(light.m_spot.GetMatrix());
-                break;
-            }
-        }
-
-        m_lightsSSBO->Bind();
-        m_lightsSSBO->SetData(lightMatrices.data(), lightMatrices.size());
+        Renderer::UpdateLightSSBO(CurrentScene().Get(), *m_lightsSSBO);
     }
 
     SvCore::ECS::EntityHandle WorldContext::GetFirstCamera()
@@ -87,7 +62,7 @@ namespace SvApp::Core
         EntityHandle entity;
         if (cameras.begin() != cameras.end())
             entity = EntityHandle(CurrentScene().Get(), *cameras.begin());
-        
+
         return entity;
     }
 

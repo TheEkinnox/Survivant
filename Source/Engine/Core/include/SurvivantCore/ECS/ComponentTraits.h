@@ -33,9 +33,11 @@ namespace SvCore::ECS
          * \tparam T The updated component's type
          * \param p_entity The component's owner
          * \param p_component The updated component
+         * \param p_newValue The component's new value
          */
         template <class T>
-        static void OnBeforeChange([[maybe_unused]] EntityHandle& p_entity, [[maybe_unused]] T& p_component)
+        static void OnBeforeChange(
+            [[maybe_unused]] EntityHandle& p_entity, [[maybe_unused]] T& p_component, [[maybe_unused]] T& p_newValue)
         {
         }
 
@@ -48,6 +50,20 @@ namespace SvCore::ECS
         template <class T>
         static void OnChange([[maybe_unused]] EntityHandle& p_entity, [[maybe_unused]] T& p_component)
         {
+        }
+
+        /**
+         * \brief The action to perform before a component of the given type is copied
+         * \tparam T The updated component's type
+         * \param p_from The source component's owner
+         * \param p_source The copied component
+         * \param p_to The copied component's owner
+         * \return The component copy
+         */
+        template <class T>
+        static T Copy([[maybe_unused]] EntityHandle& p_from, [[maybe_unused]] T& p_source, [[maybe_unused]] EntityHandle& p_to)
+        {
+            return p_source;
         }
     };
 }

@@ -4,20 +4,16 @@
 #include "SurvivantEditor/Interfaces/IPanelable.h"
 #include "SurvivantEditor/PanelItems/PanelButton.h"
 
-#include <functional>
-
 namespace SvEditor::PanelItems
 {
-	class PanelButtonList : Interfaces::IPanelable
-	{
-	public:
-		PanelButtonList() = default;
-		~PanelButtonList() = default;
+    class PanelButtonList : Interfaces::IPanelable
+    {
+    public:
+        PanelButtonList()           = default;
+        ~PanelButtonList() override = default;
 
-		void DisplayAndUpdatePanel()override;
+        void DisplayAndUpdatePanel() override;
 
-		std::vector<PanelButton> m_buttons;
-
-		bool m_gotClicked;
-	};
+        std::vector<PanelButton> m_buttons;
+    };
 }

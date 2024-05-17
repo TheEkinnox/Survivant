@@ -1,10 +1,7 @@
 //WorldContext.cpp
 
 #include "SurvivantApp/Core/RenderingContext.h"
-
-#include "SurvivantApp/Core/IEngine.h"
 #include "SurvivantApp/Core/TempDefaultScene.h"
-
 
 namespace SvApp::Core
 {
@@ -13,7 +10,7 @@ namespace SvApp::Core
         m_mainCamera(p_cam, p_trans)
     {
     }
-    RenderingContext::RenderingContext(SvCore::ECS::EntityHandle p_entity) :
+    RenderingContext::RenderingContext(const SvCore::ECS::EntityHandle p_entity) :
         m_mainCamera(p_entity)
     {
     }
@@ -24,26 +21,30 @@ namespace SvApp::Core
 
         for (size_t i = 0; i < m_frameBuffers.size(); i++)
         {
-            m_frameBuffers[i]->Bind();
-
-            if (p_scene == nullptr)
+            if (!p_scene)
             {
+                m_frameBuffers[i]->Bind();
                 IRenderAPI::GetCurrent().SetClearColor(Color::black);
                 IRenderAPI::GetCurrent().Clear(true, false, false);
+                m_frameBuffers[i]->Unbind();
             }
             else
             {
+                Renderer::RenderInfo renderInfo{
+                    .m_aspect = static_cast<float>(m_viewport.m_x) / static_cast<float>(m_viewport.m_y),
+                    .m_scene = p_scene,
+                    .m_target = m_frameBuffers[i].get()
+                };
+
                 switch (m_renderTypes[i])
                 {
-                case ERenderType::GAME:     GameRender(*p_scene);     break;
-                case ERenderType::SCENE:    SceneRender(*p_scene);     break;
-                case ERenderType::ID:       IdRender(*p_scene);      break;
+                case ERenderType::GAME:     GameRender(renderInfo);     break;
+                case ERenderType::SCENE:    SceneRender(renderInfo);    break;
+                case ERenderType::ID:       IdRender(renderInfo);       break;
                 default:
                     break;
                 }
             }
-
-            m_frameBuffers[i]->Unbind();
         }
     }
 
@@ -88,38 +89,73 @@ namespace SvApp::Core
         return ToRemove::TextureValueToEntity(val, p_scene);
     }
 
-    void RenderingContext::GameRender(Scene& p_scene)
+    void RenderingContext::GameRender(Renderer::RenderInfo& p_renderInfo) const
     {
-        using namespace ToRemove;
-
-        const auto [cam, transform] = m_mainCamera.GetCamInfo();
-        if (!(cam && transform))
-            return;
-
-        DrawMainCameraScene(p_scene, *cam, *transform);
+        m_renderer.Render(p_renderInfo);
     }
 
-    void RenderingContext::IdRender(Scene& p_scene)
+    namespace
     {
-        using namespace ToRemove;
+        void OnIdDraw(const Renderer::DrawInfo& p_drawInfo)
+        {
+            IShader& shader = *p_drawInfo.m_renderPass->m_shaderOverride;
+            shader.SetUniformInt("u_entityID", ToRemove::EntityToTextureValue(p_drawInfo.m_entity));
+        }
 
-        const auto [cam, transform] = m_mainCamera.GetCamInfo();
-        if (!(cam && transform))
-            return;
+        const Vector4 g_darkenColor = Vector4(0.3f, 0.3f, 0.3f, 1);
 
-        DrawMainCameraScene(p_scene, *cam, *transform, true);
+        void OnBeforeSceneDraw(const Renderer::DrawInfo& p_drawInfo)
+        {
+            if (p_drawInfo.m_entity == RenderingContext::s_editorSelectedEntity)
+            {
+                Vector4& colorRef = p_drawInfo.m_material->GetProperty<Vector4>("u_tint");
+                colorRef *= g_darkenColor;
+                p_drawInfo.m_material->Bind();
+            }
+        }
+
+        void OnAfterSceneDraw(const Renderer::DrawInfo& p_drawInfo)
+        {
+            if (p_drawInfo.m_entity == RenderingContext::s_editorSelectedEntity)
+            {
+                Vector4& colorRef = p_drawInfo.m_material->GetProperty<Vector4>("u_tint");
+                colorRef /= g_darkenColor;
+                p_drawInfo.m_material->Bind();
+            }
+        }
     }
 
-    void RenderingContext::SceneRender(Scene& p_scene)
+    void RenderingContext::IdRender(Renderer::RenderInfo& p_renderInfo)
     {
-        using namespace ToRemove;
-
         const auto [cam, transform] = m_mainCamera.GetCamInfo();
         if (!(cam && transform))
             return;
+
+        p_renderInfo.m_camera = { cam, transform };
+
+        static auto editorSceneShader     = ToRemove::CreateEditorSceneShader();
+        p_renderInfo.m_shaderOverride     = editorSceneShader.get();
+        p_renderInfo.m_clearColorOverride = &Color::black;
+        p_renderInfo.m_onBeforeDraw       = &OnIdDraw;
+
+        const uint8_t clearMask           = CameraComponent::PackClearMask(true, true, false);
+        p_renderInfo.m_clearFlagsOverride = &clearMask;
+
+        m_renderer.Render(p_renderInfo);
+    }
+
+    void RenderingContext::SceneRender(Renderer::RenderInfo& p_renderInfo)
+    {
+        const auto [cam, transform] = m_mainCamera.GetCamInfo();
+        if (!(cam && transform))
+            return;
+
+        p_renderInfo.m_camera       = { cam, transform };
+        p_renderInfo.m_onBeforeDraw = &OnBeforeSceneDraw;
+        p_renderInfo.m_onAfterDraw  = &OnAfterSceneDraw;
 
         IRenderAPI::GetCurrent().Clear(true, true, true);
-        DrawSelectedMainCameraScene(p_scene, *cam, *transform, s_editorSelectedEntity);
+        m_renderer.Render(p_renderInfo);
     }
 
     void RenderingContext::AddRenderPass(ERenderType p_type)
@@ -156,41 +192,33 @@ namespace SvApp::Core
         m_mainCamera.UpdateInput();
     }
 
-    void RenderingContext::Resize(const LibMath::TVector2<int>& p_size)
-    {        
+    void RenderingContext::Resize(const Vector2I& p_size)
+    {
         //textures
         m_viewport = p_size;
-        for (size_t i = 0; i < m_frameTextures.size(); i++)
-            *m_frameTextures[i] = *CreateTexture(m_textureTypeBuffer[i]);
-        
+
+        for (const auto& frameTexture : m_frameTextures)
+            frameTexture->Resize(m_viewport.m_x, m_viewport.m_y);
+
         ResetCameraAspect();
+    }
+
+    float RenderingContext::GetAspect() const
+    {
+        return static_cast<float>(m_viewport.m_x) / static_cast<float>(m_viewport.m_y);
     }
 
     void RenderingContext::ResetCameraAspect()
     {
         auto [cam, trans] = m_mainCamera.GetCamInfo();
+
         if (cam)
-            cam->SetAspect(static_cast<float>(m_viewport.m_x) / static_cast<float>(m_viewport.m_y));
+            cam->SetAspect(GetAspect());
     }
 
-    void RenderingContext::DefaultFBGameRendering(EntityHandle& p_cameraEntity)
+    const Renderer& RenderingContext::GetRenderer() const
     {
-        using namespace ToRemove;
-
-        struct
-        {
-            CameraComponent*    m_cam;
-            Transform*          m_trans;
-        }camInfo
-        {
-            .m_cam = p_cameraEntity.Get<CameraComponent>(),
-            .m_trans = p_cameraEntity.Get<Transform>()
-        };
-        
-        IRenderAPI::GetCurrent().Clear(true, true, true);
-
-        if (camInfo.m_cam && camInfo.m_trans)
-            DrawMainCameraScene(*p_cameraEntity.GetScene(), *camInfo.m_cam, *camInfo.m_trans);
+        return m_renderer;
     }
 
     void RenderingContext::AddColorRenderPass()

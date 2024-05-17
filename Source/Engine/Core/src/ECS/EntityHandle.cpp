@@ -3,6 +3,7 @@
 #include "SurvivantCore/ECS/ComponentHandle.h"
 #include "SurvivantCore/ECS/Scene.h"
 #include "SurvivantCore/ECS/Components/Hierarchy.h"
+#include "SurvivantCore/ECS/Components/TagComponent.h"
 
 using namespace SvCore::Serialization;
 using namespace SvCore::Utility;
@@ -61,6 +62,19 @@ namespace SvCore::ECS
         return { m_scene, hierarchy ? hierarchy->GetParent() : NULL_ENTITY };
     }
 
+    std::string EntityHandle::GetDisplayName() const
+    {
+        if (!*this)
+            return "None";
+
+        if (const TagComponent* tag = Get<TagComponent>(); tag && tag->m_tag.empty())
+            return tag->m_tag;
+
+        std::ostringstream str;
+        str << "Entity " << m_entity;
+        return str.str();
+    }
+
     void EntityHandle::SetParent(const EntityHandle p_parent)
     {
         HierarchyComponent* hierarchy = Get<HierarchyComponent>();
@@ -71,9 +85,29 @@ namespace SvCore::ECS
             return;
         }
 
-        auto tmp = *hierarchy;
-        tmp.SetParent(p_parent);
-        Set<HierarchyComponent>(tmp);
+        hierarchy->SetParent(p_parent);
+        Set<HierarchyComponent>(*hierarchy);
+    }
+
+    void EntityHandle::SetParent(const EntityHandle p_parent, const bool p_keepWorld)
+    {
+        LibMath::Transform* transform = Get<LibMath::Transform>();
+
+        if (!transform)
+            return SetParent(p_parent);
+
+        if (p_keepWorld)
+        {
+            const LibMath::Matrix4 world = transform->getWorldMatrix();
+            SetParent(p_parent);
+            transform->setWorldMatrix(world);
+        }
+        else
+        {
+            const LibMath::Matrix4 local = transform->getMatrix();
+            SetParent(p_parent);
+            transform->setMatrix(local);
+        }
     }
 
     EntityHandle EntityHandle::GetNextSibling() const
@@ -109,6 +143,16 @@ namespace SvCore::ECS
         while (p_index-- > 0)
             child = child.GetNextSibling();
 
+        return child;
+    }
+
+    EntityHandle EntityHandle::AddChild() const
+    {
+        if (!*this)
+            return {};
+
+        EntityHandle child = m_scene->Create();
+        child.SetParent(*this);
         return child;
     }
 

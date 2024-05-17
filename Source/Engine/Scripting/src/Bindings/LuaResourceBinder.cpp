@@ -93,7 +93,7 @@ namespace SvScripting::Bindings
 
     void LuaResourceBinder::BindResourceManager(sol::state& p_luaState)
     {
-        static constexpr const char* typeName = "Resources";
+        static constexpr const char* typeName = "ResourceManager";
 
         using Get = GenericResourceRef(ResourceManager::*)(const std::string&, const std::string&) const;
         using GetOrCreate = GenericResourceRef(ResourceManager::*)(const std::string&, const std::string&);

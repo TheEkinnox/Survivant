@@ -186,12 +186,17 @@ namespace SvScripting::Bindings
             "Copy", &EntityHandle::Copy,
             "Destroy", &EntityHandle::Destroy,
             "root", sol::readonly_property(&EntityHandle::GetRoot),
-            "parent", sol::property(&EntityHandle::GetParent, &EntityHandle::SetParent),
+            "parent", sol::property(&EntityHandle::GetParent, sol::resolve<void(EntityHandle)>(&EntityHandle::SetParent)),
             "nextSibling", sol::readonly_property(&EntityHandle::GetNextSibling),
             "previousSibling", sol::readonly_property(&EntityHandle::GetPreviousSibling),
             "childCount", sol::readonly_property(&EntityHandle::GetChildCount),
             "GetChild", &EntityHandle::GetChild,
+            "AddChild", &EntityHandle::AddChild,
             "children", sol::readonly_property(&EntityHandle::GetChildren),
+            "SetParent", sol::overload(
+                sol::resolve<void(EntityHandle)>(&EntityHandle::SetParent),
+                sol::resolve<void(EntityHandle, bool)>(&EntityHandle::SetParent)
+            ),
             "HasScript", [](const EntityHandle& p_self, const std::string& p_name) -> bool
             {
                 const LuaScriptList* script = p_self.Get<LuaScriptList>();

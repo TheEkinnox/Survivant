@@ -6,6 +6,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 
 #include <sol/sol.hpp>
 
@@ -14,6 +15,10 @@ namespace SvScripting
     class LuaScriptList
     {
     public:
+        using ScriptsMap = std::unordered_map<std::string /*name*/, sol::table /*hint*/>;
+
+        inline static std::unordered_set<std::string> s_ignoredFields = { "owner", "__type" };
+
         /**
          * \brief Creates an empty lua script list
          */
@@ -83,12 +88,35 @@ namespace SvScripting
          */
         void Clear();
 
+        /**
+         * \brief The number of elements in the script list
+         */
+        size_t size() const;
+
+        /**
+         * \brief Gets a constant iterator to the start of the lua scripts list
+         * \return A constant iterator to the start of the lua scripts list
+         */
+        auto begin() const
+        {
+            return (m_scripts | std::views::keys).begin();
+        }
+
+        /**
+         * \brief Gets a constant iterator to the end of the lua scripts list
+         * \return A constant iterator to the end of the lua scripts list
+         */
+        auto end() const
+        {
+            return (m_scripts | std::views::keys).end();
+        }
+
     private:
         friend class SvCore::ECS::ComponentRegistry;
         friend struct SvCore::ECS::ComponentTraits;
 
-        SvCore::ECS::EntityHandle                            m_owner;
-        std::unordered_map<std::string, sol::table /*hint*/> m_scripts;
+        SvCore::ECS::EntityHandle m_owner;
+        ScriptsMap                m_scripts;
     };
 
     /**
@@ -126,7 +154,8 @@ namespace SvCore::ECS
      * \param p_component The added component
      */
     template <>
-    void ComponentTraits::OnBeforeChange(EntityHandle& p_entity, SvScripting::LuaScriptList& p_component);
+    void ComponentTraits::OnBeforeChange(
+        EntityHandle& p_entity, SvScripting::LuaScriptList& p_component, SvScripting::LuaScriptList&);
 
     /**
      * \brief The action to perform after a lua script component was changed

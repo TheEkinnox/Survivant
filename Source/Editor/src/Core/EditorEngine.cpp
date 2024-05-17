@@ -4,9 +4,9 @@
 #include "SurvivantEditor/Core/EditorWindow.h"
 #include "SurvivantEditor/RuntimeBuild/BuildManager.h"
 
-#include <SurvivantCore/Debug/Assertion.h>
+#include <SurvivantApp/Core/TempDefaultScene.h>
 
-#include "SurvivantApp/Core/TempDefaultScene.h"
+#include <SurvivantCore/Debug/Assertion.h>
 
 using namespace SvApp::Core;
 
@@ -30,14 +30,14 @@ namespace SvEditor::Core
 		SV_EVENT_MANAGER().AddListenner<OnCreateBuildGame>(OnCreateBuildGame::EventDelegate(
 			[](	const std::string& p_buildFileName,
 				const SvApp::Core::BuildConfig& p_buildInfo)
-			{ 
-				BuildManager::GetInstance().CreateBuild(p_buildFileName, p_buildInfo); 
+			{
+				BuildManager::GetInstance().CreateBuild(p_buildFileName, p_buildInfo);
 			}));
 
 		SV_EVENT_MANAGER().AddListenner<OnCreateBuildAndRun>(OnCreateBuildAndRun::EventDelegate(
 			[](	const std::string& p_buildFileName,
 				const SvApp::Core::BuildConfig& p_buildInfo)
-			{ 
+			{
 				BuildManager::GetInstance().CreateAndRunBuild(p_buildFileName, p_buildInfo);
 			}));
 	}
@@ -82,8 +82,8 @@ namespace SvEditor::Core
 	std::shared_ptr<WorldContext> EditorEngine::CreatePIEWorld()
 	{
 		auto pieWorld =				IEngine::CreateNewWorldContext(WorldContext::EWorldType::PIE);
-		pieWorld->m_lightsSSBO =	IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, 0);
-		//pieWorld->m_viewport =		p_context.m_viewport;
+		pieWorld->m_lightsSSBO =	IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, Renderer::LIGHT_SSBO_INDEX);
+		// pieWorld->m_viewport =		p_context.m_viewport;
 
 		//pieWorld->RenderContext();
 		//pieWorld->m_persistentLevel = p_context.m_persistentLevel;
@@ -111,35 +111,10 @@ namespace SvEditor::Core
 		using namespace SvCore;
 		using namespace SvApp;
 		using namespace Events;
-		using AddEvent = Events::Event<int, int>;
-		class ToggleEvent : public Events::Event<> {};
 
-		InputManager& im = InputManager::GetInstance();
 		std::shared_ptr<EditorEngine::Inputs> input = std::make_shared<EditorEngine::Inputs>();
 
 		auto& k = input->m_keyCallbacks;
-		auto& m = input->m_mouseKeyCallbacks;
-
-		EventManager& em = EventManager::GetInstance();
-		AddEvent::EventDelegate printAdd = [](int i, int j) { std::cout << "Add = " << i + j << std::endl; };
-		//ToggleEvent::EventDelegate toggle = std::bind(&SvApp::Window::ToggleFullScreenMode, &window);
-		em.AddListenner<AddEvent>(printAdd);
-		//em.AddListenner<ToggleEvent>(toggle);
-
-		//cant put MODS bsc of imgui
-		InputManager::KeyboardKeyType   a(EKey::A, EKeyState::RELEASED, EInputModifier());
-		InputManager::KeyboardKeyType   b(EKey::B, EKeyState::PRESSED, EInputModifier());
-		InputManager::MouseKeyType      mouse(EMouseButton::MOUSE_1, EMouseButtonState::PRESSED, EInputModifier());
-		InputManager::KeyboardKeyType   space(EKey::SPACE, EKeyState::PRESSED, EInputModifier());
-
-		auto test = [](char p_c) { return std::tuple<int, int>{ p_c, 10 }; };
-		//k.emplace(a, im.CreateInputEventBinding<AddEvent>(a, &AddInputTranslate));
-		//k.emplace(b, im.CreateInputEventBinding<AddEvent>(a, &AddInputTranslate));
-		k.emplace(space, im.CreateInputEventBinding<AddEvent>(space, &AddInputTranslate));
-		k.emplace(InputManager::KeyboardKeyType{ EKey::ESCAPE, EKeyState::PRESSED, EInputModifier() },
-			[this](char) { m_isRunning = false; });
-
-		m.emplace(mouse, im.CreateInputEventBinding<AddEvent>(mouse, &AddMouseTranslate));
 
 		//move camera in scene
 		k.emplace(InputManager::KeyboardKeyType{ EKey::W, EKeyState::PRESSED, EInputModifier() }, [this](const char)
@@ -231,14 +206,14 @@ namespace SvEditor::Core
 		auto world = CreateNewWorldContext(WorldContext::EWorldType::EDITOR);
 		world->m_owningGameInstance = nullptr;
 
-		world->m_lightsSSBO = IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, 0);
+		world->m_lightsSSBO = IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, Renderer::LIGHT_SSBO_INDEX);
 		world->CurrentScene() = p_inScene;
 		CameraComponent cam;
 		cam.SetPerspective(90_deg, .01f, 14.f);
 		cam.SetClearColor(Color::lightGray);
 		world->SetCamera(cam, Transform({ 0.f, 1.8f, 2.f }, Quaternion::identity(), Vector3::one()));
 		world->m_inputs = CreateEditorInputs();
-		
+
 		//load and render
 		//world->Save();
 		world->BakeLighting();
@@ -258,7 +233,6 @@ namespace SvEditor::Core
 
 		pieWorld.m_inputs = ToRemove::SetupGameInputs();
 		pieWorld.SetCamera(pieWorld.GetFirstCamera());
-		pieWorld.BakeLighting();
 		pieWorld.SetInputs();
 		pieWorld.BakeLighting();
 

@@ -108,25 +108,28 @@ namespace SvCore::ECS
     void UnlinkTransforms(const EntityHandle& p_entity);
 
     template <>
-    void ComponentTraits::OnAdd<HierarchyComponent>(EntityHandle&, HierarchyComponent&);
+    void ComponentTraits::OnAdd(EntityHandle&, HierarchyComponent&);
 
     template <>
-    void ComponentTraits::OnRemove<HierarchyComponent>(EntityHandle&, HierarchyComponent&);
+    void ComponentTraits::OnRemove(EntityHandle&, HierarchyComponent&);
 
     template <>
-    void ComponentTraits::OnBeforeChange<HierarchyComponent>(EntityHandle&, HierarchyComponent&);
+    void ComponentTraits::OnBeforeChange(EntityHandle&, HierarchyComponent&, HierarchyComponent&);
 
     template <>
-    void ComponentTraits::OnChange<HierarchyComponent>(EntityHandle&, HierarchyComponent&);
+    void ComponentTraits::OnChange(EntityHandle&, HierarchyComponent&);
 
     template <>
-    void ComponentTraits::OnAdd<LibMath::Transform>(EntityHandle&, LibMath::Transform&);
+    HierarchyComponent ComponentTraits::Copy(EntityHandle&, HierarchyComponent&, EntityHandle&);
 
     template <>
-    void ComponentTraits::OnRemove<LibMath::Transform>(EntityHandle&, LibMath::Transform&);
+    void ComponentTraits::OnAdd(EntityHandle&, LibMath::Transform&);
 
     template <>
-    void ComponentTraits::OnChange<LibMath::Transform>(EntityHandle&, LibMath::Transform&);
+    void ComponentTraits::OnRemove(EntityHandle&, LibMath::Transform&);
+
+    template <>
+    void ComponentTraits::OnChange(EntityHandle&, LibMath::Transform&);
 
     template <>
     bool ComponentRegistry::ToJson(const HierarchyComponent&, Serialization::JsonWriter&, const EntitiesMap&);

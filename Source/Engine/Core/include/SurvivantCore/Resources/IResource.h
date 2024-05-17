@@ -42,10 +42,11 @@ namespace SvCore::Resources
 
         /**
          * \brief Saves the necessary info to load the resource at the given path
-         * \param p_fileName The resource file's path
+         * \param p_path The resource file's path
+         * \param p_pretty Whether the output should be human-friendly
          * \return True on success. False otherwise
          */
-        virtual bool Save(const std::string& p_fileName) = 0;
+        virtual bool Save(const std::string& p_path, bool p_pretty = false) = 0;
 
     protected:
         /**

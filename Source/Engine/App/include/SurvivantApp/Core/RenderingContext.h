@@ -2,15 +2,15 @@
 #pragma once
 
 #include "SurvivantApp/Core/MainCamera.h"
-#include "SurvivantCore/ECS/EntityHandle.h"
-#include "SurvivantCore/ECS/Scene.h"
-#include "SurvivantRendering/RHI/IShaderStorageBuffer.h"
-#include "SurvivantRendering/RHI/IFrameBuffer.h"
 
-#include "Vector/Vector2.h"
-#include "Transform.h"
+#include <SurvivantCore/ECS/Entity.h>
+#include <SurvivantCore/ECS/Scene.h>
 
-#include <string>
+#include <SurvivantRendering/Core/Renderer.h>
+
+#include <Transform.h>
+#include <Vector/Vector2.h>
+
 #include <memory>
 #include <vector>
 
@@ -57,7 +57,7 @@ namespace SvApp::Core
 		SvCore::ECS::Entity GetEntityIdValue(const Vec2& p_uv, Scene* p_scene);
 
 		/// <summary>
-		/// Adds coresponding framebuffer, render type and attached texture(s)
+		/// Adds corresponding framebuffer, render type and attached texture(s)
 		/// </summary>
 		/// <param name="p_renderType">Type of render pass</param>
 		void AddRenderPass(ERenderType p_renderType);
@@ -68,21 +68,24 @@ namespace SvApp::Core
 		Vec2&		CameraRotateInput();
 		void		UpdateCameraInput();
 		void		Resize(const LibMath::TVector2<int>& p_size);
+		float		GetAspect() const;
 		void		ResetCameraAspect();
 
-		static void DefaultFBGameRendering(SvCore::ECS::EntityHandle& p_cameraEntity);
+		const SvRendering::Core::Renderer& GetRenderer() const;
 
 		static inline SvCore::ECS::Entity s_editorSelectedEntity = SvCore::ECS::NULL_ENTITY;
 
 	private:
-		void GameRender(Scene& p_scene);
-		void SceneRender(Scene& p_scene);
-		void IdRender(Scene& p_scene);
+		void GameRender(SvRendering::Core::Renderer::RenderInfo& p_renderInfo) const;
+		void SceneRender(SvRendering::Core::Renderer::RenderInfo& p_renderInfo);
+		void IdRender(SvRendering::Core::Renderer::RenderInfo& p_renderInfo);
 
 		void		AddColorRenderPass();
 		void		AddIdRenderPass();
 		void		AddDefaultRenderPass();
 		TexturePtr	CreateTexture(const ETextureType& p_type);
+
+		SvRendering::Core::Renderer m_renderer;
 
 		LibMath::TVector2<int>		m_viewport = LibMath::Vector2(800, 600);
 		MainCamera					m_mainCamera;

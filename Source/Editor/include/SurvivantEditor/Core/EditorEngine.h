@@ -1,6 +1,5 @@
-//RuntimeEngine.h
+//EditorEngine.h
 #pragma once
-
 
 #include <SurvivantApp/Core/BuildConfig.h>
 #include <SurvivantApp/Core/IEngine.h>
@@ -9,11 +8,7 @@
 #include <SurvivantCore/Events/Event.h>
 #include <SurvivantCore/Utility/Timer.h>
 
-#include "Transform.h"
-
 #include <array>
-
-
 
 using namespace SvApp::Core;
 using namespace LibMath;
@@ -26,10 +21,10 @@ namespace SvEditor::Core
 	{
 	public:
 		class OnCreateBuildGame : public SvCore::Events::Event<
-			std::string /*p_buildFileName*/, 
+			std::string /*p_buildFileName*/,
 			SvApp::Core::BuildConfig /*p_buildInfo*/> {};
 		class OnCreateBuildAndRun : public SvCore::Events::Event<
-			std::string /*p_buildFileName*/, 
+			std::string /*p_buildFileName*/,
 			SvApp::Core::BuildConfig /*p_buildInfo*/> {};
 
 		EditorEngine() = default;
@@ -60,11 +55,11 @@ namespace SvEditor::Core
 		//on level switch, will ref new level
 		//Scene* GetGameScene();
 		//std::shared_ptr<IEngine::WorldContext> GetPIEWorldContext();
-		
+
 		//create PIE after press play
 		std::weak_ptr<GameInstance> CreatePIEGameInstance();
 		void DestroyGameInstance();
-		
+
 	private:
 		using Inputs = SvApp::InputManager::InputBindings;
 
