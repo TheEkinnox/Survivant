@@ -276,9 +276,9 @@ namespace ToRemove
                 SV_LOG("Added int %d to entity %d:%d", p_val, p_owner.GetIndex(), p_owner.GetVersion());
             };
 
-        const auto onBeforeChangeInt = [](const Entity p_owner, const int& p_val)
+        const auto onBeforeChangeInt = [](const Entity p_owner, const int& p_currentVal, const int& p_newVal)
             {
-                SV_LOG("Changing int %d of entity %d:%d", p_owner.GetIndex(), p_owner.GetVersion(), p_val);
+                SV_LOG("Changing int %d of entity %d:%d to %d", p_owner.GetIndex(), p_owner.GetVersion(), p_currentVal, p_newVal);
             };
 
         const auto onChangeInt = [](const Entity p_owner, const int& p_val)

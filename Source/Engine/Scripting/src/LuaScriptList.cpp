@@ -222,7 +222,7 @@ namespace SvCore::ECS
     }
 
     template <>
-    void ComponentTraits::OnBeforeChange(EntityHandle& p_entity, LuaScriptList& p_component)
+    void ComponentTraits::OnBeforeChange(EntityHandle& p_entity, LuaScriptList& p_component, LuaScriptList&)
     {
         OnRemove(p_entity, p_component);
     }

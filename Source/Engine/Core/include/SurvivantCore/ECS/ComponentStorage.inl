@@ -27,12 +27,19 @@ namespace SvCore::ECS
         if (sourceIt == m_entityToComponent.end())
             return false;
 
-        Set(p_target, m_components[sourceIt->second]);
+        EntityHandle sourceHandle(m_scene, p_source);
+        EntityHandle targetHandle(m_scene, p_target);
+
+        ComponentT& component  = m_components[sourceIt->second];
+        ComponentT  copyResult = ComponentTraits::Copy<ComponentT>(sourceHandle, component, targetHandle);
+        m_onCopy.Invoke(sourceHandle, component, targetHandle, copyResult);
+
+        Set(p_target, copyResult);
         return true;
     }
 
     template <class T>
-    T& ComponentStorage<T>::Set(const Entity p_owner, const ComponentT& p_instance)
+    T& ComponentStorage<T>::Set(const Entity p_owner, ComponentT p_instance)
     {
         const auto   it = m_entityToComponent.find(p_owner);
         EntityHandle handle(m_scene, p_owner);
@@ -41,10 +48,10 @@ namespace SvCore::ECS
         {
             ComponentT& component = m_components[it->second];
 
-            ComponentTraits::OnBeforeChange<ComponentT>(handle, component);
-            m_onBeforeChange.Invoke(handle, component);
+            ComponentTraits::OnBeforeChange<ComponentT>(handle, component, p_instance);
+            m_onBeforeChange.Invoke(handle, component, p_instance);
 
-            component = p_instance;
+            component = std::move(p_instance);
 
             ComponentTraits::OnChange<ComponentT>(handle, component);
             m_onChange.Invoke(handle, component);
@@ -74,11 +81,12 @@ namespace SvCore::ECS
         if (it != m_entityToComponent.end())
         {
             ComponentT& component = m_components[it->second];
+            ComponentT  newVal    = ComponentT(std::forward<Args>(p_args)...);
 
-            ComponentTraits::OnBeforeChange<ComponentT>(handle, component);
-            m_onBeforeChange.Invoke(handle, component);
+            ComponentTraits::OnBeforeChange<ComponentT>(handle, component, newVal);
+            m_onBeforeChange.Invoke(handle, component, newVal);
 
-            component = *new(&component) ComponentT(std::forward<Args>(p_args)...);
+            component = std::move(newVal);
 
             ComponentTraits::OnChange<ComponentT>(handle, component);
             m_onChange.Invoke(handle, component);

@@ -154,7 +154,8 @@ namespace SvCore::ECS
      * \param p_component The added component
      */
     template <>
-    void ComponentTraits::OnBeforeChange(EntityHandle& p_entity, SvScripting::LuaScriptList& p_component);
+    void ComponentTraits::OnBeforeChange(
+        EntityHandle& p_entity, SvScripting::LuaScriptList& p_component, SvScripting::LuaScriptList&);
 
     /**
      * \brief The action to perform after a lua script component was changed
