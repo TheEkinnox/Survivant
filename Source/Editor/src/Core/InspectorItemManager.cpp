@@ -426,6 +426,15 @@ namespace SvEditor::Core
 					std::make_shared<PanelResourceSelector<::Material>>(PanelResourceSelector<::Material>(
 						"Material ", [entity = p_entity]() mutable -> ResourceRef<::Material>&{ return
 							entity.Get<ModelComponent>()->m_material; }
+					)),
+					std::make_shared<PanelUInt32Input>(PanelUInt32Input(
+						"Layer",[entity = p_entity]() mutable -> PanelUInt32Input::Value&{ return
+							entity.Get<ModelComponent>()->m_layerMask; }
+					)),
+					std::make_shared<PanelButton>(PanelButton(
+						"All Layers",
+						PanelButton::OnButtonPressEvent::EventDelegate([entity = p_entity]() mutable {
+							entity.Get<ModelComponent>()->m_layerMask = SvRendering::Core::Layer::ALL; })
 					))
 				}));
 
