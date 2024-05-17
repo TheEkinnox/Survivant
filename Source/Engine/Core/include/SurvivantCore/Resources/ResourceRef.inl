@@ -183,15 +183,28 @@ namespace SvCore::Resources
         if (!m_resource)
             return false;
 
-        const ResourceManager& resourceManager = ResourceManager::GetInstance();
-        std::filesystem::path  fullPath        = resourceManager.GetFullPath(m_path);
-
         std::error_code err;
+
+        const ResourceManager& resourceManager = ResourceManager::GetInstance();
+        std::filesystem::path  fullPath        = std::filesystem::absolute(resourceManager.GetFullPath(m_path), err);
+
+        if (!CHECK(err.value() == 0, "Failed to get absolute resource path from \"%s\" - %s",
+                m_path.c_str(), err.message().c_str()))
+            return false;
+
         if (!p_path.empty())
         {
-            const std::filesystem::path path(resourceManager.GetFullPath(p_path));
+            const std::filesystem::path path = std::filesystem::absolute(resourceManager.GetFullPath(p_path), err);
 
-            const bool shouldCopy = !equivalent(fullPath, p_path) && exists(fullPath);
+            if (!CHECK(err.value() == 0, "Failed to get absolute target path from \"%s\" - %s",
+                    p_path.c_str(), err.message().c_str()))
+                return false;
+
+            bool shouldCopy = fullPath != path && exists(fullPath, err);
+
+            if (!CHECK(err.value() == 0, "Failed to check if path exists at \"%s\" - %s",
+                    fullPath.string().c_str(), err.message().c_str()))
+                return false;
 
             if (shouldCopy && !(
                 CHECK(std::filesystem::create_directories(path.parent_path()) || err.value() == 0,
