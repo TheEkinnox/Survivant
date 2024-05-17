@@ -606,7 +606,7 @@ namespace SvEditor::Core
 						[resource](PanelResourceSelector<IShader>::CallbackParams p_params) {
 							resource->SetShader(p_params);
 						}
-					)
+					),
 				}));
 
 		return std::make_shared<PanelResourceDisplay>(std::move(component));
@@ -636,15 +636,6 @@ namespace SvEditor::Core
 				}));
 
 		return std::make_shared<PanelResourceDisplay>(std::move(component));
-	}
-
-	std::string InspectorItemManager::GetEntityName(const SvCore::ECS::EntityHandle& p_entity)
-	{
-		auto val = p_entity.Get<TagComponent>();
-		if (val)
-			return val->m_tag + ("(" + std::to_string(p_entity.GetEntity().GetIndex()) + ')');
-
-		return "(" + std::to_string(p_entity.GetEntity().GetIndex()) + ')';
 	}
 }
 
