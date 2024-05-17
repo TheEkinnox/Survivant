@@ -47,7 +47,11 @@ namespace SvApp::Core
 
     void WorldContext::Save()
     {
+#ifdef SV_EDITOR
+        CurrentScene().Export(true);
+#else
         CurrentScene().Export();
+#endif
     }
 
     void WorldContext::BakeLighting()
