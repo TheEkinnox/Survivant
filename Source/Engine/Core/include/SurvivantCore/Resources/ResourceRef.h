@@ -141,12 +141,18 @@ namespace SvCore::Resources
         const std::string& GetPath() const;
 
         /**
+         * \brief Gets the referenced resource's path including it's search path
+         * \return The referenced resource's full path
+         */
+        std::string GetFullPath() const;
+
+        /**
          * \brief Exports the resource to the target path
          * \param p_pretty Whether the output should be human-friendly
          * \param p_path The target export path
          * \return True on success. False otherwise
          */
-        bool Export(bool p_pretty = false, const std::string& p_path = "");
+        bool Export(bool p_pretty = false, const std::string& p_path = "") const;
 
         /**
          * \brief Resets the resource reference

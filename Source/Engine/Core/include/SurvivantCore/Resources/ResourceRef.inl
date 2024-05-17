@@ -172,7 +172,13 @@ namespace SvCore::Resources
     }
 
     template <class T>
-    bool ResourceRef<T>::Export(const bool p_pretty, const std::string& p_path)
+    std::string ResourceRef<T>::GetFullPath() const
+    {
+        return ResourceManager::GetInstance().GetFullPath(m_path);
+    }
+
+    template <class T>
+    bool ResourceRef<T>::Export(const bool p_pretty, const std::string& p_path) const
     {
         if (!m_resource)
             return false;
