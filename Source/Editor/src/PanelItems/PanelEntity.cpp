@@ -19,6 +19,11 @@ namespace SvEditor::PanelItems
         m_luaScripts(std::make_unique<PanelScriptList>(p_entity))
     {
         m_index = "(" + std::to_string(p_entity.GetEntity().GetIndex()) + ')';
+
+        m_buttons.m_buttons.emplace_back("Add Child", [this]() { (void)m_entity.AddChild(); });
+        m_buttons.m_buttons.emplace_back("Duplicate", [this]() { (void)m_entity.Copy(); });
+        m_buttons.m_buttons.emplace_back("Remove", [this]() { m_entity.Destroy(); });
+
         m_addComponent = std::make_shared<PanelPopupMenuButton>(PanelPopupMenuButton(
             "Add Component",
             [this]() { GetAllComponents(); },
@@ -28,9 +33,6 @@ namespace SvEditor::PanelItems
         m_components.reserve(p_component.size());
         for (auto& component : p_component)
             AddAndSortComponent(component);
-
-        m_buttons.m_buttons.emplace_back("Duplicate", [e = m_entity]() { e.GetScene()->Create(e); });
-        m_buttons.m_buttons.emplace_back("Remove", [e = m_entity]() { e.GetScene()->Destroy(e); });
     }
 
     PanelEntity::PanelEntity(const PanelEntity& p_other)
@@ -84,18 +86,6 @@ namespace SvEditor::PanelItems
         ));
 
         this->m_luaScripts = std::move(p_other.m_luaScripts);
-        this->m_components = std::move(p_other.m_components);
-        this->m_entity = std::move(p_other.m_entity);
-        this->m_index = std::move(p_other.m_index);
-        this->m_name = std::move(p_other.m_name);
-
-
-        this->m_addComponent = std::make_shared<PanelPopupMenuButton>(PanelPopupMenuButton(
-            "Add Component",
-            [this]() { GetAllComponents(); },
-            [this]() { this->m_addComponent->m_items.clear(); }
-        ));
-
         this->m_components = std::move(p_other.m_components);
         this->m_entity = std::move(p_other.m_entity);
         this->m_index = std::move(p_other.m_index);

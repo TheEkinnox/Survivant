@@ -85,8 +85,7 @@ namespace SvEditor::Core
 				panelables.emplace_back(panel);
 		}
 
-		return std::make_shared<PanelItems::PanelEntity>(std::move(PanelItems::PanelEntity(
-			p_entity, panelables)));
+		return std::make_shared<PanelEntity>(p_entity, panelables);
 	}
 
 	InspectorItemManager::PanelableResource InspectorItemManager::GetPanelableResource(
