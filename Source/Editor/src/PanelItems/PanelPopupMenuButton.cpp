@@ -66,9 +66,6 @@ namespace SvEditor::PanelItems
 				m_onOpen();
 		}
 
-		if (IsEmpty())
-			return;
-
 		if (ImGui::BeginPopupContextItem(nullptr, flags))
 		{
 			for (auto& menu : m_items)

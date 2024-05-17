@@ -100,6 +100,7 @@ namespace SvEditor::Core
     void EditorUI::InitScenePanel(std::weak_ptr<WorldContext> p_world)
     {
         using namespace SvApp::Core;
+        using namespace SvCore::ECS;
         using namespace SvRendering::RHI;
         using namespace SvRendering::Enums;
 
@@ -107,7 +108,7 @@ namespace SvEditor::Core
 
         ScenePanel::AddClickSceneListenner(
             [p_world](const LibMath::Vector2& p_uv)
-            { 
+            {
                 auto& scene = p_world.lock()->CurrentScene();
                 auto entity = p_world.lock()->
                     m_renderingContext->GetEntityIdValue(p_uv, scene.Get());
@@ -116,11 +117,11 @@ namespace SvEditor::Core
 
                 auto& currentSelected = p_world.lock()->m_renderingContext->s_editorSelectedEntity;
                 if (currentSelected == entity)
-                    currentSelected = SvCore::ECS::NULL_ENTITY;
+                    currentSelected = {};
                 else
-                    currentSelected = entity;
+                    currentSelected = EntityHandle(p_world.lock()->CurrentScene().Get(), entity);
 
-                HierarchyPanel::ToggleSelectable(entity);
+                HierarchyPanel::ToggleSelectable(entity.GetIndex());
 
                 //auto entityPanel = InspectorItemManager::GetPanelableEntity(
                 //    SvCore::ECS::EntityHandle(p_world.lock()->CurrentScene().Get(), currentSelected));

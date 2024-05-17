@@ -20,8 +20,8 @@ namespace SvEditor::Panels
 	class HierarchyPanel : public Panel
 	{
 	public:
-		using HierarchyBranch = PanelTreeBranch<SvCore::ECS::Entity::Id>;
-		using EntityBranchMap = std::unordered_map<SvCore::ECS::Entity::Id, std::shared_ptr<HierarchyBranch>>;
+		using HierarchyBranch = PanelTreeBranch<SvCore::ECS::Entity::Index>;
+		using EntityBranchMap = std::unordered_map<SvCore::ECS::Entity::Index, std::weak_ptr<HierarchyBranch>>;
 		using SceneRefPtr = std::weak_ptr<SvApp::Core::WorldContext::SceneRef>;
 		using CurrentSceneGetter = std::function<SceneRefPtr()>;
 
@@ -32,7 +32,7 @@ namespace SvEditor::Panels
 		ERenderFlags Render() override;
 
 		static void SetCurrentSceneGetter(const CurrentSceneGetter& p_getCurrentScene);
-		static void ToggleSelectable(const SvCore::ECS::Entity::Id& p_entity);
+		static void ToggleSelectable(const SvCore::ECS::Entity::Index& p_entity);
 
 		bool m_isDirty = false;
 		static constexpr char NAME[] = "Hierarchy";
@@ -47,7 +47,6 @@ namespace SvEditor::Panels
 		void	SetupEntityBranch(HierarchyBranch& p_parent, const SvCore::ECS::EntityHandle& p_entity);
 
 		void				AddEntityBranch(HierarchyBranch& p_parent, std::shared_ptr<HierarchyBranch> p_childBranch);
-		void				RemoveEntity(const SvCore::ECS::EntityHandle& p_entity);
 		SvCore::ECS::Scene& GetScene();
 
 		static std::shared_ptr<HierarchyBranch> CreateEntityBranch(const SvCore::ECS::EntityHandle& p_childEntity);

@@ -73,7 +73,7 @@ namespace SvApp::Core
 
 		static void DefaultFBGameRendering(SvCore::ECS::EntityHandle& p_cameraEntity);
 
-		static inline SvCore::ECS::Entity s_editorSelectedEntity = SvCore::ECS::NULL_ENTITY;
+		static inline SvCore::ECS::EntityHandle s_editorSelectedEntity = {};
 
 	private:
 		void GameRender(Scene& p_scene);

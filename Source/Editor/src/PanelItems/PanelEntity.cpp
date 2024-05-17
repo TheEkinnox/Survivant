@@ -37,6 +37,7 @@ namespace SvEditor::PanelItems
 
     PanelEntity::PanelEntity(PanelEntity&& p_other) noexcept 
     {
+        m_buttons.m_buttons.clear();
         m_buttons.m_buttons.emplace_back("Duplicate", [e = p_other.m_entity]() { e.Duplicate(); });
         m_buttons.m_buttons.emplace_back("Remove", [e = p_other.m_entity]() { e.GetScene()->Destroy(e); });
         this->m_addComponent = std::make_shared<PanelPopupMenuButton>(PanelPopupMenuButton(
@@ -45,6 +46,7 @@ namespace SvEditor::PanelItems
             [this]() { this->m_addComponent->m_items.clear(); }
         ));
 
+        this->m_addComponent->m_items = std::move(p_other.m_addComponent->m_items);
         this->m_components = std::move(p_other.m_components);
         this->m_entity = std::move(p_other.m_entity);
         this->m_index = std::move(p_other.m_index);
@@ -53,6 +55,7 @@ namespace SvEditor::PanelItems
 
     PanelEntity& PanelEntity::operator=(const PanelEntity& p_other)
     {
+        m_buttons.m_buttons.clear();
         m_buttons.m_buttons.emplace_back("Duplicate", [e = p_other.m_entity]() { e.Duplicate(); });
         m_buttons.m_buttons.emplace_back("Remove", [e = p_other.m_entity]() { e.GetScene()->Destroy(e); });
         this->m_addComponent = std::make_shared<PanelPopupMenuButton>(PanelPopupMenuButton(
@@ -61,6 +64,7 @@ namespace SvEditor::PanelItems
             [this]() { this->m_addComponent->m_items.clear(); }
         ));
 
+        this->m_addComponent->m_items = p_other.m_addComponent->m_items;
         this->m_components = p_other.m_components;
         this->m_entity = p_other.m_entity;
         this->m_index = p_other.m_index;

@@ -91,12 +91,12 @@ namespace SvEditor::Panels
 		s_onResizeEvent.AddListener(p_callback);
 	}
 
-	void ScenePanel::SelectEntity(SvCore::ECS::Entity::Id p_id)
+	void ScenePanel::SelectEntity(const SvCore::ECS::EntityHandle& p_entity)
 	{
 		if (s_world.expired())
 			return;
 
-		s_world.lock()->m_renderingContext->s_editorSelectedEntity = SvCore::ECS::Entity(p_id);
+		s_world.lock()->m_renderingContext->s_editorSelectedEntity = p_entity;
 	}
 
 	void ScenePanel::ToggleTexture()

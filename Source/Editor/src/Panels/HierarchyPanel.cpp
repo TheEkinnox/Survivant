@@ -33,12 +33,11 @@ namespace SvEditor::Panels
             { 
                 using namespace Core;
 
-                auto val = p_branch.GetValue();
-                auto entityPanel = InspectorItemManager::GetPanelableEntity(
-                    EntityHandle(s_getCurrentScene().lock()->Get(), Entity(val)));
+                auto entity = s_getCurrentScene().lock()->Get()->Find(p_branch.GetValue());
+                auto entityPanel = InspectorItemManager::GetPanelableEntity(entity);
 
                 InspectorPanel::SetInpectorInfo(entityPanel, "Entity");
-                ScenePanel::SelectEntity(val);
+                ScenePanel::SelectEntity(entity);
                 p_branch.ForceOpenParents();
                 return false; 
             };
@@ -77,6 +76,7 @@ namespace SvEditor::Panels
 
         auto oldScene = m_scene;
         m_scene = s_getCurrentScene();
+        s_entities.clear();
         m_tree.SetBranches();
         SetupTree();
 
@@ -86,18 +86,12 @@ namespace SvEditor::Panels
         m_onModifEntity[0] = GetScene().GetStorage<Entity>().m_onAdd.AddListener(
             [this](const EntityHandle& /*p_handle*/)
             {
-                //auto parent = p_handle.GetParent();
-                //auto& parentBranch = parent.GetEntity() == NULL_ENTITY ? m_tree : *s_entities.at(p_handle.GetEntity());
-
-                //auto childBranch = CreateEntityBranch(p_handle);
-                //AddEntityBranch(parentBranch, childBranch);
                 m_isDirty = true;
             });
         m_onModifEntity[1] = GetScene().GetStorage<Entity>().m_onRemove.AddListener(
             [this](const EntityHandle& /*p_handle*/)
             {
                 m_isDirty = true;
-                //RemoveEntity(p_handle);
             });
 
         //tag dirty on hierarchy change
@@ -141,7 +135,9 @@ namespace SvEditor::Panels
 
             auto newBranch = CreateEntityBranch(handle);
             AddEntityBranch(m_tree, newBranch);
-            SetupEntityBranch(*newBranch, handle);
+
+            if (handle.GetChildCount() != 0)
+                SetupEntityBranch(*newBranch, handle);
         }
     }
 
@@ -180,44 +176,9 @@ namespace SvEditor::Panels
         auto prio = SIZE_MAX - p_parent.GetChildren().size();
 
         p_parent.AddBranch(p_childBranch, prio);
-        /*auto ins = */s_entities.insert({ p_childBranch->GetValue(), p_childBranch}).second;
-
-        //ASSERT(ins, "Entity cant be added");
+        s_entities.emplace(Entity::Index(p_childBranch->GetValue()), 
+            std::weak_ptr<HierarchyBranch>(p_childBranch));
     }
-
-    void HierarchyPanel::RemoveEntity(const SvCore::ECS::EntityHandle& p_entity)
-    {
-        auto it = s_entities.find(p_entity.GetEntity());
-
-        if (it == s_entities.end())
-            return;
-
-        auto& childBranch = it->second;
-
-        std::set<SvCore::ECS::Entity::Id> deleted;
-        childBranch->DeleteBranch(&deleted);
-
-        //unless parent is already removed
-        m_tree.RemoveBranch(childBranch->GetName());
-
-        for (auto& item : deleted)
-            s_entities.erase(item);
-    }
-
-    /*void HierarchyPanel::SetupChildsEntityValue(const HierarchyBranch::Children& p_childreen)
-    {
-        if (p_childreen.size() == 0)
-            return;
-
-        for (auto& [name, branch] : p_childreen)
-        {
-
-            s_entities.emplace(branch->GetValue(), branch);
-        }
-
-        for (auto& [name, branch] : p_childreen)
-            SetupChildsEntityValue(branch->GetChildren());
-    }*/
 
     SvCore::ECS::Scene& HierarchyPanel::GetScene()
     {
@@ -259,7 +220,7 @@ namespace SvEditor::Panels
         s_getCurrentScene = p_getCurrentScene;
     }
 
-    void HierarchyPanel::ToggleSelectable(const SvCore::ECS::Entity::Id& p_entity)
+    void HierarchyPanel::ToggleSelectable(const SvCore::ECS::Entity::Index& p_entity)
     {
         auto it = s_entities.find(p_entity);
 
@@ -273,8 +234,8 @@ namespace SvEditor::Panels
         }
 
         auto& [id, branch] = *it;
-        if (branch)
-            branch->ToggleSelection();
+        if (CHECK(!branch.expired(), "Can't ToggleSelectable, weakPtr expired"))
+            branch.lock()->ToggleSelection();
     }
 
 }
