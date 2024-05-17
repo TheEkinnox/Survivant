@@ -420,15 +420,15 @@ namespace SvEditor::Core
 		auto component = PanelComponent(ComponentRegistry::GetInstance().GetRegisteredTypeName<ModelComponent>(),
 			PanelComponent::Items({
 					std::make_shared<PanelResourceSelector<Model>>(PanelResourceSelector<Model>(
-						"Model    ", [entity = p_entity]() mutable -> ResourceRef<Model>& { return
+						"Model     ", [entity = p_entity]() mutable -> ResourceRef<Model>& { return
 							entity.Get<ModelComponent>()->m_model; }
 					)),
 					std::make_shared<PanelResourceSelector<::Material>>(PanelResourceSelector<::Material>(
-						"Material ", [entity = p_entity]() mutable -> ResourceRef<::Material>&{ return
+						"Material  ", [entity = p_entity]() mutable -> ResourceRef<::Material>&{ return
 							entity.Get<ModelComponent>()->m_material; }
 					)),
 					std::make_shared<PanelUInt32Input>(PanelUInt32Input(
-						"Layer",[entity = p_entity]() mutable -> PanelUInt32Input::Value&{ return
+						"Layer Mask ",[entity = p_entity]() mutable -> PanelUInt32Input::Value&{ return
 							entity.Get<ModelComponent>()->m_layerMask; }
 					)),
 					std::make_shared<PanelButton>(PanelButton(
