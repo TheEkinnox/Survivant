@@ -314,7 +314,7 @@
 //
 //		bool				IsBranch()const;
 //		const Children&	GetChildren()const;
-//		std::string			GetPathName()const;
+//		std::string			GetPath()const;
 //
 //		Children&	SetBranches(const Children& p_branches);
 //		Children&	SetBranches(const std::set<std::shared_ptr<PanelTreeBranch>>& p_branches);

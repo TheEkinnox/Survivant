@@ -1,15 +1,24 @@
 //ContentDrawerPanel.cpp
 #include "SurvivantEditor/Panels/ContentDrawerPanel.h"
 
+#include "SurvivantCore/Resources/ResourceRegistry.h"
 
-#include "SurvivantCore/Events/EventManager.h"
-#include "SurvivantEditor/Core/InspectorItemManager.h"
 #include "SurvivantEditor/Core/EditorUI.h"
+#include "SurvivantEditor/Core/InspectorItemManager.h"
 #include "SurvivantEditor/Panels/InspectorPanel.h"
-#include "SurvivantApp/Core/IEngine.h"
 
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_opengl3.h"
+#include <SurvivantApp/Core/IEngine.h>
+
+#include <SurvivantCore/ECS/Scene.h>
+
+#include <SurvivantRendering/Resources/Material.h>
+#include <SurvivantRendering/Resources/Model.h>
+#include <SurvivantRendering/RHI/IShader.h>
+#include <SurvivantRendering/RHI/ITexture.h>
+
+#include <SurvivantScripting/LuaScript.h>
+
+#include <imgui.h>
 
 namespace SvEditor::Panels
 {
@@ -32,7 +41,9 @@ namespace SvEditor::Panels
         ResourceBranch::s_leavesOnSelect =
             [](ResourceBranch& p_branch)
             {
-                auto panel = Core::InspectorItemManager::GetPanelableResource(p_branch.GetValue());
+                auto panel = Core::InspectorItemManager::GetPanelableResource(
+                    GetResourceRef(p_branch.GetValue(), p_branch.GetPath()));
+
                 if (panel)
                     InspectorPanel::SetInpectorInfo(panel, p_branch.GetName());
 
@@ -126,7 +137,10 @@ namespace SvEditor::Panels
             }
         }
 
+        s_existingPaths.clear();
+        s_fileExtensions = CreateExtensions();
         m_tree = std::make_shared<ResourceBranch>(root.filename().string());
+
         SetupBranches(m_tree, root);
     }
 
@@ -140,17 +154,15 @@ namespace SvEditor::Panels
         for (const auto& dirEntry : directory_iterator(p_filePath))
         {
             const auto& path  = dirEntry.path();
-            const bool  isDir = dirEntry.is_directory();
 
-            ResourceBranch::ValueT ref;
-
-            if (!isDir)
-                ref = CreateResourceRef(path);
-
-            auto ptrBranch = std::make_shared<ResourceBranch>(path.filename().string(), true, ref);
+            auto type = GetType(path);
+            auto ptrBranch = std::make_shared<ResourceBranch>(path.filename().string(), true, type);
             p_parent->AddBranch(ptrBranch);
 
-            if (isDir)
+            if (!type.empty())
+                s_existingPaths[type].emplaces(path.string());
+
+            if (dirEntry.is_directory())
                 directories.emplace_back(ptrBranch, path);
         }
 
@@ -164,66 +176,84 @@ namespace SvEditor::Panels
         //    SetupBranches(p_parent.get()->GetChildreens, path);
     }
 
-    std::unordered_map<std::string, std::set<std::string>> ContentDrawerPanel::CreateExtensions()
+    ContentDrawerPanel::TypedStrings ContentDrawerPanel::CreateExtensions()
     {
-        std::unordered_map<std::string, std::set<std::string>> extensions;
+        using namespace SvCore::Resources;
+        using namespace SvCore::ECS;
+        using namespace SvRendering::Resources;
+        using namespace SvRendering::RHI;
+        using namespace SvScripting;
+
+        auto& rr = ResourceRegistry::GetInstance();
+
+        TypedStrings extensions;
         {
-            auto& set = extensions["Model"];
+            auto& set = extensions[rr.GetRegisteredTypeName<Model>()];
             set.insert(".obj");
         }
         {
-            auto& set = extensions["Material"];
+            auto& set = extensions[rr.GetRegisteredTypeName<Material>()];
             set.insert(".mat");
         }
         {
-            auto& set = extensions["Shader"];
+            auto& set = extensions[rr.GetRegisteredTypeName<IShader>()];
             set.insert(".glsl");
             //set.insert(".frag");
             //set.insert(".vert");
         }
         {
-            auto& set = extensions["Script"];
+            auto& set = extensions[rr.GetRegisteredTypeName<LuaScript>()];
             set.insert(".lua");
         }
         {
-            auto& set = extensions["Texture"];
+            auto& set = extensions[rr.GetRegisteredTypeName<ITexture>()];
             set.insert(".png");
         }
         {
-            auto& set = extensions["Scene"];
+            auto& set = extensions[rr.GetRegisteredTypeName<Scene>()];
             set.insert(".scn");
         }
 
         return extensions;
     }
 
-    SvCore::Resources::GenericResourceRef ContentDrawerPanel::CreateResourceRef(const std::filesystem::path& p_filePath)
+    std::string ContentDrawerPanel::GetType(const std::filesystem::path& p_filePath)
     {
         using namespace SvCore::Resources;
+        using namespace SvCore::Utility;
         const std::string extension = p_filePath.extension().string();
 
         if (extension.empty())
             return {};
 
-        std::string resType;
-        for (auto& [type, set] : FileExtensions)
+        for (auto& [type, set] : s_fileExtensions)
         {
             if (set.contains(extension))
-            {
-                resType = type;
-                break;
-            }
+                return type;
         }
 
-        if (resType.empty())
+        return {};
+    }
+
+    SvCore::Resources::GenericResourceRef ContentDrawerPanel::GetResourceRef(
+        const std::string& p_type,
+        const std::filesystem::path& p_filePath)
+    {
+        using namespace SvCore::Resources;
+
+        if (p_type.empty())
             return {};
 
-        return { resType, p_filePath.string() };
+        return { p_type, p_filePath.string() };
     }
 
     bool ContentDrawerPanel::TryOpenFile(ResourceBranch& p_branch)
     {
+        using namespace SvCore::ECS;
+        using namespace SvCore::Resources;
+
         auto path = p_branch.GetName();
+        auto& rr = ResourceRegistry::GetInstance();
 
         const auto it = path.find_last_of('.');
 
@@ -235,7 +265,7 @@ namespace SvEditor::Panels
         path = p_branch.GetPathName();
         SV_LOG(std::string("Try to open file, path : " + path).c_str());
 
-        if (FileExtensions["Scene"].contains(extension)
+        if (s_fileExtensions.at(rr.GetRegisteredTypeName<Scene>()).contains(extension)
             && !(SV_ENGINE()->IsPlayInEditor()))
         {
             SV_ENGINE()->ChangeScene(path);

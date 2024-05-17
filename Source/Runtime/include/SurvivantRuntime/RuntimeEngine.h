@@ -13,8 +13,6 @@
 #include <array>
 #include <memory>
 
-
-
 using namespace SvApp::Core;
 using namespace LibMath;
 

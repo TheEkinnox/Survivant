@@ -192,15 +192,20 @@ namespace SvApp::Core
         m_mainCamera.UpdateInput();
     }
 
-    void RenderingContext::Resize(const Vec2& p_size)
+    void RenderingContext::Resize(const Vector2I& p_size)
     {
         //textures
         m_viewport = p_size;
+
         for (const auto& frameTexture : m_frameTextures)
             frameTexture->Resize(m_viewport.m_x, m_viewport.m_y);
 
-        //camera
-        auto [cam, _] = m_mainCamera.GetCamInfo();
+        ResetCameraAspect();
+    }
+
+    void RenderingContext::ResetCameraAspect()
+    {
+        auto [cam, trans] = m_mainCamera.GetCamInfo();
 
         if (cam)
             cam->SetAspect(static_cast<float>(m_viewport.m_x) / static_cast<float>(m_viewport.m_y));

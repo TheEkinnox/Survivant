@@ -3,6 +3,7 @@
 
 #include "SurvivantEditor/Interfaces/IInspectorable.h"
 #include "SurvivantEditor/PanelItems/PanelButton.h"
+#include "SurvivantEditor/PanelItems/PanelButtonList.h"
 #include "SurvivantEditor/PanelItems/PanelComponent.h"
 #include "SurvivantEditor/PanelItems/PanelPopupMenuButton.h"
 #include "SurvivantEditor/PanelItems/PanelScriptList.h"
@@ -46,11 +47,10 @@ namespace SvEditor::PanelItems
 		std::string					m_name;
 		SvCore::ECS::EntityHandle	m_entity;
 		Components					m_components;
-		PanelButton					m_remove;
-		PanelButton					m_addChild;
-		PanelButton					m_duplicate;
+		PanelButtonList				m_buttons;
 
 		std::shared_ptr<PanelPopupMenuButton>	m_addComponent;
 		std::unique_ptr<PanelScriptList>		m_luaScripts;
 	};
 }
+

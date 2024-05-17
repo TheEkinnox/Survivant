@@ -329,7 +329,7 @@ namespace SvEditor::PanelItems
     }
 
     template <typename T>
-    inline std::string PanelTreeBranch<T>::GetPathName() const
+    inline std::string PanelTreeBranch<T>::GetPath() const
     {
         std::vector<const PanelTreeBranch*> parents;
         parents.push_back(this);

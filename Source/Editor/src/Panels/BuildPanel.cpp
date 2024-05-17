@@ -10,7 +10,7 @@
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 
-using namespace SvEditor::RuntimeBuild;
+using namespace SvApp::Core;
 
 namespace SvEditor::Panels
 {
@@ -18,7 +18,7 @@ namespace SvEditor::Panels
         m_selectScene("Start Scene",
             SceneSelect::Ref([this]() -> SceneSelect::Value& { return m_scene; })),
         m_buildName("SvBuild"),
-        m_selectBuildName("Build Name", m_buildName)
+        m_selectBuildName("Build Name", [this]() -> std::string& { return m_buildName; })
     {
         m_name = NAME;
         //m_scene = SvCore::Resources::GetDefaultResource<SvCore::ECS::Scene>();
@@ -31,9 +31,8 @@ namespace SvEditor::Panels
 
         m_buttons.m_buttons.emplace_back(PanelButton("Build and Run", [this]()
             {
-                //auto temp = SvEditor::RuntimeBuild::BuildManager::BuildConfigRef("", new BuildConfig(m_scene));
-                //SV_EVENT_MANAGER().Invoke<Core::EditorEngine::OnCreateBuildAndRun>(
-                //    m_buildName, temp);
+                SV_EVENT_MANAGER().Invoke<Core::EditorEngine::OnCreateBuildAndRun>(
+                    m_buildName, BuildConfig(m_scene));
             }));
     }
 

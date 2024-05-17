@@ -3,6 +3,7 @@
 
 #include "SurvivantApp/Core/IEngine.h"
 #include "SurvivantCore/Debug/Assertion.h"
+
 #include "SurvivantCore/ECS/Components/Hierarchy.h"
 #include "SurvivantCore/ECS/Components/TagComponent.h"
 #include "SurvivantCore/ECS/Scene.h"
@@ -93,14 +94,12 @@ namespace SvEditor::Core
 	{
 		using namespace SvCore::Resources;
 		auto& registry = ResourceRegistry::GetInstance();
-		//auto& rm = ResourceManager::GetInstance();
 
+		PanelableResource panel = nullptr;
 		if (!registry.Contains(p_resource.GetType()))
-			return AddResourceDefault(p_resource);
+			return panel;
 
 		auto& info = registry.GetTypeInfo(p_resource.GetType());
-		PanelableResource panel = nullptr;
-
 		if (info.Has(CREATE_RESOURCE))
 			panel = info.Call<PanelableResource>(CREATE_RESOURCE, (void*)&p_resource).value_or(nullptr);
 

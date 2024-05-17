@@ -3,10 +3,9 @@
 
 #include "SurvivantCore/Debug/Assertion.h"
 #include "SurvivantRuntime/RuntimeWindow.h"
+#include "SurvivantApp/Core/BuildConfig.h"
 
 #include "SurvivantApp/Core/TempDefaultScene.h"
-
-
 
 namespace SvRuntime
 {
@@ -54,7 +53,6 @@ namespace SvRuntime
 		world->m_owningGameInstance = nullptr;
 
 		world->m_lightsSSBO = IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, 0);
-		world->m_viewport = { 0, 0 };
 
 
 		return world;
@@ -62,8 +60,15 @@ namespace SvRuntime
 
 	WorldContext::SceneRef RuntimeEngine::GetStartScene()
 	{
-		ASSERT(false, "GetStartScene not implemented");
-		return WorldContext::SceneRef();
+		using namespace SvApp::Core;
+		static std::string configFilePath = "buildConfig.txt";
+
+		auto& rm = ResourceManager::GetInstance();
+
+		auto config = rm.Load<BuildConfig>(configFilePath);
+		auto scene = rm.Load<Scene>(config->m_scene.GetPath());
+
+		return scene;
 	}
 
 	void RuntimeEngine::UpdateGame()
@@ -74,9 +79,8 @@ namespace SvRuntime
 	bool RuntimeEngine::InitializeGameInstance()
 	{
 		m_world->m_owningGameInstance = m_game.get();
-		//m_world->CurrentScene() = GetStartScene();
-		BrowseToDefaultScene(*m_world);
-
+		m_world->CurrentScene() = GetStartScene();
+		
 		m_world->m_inputs = ToRemove::SetupGameInputs();
 		m_world->SetCamera(m_world->GetFirstCamera()); //dont use cam un rendering context
 		m_world->BakeLighting();
@@ -103,13 +107,10 @@ namespace SvRuntime
 
 	void RuntimeEngine::SetViewport(const LibMath::TVector2<int>& p_size)
 	{
-		m_world->m_viewport = p_size;
-
 		IRenderAPI::GetCurrent().SetViewport( { 0, 0 }, p_size);
 
 		//camera
 		auto cam = m_camera.Get<CameraComponent>();
-
 		if (cam)
 			cam->SetAspect(static_cast<float>(p_size.m_x) / static_cast<float>(p_size.m_y));
 	}

@@ -5,7 +5,7 @@
 #include <SurvivantCore/Resources/ResourceRef.h>
 #include <SurvivantCore/ECS/Scene.h>
 
-namespace SvEditor::RuntimeBuild
+namespace SvApp::Core
 {
 	class BuildConfig : public SvCore::Resources::IResource
 	{
@@ -62,9 +62,7 @@ namespace SvEditor::RuntimeBuild
         bool ToJson(SvCore::Serialization::JsonWriter& p_writer) const;
         bool FromJson(const SvCore::Serialization::JsonValue& p_json);
 
-	private:
         SvCore::Resources::ResourceRef<SvCore::ECS::Scene> m_scene;
-
     };
 }
 

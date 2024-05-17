@@ -79,6 +79,7 @@ namespace SvEditor::PanelItems
 		{
 			ImGui::SameLine();
 			std::string resourceName = this->GetRef().GetPath();
+			resourceName = resourceName.empty() ? "(none)" : resourceName;
 			ImGui::PushID(resourceName.c_str());
 			ImGui::InputText("##", &resourceName[0], resourceName.size(), flag);
 			ImGui::PopID();
@@ -94,7 +95,15 @@ namespace SvEditor::PanelItems
 		std::vector<ResourceRef<T>> all = rm.GetAll<T>();
 
 		m_allResources->m_items.clear();
-		m_allResources->m_items.reserve(all.size());
+		m_allResources->m_items.reserve(all.size() + 1);
+
+		m_allResources->m_items.emplace_back(std::make_unique<MenuButton>(MenuButton(
+			"(default)", [this](char) mutable {
+				this->GetRef() = {};
+				if (this->m_callback)
+					this->m_callback({});
+			}
+		)));
 
 		for (ResourceRef<T>& resource : all)
 		{
