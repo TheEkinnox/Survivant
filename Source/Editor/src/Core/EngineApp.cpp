@@ -84,6 +84,7 @@ namespace SvEditor::Core
 
 			if (!m_gameInstance.expired() && !m_gameIsPaused)
 			{
+				Timer::GetInstance().Tick();
 				UpdateScripts();
 				UpdatePhysics();
 			}
