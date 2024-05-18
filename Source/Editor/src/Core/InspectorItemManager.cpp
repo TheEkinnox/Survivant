@@ -65,7 +65,7 @@ namespace SvEditor::Core
 	void InspectorItemManager::Init()
 	{
 		//resources
-		CHECK(AddResourceToPanelable<Scene>(&AddResourceDefault, "Scene"),			"Couldn't init resource type : Scene");
+		CHECK(AddResourceToPanelable<Scene>(&AddResourceScene, "Scene"),			"Couldn't init resource type : Scene");
 		CHECK(AddResourceToPanelable<Model>(&AddResourceDefault, "Model"),			"Couldn't init resource type : Model");
 		CHECK(AddResourceToPanelable<::Material>(&AddResourceMaterial, "Material"),	"Couldn't init resource type : Material");
 		CHECK(AddResourceToPanelable<LuaScript>(&AddResourceDefault, "Script"),		"Couldn't init resource type : Script");
@@ -593,51 +593,51 @@ namespace SvEditor::Core
 			mat.Export(true); })) \
 		)
 
-	void GetPropertyItems(
-		const ResourceRef<::Material>& p_material, PanelResourceDisplay::Items& p_items)
-	{		
-		for (auto& [name, property] : p_material->GetProperties())
-		{
-			auto& [type, value] = property;
-			switch (type)
-			{
-			case SvRendering::Enums::EShaderDataType::UNKNOWN:
-				break;
-			case SvRendering::Enums::EShaderDataType::BOOL:
-				p_items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelCheckbox));
-				break;
-			case SvRendering::Enums::EShaderDataType::INT:
-				p_items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelIntInput));
-				break;
-			case SvRendering::Enums::EShaderDataType::UNSIGNED_INT:
-				p_items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelUInt32Input));
-				break;
-			case SvRendering::Enums::EShaderDataType::FLOAT:
-				p_items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelFloatInput));
-				break;
-			case SvRendering::Enums::EShaderDataType::VEC2:
-				p_items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelVec2Input));
-				break;
-			case SvRendering::Enums::EShaderDataType::VEC3:
-				p_items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelVec3Input));
-				break;
-			case SvRendering::Enums::EShaderDataType::VEC4: //Assums to be a color
-				p_items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelColorInput));
-				break;
-			case SvRendering::Enums::EShaderDataType::TEXTURE: //uses ref instead of copy
-				p_items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelResourceSelector<ITexture>));
-				break;
-			case SvRendering::Enums::EShaderDataType::MAT3:
-			case SvRendering::Enums::EShaderDataType::MAT4:
-			default:
-				ASSERT(false, "Unsuported EShaderDataType");
-				break;
-			}
-		}
-	}
-
 	namespace
 	{
+		void GetPropertyItems(
+			const ResourceRef<::Material>& p_material, PanelResourceDisplay::Items& p_items)
+		{
+			for (auto& [name, property] : p_material->GetProperties())
+			{
+				auto& [type, value] = property;
+				switch (type)
+				{
+				case SvRendering::Enums::EShaderDataType::UNKNOWN:
+					break;
+				case SvRendering::Enums::EShaderDataType::BOOL:
+					p_items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelCheckbox));
+					break;
+				case SvRendering::Enums::EShaderDataType::INT:
+					p_items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelIntInput));
+					break;
+				case SvRendering::Enums::EShaderDataType::UNSIGNED_INT:
+					p_items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelUInt32Input));
+					break;
+				case SvRendering::Enums::EShaderDataType::FLOAT:
+					p_items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelFloatInput));
+					break;
+				case SvRendering::Enums::EShaderDataType::VEC2:
+					p_items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelVec2Input));
+					break;
+				case SvRendering::Enums::EShaderDataType::VEC3:
+					p_items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelVec3Input));
+					break;
+				case SvRendering::Enums::EShaderDataType::VEC4: //Assums to be a color
+					p_items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelColorInput));
+					break;
+				case SvRendering::Enums::EShaderDataType::TEXTURE: //uses ref instead of copy
+					p_items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelResourceSelector<ITexture>));
+					break;
+				case SvRendering::Enums::EShaderDataType::MAT3:
+				case SvRendering::Enums::EShaderDataType::MAT4:
+				default:
+					ASSERT(false, "Unsuported EShaderDataType");
+					break;
+				}
+			}
+		}
+
 		void CreateResourceItems(
 			const std::weak_ptr<PanelResourceDisplay>& p_resourceDisplay,
 			const ResourceRef<::Material>& p_mat)
@@ -671,6 +671,13 @@ namespace SvEditor::Core
 		CreateResourceItems(std::weak_ptr<PanelResourceDisplay>(componentPtr), mat);
 
 		return componentPtr;
+	}
+
+	InspectorItemManager::PanelableResource InspectorItemManager::AddResourceScene(
+		const SvCore::Resources::GenericResourceRef& /*p_resource*/)
+	{
+		ASSERT(false, "Do not Inspect scene bcs needs to load ref");
+		return {};
 	}
 
 	InspectorItemManager::PanelableResource InspectorItemManager::AddResourceDefault(

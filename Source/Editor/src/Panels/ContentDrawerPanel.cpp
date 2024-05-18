@@ -51,9 +51,13 @@ namespace SvEditor::Panels
         ResourceBranch::s_leavesOnSelect =
             [](ResourceBranch& p_branch)
             {
-                auto panel = Core::InspectorItemManager::GetPanelableResource(
-                        ResourceManager::GetInstance().GetOrCreate(p_branch.GetValue(), p_branch.GetPath()));
+                std::string type = p_branch.GetValue();
+                SvCore::Resources::GenericResourceRef resource;
 
+                if (type != ResourceRegistry::GetInstance().GetRegisteredTypeName<SvCore::ECS::Scene>())
+                    resource = ResourceManager::GetInstance().GetOrCreate(type, p_branch.GetPath());
+
+                auto panel = Core::InspectorItemManager::GetPanelableResource(resource);
                 if (panel)
                     InspectorPanel::SetInpectorInfo(panel, p_branch.GetName());
 
