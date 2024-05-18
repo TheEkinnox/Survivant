@@ -273,7 +273,7 @@ namespace SvEditor::Core
 			return {};
 
 		std::ostringstream oss;
-		oss << m_editorSelectedScene.GetFullPath() << std::format(".{:%m%d%Y-%H%M}.tmp", std::chrono::system_clock::now());
+		oss << m_editorSelectedScene.GetFullPath() << ".tmp";
 		return oss.str();
 	}
 
@@ -282,7 +282,16 @@ namespace SvEditor::Core
 		if (!m_editorSelectedScene)
 			return false;
 
-		return m_editorSelectedScene.Export(false, GetTemporaryScenePath());
+		std::error_code       err;
+		static constexpr auto options = std::filesystem::copy_options::overwrite_existing;
+
+		std::filesystem::copy(m_editorSelectedScene.GetFullPath(), GetTemporaryScenePath(), options, err);
+
+		if (!CHECK(err.value() == 0, "Failed to copy scene state from \"%s\" to \"%s\" - %s",
+				m_editorSelectedScene.GetFullPath().c_str(), GetTemporaryScenePath().c_str(), err.message().c_str()))
+			return false;
+
+		return m_editorWorld->Save(true);
 	}
 
 	bool EditorEngine::RestoreSceneState()
@@ -290,10 +299,16 @@ namespace SvEditor::Core
 		if (!m_editorSelectedScene)
 			return false;
 
+		m_editorSelectedScene = ResourceManager::GetInstance().Load<Scene>(m_editorSelectedScene.GetPath());
+
+		static constexpr auto options = std::filesystem::copy_options::overwrite_existing;
+
 		const std::string tempPath = GetTemporaryScenePath();
 		std::error_code   err;
 
-		return m_editorSelectedScene->Load(tempPath)
+		std::filesystem::copy(tempPath, m_editorSelectedScene.GetFullPath(), options, err);
+
+		return CHECK(err.value() == 0, "Failed to restore scene state from \"%s\" - %s", tempPath.c_str(), err.message().c_str())
 			&& CHECK(std::filesystem::remove(tempPath, err) || err.value() == 0,
 				"Failed to remove temporary scene data at \"%s\" - %s", tempPath.c_str(), err.message().c_str());
 	}
