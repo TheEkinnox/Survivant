@@ -39,36 +39,9 @@ namespace SvCore::ECS
     }
 
     template <class T>
-    T& ComponentStorage<T>::Set(const Entity p_owner, ComponentT p_instance)
+    T& ComponentStorage<T>::Set(Entity p_owner, const ComponentT& p_instance)
     {
-        const auto   it = m_entityToComponent.find(p_owner);
-        EntityHandle handle(m_scene, p_owner);
-
-        if (it != m_entityToComponent.end())
-        {
-            ComponentT& component = m_components[it->second];
-
-            ComponentTraits::OnBeforeChange<ComponentT>(handle, component, p_instance);
-            m_onBeforeChange.Invoke(handle, component, p_instance);
-
-            component = std::move(p_instance);
-
-            ComponentTraits::OnChange<ComponentT>(handle, component);
-            m_onChange.Invoke(handle, component);
-
-            return component;
-        }
-
-        ComponentT&  component = m_components.emplace_back(p_instance);
-        const size_t index     = m_components.size() - 1;
-
-        m_componentToEntity[index]   = p_owner;
-        m_entityToComponent[p_owner] = index;
-
-        ComponentTraits::OnAdd<ComponentT>(handle, component);
-        m_onAdd.Invoke(handle, component);
-
-        return component;
+        return Construct(p_owner, p_instance);
     }
 
     template <class T>
