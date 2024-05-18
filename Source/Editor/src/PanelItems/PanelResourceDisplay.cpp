@@ -9,7 +9,7 @@ namespace SvEditor::PanelItems
 	SvEditor::PanelItems::PanelResourceDisplay::PanelResourceDisplay(
 		const SvCore::Resources::GenericResourceRef& p_resource,
 		const std::string& p_icon,
-		const Items& p_items) : 
+		const Items& p_items) :
 		m_resource(p_resource),
 		m_icon(p_icon),
 		m_items(p_items)
@@ -34,6 +34,11 @@ namespace SvEditor::PanelItems
 	const std::string& PanelResourceDisplay::GetName()
 	{
 		return m_name;
+	}
+
+	void PanelResourceDisplay::SetItems(const Items& p_items)
+	{
+		m_items = p_items;
 	}
 }
 

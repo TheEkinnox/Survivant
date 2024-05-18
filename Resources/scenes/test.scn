@@ -23,6 +23,129 @@
             ]
         },
         {
+            "type": "ScriptList",
+            "data": [
+                {
+                    "owner": 0,
+                    "data": [
+                        {
+                            "name": "scripts.freeLook",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "mouse_sensitivity"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 0.005
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "move_speed"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 3.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "rotation_speed"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Degree",
+                                            "data": 90.0
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "owner": 2,
+                    "data": [
+                        {
+                            "name": "scripts.rotator",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "rotation_speed"
+                                    },
+                                    "value": {
+                                        "type": 5,
+                                        "data": [
+                                            {
+                                                "key": {
+                                                    "type": 4,
+                                                    "data": "y"
+                                                },
+                                                "value": {
+                                                    "type": 7,
+                                                    "data": {
+                                                        "type": "Degree",
+                                                        "data": 36.0
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "key": {
+                                                    "type": 4,
+                                                    "data": "z"
+                                                },
+                                                "value": {
+                                                    "type": 7,
+                                                    "data": {
+                                                        "type": "Degree",
+                                                        "data": 0.0
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "key": {
+                                                    "type": 4,
+                                                    "data": "x"
+                                                },
+                                                "value": {
+                                                    "type": 7,
+                                                    "data": {
+                                                        "type": "Degree",
+                                                        "data": 0.0
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "scripts.temporary",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "lifetime_sec"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 5.0
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
             "type": "Transform",
             "data": [
                 {
@@ -188,134 +311,109 @@
             ]
         },
         {
-            "type": "ScriptList",
+            "type": "Hierarchy",
             "data": [
                 {
-                    "owner": 0,
-                    "data": [
-                        {
-                            "name": "scripts.freeLook",
-                            "data": [
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "move_speed"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 3.0
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "mouse_sensitivity"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 0.005
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "rotation_speed"
-                                    },
-                                    "value": {
-                                        "type": 7,
-                                        "data": {
-                                            "type": "Degree",
-                                            "data": 90.0
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    ]
+                    "owner": 3,
+                    "data": {
+                        "parent": 2
+                    }
                 },
                 {
                     "owner": 2,
-                    "data": [
-                        {
-                            "name": "scripts.rotator",
-                            "data": [
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "rotation_speed"
-                                    },
-                                    "value": {
-                                        "type": 5,
-                                        "data": [
-                                            {
-                                                "key": {
-                                                    "type": 4,
-                                                    "data": "x"
-                                                },
-                                                "value": {
-                                                    "type": 7,
-                                                    "data": {
-                                                        "type": "Degree",
-                                                        "data": 0.0
-                                                    }
-                                                }
-                                            },
-                                            {
-                                                "key": {
-                                                    "type": 4,
-                                                    "data": "y"
-                                                },
-                                                "value": {
-                                                    "type": 7,
-                                                    "data": {
-                                                        "type": "Degree",
-                                                        "data": 36.0
-                                                    }
-                                                }
-                                            },
-                                            {
-                                                "key": {
-                                                    "type": 4,
-                                                    "data": "z"
-                                                },
-                                                "value": {
-                                                    "type": 7,
-                                                    "data": {
-                                                        "type": "Degree",
-                                                        "data": 0.0
-                                                    }
-                                                }
-                                            }
-                                        ]
-                                    }
-                                }
-                            ]
-                        },
-                        {
-                            "name": "scripts.temporary",
-                            "data": [
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "lifetime_sec"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 5.0
-                                    }
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "Tag",
-            "data": [
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
+                },
                 {
-                    "owner": 2,
-                    "data": "fdsafdsafdsafdsfdsf"
+                    "owner": 4,
+                    "data": {
+                        "parent": 3
+                    }
+                },
+                {
+                    "owner": 5,
+                    "data": {
+                        "parent": 4
+                    }
+                },
+                {
+                    "owner": 6,
+                    "data": {
+                        "parent": 5
+                    }
+                },
+                {
+                    "owner": 7,
+                    "data": {
+                        "parent": 6
+                    }
+                },
+                {
+                    "owner": 8,
+                    "data": {
+                        "parent": 7
+                    }
+                },
+                {
+                    "owner": 9,
+                    "data": {
+                        "parent": 3
+                    }
+                },
+                {
+                    "owner": 10,
+                    "data": {
+                        "parent": 2
+                    }
+                },
+                {
+                    "owner": 11,
+                    "data": {
+                        "parent": 6
+                    }
+                },
+                {
+                    "owner": 12,
+                    "data": {
+                        "parent": 11
+                    }
+                },
+                {
+                    "owner": 13,
+                    "data": {
+                        "parent": 8
+                    }
+                },
+                {
+                    "owner": 14,
+                    "data": {
+                        "parent": 13
+                    }
+                },
+                {
+                    "owner": 16,
+                    "data": {
+                        "parent": 10
+                    }
+                },
+                {
+                    "owner": 17,
+                    "data": {
+                        "parent": 16
+                    }
+                },
+                {
+                    "owner": 18,
+                    "data": {
+                        "parent": 9
+                    }
+                },
+                {
+                    "owner": 19,
+                    "data": {
+                        "parent": 18
+                    }
                 }
             ]
         },
@@ -534,109 +632,11 @@
             ]
         },
         {
-            "type": "Hierarchy",
+            "type": "Tag",
             "data": [
                 {
-                    "owner": 3,
-                    "data": {
-                        "parent": 2
-                    }
-                },
-                {
                     "owner": 2,
-                    "data": {
-                        "parent": 18446744073709551615
-                    }
-                },
-                {
-                    "owner": 4,
-                    "data": {
-                        "parent": 3
-                    }
-                },
-                {
-                    "owner": 5,
-                    "data": {
-                        "parent": 4
-                    }
-                },
-                {
-                    "owner": 6,
-                    "data": {
-                        "parent": 5
-                    }
-                },
-                {
-                    "owner": 7,
-                    "data": {
-                        "parent": 6
-                    }
-                },
-                {
-                    "owner": 8,
-                    "data": {
-                        "parent": 7
-                    }
-                },
-                {
-                    "owner": 9,
-                    "data": {
-                        "parent": 3
-                    }
-                },
-                {
-                    "owner": 10,
-                    "data": {
-                        "parent": 2
-                    }
-                },
-                {
-                    "owner": 11,
-                    "data": {
-                        "parent": 6
-                    }
-                },
-                {
-                    "owner": 12,
-                    "data": {
-                        "parent": 11
-                    }
-                },
-                {
-                    "owner": 13,
-                    "data": {
-                        "parent": 8
-                    }
-                },
-                {
-                    "owner": 14,
-                    "data": {
-                        "parent": 13
-                    }
-                },
-                {
-                    "owner": 16,
-                    "data": {
-                        "parent": 10
-                    }
-                },
-                {
-                    "owner": 17,
-                    "data": {
-                        "parent": 16
-                    }
-                },
-                {
-                    "owner": 18,
-                    "data": {
-                        "parent": 9
-                    }
-                },
-                {
-                    "owner": 19,
-                    "data": {
-                        "parent": 18
-                    }
+                    "data": "fdsafdsafdsafdsfdsf"
                 }
             ]
         },

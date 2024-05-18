@@ -62,7 +62,6 @@ namespace SvEditor::Core
 
 		static PanelableResource AddResourceDefault(const SvCore::Resources::GenericResourceRef& p_resource);
 		static PanelableResource AddResourceMaterial(const SvCore::Resources::GenericResourceRef& p_resource);
-
 	};
 
 }

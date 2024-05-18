@@ -10,6 +10,7 @@
 #include "SurvivantRendering/Components/CameraComponent.h"
 #include "SurvivantRendering/Components/LightComponent.h"
 #include "SurvivantRendering/Components/ModelComponent.h"
+#include "SurvivantRendering/Enums/EShaderDataType.h"
 #include "SurvivantRendering/Resources/Material.h"
 #include "SurvivantRendering/Resources/Model.h"
 #include "SurvivantRendering/RHI/IShader.h"
@@ -21,6 +22,7 @@
 #include "SurvivantEditor/PanelItems/PanelColorInput.h"
 #include "SurvivantEditor/PanelItems/PanelComponent.h"
 #include "SurvivantEditor/PanelItems/PanelFloatInput.h"
+#include "SurvivantEditor/PanelItems/PanelIntInput.h"
 #include "SurvivantEditor/PanelItems/PanelMultipleSelection.h"
 #include "SurvivantEditor/PanelItems/PanelResourceSelector.h"
 #include "SurvivantEditor/PanelItems/PanelSelectionDisplay.h"
@@ -30,6 +32,7 @@
 #include "SurvivantEditor/PanelItems/PanelUInt32Input.h"
 #include "SurvivantEditor/PanelItems/PanelVec2Input.h"
 #include "SurvivantEditor/PanelItems/PanelVec3Input.h"
+#include "SurvivantEditor/PanelItems/PanelCheckbox.h"
 #include "SurvivantEditor/PanelItems/PanelScriptList.h"
 
 #include <SurvivantPhysics/RigidBody.h>
@@ -53,6 +56,9 @@ using namespace SvPhysics;
 
 using Material = SvRendering::Resources::Material;
 using PhysicsMaterial = SvPhysics::Material;
+using namespace SvRendering::Resources;
+using namespace SvRendering::RHI;
+using namespace SvCore::Resources;
 
 namespace SvEditor::Core
 {
@@ -61,7 +67,7 @@ namespace SvEditor::Core
 		//resources
 		CHECK(AddResourceToPanelable<Scene>(&AddResourceDefault, "Scene"),			"Couldn't init resource type : Scene");
 		CHECK(AddResourceToPanelable<Model>(&AddResourceDefault, "Model"),			"Couldn't init resource type : Model");
-		CHECK(AddResourceToPanelable<::Material>(&AddResourceDefault, "Material"),	"Couldn't init resource type : Material");
+		CHECK(AddResourceToPanelable<::Material>(&AddResourceMaterial, "Material"),	"Couldn't init resource type : Material");
 		CHECK(AddResourceToPanelable<LuaScript>(&AddResourceDefault, "Script"),		"Couldn't init resource type : Script");
 		CHECK(AddResourceToPanelable<IShader>(&AddResourceDefault, "Shader"),		"Couldn't init resource type : Shader");
 		CHECK(AddResourceToPanelable<ITexture>(&AddResourceDefault, "Texture"),		"Couldn't init resource type : Texture");
@@ -110,7 +116,6 @@ namespace SvEditor::Core
 	InspectorItemManager::PanelableResource InspectorItemManager::GetPanelableResource(
 		const SvCore::Resources::GenericResourceRef& p_resource)
 	{
-		using namespace SvCore::Resources;
 		auto& registry = ResourceRegistry::GetInstance();
 
 		PanelableResource panel = nullptr;
@@ -173,8 +178,6 @@ namespace SvEditor::Core
 	InspectorItemManager::PanelableComponent InspectorItemManager::AddComponentHierarchy(
 		const SvCore::ECS::EntityHandle& p_entity)
 	{
-		using namespace SvEditor::Panels;
-
 		auto component = PanelComponent(ComponentRegistry::GetInstance().GetRegisteredTypeName<HierarchyComponent>(),
 			PanelComponent::Items({
 				std::make_shared<PanelUInt32Input>(PanelUInt32Input(
@@ -313,8 +316,6 @@ namespace SvEditor::Core
 	InspectorItemManager::PanelableComponent InspectorItemManager::AddComponentLight(
 		const SvCore::ECS::EntityHandle& p_entity)
 	{
-		using namespace SvRendering::Core;
-
 		std::vector<std::string> enumNames;
 		for (int i = 0; i <= static_cast<int>(ELightType::SPOT); i++)
 			enumNames.emplace_back(std::string(LightTypeToString(ELightType(i))));
@@ -412,11 +413,6 @@ namespace SvEditor::Core
 	InspectorItemManager::PanelableComponent InspectorItemManager::AddComponentModel(
 		const SvCore::ECS::EntityHandle& p_entity)
 	{
-		using namespace SvRendering::Resources;
-		using namespace SvCore::Resources;
-
-		//auto& ref = *p_entity.Get<ModelComponent>();
-
 		auto component = PanelComponent(ComponentRegistry::GetInstance().GetRegisteredTypeName<ModelComponent>(),
 			PanelComponent::Items({
 					std::make_shared<PanelResourceSelector<Model>>(PanelResourceSelector<Model>(
@@ -587,37 +583,99 @@ namespace SvEditor::Core
 
 		return MakePanelCollider<CapsuleCollider>(p_entity, std::move(items));
 	}
+#define PROPERTY_TO_PANELABLE(mat, name, panelType) \
+	std::make_shared<panelType>(panelType( \
+		name, \
+		panelType::GetRefFunc([mat = p_material, name]() mutable -> panelType::Value& { \
+			return std::any_cast<panelType::Value&>(mat->GetProperty(name).m_value); }), \
+		panelType::Callback([mat = p_material, name](panelType::Value p_val) { \
+			mat->GetProperty(name).m_value.emplace<panelType::Value>(p_val); \
+			/*mat->Save(mat.GetPath());*/ })) \
+		)
+
+	void GetPropertyItems(
+		const ResourceRef<::Material>& p_material, PanelResourceDisplay::Items& p_items)
+	{		
+		for (auto& [name, property] : p_material->GetProperties())
+		{
+			auto& [type, value] = property;
+			switch (type)
+			{
+			case SvRendering::Enums::EShaderDataType::UNKNOWN:
+				break;
+			case SvRendering::Enums::EShaderDataType::BOOL:
+				p_items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelCheckbox));
+				break;
+			case SvRendering::Enums::EShaderDataType::INT:
+				p_items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelIntInput));
+				break;
+			case SvRendering::Enums::EShaderDataType::UNSIGNED_INT:
+				p_items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelUInt32Input));
+				break;
+			case SvRendering::Enums::EShaderDataType::FLOAT:
+				p_items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelFloatInput));
+				break;
+			case SvRendering::Enums::EShaderDataType::VEC2:
+				p_items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelVec2Input));
+				break;
+			case SvRendering::Enums::EShaderDataType::VEC3:
+				p_items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelVec3Input));
+				break;
+			case SvRendering::Enums::EShaderDataType::VEC4: //Assums to be a color
+				p_items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelColorInput));
+				break;
+			case SvRendering::Enums::EShaderDataType::TEXTURE: //uses ref instead of copy
+				p_items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelResourceSelector<ITexture>));
+				break;
+			case SvRendering::Enums::EShaderDataType::MAT3:
+			case SvRendering::Enums::EShaderDataType::MAT4:
+			default:
+				ASSERT(false, "Unsuported EShaderDataType");
+				break;
+			}
+		}
+	}
+
+	namespace
+	{
+		void CreateResourceItems(
+			const std::weak_ptr<PanelResourceDisplay>& p_resourceDisplay,
+			const ResourceRef<::Material>& p_mat)
+		{
+			PanelResourceDisplay::Items items = PanelResourceDisplay::Items({
+				std::make_shared<PanelResourceSelector<IShader>>(
+					"Shader ", [p_mat]() mutable -> ResourceRef<IShader>&{
+						static ResourceRef<IShader> ref = p_mat->GetShaderRef();
+						return ref; 
+					},
+					[p_mat, p_resourceDisplay](PanelResourceSelector<IShader>::CallbackParams p_params) {
+						p_mat->SetShader(p_params); 
+						CreateResourceItems(p_resourceDisplay, p_mat);
+					}) 
+				});
+
+			GetPropertyItems(p_mat, items);
+			p_resourceDisplay.lock()->SetItems(items);
+		}
+	}
 
 	InspectorItemManager::PanelableResource InspectorItemManager::AddResourceMaterial(
 		const SvCore::Resources::GenericResourceRef& p_resource)
 	{
-		using namespace SvRendering::Resources;
-		using namespace SvRendering::RHI;
-		using namespace SvCore::Resources;
+		ResourceRef<::Material> mat = p_resource;
+		
+		auto componentPtr = std::make_shared<PanelResourceDisplay>(PanelResourceDisplay(
+			p_resource, "Ma",
+			PanelResourceDisplay::Items()));
 
-		ResourceRef<::Material> resource = p_resource;
+		CreateResourceItems(std::weak_ptr<PanelResourceDisplay>(componentPtr), mat);
 
-		auto component = PanelResourceDisplay(p_resource, "Ma",
-			PanelResourceDisplay::Items({
-					std::make_shared<PanelResourceSelector<IShader>>(
-						"Material ", [resource]() mutable -> ResourceRef<IShader>&{
-							static ResourceRef<IShader> ref = resource->GetShaderRef();
-							return ref; },
-						[resource](PanelResourceSelector<IShader>::CallbackParams p_params) {
-							resource->SetShader(p_params);
-						}
-					),
-				}));
-
-		return std::make_shared<PanelResourceDisplay>(std::move(component));
+		return componentPtr;
 	}
 
 	InspectorItemManager::PanelableResource InspectorItemManager::AddResourceDefault(
 		const SvCore::Resources::GenericResourceRef& p_resource)
 	{
-		using namespace SvRendering::Resources;
-		using namespace SvRendering::RHI;
-		using namespace SvCore::Resources;
 		using namespace SvCore::Serialization;
 
 		JsonStringBuffer buffer;
