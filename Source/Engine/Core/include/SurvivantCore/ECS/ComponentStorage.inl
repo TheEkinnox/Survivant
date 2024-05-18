@@ -51,31 +51,29 @@ namespace SvCore::ECS
         const auto   it = m_entityToComponent.find(p_owner);
         EntityHandle handle(m_scene, p_owner);
 
+        // Re-fetch component between events in case one of them triggers a reallocation
         if (it != m_entityToComponent.end())
         {
-            ComponentT& component = m_components[it->second];
-            ComponentT  newVal    = ComponentT(std::forward<Args>(p_args)...);
+            const size_t index  = it->second;
+            ComponentT   newVal = ComponentT(std::forward<Args>(p_args)...);
 
-            ComponentTraits::OnBeforeChange<ComponentT>(handle, component, newVal);
-            m_onBeforeChange.Invoke(handle, component, newVal);
+            ComponentTraits::OnBeforeChange<ComponentT>(handle, m_components[index], newVal);
+            m_onBeforeChange.Invoke(handle, m_components[index], newVal);
 
-            component = std::move(newVal);
-
-            ComponentTraits::OnChange<ComponentT>(handle, component);
-            m_onChange.Invoke(handle, component);
-            return component;
+            ComponentTraits::OnChange<ComponentT>(handle, *new(m_components.data() + index) ComponentT(std::move(newVal)));
+            m_onChange.Invoke(handle, m_components[index]);
+            return m_components[index];
         }
 
-        ComponentT&  component = m_components.emplace_back(std::forward<Args>(p_args)...);
-        const size_t index     = m_components.size() - 1;
+        const size_t index = m_components.size();
 
         m_componentToEntity[index]   = p_owner;
         m_entityToComponent[p_owner] = index;
 
-        ComponentTraits::OnAdd<ComponentT>(handle, component);
-        m_onAdd.Invoke(handle, component);
+        ComponentTraits::OnAdd<ComponentT>(handle, m_components.emplace_back(std::forward<Args>(p_args)...));
+        m_onAdd.Invoke(handle, m_components[index]);
 
-        return component;
+        return m_components[index];
     }
 
     template <class T>
@@ -280,7 +278,7 @@ namespace SvCore::ECS
             if (!ComponentRegistry::FromJson(component, it->value, m_scene))
                 return false;
 
-            Set(owner, component);
+            Construct(owner, std::move(component));
         }
 
         return true;
