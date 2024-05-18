@@ -590,7 +590,7 @@ namespace SvEditor::Core
 			return std::any_cast<panelType::Value&>(mat->GetProperty(name).m_value); }), \
 		panelType::Callback([mat = p_material, name](panelType::Value p_val) { \
 			mat->GetProperty(name).m_value.emplace<panelType::Value>(p_val); \
-			/*mat->Save(mat.GetPath());*/ })) \
+			mat.Export(true); })) \
 		)
 
 	void GetPropertyItems(
@@ -651,7 +651,7 @@ namespace SvEditor::Core
 					[p_mat, p_resourceDisplay](PanelResourceSelector<IShader>::CallbackParams p_params) {
 						p_mat->SetShader(p_params); 
 						CreateResourceItems(p_resourceDisplay, p_mat);
-					}) 
+					})
 				});
 
 			GetPropertyItems(p_mat, items);
