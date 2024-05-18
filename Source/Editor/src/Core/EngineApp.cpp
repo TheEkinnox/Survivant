@@ -42,11 +42,14 @@ namespace SvEditor::Core
 		SvCore::Debug::Logger::GetInstance().SetFile("debug.log");
         SvCore::Resources::ResourceManager::GetInstance().AddSearchPath("assets");
 
-		//setup InspectorComponents
-		InspectorItemManager::Init();
+		//physics
+		SvPhysics::PhysicsContext::GetInstance().Init();
 
 		//scripts
 		SvScripting::LuaContext::GetInstance().Init();
+
+		//setup InspectorComponents
+		InspectorItemManager::Init();
 
 		//window
 		m_window = std::make_unique<Core::EditorWindow>();
@@ -99,6 +102,9 @@ namespace SvEditor::Core
 
 	void EngineApp::TogglePlayPIE()
 	{
+		const auto currentSelection = RenderingContext::s_editorSelectedEntity.GetEntity().GetIndex();
+		HierarchyPanel::ToggleSelectable(SvCore::ECS::NULL_ENTITY.GetIndex());
+
 		if (!m_gameInstance.expired()) //game is running
 		{
 			m_editorEngine.DestroyGameInstance();
@@ -111,6 +117,8 @@ namespace SvEditor::Core
 			m_window->GetUI().ForceGameFocus();
 			//this is tmp game
 		}
+
+		HierarchyPanel::ToggleSelectable(currentSelection);
 	}
 
 	void EngineApp::TogglePausePIE()
@@ -125,14 +133,12 @@ namespace SvEditor::Core
 
 	void EngineApp::UpdateScripts()
 	{
-		//update scripts
-
-		//update scripts
-		//SvScripting::LuaContext::GetInstance().Update(SV_DELTA_TIME());
+		SvScripting::LuaContext::GetInstance().Update(Timer::GetInstance().GetDeltaTime());
 	}
 
 	void EngineApp::UpdatePhysics()
 	{
+		SvPhysics::PhysicsContext::GetInstance().Update(Timer::GetInstance().GetDeltaTime());
 	}
 }
 

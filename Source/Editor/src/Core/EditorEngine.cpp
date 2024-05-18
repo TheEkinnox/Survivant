@@ -8,6 +8,10 @@
 
 #include <SurvivantCore/Debug/Assertion.h>
 
+#include <SurvivantPhysics/PhysicsContext.h>
+
+#include <SurvivantScripting/LuaContext.h>
+
 using namespace SvApp::Core;
 
 namespace SvEditor::Core
@@ -67,11 +71,17 @@ namespace SvEditor::Core
 
 	void EditorEngine::DestroyGameInstance()
 	{
+		SvPhysics::PhysicsContext::GetInstance().Reload();
+		SvScripting::LuaContext& luaContext = SvScripting::LuaContext::GetInstance();
+		luaContext.Stop();
+		luaContext.Reload();
+
+		ASSERT(luaContext.IsValid());
+
 		WorldContext::SceneRef scene = GetWorldContextRef(*m_gameInstance).lock()->CurrentScene();
 		m_gameInstance.reset();
 
-		if (!RestoreSceneState())
-			SV_LOG_ERROR("Pre-play scene state couldn't be restored");
+		RestoreSceneState();
 
 		//while playing, loaded new scene, so go back to selected
 		if (scene != m_editorSelectedScene)
@@ -236,7 +246,14 @@ namespace SvEditor::Core
 		if (!SaveSceneState())
 			return false;
 
-		pieWorld.CurrentScene() = m_editorSelectedScene;
+		SvPhysics::PhysicsContext::GetInstance().Reload();
+
+		Timer::GetInstance().Refresh();
+
+		SvScripting::LuaContext& luaContext = SvScripting::LuaContext::GetInstance();
+		luaContext.Reload();
+
+		pieWorld.CurrentScene() = ResourceManager::GetInstance().Load<Scene>(m_editorSelectedScene.GetPath());
 
 		pieWorld.m_inputs = ToRemove::SetupGameInputs();
 		pieWorld.SetCamera(pieWorld.GetFirstCamera());
@@ -246,7 +263,8 @@ namespace SvEditor::Core
 		//init
 		m_gameInstance->Init(m_PIEWorld);
 
-		return true;
+		luaContext.Start();
+		return CHECK(luaContext.IsValid(), "Failed to start lua context");
 	}
 
 	std::string EditorEngine::GetTemporaryScenePath() const

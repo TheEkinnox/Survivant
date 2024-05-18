@@ -590,6 +590,12 @@ namespace SvPhysics
         m_shapeToCollider.clear();
     }
 
+    void PhysicsContext::Reload()
+    {
+        Reset();
+        Init();
+    }
+
     void PhysicsContext::MoveShapes(PxRigidActor& p_from, PxRigidActor& p_to)
     {
         if (&p_from == &p_to)
