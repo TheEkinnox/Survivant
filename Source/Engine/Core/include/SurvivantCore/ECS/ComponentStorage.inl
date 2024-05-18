@@ -30,11 +30,11 @@ namespace SvCore::ECS
         EntityHandle sourceHandle(m_scene, p_source);
         EntityHandle targetHandle(m_scene, p_target);
 
-        ComponentT& component  = m_components[sourceIt->second];
-        ComponentT  copyResult = ComponentTraits::Copy<ComponentT>(sourceHandle, component, targetHandle);
-        m_onCopy.Invoke(sourceHandle, component, targetHandle, copyResult);
+        const size_t index      = sourceIt->second;
+        ComponentT   copyResult = ComponentTraits::Copy<ComponentT>(sourceHandle, m_components[index], targetHandle);
+        m_onCopy.Invoke(sourceHandle, m_components[index], targetHandle, copyResult);
 
-        Set(p_target, copyResult);
+        Construct(p_target, std::move(copyResult));
         return true;
     }
 
