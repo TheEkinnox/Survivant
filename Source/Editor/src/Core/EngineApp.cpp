@@ -89,10 +89,10 @@ namespace SvEditor::Core
 				UpdatePhysics();
 			}
 
-			m_editorEngine.RenderWorlds();
+			m_window->RenderUI();			//update UI
+			m_editorEngine.RenderWorlds();	//render worlds
 
-			m_window->RenderUI();
-			m_window->EndRender();
+			m_window->EndRender();			//render UI with worlds
 		}
 	}
 

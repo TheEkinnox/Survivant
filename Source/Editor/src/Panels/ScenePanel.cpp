@@ -11,11 +11,12 @@
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 
+using namespace SvApp::Core;
+
 namespace SvEditor::Panels
 {
 	ScenePanel::ScenePanel()
 	{
-		using namespace SvApp::Core;
 		m_name = NAME;
 
 		m_image.SetTexture(s_world.lock()->m_renderingContext->GetTextureId(RenderingContext::ETextureType::COLOR));
@@ -23,8 +24,7 @@ namespace SvEditor::Panels
 	}
 
 	ScenePanel::~ScenePanel()
-	{
-	}
+	{}
 
 	void ScenePanel::SetSceneWorld(std::weak_ptr<WorldContext> p_world)
 	{
@@ -33,7 +33,6 @@ namespace SvEditor::Panels
 
 	Panel::ERenderFlags ScenePanel::Render()
 	{
-		static intptr_t tmp = 1;
 		static ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoNavInputs;
 		bool showWindow = true;
 
@@ -50,7 +49,11 @@ namespace SvEditor::Panels
 			m_buttons.DisplayAndUpdatePanel();
 
 			if (IsWindowDifferentSize(m_imageSize))
+			{
 				s_onResizeEvent.Invoke(m_imageSize);
+				m_image.SetTexture(s_world.lock()->m_renderingContext->GetTextureId(
+					RenderingContext::ETextureType::COLOR));
+			}
 
 			auto pos = ImGui::GetCursorPos();
 			m_imagePos = { ImGui::GetCursorScreenPos().x , ImGui::GetCursorScreenPos().y };
@@ -97,11 +100,6 @@ namespace SvEditor::Panels
 			return;
 
 		s_world.lock()->m_renderingContext->s_editorSelectedEntity = p_entity;
-	}
-
-	void ScenePanel::ToggleTexture()
-	{
-
 	}
 
 	LibMath::Vector2 ScenePanel::CalculateUVCords(const LibMath::Vector2& p_cursorPos)
