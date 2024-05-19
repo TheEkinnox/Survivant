@@ -10,7 +10,8 @@ local EditorDisplay = {
         [1] = "a",
         subtable = {
             b = 2,
-            [2] = "b"
+            [2] = "b",
+            a = "used name"
         }
     },
     userdata = {

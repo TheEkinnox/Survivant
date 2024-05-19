@@ -1,20 +1,26 @@
 #include "SurvivantEditor/Core/EngineApp.h"
 
-#include "SurvivantEditor/RuntimeBuild/BuildManager.h"
+#include "SurvivantEditor/Core/InspectorItemManager.h"
+#include "SurvivantEditor/Panels/HierarchyPanel.h"
 
-#include "SurvivantApp/Inputs/InputManager.h"
+#include <SurvivantApp/Inputs/InputManager.h>
+
 #include <SurvivantCore/Debug/Assertion.h>
 #include <SurvivantCore/Debug/Logger.h>
-#include "SurvivantCore/Events/EventManager.h"
-#include <SurvivantCore/Utility/FileSystem.h>
-#include "SurvivantEditor/Panels/ScenePanel.h"
-#include "SurvivantEditor/Core/EditorUI.h"
-#include "SurvivantEditor/Core/InspectorItemManager.h"
-#include "SurvivantScripting/LuaContext.h"
+#include <SurvivantCore/Resources/ResourceManager.h>
+
+#include <SurvivantPhysics/PhysicsContext.h>
+
+#include <SurvivantRendering/RHI/IRenderAPI.h>
+
+#include <SurvivantScripting/LuaContext.h>
 
 #include <memory>
 
-#include "SurvivantApp/Core/TempDefaultScene.h"
+using namespace SvRendering::RHI;
+using namespace SvRendering::Enums;
+
+using namespace SvCore::Utility;
 
 namespace SvEditor::Core
 {
@@ -26,7 +32,7 @@ namespace SvEditor::Core
 
 	EngineApp::~EngineApp()
 	{
-		m_window.release();
+		m_window.reset();
 	}
 
 	void EngineApp::Init()
@@ -34,13 +40,16 @@ namespace SvEditor::Core
 		m_gameIsPaused = false;
 
 		SvCore::Debug::Logger::GetInstance().SetFile("debug.log");
-		ResourceManager::GetInstance().AddSearchPath("assets");
+        SvCore::Resources::ResourceManager::GetInstance().AddSearchPath("assets");
 
-		//setup InspectorComponents
-		InspectorItemManager::Init();
+		//physics
+		SvPhysics::PhysicsContext::GetInstance().Init();
 
 		//scripts
 		SvScripting::LuaContext::GetInstance().Init();
+
+		//setup InspectorComponents
+		InspectorItemManager::Init();
 
 		//window
 		m_window = std::make_unique<Core::EditorWindow>();
@@ -75,6 +84,7 @@ namespace SvEditor::Core
 
 			if (!m_gameInstance.expired() && !m_gameIsPaused)
 			{
+				Timer::GetInstance().Tick();
 				UpdateScripts();
 				UpdatePhysics();
 			}
@@ -93,6 +103,9 @@ namespace SvEditor::Core
 
 	void EngineApp::TogglePlayPIE()
 	{
+		const auto currentSelection = RenderingContext::s_editorSelectedEntity.GetEntity().GetIndex();
+		HierarchyPanel::ToggleSelectable(SvCore::ECS::NULL_ENTITY.GetIndex());
+
 		if (!m_gameInstance.expired()) //game is running
 		{
 			m_editorEngine.DestroyGameInstance();
@@ -105,6 +118,8 @@ namespace SvEditor::Core
 			m_window->GetUI().ForceGameFocus();
 			//this is tmp game
 		}
+
+		HierarchyPanel::ToggleSelectable(currentSelection);
 	}
 
 	void EngineApp::TogglePausePIE()
@@ -119,14 +134,12 @@ namespace SvEditor::Core
 
 	void EngineApp::UpdateScripts()
 	{
-		//update scripts
-
-		//update scripts
-		//SvScripting::LuaContext::GetInstance().Update(SV_DELTA_TIME());
+		SvScripting::LuaContext::GetInstance().Update(Timer::GetInstance().GetDeltaTime());
 	}
 
 	void EngineApp::UpdatePhysics()
 	{
+		SvPhysics::PhysicsContext::GetInstance().Update(Timer::GetInstance().GetDeltaTime());
 	}
 }
 

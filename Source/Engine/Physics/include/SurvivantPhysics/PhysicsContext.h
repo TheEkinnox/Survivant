@@ -166,6 +166,11 @@ namespace SvPhysics
          */
         void Reset();
 
+        /**
+         * \brief Resets and re-initializes the physics context
+         */
+        void Reload();
+
     private:
         friend class PhysXEventHandler;
         friend class ICollider;

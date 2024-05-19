@@ -219,14 +219,9 @@ namespace SvTest
 
     void TestApp::MakeScene()
     {
-        PhysicsContext& physicsContext = PhysicsContext::GetInstance();
-        physicsContext.Reset();
-
-        if (m_scene)
-            m_scene->Clear();
+        PhysicsContext::GetInstance().Reload();
 
         Timer::GetInstance().Refresh();
-        physicsContext.Init();
 
         LuaContext& luaContext = LuaContext::GetInstance();
         luaContext.Reload();

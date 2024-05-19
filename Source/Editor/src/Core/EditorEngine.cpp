@@ -8,6 +8,10 @@
 
 #include <SurvivantCore/Debug/Assertion.h>
 
+#include <SurvivantPhysics/PhysicsContext.h>
+
+#include <SurvivantScripting/LuaContext.h>
+
 using namespace SvApp::Core;
 
 namespace SvEditor::Core
@@ -67,8 +71,17 @@ namespace SvEditor::Core
 
 	void EditorEngine::DestroyGameInstance()
 	{
+		SvPhysics::PhysicsContext::GetInstance().Reload();
+		SvScripting::LuaContext& luaContext = SvScripting::LuaContext::GetInstance();
+		luaContext.Stop();
+		luaContext.Reload();
+
+		ASSERT(luaContext.IsValid());
+
 		WorldContext::SceneRef scene = GetWorldContextRef(*m_gameInstance).lock()->CurrentScene();
 		m_gameInstance.reset();
+
+		RestoreSceneState();
 
 		//while playing, loaded new scene, so go back to selected
 		if (scene != m_editorSelectedScene)
@@ -229,7 +242,18 @@ namespace SvEditor::Core
 		auto& pieWorld = *m_PIEWorld.lock();
 
 		pieWorld.m_owningGameInstance = m_gameInstance.get();
-		pieWorld.CurrentScene() = m_editorSelectedScene;
+
+		if (!SaveSceneState())
+			return false;
+
+		SvPhysics::PhysicsContext::GetInstance().Reload();
+
+		Timer::GetInstance().Refresh();
+
+		SvScripting::LuaContext& luaContext = SvScripting::LuaContext::GetInstance();
+		luaContext.Reload();
+
+		pieWorld.CurrentScene() = ResourceManager::GetInstance().Load<Scene>(m_editorSelectedScene.GetPath());
 
 		pieWorld.m_inputs = ToRemove::SetupGameInputs();
 		pieWorld.SetCamera(pieWorld.GetFirstCamera());
@@ -239,7 +263,54 @@ namespace SvEditor::Core
 		//init
 		m_gameInstance->Init(m_PIEWorld);
 
-		return true;
+		luaContext.Start();
+		return CHECK(luaContext.IsValid(), "Failed to start lua context");
+	}
+
+	std::string EditorEngine::GetTemporaryScenePath() const
+	{
+		if (!m_editorSelectedScene)
+			return {};
+
+		std::ostringstream oss;
+		oss << m_editorSelectedScene.GetFullPath() << ".tmp";
+		return oss.str();
+	}
+
+	bool EditorEngine::SaveSceneState() const
+	{
+		if (!m_editorSelectedScene)
+			return false;
+
+		std::error_code       err;
+		static constexpr auto options = std::filesystem::copy_options::overwrite_existing;
+
+		std::filesystem::copy(m_editorSelectedScene.GetFullPath(), GetTemporaryScenePath(), options, err);
+
+		if (!CHECK(err.value() == 0, "Failed to copy scene state from \"%s\" to \"%s\" - %s",
+				m_editorSelectedScene.GetFullPath().c_str(), GetTemporaryScenePath().c_str(), err.message().c_str()))
+			return false;
+
+		return m_editorWorld->Save(true);
+	}
+
+	bool EditorEngine::RestoreSceneState()
+	{
+		if (!m_editorSelectedScene)
+			return false;
+
+		m_editorSelectedScene = ResourceManager::GetInstance().Load<Scene>(m_editorSelectedScene.GetPath());
+
+		static constexpr auto options = std::filesystem::copy_options::overwrite_existing;
+
+		const std::string tempPath = GetTemporaryScenePath();
+		std::error_code   err;
+
+		std::filesystem::copy(tempPath, m_editorSelectedScene.GetFullPath(), options, err);
+
+		return CHECK(err.value() == 0, "Failed to restore scene state from \"%s\" - %s", tempPath.c_str(), err.message().c_str())
+			&& CHECK(std::filesystem::remove(tempPath, err) || err.value() == 0,
+				"Failed to remove temporary scene data at \"%s\" - %s", tempPath.c_str(), err.message().c_str());
 	}
 
 	void EditorEngine::BakeLights()

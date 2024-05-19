@@ -12,7 +12,7 @@ namespace SvEditor::PanelItems
     public:
         using Items = std::vector<std::shared_ptr<IPanelable>>;
 
-        PanelScript(SvScripting::LuaScriptHandle p_script);
+        explicit PanelScript(SvScripting::LuaScriptHandle p_script);
         ~PanelScript() override = default;
 
         void DisplayAndUpdatePanel() override;

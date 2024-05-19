@@ -336,6 +336,12 @@ namespace SvCore::ECS
     template <>
     bool ComponentRegistry::FromJson(sol::table& p_out, const JsonValue& p_json, Scene* p_scene)
     {
+        if (p_json.IsNull())
+        {
+            p_out = sol::nil;
+            return true;
+        }
+
         if (!CHECK(p_json.IsArray(), "Unable to deserialize lua table - Json value should be an array"))
             return false;
 

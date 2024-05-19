@@ -45,10 +45,9 @@ namespace SvApp::Core
     //    UpdateRotators(rotatorsView, SV_DELTA_TIME());
     //}
 
-    void WorldContext::Save(const bool p_pretty)
+    bool WorldContext::Save(const bool p_pretty)
     {
-        CurrentScene().Export(p_pretty);
-        SV_LOG("Saved Scene: %s", CurrentScene().GetPath().c_str());
+        return CurrentScene().Export(p_pretty);
     }
 
     void WorldContext::BakeLighting()
