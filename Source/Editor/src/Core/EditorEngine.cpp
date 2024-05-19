@@ -241,8 +241,6 @@ namespace SvEditor::Core
 	{
 		auto& pieWorld = *m_PIEWorld.lock();
 
-		pieWorld.m_owningGameInstance = m_gameInstance.get();
-
 		if (!SaveSceneState())
 			return false;
 
@@ -255,13 +253,15 @@ namespace SvEditor::Core
 
 		pieWorld.CurrentScene() = ResourceManager::GetInstance().Load<Scene>(m_editorSelectedScene.GetPath());
 
-		pieWorld.m_inputs = ToRemove::SetupGameInputs();
+		pieWorld.m_inputs = std::make_shared<SvApp::InputManager::InputBindings>();
+		//pieWorld.m_inputs = ToRemove::SetupGameInputs();
 		pieWorld.SetCamera(pieWorld.GetFirstCamera());
 		pieWorld.SetInputs();
 		pieWorld.BakeLighting();
 
 		//init
 		m_gameInstance->Init(m_PIEWorld);
+		pieWorld.m_owningGameInstance = m_gameInstance.get();
 
 		luaContext.Start();
 		return CHECK(luaContext.IsValid(), "Failed to start lua context");
@@ -361,11 +361,8 @@ namespace SvEditor::Core
 			return false;
 
 		//update editorWorld level. Dont bcs change back
-		if (m_gameInstance)
-			m_editorSelectedScene = m_PIEWorld.lock()->CurrentScene();
-
-		//m_editorWorld->CurrentScene() = destination;
-		//dont update selected editor scene
+		if (!m_gameInstance)
+			m_editorSelectedScene = m_editorWorld->CurrentScene();
 
 		return true;
 	}

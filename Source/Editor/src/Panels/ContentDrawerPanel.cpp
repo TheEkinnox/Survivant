@@ -236,6 +236,7 @@ namespace SvEditor::Panels
         {
             auto& set = extensions[rr.GetRegisteredTypeName<ITexture>()];
             set.insert(".png");
+            set.insert(".jpg");
         }
         {
             auto& set = extensions[rr.GetRegisteredTypeName<Scene>()];

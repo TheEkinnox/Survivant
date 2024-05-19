@@ -10,12 +10,12 @@
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 
+using namespace SvApp::Core;
+
 namespace SvEditor::Panels
 {
 	GamePanel::GamePanel()
 	{
-		using namespace SvApp::Core;
-
 		m_name = NAME; 
 
 		m_buttons.m_buttons.reserve(3);
@@ -60,7 +60,10 @@ namespace SvEditor::Panels
 				flags = ERenderFlags(flags | DefaultInputs);
 
 			if (IsWindowDifferentSize(m_imageSize))
+			{
 				m_onResize.Invoke(m_imageSize);
+				m_image.SetTexture(m_world->m_renderingContext->GetTextureId(RenderingContext::ETextureType::COLOR));
+			}
 
 			m_buttons.DisplayAndUpdatePanel();
 			m_image.DisplayAndUpdatePanel();

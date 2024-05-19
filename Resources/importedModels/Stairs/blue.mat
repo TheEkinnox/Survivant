@@ -1,0 +1,19 @@
+{
+    "shader": {
+        "path": "shaders/Unlit.glsl"
+    },
+    "properties": [
+        {
+            "name": "u_tint",
+            "type": 7,
+            "value": "{0.831224,0.821679,0.813687,1}"
+        },
+        {
+            "name": "u_diffuse",
+            "type": 10,
+            "value": {
+                "path": "importedModels/Stairs/germany010b.jpg"
+            }
+        }
+    ]
+}
