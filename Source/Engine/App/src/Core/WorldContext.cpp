@@ -5,30 +5,13 @@
 #include "SurvivantApp/Core/IEngine.h"
 #include "SurvivantApp/Core/TempDefaultScene.h"
 
-
 namespace SvApp::Core
 {
     void WorldContext::BeginPlay()
     {
         using namespace ToRemove;
 
-
-        //TODO : Save resource ref in begin play
-        //static int i = 0;
-        //if (i == 0)
-        //{
-        //ToRemove::MakeScene(*CurrentScene());
-        //CurrentScene()->Save("assets/scenes/DefaultScene.scn");
-            //i++;
-        //}
-        //else
-        //{
-        //    CurrentScene()->Save("assets/scenes/TestScene1.scn");
-        //}
-
-        //CurrentScene()->Clear();
-        //CurrentScene()->Save("assets/scenes/EmptyScene.scn");
-
+        CurrentScene().Export(true);
         TestLevelBeginPlay(*CurrentScene());
     }
 
