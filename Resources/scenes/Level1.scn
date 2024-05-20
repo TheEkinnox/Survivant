@@ -2,67 +2,187 @@
     "entities": 33,
     "components": [
         {
-            "type": "Tag",
+            "type": "Hierarchy",
             "data": [
                 {
-                    "owner": 1,
-                    "data": "Indicator"
+                    "owner": 2,
+                    "data": {
+                        "parent": 1
+                    }
                 },
                 {
-                    "owner": 9,
-                    "data": "Spawn"
+                    "owner": 1,
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
+                },
+                {
+                    "owner": 3,
+                    "data": {
+                        "parent": 1
+                    }
+                },
+                {
+                    "owner": 4,
+                    "data": {
+                        "parent": 1
+                    }
+                },
+                {
+                    "owner": 6,
+                    "data": {
+                        "parent": 5
+                    }
                 },
                 {
                     "owner": 5,
-                    "data": "Base"
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
+                },
+                {
+                    "owner": 7,
+                    "data": {
+                        "parent": 5
+                    }
+                },
+                {
+                    "owner": 8,
+                    "data": {
+                        "parent": 5
+                    }
+                },
+                {
+                    "owner": 9,
+                    "data": {
+                        "parent": 5
+                    }
+                },
+                {
+                    "owner": 10,
+                    "data": {
+                        "parent": 5
+                    }
+                },
+                {
+                    "owner": 12,
+                    "data": {
+                        "parent": 11
+                    }
                 },
                 {
                     "owner": 11,
-                    "data": "Start"
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
                 },
                 {
                     "owner": 13,
-                    "data": "Floor"
+                    "data": {
+                        "parent": 11
+                    }
+                },
+                {
+                    "owner": 14,
+                    "data": {
+                        "parent": 11
+                    }
+                },
+                {
+                    "owner": 15,
+                    "data": {
+                        "parent": 11
+                    }
+                },
+                {
+                    "owner": 16,
+                    "data": {
+                        "parent": 11
+                    }
+                },
+                {
+                    "owner": 17,
+                    "data": {
+                        "parent": 5
+                    }
+                },
+                {
+                    "owner": 19,
+                    "data": {
+                        "parent": 18
+                    }
                 },
                 {
                     "owner": 18,
-                    "data": "End"
-                },
-                {
-                    "owner": 22,
-                    "data": "Floor"
-                },
-                {
-                    "owner": 25,
-                    "data": "Wall1"
-                },
-                {
-                    "owner": 26,
-                    "data": "Wall3"
-                },
-                {
-                    "owner": 27,
-                    "data": "Wall2"
-                },
-                {
-                    "owner": 28,
-                    "data": "Wall3"
-                },
-                {
-                    "owner": 29,
-                    "data": "WALLS"
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
                 },
                 {
                     "owner": 30,
-                    "data": "PLAYER"
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
                 },
                 {
-                    "owner": 31,
-                    "data": "end"
+                    "owner": 21,
+                    "data": {
+                        "parent": 18
+                    }
                 },
                 {
-                    "owner": 32,
-                    "data": "goggle"
+                    "owner": 22,
+                    "data": {
+                        "parent": 18
+                    }
+                },
+                {
+                    "owner": 23,
+                    "data": {
+                        "parent": 18
+                    }
+                },
+                {
+                    "owner": 24,
+                    "data": {
+                        "parent": 5
+                    }
+                },
+                {
+                    "owner": 28,
+                    "data": {
+                        "parent": 29
+                    }
+                },
+                {
+                    "owner": 29,
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
+                },
+                {
+                    "owner": 27,
+                    "data": {
+                        "parent": 29
+                    }
+                },
+                {
+                    "owner": 26,
+                    "data": {
+                        "parent": 29
+                    }
+                },
+                {
+                    "owner": 25,
+                    "data": {
+                        "parent": 29
+                    }
+                },
+                {
+                    "owner": 20,
+                    "data": {
+                        "parent": 30
+                    }
                 }
             ]
         },
@@ -369,187 +489,119 @@
             ]
         },
         {
-            "type": "Hierarchy",
+            "type": "Tag",
             "data": [
                 {
-                    "owner": 2,
-                    "data": {
-                        "parent": 1
-                    }
-                },
-                {
                     "owner": 1,
-                    "data": {
-                        "parent": 18446744073709551615
-                    }
-                },
-                {
-                    "owner": 3,
-                    "data": {
-                        "parent": 1
-                    }
-                },
-                {
-                    "owner": 4,
-                    "data": {
-                        "parent": 1
-                    }
-                },
-                {
-                    "owner": 6,
-                    "data": {
-                        "parent": 5
-                    }
-                },
-                {
-                    "owner": 5,
-                    "data": {
-                        "parent": 18446744073709551615
-                    }
-                },
-                {
-                    "owner": 7,
-                    "data": {
-                        "parent": 5
-                    }
-                },
-                {
-                    "owner": 8,
-                    "data": {
-                        "parent": 5
-                    }
+                    "data": "Indicator"
                 },
                 {
                     "owner": 9,
-                    "data": {
-                        "parent": 5
-                    }
+                    "data": "Spawn"
                 },
                 {
-                    "owner": 10,
-                    "data": {
-                        "parent": 5
-                    }
-                },
-                {
-                    "owner": 12,
-                    "data": {
-                        "parent": 11
-                    }
+                    "owner": 5,
+                    "data": "Base"
                 },
                 {
                     "owner": 11,
-                    "data": {
-                        "parent": 18446744073709551615
-                    }
+                    "data": "Start"
                 },
                 {
                     "owner": 13,
-                    "data": {
-                        "parent": 11
-                    }
-                },
-                {
-                    "owner": 14,
-                    "data": {
-                        "parent": 11
-                    }
-                },
-                {
-                    "owner": 15,
-                    "data": {
-                        "parent": 11
-                    }
-                },
-                {
-                    "owner": 16,
-                    "data": {
-                        "parent": 11
-                    }
-                },
-                {
-                    "owner": 17,
-                    "data": {
-                        "parent": 5
-                    }
-                },
-                {
-                    "owner": 19,
-                    "data": {
-                        "parent": 18
-                    }
+                    "data": "Floor"
                 },
                 {
                     "owner": 18,
-                    "data": {
-                        "parent": 18446744073709551615
-                    }
-                },
-                {
-                    "owner": 30,
-                    "data": {
-                        "parent": 18446744073709551615
-                    }
-                },
-                {
-                    "owner": 21,
-                    "data": {
-                        "parent": 18
-                    }
+                    "data": "End"
                 },
                 {
                     "owner": 22,
-                    "data": {
-                        "parent": 18
-                    }
-                },
-                {
-                    "owner": 23,
-                    "data": {
-                        "parent": 18
-                    }
-                },
-                {
-                    "owner": 24,
-                    "data": {
-                        "parent": 5
-                    }
-                },
-                {
-                    "owner": 28,
-                    "data": {
-                        "parent": 29
-                    }
-                },
-                {
-                    "owner": 29,
-                    "data": {
-                        "parent": 18446744073709551615
-                    }
-                },
-                {
-                    "owner": 27,
-                    "data": {
-                        "parent": 29
-                    }
-                },
-                {
-                    "owner": 26,
-                    "data": {
-                        "parent": 29
-                    }
+                    "data": "Floor"
                 },
                 {
                     "owner": 25,
-                    "data": {
-                        "parent": 29
-                    }
+                    "data": "Wall1"
                 },
                 {
-                    "owner": 20,
-                    "data": {
-                        "parent": 30
-                    }
+                    "owner": 26,
+                    "data": "Wall3"
+                },
+                {
+                    "owner": 27,
+                    "data": "Wall2"
+                },
+                {
+                    "owner": 28,
+                    "data": "Wall3"
+                },
+                {
+                    "owner": 29,
+                    "data": "WALLS"
+                },
+                {
+                    "owner": 30,
+                    "data": "PLAYER"
+                },
+                {
+                    "owner": 31,
+                    "data": "end"
+                },
+                {
+                    "owner": 32,
+                    "data": "goggle"
+                }
+            ]
+        },
+        {
+            "type": "ScriptList",
+            "data": [
+                {
+                    "owner": 0,
+                    "data": []
+                },
+                {
+                    "owner": 30,
+                    "data": [
+                        {
+                            "name": "scripts.freeLook",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "mouse_sensitivity"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 0.005
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "rotation_speed"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Degree",
+                                            "data": 90.0
+                                        }
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "move_speed"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 3.0
+                                    }
+                                }
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -823,58 +875,6 @@
             ]
         },
         {
-            "type": "ScriptList",
-            "data": [
-                {
-                    "owner": 0,
-                    "data": []
-                },
-                {
-                    "owner": 30,
-                    "data": [
-                        {
-                            "name": "scripts.freeLook",
-                            "data": [
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "rotation_speed"
-                                    },
-                                    "value": {
-                                        "type": 7,
-                                        "data": {
-                                            "type": "Degree",
-                                            "data": 90.0
-                                        }
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "mouse_sensitivity"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 0.005
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "move_speed"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 3.0
-                                    }
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
             "type": "Camera",
             "data": [
                 {
@@ -884,7 +884,7 @@
                         "active": true,
                         "clear_mask": 7,
                         "clear_color": "{0,0,0,1}",
-                        "culling_mask": 255,
+                        "culling_mask": 1,
                         "perspective_fov": 90.0,
                         "perspective_near": 1.0,
                         "perspective_far": 50.0,
