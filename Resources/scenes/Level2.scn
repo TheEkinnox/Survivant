@@ -1,5 +1,5 @@
 {
-    "entities": 49,
+    "entities": 53,
     "components": [
         {
             "type": "Camera",
@@ -19,6 +19,54 @@
                         "orthographic_near": 0.0,
                         "orthographic_far": 0.0
                     }
+                }
+            ]
+        },
+        {
+            "type": "ScriptList",
+            "data": [
+                {
+                    "owner": 0,
+                    "data": [
+                        {
+                            "name": "scripts.freeLook",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "mouse_sensitivity"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 0.005
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "move_speed"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 3.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "rotation_speed"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Degree",
+                                            "data": 90.0
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -44,9 +92,9 @@
                 {
                     "owner": 2,
                     "data": {
-                        "position": "{0,0,-7}",
+                        "position": "{4,0,-17}",
                         "rotation": "{0,0,0,1}",
-                        "scale": "{3,1,3}"
+                        "scale": "{3,1,2}"
                     }
                 },
                 {
@@ -150,7 +198,7 @@
                     "data": {
                         "position": "{0,1,-10}",
                         "rotation": "{0,0,0,1}",
-                        "scale": "{13,3,1}"
+                        "scale": "{13,5,1}"
                     }
                 },
                 {
@@ -172,9 +220,9 @@
                 {
                     "owner": 18,
                     "data": {
-                        "position": "{-7,1,2.5}",
+                        "position": "{-7,5,-0.5}",
                         "rotation": "{0,0,0,1}",
-                        "scale": "{1,3,16}"
+                        "scale": "{1,3,20}"
                     }
                 },
                 {
@@ -182,7 +230,7 @@
                     "data": {
                         "position": "{7,1,-2.5}",
                         "rotation": "{0,0,0,1}",
-                        "scale": "{1,3,16}"
+                        "scale": "{1,5,16}"
                     }
                 },
                 {
@@ -300,17 +348,17 @@
                 {
                     "owner": 35,
                     "data": {
-                        "position": "{0,0,-15}",
+                        "position": "{0,1.5,-17}",
                         "rotation": "{0,0,0,1}",
-                        "scale": "{3,1,3}"
+                        "scale": "{3,2,1}"
                     }
                 },
                 {
                     "owner": 37,
                     "data": {
-                        "position": "{-5,0,-11}",
+                        "position": "{-4,0,-11}",
                         "rotation": "{0,0,0,1}",
-                        "scale": "{3,1,3}"
+                        "scale": "{3,1,5}"
                     }
                 },
                 {
@@ -340,9 +388,9 @@
                 {
                     "owner": 41,
                     "data": {
-                        "position": "{-7,1,0}",
+                        "position": "{-7,1,-5.5}",
                         "rotation": "{0,0,0,1}",
-                        "scale": "{1,3,5}"
+                        "scale": "{1,3,16}"
                     }
                 },
                 {
@@ -364,9 +412,9 @@
                 {
                     "owner": 44,
                     "data": {
-                        "position": "{0,-0.5,-2}",
+                        "position": "{4,-2,-2}",
                         "rotation": "{0,0,0,1}",
-                        "scale": "{13,2,1}"
+                        "scale": "{5,3,1}"
                     }
                 },
                 {
@@ -400,54 +448,376 @@
                         "rotation": "{0,0,0,1}",
                         "scale": "{1,3,3}"
                     }
+                },
+                {
+                    "owner": 49,
+                    "data": {
+                        "position": "{-7,1,0}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,5,21}"
+                    }
+                },
+                {
+                    "owner": 50,
+                    "data": {
+                        "position": "{0,0,-7}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{3,1,3}"
+                    }
+                },
+                {
+                    "owner": 51,
+                    "data": {
+                        "position": "{0,0,-17}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{3,1,7}"
+                    }
+                },
+                {
+                    "owner": 52,
+                    "data": {
+                        "position": "{0,0,-2}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{13,1,1}"
+                    }
                 }
             ]
         },
         {
-            "type": "ScriptList",
+            "type": "Tag",
             "data": [
                 {
-                    "owner": 0,
-                    "data": [
-                        {
-                            "name": "scripts.freeLook",
-                            "data": [
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "rotation_speed"
-                                    },
-                                    "value": {
-                                        "type": 7,
-                                        "data": {
-                                            "type": "Degree",
-                                            "data": 90.0
-                                        }
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "mouse_sensitivity"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 0.005
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "move_speed"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 3.0
-                                    }
-                                }
-                            ]
-                        }
-                    ]
+                    "owner": 20,
+                    "data": "stair1"
+                },
+                {
+                    "owner": 24,
+                    "data": "stair2"
+                },
+                {
+                    "owner": 13,
+                    "data": "STAIRS"
+                },
+                {
+                    "owner": 36,
+                    "data": "platforms"
+                }
+            ]
+        },
+        {
+            "type": "Hierarchy",
+            "data": [
+                {
+                    "owner": 7,
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
+                },
+                {
+                    "owner": 2,
+                    "data": {
+                        "parent": 36
+                    }
+                },
+                {
+                    "owner": 36,
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
+                },
+                {
+                    "owner": 1,
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
+                },
+                {
+                    "owner": 3,
+                    "data": {
+                        "parent": 7
+                    }
+                },
+                {
+                    "owner": 4,
+                    "data": {
+                        "parent": 7
+                    }
+                },
+                {
+                    "owner": 5,
+                    "data": {
+                        "parent": 7
+                    }
+                },
+                {
+                    "owner": 6,
+                    "data": {
+                        "parent": 7
+                    }
+                },
+                {
+                    "owner": 33,
+                    "data": {
+                        "parent": 24
+                    }
+                },
+                {
+                    "owner": 24,
+                    "data": {
+                        "parent": 13
+                    }
+                },
+                {
+                    "owner": 13,
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
+                },
+                {
+                    "owner": 9,
+                    "data": {
+                        "parent": 8
+                    }
+                },
+                {
+                    "owner": 8,
+                    "data": {
+                        "parent": 7
+                    }
+                },
+                {
+                    "owner": 10,
+                    "data": {
+                        "parent": 8
+                    }
+                },
+                {
+                    "owner": 11,
+                    "data": {
+                        "parent": 8
+                    }
+                },
+                {
+                    "owner": 12,
+                    "data": {
+                        "parent": 8
+                    }
+                },
+                {
+                    "owner": 32,
+                    "data": {
+                        "parent": 28
+                    }
+                },
+                {
+                    "owner": 28,
+                    "data": {
+                        "parent": 28
+                    }
+                },
+                {
+                    "owner": 15,
+                    "data": {
+                        "parent": 14
+                    }
+                },
+                {
+                    "owner": 14,
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
+                },
+                {
+                    "owner": 16,
+                    "data": {
+                        "parent": 14
+                    }
+                },
+                {
+                    "owner": 17,
+                    "data": {
+                        "parent": 14
+                    }
+                },
+                {
+                    "owner": 18,
+                    "data": {
+                        "parent": 14
+                    }
+                },
+                {
+                    "owner": 19,
+                    "data": {
+                        "parent": 14
+                    }
+                },
+                {
+                    "owner": 21,
+                    "data": {
+                        "parent": 24
+                    }
+                },
+                {
+                    "owner": 20,
+                    "data": {
+                        "parent": 13
+                    }
+                },
+                {
+                    "owner": 22,
+                    "data": {
+                        "parent": 20
+                    }
+                },
+                {
+                    "owner": 23,
+                    "data": {
+                        "parent": 20
+                    }
+                },
+                {
+                    "owner": 25,
+                    "data": {
+                        "parent": 24
+                    }
+                },
+                {
+                    "owner": 26,
+                    "data": {
+                        "parent": 24
+                    }
+                },
+                {
+                    "owner": 27,
+                    "data": {
+                        "parent": 20
+                    }
+                },
+                {
+                    "owner": 29,
+                    "data": {
+                        "parent": 28
+                    }
+                },
+                {
+                    "owner": 30,
+                    "data": {
+                        "parent": 28
+                    }
+                },
+                {
+                    "owner": 31,
+                    "data": {
+                        "parent": 28
+                    }
+                },
+                {
+                    "owner": 34,
+                    "data": {
+                        "parent": 8
+                    }
+                },
+                {
+                    "owner": 37,
+                    "data": {
+                        "parent": 36
+                    }
+                },
+                {
+                    "owner": 35,
+                    "data": {
+                        "parent": 36
+                    }
+                },
+                {
+                    "owner": 40,
+                    "data": {
+                        "parent": 39
+                    }
+                },
+                {
+                    "owner": 39,
+                    "data": {
+                        "parent": 38
+                    }
+                },
+                {
+                    "owner": 38,
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
+                },
+                {
+                    "owner": 41,
+                    "data": {
+                        "parent": 39
+                    }
+                },
+                {
+                    "owner": 42,
+                    "data": {
+                        "parent": 39
+                    }
+                },
+                {
+                    "owner": 43,
+                    "data": {
+                        "parent": 39
+                    }
+                },
+                {
+                    "owner": 44,
+                    "data": {
+                        "parent": 39
+                    }
+                },
+                {
+                    "owner": 45,
+                    "data": {
+                        "parent": 38
+                    }
+                },
+                {
+                    "owner": 46,
+                    "data": {
+                        "parent": 38
+                    }
+                },
+                {
+                    "owner": 47,
+                    "data": {
+                        "parent": 38
+                    }
+                },
+                {
+                    "owner": 48,
+                    "data": {
+                        "parent": 38
+                    }
+                },
+                {
+                    "owner": 49,
+                    "data": {
+                        "parent": 14
+                    }
+                },
+                {
+                    "owner": 50,
+                    "data": {
+                        "parent": 36
+                    }
+                },
+                {
+                    "owner": 51,
+                    "data": {
+                        "parent": 36
+                    }
+                },
+                {
+                    "owner": 52,
+                    "data": {
+                        "parent": 39
+                    }
                 }
             ]
         },
@@ -860,320 +1230,50 @@
                             "path": "materials/blue.mat"
                         }
                     }
-                }
-            ]
-        },
-        {
-            "type": "Hierarchy",
-            "data": [
+                },
                 {
-                    "owner": 7,
+                    "owner": 49,
                     "data": {
-                        "parent": 18446744073709551615
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/blue.mat"
+                        }
                     }
                 },
                 {
-                    "owner": 2,
+                    "owner": 50,
                     "data": {
-                        "parent": 36
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/magenta.mat"
+                        }
                     }
                 },
                 {
-                    "owner": 36,
+                    "owner": 51,
                     "data": {
-                        "parent": 18446744073709551615
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/magenta.mat"
+                        }
                     }
                 },
                 {
-                    "owner": 1,
+                    "owner": 52,
                     "data": {
-                        "parent": 18446744073709551615
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/blue.mat"
+                        }
                     }
-                },
-                {
-                    "owner": 3,
-                    "data": {
-                        "parent": 7
-                    }
-                },
-                {
-                    "owner": 4,
-                    "data": {
-                        "parent": 7
-                    }
-                },
-                {
-                    "owner": 5,
-                    "data": {
-                        "parent": 7
-                    }
-                },
-                {
-                    "owner": 6,
-                    "data": {
-                        "parent": 7
-                    }
-                },
-                {
-                    "owner": 33,
-                    "data": {
-                        "parent": 24
-                    }
-                },
-                {
-                    "owner": 24,
-                    "data": {
-                        "parent": 13
-                    }
-                },
-                {
-                    "owner": 13,
-                    "data": {
-                        "parent": 18446744073709551615
-                    }
-                },
-                {
-                    "owner": 9,
-                    "data": {
-                        "parent": 8
-                    }
-                },
-                {
-                    "owner": 8,
-                    "data": {
-                        "parent": 7
-                    }
-                },
-                {
-                    "owner": 10,
-                    "data": {
-                        "parent": 8
-                    }
-                },
-                {
-                    "owner": 11,
-                    "data": {
-                        "parent": 8
-                    }
-                },
-                {
-                    "owner": 12,
-                    "data": {
-                        "parent": 8
-                    }
-                },
-                {
-                    "owner": 32,
-                    "data": {
-                        "parent": 28
-                    }
-                },
-                {
-                    "owner": 28,
-                    "data": {
-                        "parent": 28
-                    }
-                },
-                {
-                    "owner": 15,
-                    "data": {
-                        "parent": 14
-                    }
-                },
-                {
-                    "owner": 14,
-                    "data": {
-                        "parent": 18446744073709551615
-                    }
-                },
-                {
-                    "owner": 16,
-                    "data": {
-                        "parent": 14
-                    }
-                },
-                {
-                    "owner": 17,
-                    "data": {
-                        "parent": 14
-                    }
-                },
-                {
-                    "owner": 18,
-                    "data": {
-                        "parent": 14
-                    }
-                },
-                {
-                    "owner": 19,
-                    "data": {
-                        "parent": 14
-                    }
-                },
-                {
-                    "owner": 21,
-                    "data": {
-                        "parent": 24
-                    }
-                },
-                {
-                    "owner": 20,
-                    "data": {
-                        "parent": 13
-                    }
-                },
-                {
-                    "owner": 22,
-                    "data": {
-                        "parent": 20
-                    }
-                },
-                {
-                    "owner": 23,
-                    "data": {
-                        "parent": 20
-                    }
-                },
-                {
-                    "owner": 25,
-                    "data": {
-                        "parent": 24
-                    }
-                },
-                {
-                    "owner": 26,
-                    "data": {
-                        "parent": 24
-                    }
-                },
-                {
-                    "owner": 27,
-                    "data": {
-                        "parent": 20
-                    }
-                },
-                {
-                    "owner": 29,
-                    "data": {
-                        "parent": 28
-                    }
-                },
-                {
-                    "owner": 30,
-                    "data": {
-                        "parent": 28
-                    }
-                },
-                {
-                    "owner": 31,
-                    "data": {
-                        "parent": 28
-                    }
-                },
-                {
-                    "owner": 34,
-                    "data": {
-                        "parent": 8
-                    }
-                },
-                {
-                    "owner": 37,
-                    "data": {
-                        "parent": 36
-                    }
-                },
-                {
-                    "owner": 35,
-                    "data": {
-                        "parent": 36
-                    }
-                },
-                {
-                    "owner": 40,
-                    "data": {
-                        "parent": 39
-                    }
-                },
-                {
-                    "owner": 39,
-                    "data": {
-                        "parent": 38
-                    }
-                },
-                {
-                    "owner": 38,
-                    "data": {
-                        "parent": 18446744073709551615
-                    }
-                },
-                {
-                    "owner": 41,
-                    "data": {
-                        "parent": 39
-                    }
-                },
-                {
-                    "owner": 42,
-                    "data": {
-                        "parent": 39
-                    }
-                },
-                {
-                    "owner": 43,
-                    "data": {
-                        "parent": 39
-                    }
-                },
-                {
-                    "owner": 44,
-                    "data": {
-                        "parent": 39
-                    }
-                },
-                {
-                    "owner": 45,
-                    "data": {
-                        "parent": 38
-                    }
-                },
-                {
-                    "owner": 46,
-                    "data": {
-                        "parent": 38
-                    }
-                },
-                {
-                    "owner": 47,
-                    "data": {
-                        "parent": 38
-                    }
-                },
-                {
-                    "owner": 48,
-                    "data": {
-                        "parent": 38
-                    }
-                }
-            ]
-        },
-        {
-            "type": "Tag",
-            "data": [
-                {
-                    "owner": 20,
-                    "data": "stair1"
-                },
-                {
-                    "owner": 24,
-                    "data": "stair2"
-                },
-                {
-                    "owner": 13,
-                    "data": "STAIRS"
-                },
-                {
-                    "owner": 36,
-                    "data": "platforms"
                 }
             ]
         }
