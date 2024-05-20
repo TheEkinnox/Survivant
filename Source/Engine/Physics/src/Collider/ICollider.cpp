@@ -10,10 +10,12 @@ namespace SvPhysics
 {
     void ICollider::Refresh(const LibMath::Transform*)
     {
-        m_pxShape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, m_isTrigger);
-        m_pxShape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, !m_isTrigger);
+        using namespace physx;
 
-        physx::PxMaterial* mat = &PhysicsContext::GetInstance().GetMaterial(m_material.GetOrDefault());
+        const PxShapeFlags flags = m_pxShape->getFlags() & ~(PxShapeFlag::eTRIGGER_SHAPE | PxShapeFlag::eSIMULATION_SHAPE);
+        m_pxShape->setFlags(flags | (m_isTrigger ? PxShapeFlag::eTRIGGER_SHAPE : PxShapeFlag::eSIMULATION_SHAPE));
+
+        PxMaterial* mat = &PhysicsContext::GetInstance().GetMaterial(m_material.GetOrDefault());
         m_pxShape->setMaterials(&mat, 1);
     }
 
