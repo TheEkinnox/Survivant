@@ -108,7 +108,7 @@ namespace SvRendering::Components
         if (!CHECK(it != p_json.MemberEnd() && it->value.IsUint(), "Unable to deserialize camera component's culling mask"))
             return false;
 
-        m_cullingMask = static_cast<uint8_t>(it->value.GetUint());
+        m_cullingMask = static_cast<LayerMask>(it->value.GetUint());
 
         it = p_json.FindMember("perspective_fov");
 
