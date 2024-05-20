@@ -76,8 +76,8 @@ namespace SvApp::Core
         const LibMath::Transform& p_trans, 
         const Vec2& p_move, const Vec2& p_rotation, const float p_dt)
     {
-        constexpr float  CAM_MOVE_SPEED = 3.f;
-        constexpr Radian CAM_ROTATION_SPEED = 90_deg;
+        constexpr float  CAM_MOVE_SPEED = 10.f;
+        constexpr Radian CAM_ROTATION_SPEED = 180_deg;
 
         Vector3    newPos = p_trans.getPosition();
         Quaternion newRot = p_trans.getRotation();
