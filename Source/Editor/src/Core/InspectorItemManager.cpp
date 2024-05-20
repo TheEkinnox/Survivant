@@ -230,7 +230,8 @@ namespace SvEditor::Core
 						entity.Get<CameraComponent>()->GetPerspectiveFar()); },
 					[entity = p_entity](const Vector2& p_val) mutable {
 						entity.Get<CameraComponent>()->SetPerspectiveNear(p_val.m_x);
-						entity.Get<CameraComponent>()->SetPerspectiveFar(p_val.m_y); }
+						entity.Get<CameraComponent>()->SetPerspectiveFar(p_val.m_y); },
+					0.001f, FLT_MAX
 				))
 			}));
 
