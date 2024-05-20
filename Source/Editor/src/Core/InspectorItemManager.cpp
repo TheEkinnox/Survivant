@@ -595,9 +595,10 @@ namespace SvEditor::Core
 
 	namespace
 	{
-		void GetPropertyItems(
-			const ResourceRef<::Material>& p_material, PanelResourceDisplay::Items& p_items)
+		PanelResourceDisplay::Items GetPropertyItems(
+			const ResourceRef<::Material>& p_material)
 		{
+			PanelResourceDisplay::Items items;
 			for (auto& [name, property] : p_material->GetProperties())
 			{
 				auto& [type, value] = property;
@@ -606,28 +607,28 @@ namespace SvEditor::Core
 				case SvRendering::Enums::EShaderDataType::UNKNOWN:
 					break;
 				case SvRendering::Enums::EShaderDataType::BOOL:
-					p_items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelCheckbox));
+					items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelCheckbox));
 					break;
 				case SvRendering::Enums::EShaderDataType::INT:
-					p_items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelIntInput));
+					items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelIntInput));
 					break;
 				case SvRendering::Enums::EShaderDataType::UNSIGNED_INT:
-					p_items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelUInt32Input));
+					items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelUInt32Input));
 					break;
 				case SvRendering::Enums::EShaderDataType::FLOAT:
-					p_items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelFloatInput));
+					items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelFloatInput));
 					break;
 				case SvRendering::Enums::EShaderDataType::VEC2:
-					p_items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelVec2Input));
+					items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelVec2Input));
 					break;
 				case SvRendering::Enums::EShaderDataType::VEC3:
-					p_items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelVec3Input));
+					items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelVec3Input));
 					break;
 				case SvRendering::Enums::EShaderDataType::VEC4: //Assums to be a color
-					p_items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelColorInput));
+					items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelColorInput));
 					break;
-				case SvRendering::Enums::EShaderDataType::TEXTURE: //uses ref instead of copy
-					p_items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelResourceSelector<ITexture>));
+				case SvRendering::Enums::EShaderDataType::TEXTURE:
+					items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelResourceSelector<ITexture>));
 					break;
 				case SvRendering::Enums::EShaderDataType::MAT3:
 				case SvRendering::Enums::EShaderDataType::MAT4:
@@ -636,6 +637,8 @@ namespace SvEditor::Core
 					break;
 				}
 			}
+
+			return items;
 		}
 
 		void CreateResourceItems(
@@ -650,12 +653,13 @@ namespace SvEditor::Core
 					},
 					[p_mat, p_resourceDisplay](PanelResourceSelector<IShader>::CallbackParams p_params) {
 						p_mat->SetShader(p_params); 
-						CreateResourceItems(p_resourceDisplay, p_mat);
+						p_mat.Export(true);
+						p_resourceDisplay.lock()->SetItems(GetPropertyItems(p_mat), 1);
 					})
 				});
 
-			GetPropertyItems(p_mat, items);
 			p_resourceDisplay.lock()->SetItems(items);
+			p_resourceDisplay.lock()->SetItems(GetPropertyItems(p_mat), 1);
 		}
 	}
 

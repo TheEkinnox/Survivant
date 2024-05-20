@@ -435,12 +435,12 @@ namespace SvEditor::Core
     {
         //TODO: add save boolean here
         std::srand((int)std::time(0));
-        auto val = std::rand();
-        if (val % 20 == 0)
-        {
+        //auto val = std::rand();
+        //if (val % 20 == 0)
+        //{
             CreateSavePanel();
             SvApp::Window::WindowCloseRequest::InterceptCloseRequest();
-        }
+        //}
     }
 
     std::shared_ptr<Panel> EditorUI::CreateSavePanel()

@@ -30,15 +30,15 @@ namespace SvEditor::Panels
     }
 
     Panel::ERenderFlags SavePanel::Render()
-    {
-        if (ImGui::Begin(m_name.c_str(), &m_open))
+    {   
+        ImGui::OpenPopup(m_name.c_str());
+
+        if (ImGui::BeginPopupModal(m_name.c_str(), &m_open))
         {
-            //buttons or 'x' can close
             m_options.DisplayAndUpdatePanel();
+            ImGui::EndPopup();
         }
 
-
-        ImGui::End();
 
         ERenderFlags flags = ERenderFlags();
         if (!m_open)
