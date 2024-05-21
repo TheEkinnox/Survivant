@@ -31,14 +31,19 @@
 
 #include "SurvivantApp/Core/IEngine.h"
 
+#include "SurvivantRendering/Components/ModelComponent.h"
+
 namespace SvEditor::Core
 {
     using namespace MenuItems;
     using namespace PanelItems;
 
+    using namespace LibMath;
+    using namespace SvCore::ECS;
+    using namespace SvRendering::Components;
+
     EditorUI::EditorUI() :
         m_main(std::make_shared<MainPanel>()),
-        m_currentPanels(),
         m_selected(nullptr)
     {
         IMGUI_CHECKVERSION();
@@ -210,6 +215,38 @@ namespace SvEditor::Core
         m_main->ForceFocus(ScenePanel::NAME);
     }
 
+    namespace
+    {
+        void SetFocusPerspective(
+            const CameraComponent& p_cam, Transform& p_camTransform, const EntityHandle& p_entity, const float p_spacing = 0.f)
+        {
+            const Transform* entityTransform = p_entity.Get<Transform>();
+            const Vector3 entityPos = entityTransform ? entityTransform->getWorldPosition() : Vector3::zero();
+
+            float boundsSize;
+
+            if (const ModelComponent* model = p_entity.Get<ModelComponent>(); model && model->m_model)
+            {
+                const auto [min, max] = entityTransform ?
+                    TransformBoundingBox(model->m_model->GetBoundingBox(), entityTransform->getWorldMatrix())
+                    : model->m_model->GetBoundingBox();
+
+                boundsSize = min.distanceFrom(max);
+            }
+            else if (entityTransform)
+            {
+                boundsSize = entityTransform->getWorldScale().magnitude();
+            }
+            else
+            {
+                return; // No model and no transform - Nothing to focus
+            }
+
+            const float minDistance = (boundsSize + p_spacing) / sin(p_cam.GetFovY() * .5f);
+            p_camTransform.setPosition(entityPos + p_camTransform.forward() * minDistance);
+        }
+    }
+
     MenuBar EditorUI::CreateMenuBar(std::weak_ptr<WorldContext> p_world)
     {
         using namespace SvApp;
@@ -267,9 +304,9 @@ namespace SvEditor::Core
             menu2.m_items.emplace_back(std::move(menu3));
         }
 
-        Menu& menu4 = menuList.emplace_back("Scene");
+        Menu& sceneMenu = menuList.emplace_back("Scene");
 
-        menu4.m_items.emplace_back(std::make_unique<MenuButton>(MenuButton(
+        sceneMenu.m_items.emplace_back(std::make_unique<MenuButton>(MenuButton(
             "Save",
             [p_world](char)
             {
@@ -287,7 +324,7 @@ namespace SvEditor::Core
             *m_inputs
         )));
 
-        menu4.m_items.emplace_back(std::make_unique<MenuButton>(MenuButton(
+        sceneMenu.m_items.emplace_back(std::make_unique<MenuButton>(MenuButton(
             "Reload",
             [p_world](char)
             {
@@ -314,7 +351,72 @@ namespace SvEditor::Core
                 if (const auto& scene = p_world.lock()->CurrentScene())
                     scene->Create();
             },
-            InputManager::KeyboardKeyType(EKey::N, EKeyState::PRESSED, EInputModifier::MOD_CONTROL),
+            InputManager::KeyboardKeyType(
+                EKey::N, EKeyState::PRESSED,
+                static_cast<EInputModifier>(EInputModifier::MOD_CONTROL | EInputModifier::MOD_SHIFT)
+            ),
+            *m_inputs
+        ));
+
+        entityMenu.m_items.emplace_back(std::make_unique<MenuButton>(
+            "Add New Child",
+            [p_world](char)
+            {
+                const auto world = p_world.lock();
+
+                if (Scene* scene = world->CurrentScene().Get())
+                {
+                    const EntityHandle entity(scene, world->m_renderingContext->s_editorSelectedEntity);
+                    (void)(entity ? entity.AddChild() : scene->Create());
+                }
+            },
+            InputManager::KeyboardKeyType(
+                EKey::N, EKeyState::PRESSED,
+                static_cast<EInputModifier>(EInputModifier::MOD_CONTROL | EInputModifier::MOD_ALT)
+            ),
+            *m_inputs
+        ));
+
+        entityMenu.m_items.emplace_back(std::make_unique<MenuButton>(
+            "Add New Parent",
+            [p_world](char)
+            {
+                const auto world = p_world.lock();
+
+                if (Scene* scene = world->CurrentScene().Get())
+                {
+                    const EntityHandle parent = scene->Create();
+                    EntityHandle       entity(scene, world->m_renderingContext->s_editorSelectedEntity);
+
+                    if (entity)
+                        entity.SetParent(parent, true);
+                }
+            },
+            InputManager::KeyboardKeyType(
+                EKey::N, EKeyState::PRESSED,
+                static_cast<EInputModifier>(EInputModifier::MOD_ALT | EInputModifier::MOD_SHIFT)
+            ),
+            *m_inputs
+        ));
+
+        entityMenu.m_items.emplace_back(std::make_unique<MenuButton>(
+            "Focus selected",
+            [p_world](char)
+            {
+                using namespace LibMath;
+                using namespace SvCore::ECS;
+                using namespace SvRendering::Components;
+
+                const auto world               = p_world.lock();
+                const auto [cam, camTransform] = world->m_renderingContext->GetCameraInfo();
+
+                if (!cam || !camTransform)
+                    return;
+
+                const EntityHandle entity(world->CurrentScene().Get(), world->m_renderingContext->s_editorSelectedEntity);
+                SetFocusPerspective(*cam, *camTransform, entity);
+            },
+            InputManager::KeyboardKeyType(EKey::F, EKeyState::PRESSED, EInputModifier()),
             *m_inputs
         ));
 
@@ -322,9 +424,9 @@ namespace SvEditor::Core
             "Duplicate selected",
             [p_world](char)
             {
-                const auto                      world = p_world.lock();
-                SvCore::ECS::Scene*             scene = world->CurrentScene().Get();
-                const SvCore::ECS::EntityHandle entity(scene, world->m_renderingContext->s_editorSelectedEntity);
+                const auto         world = p_world.lock();
+                Scene*             scene = world->CurrentScene().Get();
+                const EntityHandle entity(scene, world->m_renderingContext->s_editorSelectedEntity);
                 (void)entity.Copy();
             },
             InputManager::KeyboardKeyType(EKey::D, EKeyState::PRESSED, EInputModifier::MOD_CONTROL),
@@ -335,60 +437,60 @@ namespace SvEditor::Core
             "Remove selected",
             [p_world](char)
             {
-                const auto                      world = p_world.lock();
-                SvCore::ECS::Scene*             scene = world->CurrentScene().Get();
-                SvCore::ECS::EntityHandle entity(scene, world->m_renderingContext->s_editorSelectedEntity);
+                const auto   world = p_world.lock();
+                Scene*       scene = world->CurrentScene().Get();
+                EntityHandle entity(scene, world->m_renderingContext->s_editorSelectedEntity);
                 entity.Destroy();
             },
             InputManager::KeyboardKeyType(EKey::DEL, EKeyState::PRESSED, EInputModifier()),
             *m_inputs
         ));
 
-        Menu& menu5 = menuList.emplace_back("Panels");
+        Menu& panelsMenu = menuList.emplace_back("Panels");
 
-        menu5.m_items.emplace_back(std::make_unique<MenuButton>(
+        panelsMenu.m_items.emplace_back(std::make_unique<MenuButton>(
             "Build",
             [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateBuildPanel); },
             InputManager::KeyboardKeyType(EKey::B, EKeyState::PRESSED, EInputModifier::MOD_ALT),
             *m_inputs
         ));
 
-        menu5.m_items.emplace_back(std::make_unique<MenuButton>(
+        panelsMenu.m_items.emplace_back(std::make_unique<MenuButton>(
             "Console",
             [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateConsolePanel); },
             InputManager::KeyboardKeyType(EKey::C, EKeyState::PRESSED, EInputModifier::MOD_ALT),
             *m_inputs
         ));
 
-        menu5.m_items.emplace_back(std::make_unique<MenuButton>(
+        panelsMenu.m_items.emplace_back(std::make_unique<MenuButton>(
             "Assets",
             [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateContentPanel); },
             InputManager::KeyboardKeyType(EKey::A, EKeyState::PRESSED, EInputModifier::MOD_ALT),
             *m_inputs
         ));
 
-        menu5.m_items.emplace_back(std::make_unique<MenuButton>(
+        panelsMenu.m_items.emplace_back(std::make_unique<MenuButton>(
             "Game",
             [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateGamePanel); },
             InputManager::KeyboardKeyType(EKey::G, EKeyState::PRESSED, EInputModifier::MOD_ALT),
             *m_inputs
         ));
 
-        menu5.m_items.emplace_back(std::make_unique<MenuButton>(
+        panelsMenu.m_items.emplace_back(std::make_unique<MenuButton>(
             "Hierarchy",
             [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateHierarchyPanel); },
             InputManager::KeyboardKeyType(EKey::H, EKeyState::PRESSED, EInputModifier::MOD_ALT),
             *m_inputs
         ));
 
-        menu5.m_items.emplace_back(std::make_unique<MenuButton>(
+        panelsMenu.m_items.emplace_back(std::make_unique<MenuButton>(
             "Inspector",
             [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateInspectorPanel); },
             InputManager::KeyboardKeyType(EKey::I, EKeyState::PRESSED, EInputModifier::MOD_ALT),
             *m_inputs
         ));
 
-        menu5.m_items.emplace_back(std::make_unique<MenuButton>(
+        panelsMenu.m_items.emplace_back(std::make_unique<MenuButton>(
             "Scene",
             [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateScenePanel); },
             InputManager::KeyboardKeyType(EKey::S, EKeyState::PRESSED, EInputModifier::MOD_ALT),

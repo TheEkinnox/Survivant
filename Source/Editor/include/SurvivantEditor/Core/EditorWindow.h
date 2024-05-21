@@ -19,7 +19,7 @@ namespace SvEditor::Core
 		using WorldContext = SvApp::Core::WorldContext;
 
 		EditorWindow();
-		~EditorWindow() = default;
+		~EditorWindow() override = default;
 
 		void Update() override;
 		void RenderUI();
@@ -36,7 +36,7 @@ namespace SvEditor::Core
 	private:
 		//init on creation
 		std::unique_ptr<EditorUI>	m_ui;
-		bool						m_shouldClose = false; 
+		bool						m_shouldClose = false;
 
 		std::shared_ptr<SvApp::InputManager::InputBindings>		m_inputs;
 	};

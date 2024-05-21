@@ -35,12 +35,12 @@ namespace SvEditor::Core
 		using WorldContext = SvApp::Core::WorldContext;
 
 		EditorUI();
-		~EditorUI() = default; 
+		~EditorUI() override = default;
 
 		void InitWindow(SvApp::Window* p_window);
 
 		void InitGamePanel(
-			const WorldContext::WorldCreator& p_worldCreator, 
+			const WorldContext::WorldCreator& p_worldCreator,
 			const std::array<std::function<void()>, 3> p_playPauseFrameCallbacks);
 		void InitScenePanel(std::weak_ptr<WorldContext> p_world);
 		void InitHierarchyPanel(std::weak_ptr<WorldContext> p_world);
