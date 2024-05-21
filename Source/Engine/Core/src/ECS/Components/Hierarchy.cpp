@@ -18,11 +18,6 @@ namespace SvCore::ECS
         return m_parent;
     }
 
-    void HierarchyComponent::SetParent(const Entity p_parent)
-    {
-        m_parent = p_parent;
-    }
-
     Entity HierarchyComponent::GetFirstChild() const
     {
         return m_firstChild;
@@ -133,6 +128,12 @@ namespace SvCore::ECS
         Scene* scene = p_entity.GetScene();
         ASSERT(scene);
 
+        if (p_newValue.m_parent == p_entity)
+            p_newValue.m_parent = p_component.m_parent;
+
+        p_newValue.m_firstChild = p_component.m_firstChild;
+        p_newValue.m_childCount = p_component.m_childCount;
+
         EntityHandle parent(scene, p_component.m_parent);
         EntityHandle nextSibling(scene, p_component.m_nextSibling);
         EntityHandle prevSibling(scene, p_component.m_previousSibling);
@@ -153,11 +154,8 @@ namespace SvCore::ECS
 
         // Technically the component gets overriden but events, which get called after this, might need the info to be accurate
         p_component.m_parent          = NULL_ENTITY;
-        p_component.m_nextSibling     = NULL_ENTITY;
-        p_component.m_previousSibling = NULL_ENTITY;
-
-        p_newValue.m_firstChild = p_component.m_firstChild;
-        p_newValue.m_childCount = p_component.m_childCount;
+        p_component.m_nextSibling     = p_newValue.m_nextSibling     = NULL_ENTITY;
+        p_component.m_previousSibling = p_newValue.m_previousSibling = NULL_ENTITY;
     }
 
     template <>
@@ -166,16 +164,16 @@ namespace SvCore::ECS
         Scene* scene = p_entity.GetScene();
         ASSERT(scene);
 
+        if (p_component.m_parent == p_entity)
+            p_component.m_parent = NULL_ENTITY;
+
         EntityHandle parent(scene, p_component.m_parent);
         EntityHandle firstChild(scene, p_component.m_firstChild);
 
-        if (!parent)
+        if (HierarchyComponent* parentHierarchy = parent.Get<HierarchyComponent>())
         {
-            p_component.m_parent = NULL_ENTITY;
-        }
-        else if (HierarchyComponent* parentHierarchy = parent.Get<HierarchyComponent>())
-        {
-            EntityHandle nextSibling(scene, p_component.m_nextSibling = parentHierarchy->m_firstChild);
+            p_component.m_nextSibling = parentHierarchy->m_firstChild;
+            EntityHandle nextSibling(scene, p_component.m_nextSibling);
 
             if (nextSibling)
                 nextSibling.Get<HierarchyComponent>()->m_previousSibling = p_entity;
@@ -183,7 +181,7 @@ namespace SvCore::ECS
             parentHierarchy->m_firstChild = p_entity;
             ++parentHierarchy->m_childCount;
         }
-        else
+        else if (parent)
         {
             parentHierarchy               = &parent.Make<HierarchyComponent>(NULL_ENTITY);
             parentHierarchy->m_firstChild = p_entity;
@@ -197,39 +195,27 @@ namespace SvCore::ECS
     }
 
     template <>
-    HierarchyComponent ComponentTraits::Copy(EntityHandle& p_from, HierarchyComponent& p_source, EntityHandle& p_to)
+    HierarchyComponent ComponentTraits::Copy(EntityHandle&, HierarchyComponent& p_source, EntityHandle& p_to)
     {
         ASSERT(p_to);
         Scene* scene = p_to.GetScene();
 
-        const Entity parent     = p_source.m_parent;
-        const Entity firstChild = p_source.m_firstChild;
-        EntityHandle child(scene, firstChild);
+        p_to.SetParent({ scene, p_source.m_parent }, true);
 
-        const Transform* sourceTransform = p_from.Get<Transform>();
-        const Matrix4    sourceMatrix    = sourceTransform ? sourceTransform->getMatrix() : Matrix4(1.f);
+        const EntityHandle firstChild(scene, p_source.m_firstChild);
+        EntityHandle       child = firstChild;
 
         while (child)
         {
             const EntityHandle nextSibling = child.GetNextSibling();
 
             EntityHandle copy = child.Copy();
-
-            HierarchyComponent& copyHierarchy = *copy.Get<HierarchyComponent>();
-            copyHierarchy.m_nextSibling       = NULL_ENTITY;
-            copyHierarchy.m_previousSibling   = NULL_ENTITY;
-
-            p_from.Get<HierarchyComponent>()->m_firstChild = firstChild;
-
             copy.SetParent(p_to, true);
 
             child = nextSibling;
         }
 
-        if (Transform* transform = p_to.Get<Transform>())
-            transform->setMatrix(sourceMatrix);
-
-        return HierarchyComponent(parent);
+        return *p_to.Get<HierarchyComponent>();
     }
 
     template <>
@@ -283,7 +269,7 @@ namespace SvCore::ECS
         if (!CHECK(it != p_json.MemberEnd() && it->value.Is<Entity::Id>(), "Unable to deserialize hierarchy - Invalid parent"))
             return false;
 
-        p_out.SetParent(Entity(it->value.Get<Entity::Id>()));
+        p_out.m_parent = Entity(it->value.Get<Entity::Id>());
         return true;
     }
 }

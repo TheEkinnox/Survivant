@@ -53,12 +53,6 @@ namespace SvCore::ECS
         Entity GetParent() const;
 
         /**
-         * \brief Sets the hierarchy owner's parent entity
-         * \param p_parent The owner's new parent
-         */
-        void SetParent(Entity p_parent);
-
-        /**
          * \brief Gets the hierarchy owner's first child
          * \return The owner's first child
          */
