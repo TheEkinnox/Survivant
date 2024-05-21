@@ -97,13 +97,13 @@ namespace SvCore::ECS
          * \brief Reserves the given number of components
          * \param p_count The number of components to reserve
          */
-        virtual void Reserve(Entity::Id p_count) = 0;
+        virtual void Reserve(Entity::Index p_count) = 0;
 
         /**
          * \brief Gets the current number of entities
          * \return The current number of entities
          */
-        virtual Entity::Id size() const = 0;
+        virtual Entity::Index size() const = 0;
 
         /**
          * \brief Serializes the component storage to json
@@ -235,7 +235,7 @@ namespace SvCore::ECS
          * \brief Reserves the given number of entities
          * \param p_count The number of entities to reserve
          */
-        void Reserve(Entity::Id p_count) override;
+        void Reserve(Entity::Index p_count) override;
 
         /**
          * \brief Sorts the storage to match the scene's entity storage's order
@@ -246,7 +246,7 @@ namespace SvCore::ECS
          * \brief Gets the current number of entities
          * \return The current number of entities
          */
-        Entity::Id size() const override;
+        Entity::Index size() const override;
 
         /**
          * \brief Checks if the given entity owns a component in the storage
@@ -337,10 +337,10 @@ namespace SvCore::ECS
         bool FromJson(const Serialization::JsonValue& p_json) override;
 
     private:
-        std::vector<ComponentT>                m_components;
-        std::unordered_map<Entity::Id, size_t> m_entityToComponent;
-        std::unordered_map<size_t, Entity>     m_componentToEntity;
-        Scene*                                 m_scene;
+        std::vector<ComponentT>                       m_components;
+        std::unordered_map<Entity::Id, Entity::Index> m_entityToComponent;
+        std::unordered_map<Entity::Index, Entity>     m_componentToEntity;
+        Scene*                                        m_scene;
     };
 }
 
