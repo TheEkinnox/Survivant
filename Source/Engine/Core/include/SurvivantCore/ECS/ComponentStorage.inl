@@ -39,9 +39,9 @@ namespace SvCore::ECS
     }
 
     template <class T>
-    T& ComponentStorage<T>::Set(Entity p_owner, const ComponentT& p_instance)
+    T& ComponentStorage<T>::Set(Entity p_owner, ComponentT p_instance)
     {
-        return Construct(p_owner, p_instance);
+        return Construct(p_owner, std::move(p_instance));
     }
 
     template <class T>
@@ -54,8 +54,8 @@ namespace SvCore::ECS
         // Re-fetch component between events in case one of them triggers a reallocation
         if (it != m_entityToComponent.end())
         {
-            const size_t index  = it->second;
-            ComponentT   newVal = ComponentT(std::forward<Args>(p_args)...);
+            const size_t index = it->second;
+            ComponentT   newVal(std::forward<Args>(p_args)...);
 
             ComponentTraits::OnBeforeChange<ComponentT>(handle, m_components[index], newVal);
             m_onBeforeChange.Invoke(handle, m_components[index], newVal);
