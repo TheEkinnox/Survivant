@@ -1,8 +1,9 @@
 //Window.cpp
 
-#include "SurvivantApp/Inputs/InputManager.h"
 #include "SurvivantApp/Windows/Window.h"
-#include "SurvivantCore/Debug/Assertion.h"
+#include "SurvivantApp/Inputs/InputManager.h"
+
+#include <SurvivantCore/Debug/Assertion.h>
 
 #include <GLFW/glfw3.h>
 
@@ -61,7 +62,7 @@ void WindowMinimizeCallback(GLFWwindow* /*window*/, int p_iconified)
     SvCore::Events::EventManager::GetInstance().Invoke<Window::WindowMinimize>(p_iconified != 0);
 }
 
-Window::Window(std::string p_name)
+Window::Window(const std::string& p_name, const bool p_startMaximized)
 {
     //init
     m_monitor = glfwGetPrimaryMonitor();
@@ -71,13 +72,14 @@ Window::Window(std::string p_name)
     glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
     glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
     glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+    glfwWindowHint(GLFW_MAXIMIZED, p_startMaximized);
 
-    m_window = glfwCreateWindow(mode->width, mode->height, p_name.c_str(), nullptr, nullptr);
+    const int width = static_cast<int>(static_cast<float>(mode->width) * .8f);
+    const int height = static_cast<int>(static_cast<float>(mode->height) * .8f);
+    m_window = glfwCreateWindow(width, height, p_name.c_str(), nullptr, nullptr);
     m_isInFullscreen = false;
 
-    int x;
-    glfwGetWindowPos(m_window, &x, &m_yWindowedPos);
-    glfwSetWindowPos(m_window, 0, m_yWindowedPos);
+    glfwGetWindowPos(m_window, nullptr, &m_yWindowedPos);
 
     glfwMakeContextCurrent(m_window);
 
@@ -85,7 +87,7 @@ Window::Window(std::string p_name)
     SetupInputManagerCallbacks();
 }
 
-SvApp::Window::Window(std::string p_name, int p_width , int p_height, int p_x, int p_y)
+Window::Window(const std::string& p_name, int p_width , int p_height, int p_x, int p_y)
 {
     //init
     m_monitor = glfwGetPrimaryMonitor();
@@ -108,22 +110,22 @@ SvApp::Window::Window(std::string p_name, int p_width , int p_height, int p_x, i
     SetupInputManagerCallbacks();
 }
 
-SvApp::Window::~Window()
+Window::~Window()
 {
     glfwDestroyWindow(m_window);
 }
 
-GLFWwindow* SvApp::Window::GetWindow()
+GLFWwindow* Window::GetWindow()
 {
     return m_window;
 }
 
-void SvApp::Window::GetSize(int& p_width, int& p_height)
+void Window::GetSize(int& p_width, int& p_height)
 {
     glfwGetWindowSize(m_window, &p_width, &p_height);
 }
 
-void SvApp::Window::SetupWindowCallbacks() const
+void Window::SetupWindowCallbacks() const
 {
     glfwSetWindowCloseCallback(m_window, WindowCloseCallback);
     glfwSetWindowSizeCallback(m_window, WindowSizeCallback);
@@ -131,37 +133,37 @@ void SvApp::Window::SetupWindowCallbacks() const
     glfwSetWindowIconifyCallback(m_window, WindowMinimizeCallback);
 }
 
-void SvApp::Window::SetupInputManagerCallbacks() const
+void Window::SetupInputManagerCallbacks() const
 {
     glfwSetKeyCallback(m_window, IMKeyCallback);
     glfwSetMouseButtonCallback(m_window, IMMouseCallback);
 }
 
-void SvApp::Window::GetMousePos(double& p_x, double& p_y) const
+void Window::GetMousePos(double& p_x, double& p_y) const
 {
     glfwGetCursorPos(m_window, &p_x, &p_y);
 }
 
-void SvApp::Window::GetWindowSize(int& p_width, int& p_height) const
+void Window::GetWindowSize(int& p_width, int& p_height) const
 {
     glfwGetWindowSize(m_window, &p_width, &p_height);
 }
 
-bool SvApp::Window::EvaluateInput(EKey p_key, EKeyState p_state, EInputModifier p_modif)
+bool Window::EvaluateInput(EKey p_key, EKeyState p_state, EInputModifier p_modif)
 {
     return  static_cast<int>(p_state) == glfwGetKey(m_window, static_cast<int>(p_key)) &&
             EvaluteModif(p_modif);
 }
 
-bool SvApp::Window::EvaluateInput(EMouseButton p_button, EMouseButtonState p_state, EInputModifier p_modif)
+bool Window::EvaluateInput(EMouseButton p_button, EMouseButtonState p_state, EInputModifier p_modif)
 {
     return  static_cast<int>(p_state) == glfwGetMouseButton(m_window, static_cast<int>(p_button)) &&
             EvaluteModif(p_modif);
 }
 
-bool SvApp::Window::EvaluteModif(const EInputModifier p_modif)
+bool Window::EvaluteModif(const EInputModifier p_modif)
 {
-    if (p_modif == EInputModifier::MOD_ANY)
+    if (p_modif == MOD_ANY)
         return true;
 
     uint8_t currentModif = 0;
@@ -186,7 +188,7 @@ bool SvApp::Window::EvaluteModif(const EInputModifier p_modif)
     return static_cast<uint8_t>(p_modif) == currentModif;
 }
 
-void SvApp::Window::ToggleFullScreenMode()
+void Window::ToggleFullScreenMode()
 {
     const GLFWvidmode* mode = glfwGetVideoMode(m_monitor);
     glfwSetWindowMonitor(
@@ -201,54 +203,54 @@ void SvApp::Window::ToggleFullScreenMode()
     m_isInFullscreen = !m_isInFullscreen;
 }
 
-void SvApp::Window::Update()
+void Window::Update()
 {
     glfwPollEvents();
 }
 
 
-void SvApp::Window::EndRender()
+void Window::EndRender()
 {
     glfwSwapBuffers(m_window);
 }
 
-bool SvApp::Window::ShouldClose()
+bool Window::ShouldClose()
 {
     return glfwWindowShouldClose(m_window);
 }
 
-void SvApp::Window::SetWindowSizeLimits(int p_minWidth, int p_minHeight, int p_maxWidth, int p_maxHeight)
+void Window::SetWindowSizeLimits(int p_minWidth, int p_minHeight, int p_maxWidth, int p_maxHeight)
 {
     glfwSetWindowSizeLimits(m_window, p_minWidth, p_minHeight, p_maxWidth, p_maxHeight);
 }
 
-void SvApp::Window::SetAspectRatio(int p_width, int p_height)
+void Window::SetAspectRatio(int p_width, int p_height)
 {
     glfwSetWindowAspectRatio(m_window, p_width, p_height);
 }
 
-void SvApp::Window::SetWindowIcons(std::vector<GLFWimage> p_images)
+void Window::SetWindowIcons(std::vector<GLFWimage> p_images)
 {
     glfwSetWindowIcon(m_window, static_cast<int>(p_images.size()), p_images.data());
 }
 
-void SvApp::Window::SetFocusWindow()
+void Window::SetFocusWindow()
 {
     glfwFocusWindow(m_window);
 }
 
-void SvApp::Window::WindowCloseRequest::BeforeInvoke()
+void Window::WindowCloseRequest::BeforeInvoke()
 {
     m_cancelRequest = false;
 }
 
-void SvApp::Window::WindowCloseRequest::AfterInvoke()
+void Window::WindowCloseRequest::AfterInvoke()
 {
     if (!m_cancelRequest)
         SvCore::Events::EventManager::GetInstance().Invoke<WindowClosing>();
 }
 
-void SvApp::Window::WindowCloseRequest::InterceptCloseRequest()
+void Window::WindowCloseRequest::InterceptCloseRequest()
 {
     m_cancelRequest = true;
 }
