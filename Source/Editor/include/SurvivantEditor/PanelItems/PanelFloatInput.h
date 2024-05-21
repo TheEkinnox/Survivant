@@ -24,7 +24,7 @@ namespace SvEditor::PanelItems
 			const std::string& p_name,
 			const GetCopyFunc& p_getCopy,
 			const Callback& p_callback);
-		~PanelFloatInput() = default;
+		~PanelFloatInput() override = default;
 
 		virtual void DisplayAndUpdatePanel() override;
 
