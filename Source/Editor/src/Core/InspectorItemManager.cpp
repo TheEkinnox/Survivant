@@ -21,6 +21,7 @@
 #include "SurvivantEditor/PanelItems/PanelColorInput.h"
 #include "SurvivantEditor/PanelItems/PanelComponent.h"
 #include "SurvivantEditor/PanelItems/PanelFloatInput.h"
+#include "SurvivantEditor/PanelItems/PanelIntInput.h"
 #include "SurvivantEditor/PanelItems/PanelMultipleSelection.h"
 #include "SurvivantEditor/PanelItems/PanelResourceSelector.h"
 #include "SurvivantEditor/PanelItems/PanelSelectionDisplay.h"
@@ -31,6 +32,7 @@
 #include "SurvivantEditor/PanelItems/PanelVec2Input.h"
 #include "SurvivantEditor/PanelItems/PanelVec3Input.h"
 #include "SurvivantEditor/PanelItems/PanelScriptList.h"
+#include "SurvivantEditor/PanelItems/PanelSeparator.h"
 
 #include <SurvivantPhysics/RigidBody.h>
 #include <SurvivantPhysics/Collider/BoxCollider.h>
@@ -222,12 +224,12 @@ namespace SvEditor::Core
 				)),
 				std::make_shared<PanelVec2Input>(PanelVec2Input(
 					"Near/Far ",
-					[entity = p_entity]() mutable -> Vector2 { return Vector2(
-						entity.Get<CameraComponent>()->GetPerspectiveNear(),
-						entity.Get<CameraComponent>()->GetPerspectiveFar()); },
+					[p_entity]() -> Vector2 {
+						const CameraComponent* cam = p_entity.Get<CameraComponent>();
+						return { cam->GetPerspectiveNear(), cam->GetPerspectiveFar() }; },
 					[entity = p_entity](const Vector2& p_val) mutable {
-						entity.Get<CameraComponent>()->SetPerspectiveNear(p_val.m_x);
-						entity.Get<CameraComponent>()->SetPerspectiveFar(p_val.m_y); }
+						CameraComponent* cam = entity.Get<CameraComponent>();
+						cam->SetPerspectiveNear(p_val.m_x).SetPerspectiveFar(p_val.m_y); }
 				))
 			}));
 
@@ -253,10 +255,23 @@ namespace SvEditor::Core
 
 		auto component = PanelComponent(ComponentRegistry::GetInstance().GetRegisteredTypeName<CameraComponent>(),
 			PanelComponent::Items({
+				std::make_shared<PanelCheckbox>(
+					"Is Active    ",
+					[p_entity] { return p_entity.Get<CameraComponent>()->IsActive(); },
+					[entity = p_entity](const bool p_val) mutable {
+						entity.Get<CameraComponent>()->SetActive(p_val); }
+				),
+				std::make_shared<PanelSeparator>("Rendering"),
+				std::make_shared<PanelIntInput>(
+					"Order        ",
+					[p_entity] { return p_entity.Get<CameraComponent>()->GetOrder(); },
+					[entity = p_entity](const int p_val) mutable {
+						entity.Get<CameraComponent>()->SetOrder(p_val); }
+				),
 				std::make_shared<PanelMultipleSelection>(PanelMultipleSelection(
 					"Clear Mask   ", { "Color", "Depth", "Stencil" },
-					[entity = p_entity]() -> int {
-							return static_cast<int>(entity.Get<CameraComponent>()->GetClearMask());
+					[p_entity]() -> int {
+							return static_cast<int>(p_entity.Get<CameraComponent>()->GetClearMask());
 					},
 					[entity = p_entity](const int& p_val) mutable {
 							entity.Get<CameraComponent>()->SetClearMask(static_cast<uint8_t>(p_val));
@@ -264,18 +279,19 @@ namespace SvEditor::Core
 				)),
 				std::make_shared<PanelColorInput>(PanelColorInput(
 					"Color        ",
-					[entity = p_entity]() mutable -> Vector4 { return static_cast<Vector4>(
-						entity.Get<CameraComponent>()->GetClearColor()); },
+					[p_entity]() -> Vector4 { return static_cast<Vector4>(
+						p_entity.Get<CameraComponent>()->GetClearColor()); },
 					[entity = p_entity](const Vector4& p_value) mutable {
 						entity.Get<CameraComponent>()->SetClearColor(p_value); }
 				)),
 				std::make_shared<PanelUInt32Input>(PanelUInt32Input(
 					"Culling Mask ",
-					[entity = p_entity]() mutable -> uint32_t { return static_cast<uint32_t>(
-						entity.Get<CameraComponent>()->GetCullingMask()); },
+					[p_entity]() -> uint32_t { return static_cast<uint32_t>(
+						p_entity.Get<CameraComponent>()->GetCullingMask()); },
 					[entity = p_entity](const uint32_t& p_value) mutable {
 						entity.Get<CameraComponent>()->SetCullingMask(p_value); }
 				)),
+				std::make_shared<PanelSeparator>("Projection"),
 				std::make_shared<PanelSelectionDisplay>(PanelSelectionDisplay(
 					"Type         ", enumNames, display,
 					[p_entity]() -> int { return static_cast<int>( //copy enum to int
