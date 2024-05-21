@@ -138,6 +138,31 @@ namespace SvCore::ECS
     }
 
     template <class T>
+    void ComponentStorage<T>::Sort()
+    {
+        std::vector<ComponentT> components;
+
+        components.reserve(m_components.size());
+
+        Entity::Id index = 0;
+        for (const Entity& entity : m_scene->GetStorage<Entity>())
+        {
+            const auto it = m_entityToComponent.find(entity);
+
+            if (it == m_entityToComponent.end())
+                continue;
+
+            components.emplace_back(std::move(m_components[it->second]));
+
+            m_componentToEntity[index] = entity;
+            it->second                 = index;
+            ++index;
+        }
+
+        m_components = std::move(components);
+    }
+
+    template <class T>
     Entity::Id ComponentStorage<T>::size() const
     {
         return static_cast<Entity::Id>(m_components.size());

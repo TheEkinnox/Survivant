@@ -238,6 +238,11 @@ namespace SvCore::ECS
         void Reserve(Entity::Id p_count) override;
 
         /**
+         * \brief Sorts the storage to match the scene's entity storage's order
+         */
+        void Sort();
+
+        /**
          * \brief Gets the current number of entities
          * \return The current number of entities
          */
