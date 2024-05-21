@@ -20,8 +20,8 @@ namespace SvEditor::PanelItems
 		~PanelComponent() override = default;
 
         void		DisplayAndUpdatePanel() override;
-		bool		NeedToRemove()const;
-		size_t		GetPrio()const;
+		bool		NeedToRemove() const;
+		size_t		GetPrio() const;
 
 		const std::string&	GetName()const;
 
