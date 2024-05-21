@@ -63,6 +63,13 @@ namespace SvCore::ECS
         bool operator==(const EntityHandle& p_other) const;
 
         /**
+         * \brief Checks whether this handle references the given entity
+         * \param p_entity The compared entity
+         * \return True if this handle references the given entity. False otherwise
+         */
+        bool operator==(Entity p_entity) const;
+
+        /**
          * \brief Checks whether the entity is valid or not
          * \return True if the entity is valid. False otherwise.
          */

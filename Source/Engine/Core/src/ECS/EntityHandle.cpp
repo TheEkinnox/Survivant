@@ -20,6 +20,11 @@ namespace SvCore::ECS
         return m_entity == p_other.m_entity && m_scene == p_other.m_scene;
     }
 
+    bool EntityHandle::operator==(const Entity p_entity) const
+    {
+        return m_entity == p_entity;
+    }
+
     EntityHandle::operator bool() const
     {
         return m_scene && m_scene->IsValid(m_entity);
