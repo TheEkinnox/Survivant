@@ -1,0 +1,1693 @@
+{
+    "entities": 53,
+    "components": [
+        {
+            "type": "SphereCollider",
+            "data": [
+                {
+                    "owner": 0,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "radius": 1.0
+                    }
+                }
+            ]
+        },
+        {
+            "type": "Camera",
+            "data": [
+                {
+                    "owner": 0,
+                    "data": {
+                        "type": "perspective",
+                        "active": true,
+                        "clear_mask": 7,
+                        "clear_color": "{0.5,0.5,0.5,1}",
+                        "culling_mask": 255,
+                        "perspective_fov": 90.0,
+                        "perspective_near": 0.0010000000474974513,
+                        "perspective_far": 50.0,
+                        "orthographic_size": 0.0,
+                        "orthographic_near": 0.0,
+                        "orthographic_far": 0.0
+                    }
+                }
+            ]
+        },
+        {
+            "type": "ScriptList",
+            "data": [
+                {
+                    "owner": 0,
+                    "data": [
+                        {
+                            "name": "scripts.freeLook",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "mouse_sensitivity"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 0.005
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "move_speed"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 3.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "rotation_speed"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Degree",
+                                            "data": 90.0
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "Transform",
+            "data": [
+                {
+                    "owner": 0,
+                    "data": {
+                        "position": "{0,0,0}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 1,
+                    "data": {
+                        "position": "{0,5,0}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 29,
+                    "data": {
+                        "position": "{-2.38419e-07,0,-9.53674e-07}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 3,
+                    "data": {
+                        "position": "{2,3,0}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,7,3}"
+                    }
+                },
+                {
+                    "owner": 4,
+                    "data": {
+                        "position": "{-2,3,0}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,7,3}"
+                    }
+                },
+                {
+                    "owner": 5,
+                    "data": {
+                        "position": "{0,0,0}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{3,1,3}"
+                    }
+                },
+                {
+                    "owner": 6,
+                    "data": {
+                        "position": "{0,3,2}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{5,7,1}"
+                    }
+                },
+                {
+                    "owner": 7,
+                    "data": {
+                        "position": "{8,0,-13}",
+                        "rotation": "{0,0.707107,0,0.707107}",
+                        "scale": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 8,
+                    "data": {
+                        "position": "{0,0,-3}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 16,
+                    "data": {
+                        "position": "{0,1,2}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{5,3,1}"
+                    }
+                },
+                {
+                    "owner": 10,
+                    "data": {
+                        "position": "{6,3,2}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{-7,7,1}"
+                    }
+                },
+                {
+                    "owner": 11,
+                    "data": {
+                        "position": "{-9.53674e-07,-2.38419e-07,-1.19209e-06}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 12,
+                    "data": {
+                        "position": "{-4,3,-6.5}",
+                        "rotation": "{0,0.707107,0,0.707107}",
+                        "scale": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 24,
+                    "data": {
+                        "position": "{0,0,0}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 14,
+                    "data": {
+                        "position": "{-2,0,-13.5}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 9,
+                    "data": {
+                        "position": "{0,0.5,-2}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 20,
+                    "data": {
+                        "position": "{-4.5,1,3}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{4,3,1}"
+                    }
+                },
+                {
+                    "owner": 17,
+                    "data": {
+                        "position": "{-10,3,-3}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,7,26}"
+                    }
+                },
+                {
+                    "owner": 15,
+                    "data": {
+                        "position": "{0,-2,0}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{5,5,5}"
+                    }
+                },
+                {
+                    "owner": 19,
+                    "data": {
+                        "position": "{-9.53674e-07,-0.0400002,-9.53674e-07}",
+                        "rotation": "{0.189095,-1.92959e-14,-9.28951e-16,0.981959}",
+                        "scale": "{4,1,5.793}"
+                    }
+                },
+                {
+                    "owner": 26,
+                    "data": {
+                        "position": "{7,1,3}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{9,3,1}"
+                    }
+                },
+                {
+                    "owner": 2,
+                    "data": {
+                        "position": "{-2.38419e-07,-0.04,0}",
+                        "rotation": "{0.189095,-9.64797e-15,0,0.981959}",
+                        "scale": "{4,1,4.993}"
+                    }
+                },
+                {
+                    "owner": 25,
+                    "data": {
+                        "position": "{2.5,0,0}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{18,1,5}"
+                    }
+                },
+                {
+                    "owner": 18,
+                    "data": {
+                        "position": "{2,1,-0.5}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,3,4}"
+                    }
+                },
+                {
+                    "owner": 23,
+                    "data": {
+                        "position": "{0,4,-31}",
+                        "rotation": "{0,1,-0,-4.37114e-08}",
+                        "scale": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 21,
+                    "data": {
+                        "position": "{2.5,-2,-3}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{18,5,1}"
+                    }
+                },
+                {
+                    "owner": 27,
+                    "data": {
+                        "position": "{-7,1,0}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,3,7}"
+                    }
+                },
+                {
+                    "owner": 22,
+                    "data": {
+                        "position": "{0,0,-5}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 31,
+                    "data": {
+                        "position": "{1,1,-6.5}",
+                        "rotation": "{0,0.707107,0,0.707107}",
+                        "scale": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 28,
+                    "data": {
+                        "position": "{-2,1,-0.5}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,3,4}"
+                    }
+                },
+                {
+                    "owner": 32,
+                    "data": {
+                        "position": "{-9,4,-6.5}",
+                        "rotation": "{8.74227e-08,0,0,1}",
+                        "scale": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 33,
+                    "data": {
+                        "position": "{7,0,-6.5}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{3,1,5}"
+                    }
+                },
+                {
+                    "owner": 30,
+                    "data": {
+                        "position": "{2,0,-1}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,1,6}"
+                    }
+                },
+                {
+                    "owner": 34,
+                    "data": {
+                        "position": "{-0.5,0,-1}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{4,1,6}"
+                    }
+                },
+                {
+                    "owner": 35,
+                    "data": {
+                        "position": "{-0.5,-2,0}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{4,3,4}"
+                    }
+                },
+                {
+                    "owner": 36,
+                    "data": {
+                        "position": "{0,0,-4.5}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{5,1,1}"
+                    }
+                },
+                {
+                    "owner": 37,
+                    "data": {
+                        "position": "{0,0,-5}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 38,
+                    "data": {
+                        "position": "{-0.25,0,-0.25}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{5,0.9,0.5}"
+                    }
+                },
+                {
+                    "owner": 39,
+                    "data": {
+                        "position": "{-3.5,0.75,-8}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{8,0.5,2}"
+                    }
+                },
+                {
+                    "owner": 40,
+                    "data": {
+                        "position": "{-4.5,0,-6.5}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{10,1,5}"
+                    }
+                },
+                {
+                    "owner": 41,
+                    "data": {
+                        "position": "{3,-1,-6.5}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{5,1,5}"
+                    }
+                },
+                {
+                    "owner": 42,
+                    "data": {
+                        "position": "{3,0,-6.5}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 43,
+                    "data": {
+                        "position": "{1.5,0.75,0}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{2,0.5,5}"
+                    }
+                },
+                {
+                    "owner": 44,
+                    "data": {
+                        "position": "{-6,3,2}",
+                        "rotation": "{0,0,0,0.707107}",
+                        "scale": "{7,7,1}"
+                    }
+                },
+                {
+                    "owner": 45,
+                    "data": {
+                        "position": "{-0.5,3,9.5}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{18,7,1}"
+                    }
+                },
+                {
+                    "owner": 46,
+                    "data": {
+                        "position": "{0,0,0}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{3,1,3}"
+                    }
+                },
+                {
+                    "owner": 47,
+                    "data": {
+                        "position": "{0,0,-2}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{3,1,1}"
+                    }
+                },
+                {
+                    "owner": 48,
+                    "data": {
+                        "position": "{0,0.25,0}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{3,0.5,0.9}"
+                    }
+                },
+                {
+                    "owner": 49,
+                    "data": {
+                        "position": "{-0.5,0,2.5}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{18,1,13}"
+                    }
+                },
+                {
+                    "owner": 50,
+                    "data": {
+                        "position": "{-8.5,0.75,-2}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{2,0.5,14}"
+                    }
+                },
+                {
+                    "owner": 51,
+                    "data": {
+                        "position": "{-8,1.25,-17}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1.5,1.5,1.5}"
+                    }
+                },
+                {
+                    "owner": 52,
+                    "data": {
+                        "position": "{-8,1.25,-15}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1.5,1.5,1.5}"
+                    }
+                }
+            ]
+        },
+        {
+            "type": "Tag",
+            "data": [
+                {
+                    "owner": 29,
+                    "data": "Collider"
+                },
+                {
+                    "owner": 13,
+                    "data": "STRAIR"
+                },
+                {
+                    "owner": 31,
+                    "data": "stair2"
+                },
+                {
+                    "owner": 12,
+                    "data": "stair1"
+                },
+                {
+                    "owner": 11,
+                    "data": "Collider"
+                },
+                {
+                    "owner": 7,
+                    "data": "start"
+                },
+                {
+                    "owner": 37,
+                    "data": "to_scale(1-22)"
+                },
+                {
+                    "owner": 38,
+                    "data": "bridge"
+                },
+                {
+                    "owner": 42,
+                    "data": "to_move(0-4)"
+                },
+                {
+                    "owner": 9,
+                    "data": "to_scale(1-4)"
+                },
+                {
+                    "owner": 23,
+                    "data": "end"
+                },
+                {
+                    "owner": 14,
+                    "data": "mid"
+                },
+                {
+                    "owner": 32,
+                    "data": "top_of_stairs"
+                }
+            ]
+        },
+        {
+            "type": "Hierarchy",
+            "data": [
+                {
+                    "owner": 7,
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
+                },
+                {
+                    "owner": 31,
+                    "data": {
+                        "parent": 13
+                    }
+                },
+                {
+                    "owner": 13,
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
+                },
+                {
+                    "owner": 29,
+                    "data": {
+                        "parent": 31
+                    }
+                },
+                {
+                    "owner": 1,
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
+                },
+                {
+                    "owner": 3,
+                    "data": {
+                        "parent": 7
+                    }
+                },
+                {
+                    "owner": 4,
+                    "data": {
+                        "parent": 7
+                    }
+                },
+                {
+                    "owner": 5,
+                    "data": {
+                        "parent": 7
+                    }
+                },
+                {
+                    "owner": 6,
+                    "data": {
+                        "parent": 7
+                    }
+                },
+                {
+                    "owner": 30,
+                    "data": {
+                        "parent": 24
+                    }
+                },
+                {
+                    "owner": 24,
+                    "data": {
+                        "parent": 32
+                    }
+                },
+                {
+                    "owner": 33,
+                    "data": {
+                        "parent": 14
+                    }
+                },
+                {
+                    "owner": 9,
+                    "data": {
+                        "parent": 23
+                    }
+                },
+                {
+                    "owner": 23,
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
+                },
+                {
+                    "owner": 8,
+                    "data": {
+                        "parent": 7
+                    }
+                },
+                {
+                    "owner": 10,
+                    "data": {
+                        "parent": 8
+                    }
+                },
+                {
+                    "owner": 11,
+                    "data": {
+                        "parent": 12
+                    }
+                },
+                {
+                    "owner": 19,
+                    "data": {
+                        "parent": 11
+                    }
+                },
+                {
+                    "owner": 18,
+                    "data": {
+                        "parent": 23
+                    }
+                },
+                {
+                    "owner": 28,
+                    "data": {
+                        "parent": 23
+                    }
+                },
+                {
+                    "owner": 2,
+                    "data": {
+                        "parent": 29
+                    }
+                },
+                {
+                    "owner": 14,
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
+                },
+                {
+                    "owner": 16,
+                    "data": {
+                        "parent": 23
+                    }
+                },
+                {
+                    "owner": 17,
+                    "data": {
+                        "parent": 14
+                    }
+                },
+                {
+                    "owner": 20,
+                    "data": {
+                        "parent": 22
+                    }
+                },
+                {
+                    "owner": 22,
+                    "data": {
+                        "parent": 23
+                    }
+                },
+                {
+                    "owner": 12,
+                    "data": {
+                        "parent": 13
+                    }
+                },
+                {
+                    "owner": 21,
+                    "data": {
+                        "parent": 22
+                    }
+                },
+                {
+                    "owner": 15,
+                    "data": {
+                        "parent": 42
+                    }
+                },
+                {
+                    "owner": 25,
+                    "data": {
+                        "parent": 22
+                    }
+                },
+                {
+                    "owner": 27,
+                    "data": {
+                        "parent": 22
+                    }
+                },
+                {
+                    "owner": 26,
+                    "data": {
+                        "parent": 22
+                    }
+                },
+                {
+                    "owner": 32,
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
+                },
+                {
+                    "owner": 34,
+                    "data": {
+                        "parent": 24
+                    }
+                },
+                {
+                    "owner": 35,
+                    "data": {
+                        "parent": 24
+                    }
+                },
+                {
+                    "owner": 36,
+                    "data": {
+                        "parent": 24
+                    }
+                },
+                {
+                    "owner": 37,
+                    "data": {
+                        "parent": 32
+                    }
+                },
+                {
+                    "owner": 38,
+                    "data": {
+                        "parent": 37
+                    }
+                },
+                {
+                    "owner": 39,
+                    "data": {
+                        "parent": 14
+                    }
+                },
+                {
+                    "owner": 40,
+                    "data": {
+                        "parent": 14
+                    }
+                },
+                {
+                    "owner": 41,
+                    "data": {
+                        "parent": 14
+                    }
+                },
+                {
+                    "owner": 42,
+                    "data": {
+                        "parent": 14
+                    }
+                },
+                {
+                    "owner": 43,
+                    "data": {
+                        "parent": 42
+                    }
+                },
+                {
+                    "owner": 44,
+                    "data": {
+                        "parent": 8
+                    }
+                },
+                {
+                    "owner": 45,
+                    "data": {
+                        "parent": 14
+                    }
+                },
+                {
+                    "owner": 46,
+                    "data": {
+                        "parent": 23
+                    }
+                },
+                {
+                    "owner": 47,
+                    "data": {
+                        "parent": 23
+                    }
+                },
+                {
+                    "owner": 48,
+                    "data": {
+                        "parent": 9
+                    }
+                },
+                {
+                    "owner": 49,
+                    "data": {
+                        "parent": 14
+                    }
+                },
+                {
+                    "owner": 50,
+                    "data": {
+                        "parent": 14
+                    }
+                }
+            ]
+        },
+        {
+            "type": "Model",
+            "data": [
+                {
+                    "owner": 2,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/red.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 3,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/blue.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 4,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/blue.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 5,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/unlitWhite.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 6,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/blue.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 20,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/blue.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 10,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/blue.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 30,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/blue.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 33,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/unlitWhite.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 16,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/blue.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 18,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/blue.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 25,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/unlitWhite.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 17,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/blue.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 15,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/magenta.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 19,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/red.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 21,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/blue.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 28,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/blue.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 26,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/blue.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 27,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/blue.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 9,
+                    "data": {
+                        "model": {
+                            "path": "models/sphere.obj"
+                        },
+                        "material": {
+                            "path": "materials/red.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 34,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/unlitWhite.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 35,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/blue.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 36,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/blue.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 37,
+                    "data": {
+                        "model": {
+                            "path": "models/sphere.obj"
+                        },
+                        "material": {
+                            "path": "materials/red.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 38,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/green.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 39,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/unlitWhite.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 40,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/unlitWhite.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 41,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/unlitWhite.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 42,
+                    "data": {
+                        "model": {
+                            "path": "models/sphere.obj"
+                        },
+                        "material": {
+                            "path": "materials/red.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 43,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/magenta.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 44,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/blue.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 45,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/blue.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 46,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/unlitWhite.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 47,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/blue.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 48,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/green.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 49,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/unlitWhite.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 50,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/unlitWhite.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 51,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/magenta.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 52,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/magenta.mat"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "type": "RigidBody",
+            "data": [
+                {
+                    "owner": 0,
+                    "data": {
+                        "mass": 1.0,
+                        "is_kinematic": true,
+                        "use_gravity": true
+                    }
+                },
+                {
+                    "owner": 51,
+                    "data": {
+                        "mass": 1.0,
+                        "is_kinematic": false,
+                        "use_gravity": true
+                    }
+                },
+                {
+                    "owner": 52,
+                    "data": {
+                        "mass": 1.0,
+                        "is_kinematic": false,
+                        "use_gravity": true
+                    }
+                }
+            ]
+        },
+        {
+            "type": "BoxCollider",
+            "data": [
+                {
+                    "owner": 33,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 27,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 26,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 20,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 41,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 16,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 25,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 28,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 9,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 3,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 6,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 4,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 10,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 30,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 19,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 17,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 2,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 21,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 18,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 34,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 35,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 36,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 39,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 40,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 44,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 45,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 46,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 47,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 49,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 50,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 51,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 52,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                }
+            ]
+        }
+    ]
+}
