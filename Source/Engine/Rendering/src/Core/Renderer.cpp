@@ -20,6 +20,14 @@ using namespace SvRendering::RHI;
 
 namespace SvRendering::Core
 {
+    namespace
+    {
+        bool CameraOrderFunc(const CameraComponent& p_left, const CameraComponent& p_right)
+        {
+            return p_left.IsActive() == p_right.IsActive() ? p_left.GetOrder() < p_right.GetOrder() : p_left.IsActive();
+        }
+    }
+
     Renderer::Renderer()
         : m_cameraBuffer(IUniformBuffer::Create(EAccessMode::DYNAMIC_DRAW, CAMERA_UBO_INDEX)),
         m_modelBuffer(IUniformBuffer::Create(EAccessMode::DYNAMIC_DRAW, MODEL_UBO_INDEX))
@@ -80,6 +88,8 @@ namespace SvRendering::Core
         else
         {
             SceneView<CameraComponent> cameras(*p_renderPass.m_scene);
+            cameras.Sort<CameraComponent>(&CameraOrderFunc);
+
             for (const auto camEntity : cameras)
             {
                 p_renderPass.m_camera = {
