@@ -68,7 +68,7 @@ namespace SvRendering::Core
     {
         Matrix4 lightMat(Light::GetMatrix());
 
-        const Vector3 pos = p_transform ? (p_transform->getWorldMatrix() * Vector4(m_position, 0.f)).xyz() : m_position;
+        const Vector3 pos = p_transform ? (p_transform->getWorldMatrix() * Vector4(m_position, 1.f)).xyz() : m_position;
 
         lightMat(1, 1) = pos.m_x;
         lightMat(2, 1) = pos.m_y;
@@ -103,7 +103,7 @@ namespace SvRendering::Core
         lightMat(2, 0) = dir.m_y;
         lightMat(3, 0) = dir.m_z;
 
-        const Vector3 pos = p_transform ? (p_transform->getWorldMatrix() * Vector4(m_position, 0.f)).xyz() : m_position;
+        const Vector3 pos = p_transform ? (p_transform->getWorldMatrix() * Vector4(m_position, 1.f)).xyz() : m_position;
 
         lightMat(1, 1) = pos.m_x;
         lightMat(2, 1) = pos.m_y;
