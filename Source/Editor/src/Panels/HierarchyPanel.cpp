@@ -141,7 +141,6 @@ namespace SvEditor::Panels
         m_onModifTag[0] = GetScene().GetStorage<SvCore::ECS::TagComponent>().m_onAdd.AddListener(modifTag);
         m_onModifTag[1] = GetScene().GetStorage<SvCore::ECS::TagComponent>().m_onRemove.AddListener(modifTag);
         m_onModifTag[2] = GetScene().GetStorage<SvCore::ECS::TagComponent>().m_onChange.AddListener(modifTag);
-            
     }
 
     void HierarchyPanel::SetupTree()
@@ -164,8 +163,8 @@ namespace SvEditor::Panels
     void HierarchyPanel::SetupEntityBranch(
         HierarchyBranch& p_parent, const SvCore::ECS::EntityHandle& p_entity)
     {
-        using WithChildreen = std::vector<std::pair< std::shared_ptr<HierarchyBranch>, SvCore::ECS::EntityHandle>>;
-        WithChildreen withChildreen;
+        using WithChildren = std::vector<std::pair< std::shared_ptr<HierarchyBranch>, SvCore::ECS::EntityHandle>>;
+        WithChildren withChildren;
 
         for (auto& child: p_entity.GetChildren())
         {
@@ -173,10 +172,10 @@ namespace SvEditor::Panels
             AddEntityBranch(p_parent, branch);
 
             if (child.GetChildCount() != 0)
-                withChildreen.push_back({ branch, child });
+                withChildren.push_back({ branch, child });
         }
 
-        for (auto& [parent, entity] : withChildreen)
+        for (auto& [parent, entity] : withChildren)
             SetupEntityBranch(*parent, entity);
     }
 
@@ -194,7 +193,7 @@ namespace SvEditor::Panels
         auto prio = SIZE_MAX - p_parent.GetChildren().size();
 
         p_parent.AddBranch(p_childBranch, prio);
-        s_entities.emplace(Entity::Index(p_childBranch->GetValue()), 
+        s_entities.emplace(Entity::Index(p_childBranch->GetValue()),
             std::weak_ptr<HierarchyBranch>(p_childBranch));
     }
 

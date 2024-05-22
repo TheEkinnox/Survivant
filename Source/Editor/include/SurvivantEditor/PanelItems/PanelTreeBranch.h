@@ -63,13 +63,13 @@ namespace SvEditor::PanelItems
 		void			RemoveBranch(const std::string& p_name);
 		void			DeleteBranch(std::set<T>* p_deletedElements = nullptr);
 		void			ForceOpenParents(bool p_openSelf = false);
-		void			ForceCloseChildreen(bool p_closeSelf = false);
+		void			ForceCloseChildren(bool p_closeSelf = false);
 		void			ForceOpenAll();
 
 		void			SetAllPriority(const PriorityFunc& p_prioFunc);
 		//void			NoPriority(const PriorityFunc& p_prioFunc);
 
-		static size_t	HasChildreenPriority(const PanelTreeBranch& p_branch);
+		static size_t	HasChildrenPriority(const PanelTreeBranch& p_branch);
 
 		static inline BranchCallback s_branchesOnSelect = nullptr;
 		static inline BranchCallback s_leavesOnSelect = nullptr;
