@@ -1,19 +1,29 @@
 {
     "shader": {
-        "path": "shaders/Unlit.glsl"
+        "path": "shaders/Lit.glsl"
     },
     "properties": [
         {
             "name": "u_tint",
             "type": 7,
-            "value": "{0.831224,0.821679,0.813687,1}"
+            "value": "{1,1,1,0}"
         },
         {
             "name": "u_diffuse",
             "type": 10,
             "value": {
-                "path": "importedModels/Stairs/germany010b.jpg"
+                "path": "importedModels/Stairs/slat39XL.jpg"
             }
+        },
+        {
+            "name": "u_shininess",
+            "type": 4,
+            "value": 10000.0
+        },
+        {
+            "name": "u_specularColor",
+            "type": 7,
+            "value": "{1,1,1,0}"
         }
     ]
 }
