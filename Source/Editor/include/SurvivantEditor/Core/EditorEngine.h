@@ -28,12 +28,13 @@ namespace SvEditor::Core
 			SvApp::Core::BuildConfig /*p_buildInfo*/> {};
 
 		EditorEngine() = default;
-		~EditorEngine() = default;
+		~EditorEngine() override = default;
 
 		// Inherited via IEngine
 		void Init() override;
 		void Update() override;
 		void BakeLights() override;
+		SceneRef GetCurrentScene() const override;
 		bool ChangeScene(const std::string& p_scenePath) override;
 		bool ChangeCamera(const SvCore::ECS::EntityHandle& p_camera) override;
 		float GetDeltaTime() override;

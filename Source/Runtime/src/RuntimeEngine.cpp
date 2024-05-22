@@ -7,6 +7,8 @@
 
 #include "SurvivantApp/Core/TempDefaultScene.h"
 
+using namespace SvApp::Core;
+
 namespace SvRuntime
 {
 	void RuntimeEngine::Init()
@@ -118,6 +120,14 @@ namespace SvRuntime
 	void RuntimeEngine::BakeLights()
 	{
 		m_world->BakeLighting();
+	}
+
+	IEngine::SceneRef RuntimeEngine::GetCurrentScene() const
+	{
+		if (!m_world)
+			return {};
+
+		return m_world->m_currentSceneRef ? *m_world->m_currentSceneRef : SceneRef();
 	}
 
 	bool RuntimeEngine::IsRunning()

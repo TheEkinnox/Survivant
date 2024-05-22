@@ -348,13 +348,19 @@ namespace SvEditor::Core
 			p_playPauseFrameCallbacks);
 	}
 
+	IEngine::SceneRef EditorEngine::GetCurrentScene() const
+	{
+		auto& world = m_gameInstance ? *m_PIEWorld.lock() : *m_editorWorld;
+		return world.CurrentScene();
+	}
+
 	bool EditorEngine::ChangeScene(const std::string& p_scenePath)
 	{
 		//ASSERT(!m_allLevels.empty(), "No levels to browse to");
 		//ASSERT(p_worldContext.CurrentScene != nullptr); can have no current if first browse
 
 		//auto& rm = ResourceManager::GetInstance();
-		auto& world = m_gameInstance? *m_PIEWorld.lock() : *m_editorWorld;
+		auto& world = m_gameInstance ? *m_PIEWorld.lock() : *m_editorWorld;
 
 		//couldnt browse to scene
 		if (!BrowseToScene(world, p_scenePath))
@@ -362,7 +368,7 @@ namespace SvEditor::Core
 
 		//update editorWorld level. Dont bcs change back
 		if (m_gameInstance)
-			m_editorSelectedScene = m_PIEWorld.lock()->CurrentScene();
+			m_editorSelectedScene = world.CurrentScene();
 
 		//m_editorWorld->CurrentScene() = destination;
 		//dont update selected editor scene
