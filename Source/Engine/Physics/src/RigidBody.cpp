@@ -100,8 +100,7 @@ namespace SvPhysics
 
     void RigidBody::SetVelocity(const LibMath::Vector3& p_velocity)
     {
-        const LibMath::Vector3 impulse = p_velocity - GetVelocity();
-        m_pxBody->addForce(reinterpret_cast<const PxVec3&>(impulse), PxForceMode::eVELOCITY_CHANGE);
+        m_pxBody->setLinearVelocity(reinterpret_cast<const PxVec3&>(p_velocity));
     }
 
     LibMath::Vector3 RigidBody::GetAngularVelocity() const
@@ -112,8 +111,7 @@ namespace SvPhysics
 
     void RigidBody::SetAngularVelocity(const LibMath::Vector3& p_velocity)
     {
-        const LibMath::Vector3 impulse = p_velocity - GetAngularVelocity();
-        m_pxBody->addTorque(reinterpret_cast<const PxVec3&>(impulse), PxForceMode::eVELOCITY_CHANGE);
+        m_pxBody->setAngularVelocity(reinterpret_cast<const PxVec3&>(p_velocity));
     }
 
     bool RigidBody::IsKinematic() const
