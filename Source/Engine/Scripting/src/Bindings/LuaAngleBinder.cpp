@@ -11,7 +11,7 @@ namespace SvScripting::Bindings
     void BindAngleType(const std::string& p_typeName, sol::state& p_luaState)
     {
         sol::usertype angleType = p_luaState.new_usertype<T>(
-            p_typeName, sol::constructors<T(), T(float), T(const U&)>(),
+            p_typeName, sol::constructors<T(), T(float), T(const T&), T(const U&)>(),
             sol::meta_function::concatenation, sol::overload(
                 [](const char* p_str, const T& p_self)
                 {
