@@ -39,7 +39,6 @@ namespace SvEditor::Core
 		float GetDeltaTime() override;
 		bool IsPlayInEditor()override;
 
-
 		void RenderWorlds();
 		bool IsRunning();
 

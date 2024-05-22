@@ -385,12 +385,12 @@ namespace SvEditor::Core
 				std::make_shared<PanelVec3Input>(PanelVec3Input(
 					"Attenuation ",
 					[entity = p_entity]() mutable -> LibMath::Vector3& { return //cast from (float[3])[0] to &Vec3
-						*(Vector3*)&(entity.Get<LightComponent>()->m_spot.m_attenuationData.m_constant); }
+						*(Vector3*)&(entity.Get<LightComponent>()->m_spot.m_attenuationData); }
 				)),
 				std::make_shared<PanelVec2Input>(PanelVec2Input(
 					"Cutoff      ",
 					[entity = p_entity]() mutable -> LibMath::Vector2& { return //cast from (float[2])[0] to &Vec2
-						*(Vector2*)&(entity.Get<LightComponent>()->m_spot.m_cutoff.m_inner); }
+						*(Vector2*)&(entity.Get<LightComponent>()->m_spot.m_cutoff); }
 				))
 			}));
 
