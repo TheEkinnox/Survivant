@@ -32,6 +32,7 @@ namespace SvScripting::Bindings
             "isValid", sol::readonly_property(&GenericResourceRef::operator bool),
             "type", sol::readonly_property(&GenericResourceRef::GetType),
             "path", sol::readonly_property(&GenericResourceRef::GetPath),
+            "fullPath", sol::readonly_property(&GenericResourceRef::GetFullPath),
             sol::meta_function::index, [&p_luaState](const GenericResourceRef& p_self, const sol::object& p_index) -> sol::object
             {
                 const LuaTypeInfo& typeInfo = LuaTypeRegistry::GetInstance().GetTypeInfo(p_self.GetType());
