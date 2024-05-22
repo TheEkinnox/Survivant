@@ -1,8 +1,14 @@
 #pragma once
+#include <SurvivantCore/ECS/EntityHandle.h>
+
+#include <sol/types.hpp>
 
 namespace sol
 {
-    class state;
+    template <>
+    struct is_container<SvCore::ECS::EntityHandle> : std::false_type
+    {
+    };
 }
 
 namespace SvScripting::Bindings

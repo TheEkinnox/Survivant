@@ -33,7 +33,7 @@ namespace SvCore::ECS
         return m_nextSibling;
     }
 
-    size_t HierarchyComponent::GetChildCount() const
+    Entity::Index HierarchyComponent::GetChildCount() const
     {
         return m_childCount;
     }
@@ -42,9 +42,7 @@ namespace SvCore::ECS
     {
         std::vector<Transform*> linkedTransforms;
 
-        const std::vector<EntityHandle> children = p_entity.GetChildren();
-
-        for (EntityHandle child : children)
+        for (EntityHandle child : p_entity)
         {
             if (Transform* childTransform = child.Get<Transform>())
             {

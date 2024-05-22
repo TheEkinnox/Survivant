@@ -3,6 +3,7 @@
 
 #include "SurvivantCore/ECS/ComponentRegistry.h"
 #include "SurvivantCore/ECS/ComponentTraits.h"
+#include "SurvivantCore/ECS/EntityHandle.h"
 
 namespace SvCore::ECS
 {

@@ -1,5 +1,6 @@
 #pragma once
 #include "SurvivantCore/ECS/EntityHandle.h"
+#include "SurvivantCore/ECS/EntityHandleIterator.h"
 
 #include "SurvivantCore/ECS/Scene.h"
 
@@ -61,9 +62,7 @@ namespace SvCore::ECS
         if (T* component = Get<T>())
             return component;
 
-        const std::vector<EntityHandle> children = GetChildren();
-
-        for (const EntityHandle& child : children)
+        for (const EntityHandle& child : *this)
         {
             if (T* component = child.GetInChildren<T>())
                 return component;

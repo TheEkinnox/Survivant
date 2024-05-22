@@ -166,7 +166,7 @@ namespace SvEditor::Panels
         using WithChildren = std::vector<std::pair< std::shared_ptr<HierarchyBranch>, SvCore::ECS::EntityHandle>>;
         WithChildren withChildren;
 
-        for (auto& child: p_entity.GetChildren())
+        for (const auto& child: p_entity)
         {
             auto branch = CreateEntityBranch(child);
             AddEntityBranch(p_parent, branch);

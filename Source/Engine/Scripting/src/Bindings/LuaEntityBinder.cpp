@@ -4,8 +4,6 @@
 
 #include <SurvivantCore/ECS/ComponentHandle.h>
 
-#include <sol/state.hpp>
-
 using namespace SvCore::ECS;
 
 namespace SvScripting::Bindings
@@ -21,13 +19,12 @@ namespace SvScripting::Bindings
             if (!p_self || p_type.empty())
                 return false;
 
-            ComponentRegistry& components = ComponentRegistry::GetInstance();
+            const ComponentRegistry& components = ComponentRegistry::GetInstance();
 
             if (!CHECK(components.Contains(p_type), "Unkown component type \"%s\"", p_type.c_str()))
                 return false;
 
-            const auto typeId = components.GetTypeInfo(p_type).m_typeId;
-            return p_self.GetScene()->GetStorage(typeId).Contains(p_self.GetEntity());
+            return p_self.Has(components.GetRegisteredTypeId(p_type));
         };
 
         static const auto getComponent = [](const EntityHandle& p_self, const std::string& p_type) -> ComponentHandle
@@ -35,88 +32,51 @@ namespace SvScripting::Bindings
             if (p_type.empty())
                 return {};
 
-            ComponentRegistry& components = ComponentRegistry::GetInstance();
+            const ComponentRegistry& components = ComponentRegistry::GetInstance();
 
             if (!CHECK(components.Contains(p_type), "Unkown component type \"%s\"", p_type.c_str()))
                 return {};
 
-            return { p_self, components.GetTypeInfo(p_type).m_typeId };
+            return p_self.Get(components.GetRegisteredTypeId(p_type));
         };
 
         static const auto getOrCreate = [](const EntityHandle& p_self, const std::string& p_type) -> ComponentHandle
         {
-            if (p_type.empty())
+            if (!p_self || p_type.empty())
                 return {};
 
-            ComponentRegistry& components = ComponentRegistry::GetInstance();
+            const ComponentRegistry& components = ComponentRegistry::GetInstance();
 
             if (!CHECK(components.Contains(p_type), "Unkown component type \"%s\"", p_type.c_str()))
                 return {};
 
-            const ComponentTypeInfo& typeInfo = components.GetTypeInfo(p_type);
-
-            if (p_self.GetScene()->GetStorage(typeInfo.m_typeId).GetOrCreateRaw(p_self))
-                return { p_self, typeInfo.m_typeId };
-
-            return {};
+            return p_self.GetOrCreate(components.GetRegisteredTypeId(p_type));
         };
 
         static const auto getInParent = [](const EntityHandle& p_self, const std::string& p_type) -> ComponentHandle
         {
-            if (!p_self || p_type.empty())
+            if (p_type.empty())
                 return {};
 
-            ComponentRegistry& components = ComponentRegistry::GetInstance();
+            const ComponentRegistry& components = ComponentRegistry::GetInstance();
 
             if (!CHECK(components.Contains(p_type), "Unkown component type \"%s\"", p_type.c_str()))
                 return {};
 
-            const auto typeId = components.GetTypeInfo(p_type).m_typeId;
-
-            ComponentHandle current{ p_self, typeId };
-
-            if (current)
-                return current;
-
-            EntityHandle parent = p_self.GetParent();
-
-            while (parent)
-            {
-                if ((current = { parent, typeId }))
-                    return current;
-
-                parent = parent.GetParent();
-            }
-
-            return {};
+            return p_self.GetInParent(components.GetRegisteredTypeId(p_type));
         };
 
         static const auto getInChildren = [](const EntityHandle& p_self, const std::string& p_type) -> ComponentHandle
         {
-            if (!p_self || p_type.empty())
+            if (p_type.empty())
                 return {};
 
-            ComponentRegistry& components = ComponentRegistry::GetInstance();
+            const ComponentRegistry& components = ComponentRegistry::GetInstance();
 
             if (!CHECK(components.Contains(p_type), "Unkown component type \"%s\"", p_type.c_str()))
                 return {};
 
-            const auto typeId = components.GetTypeInfo(p_type).m_typeId;
-
-            ComponentHandle current{ p_self, typeId };
-
-            if (current)
-                return current;
-
-            const std::vector<EntityHandle> children = p_self.GetChildren();
-
-            for (const EntityHandle& child : children)
-            {
-                if ((current = { child, typeId }))
-                    return current;
-            }
-
-            return {};
+            return p_self.GetInChildren(components.GetRegisteredTypeId(p_type));
         };
 
         static const auto getInHierarchy
@@ -124,30 +84,15 @@ namespace SvScripting::Bindings
             [](const EntityHandle& p_self, const std::string& p_type, const SearchOrigin p_searchOrigin)
             -> ComponentHandle
             {
-                switch (p_searchOrigin)
-                {
-                case SearchOrigin::ROOT:
-                {
-                    return getInChildren(p_self.GetRoot(), p_type);
-                }
-                case SearchOrigin::PARENT:
-                {
-                    if (const ComponentHandle component = getInParent(p_self, p_type))
-                        return component;
-
-                    return getInChildren(p_self, p_type);
-                }
-                case SearchOrigin::CHILDREN:
-                {
-                    if (const ComponentHandle component = getInChildren(p_self, p_type))
-                        return component;
-
-                    return getInParent(p_self, p_type);
-                }
-                default:
-                    ASSERT(false, "Invalid component search origin");
+                if (p_type.empty())
                     return {};
-                }
+
+                const ComponentRegistry& components = ComponentRegistry::GetInstance();
+
+                if (!CHECK(components.Contains(p_type), "Unkown component type \"%s\"", p_type.c_str()))
+                    return {};
+
+                return p_self.GetInHierarchy(components.GetRegisteredTypeId(p_type), p_searchOrigin);
             }
         };
 

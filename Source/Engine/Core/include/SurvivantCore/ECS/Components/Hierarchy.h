@@ -74,17 +74,17 @@ namespace SvCore::ECS
          * \brief Gets the hierarchy owner's number of child
          * \return The owner's child count
          */
-        size_t GetChildCount() const;
+        Entity::Index GetChildCount() const;
 
     private:
         friend struct ComponentTraits;
         friend class ComponentRegistry;
 
-        Entity m_parent          = NULL_ENTITY;
-        Entity m_firstChild      = NULL_ENTITY;
-        Entity m_previousSibling = NULL_ENTITY;
-        Entity m_nextSibling     = NULL_ENTITY;
-        size_t m_childCount      = 0;
+        Entity        m_parent          = NULL_ENTITY;
+        Entity        m_firstChild      = NULL_ENTITY;
+        Entity        m_previousSibling = NULL_ENTITY;
+        Entity        m_nextSibling     = NULL_ENTITY;
+        Entity::Index m_childCount      = 0;
     };
 
     std::vector<LibMath::Transform*> GetChildTransforms(const EntityHandle& p_entity);
