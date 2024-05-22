@@ -44,6 +44,10 @@ namespace SvPhysics
         if (!CHECK(p_writer.Bool(m_useGravity), "Failed to write rigid body use gravity flag"))
             return false;
 
+        p_writer.Key("collision_mode");
+        if (!CHECK(p_writer.Uint(static_cast<uint8_t>(m_collisionDetectionMode)), "Failed to write rigid body collision mode"))
+            return false;
+
         return CHECK(p_writer.EndObject(), "Failed to serialize rigid body");
     }
 
@@ -76,6 +80,21 @@ namespace SvPhysics
 
         if (!CHECK(it->value.IsBool(), "Unable to deserialize rigid body use gravity flag - Json value should be a boolean"))
             return false;
+
+        m_useGravity = it->value.GetBool();
+
+        it = p_json.FindMember("collision_mode");
+        if (it != p_json.MemberEnd())
+        {
+            if (!CHECK(it->value.IsUint(), "Unable to deserialize rigid body collision mode - Json value should be a uint"))
+                return false;
+
+            m_collisionDetectionMode = static_cast<ECollisionDetectionMode>(it->value.GetUint());
+        }
+        else
+        {
+            m_collisionDetectionMode = ECollisionDetectionMode::DISCRETE;
+        }
 
         m_useGravity = it->value.GetBool();
         return true;
