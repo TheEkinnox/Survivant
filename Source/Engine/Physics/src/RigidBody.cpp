@@ -164,19 +164,19 @@ namespace SvPhysics
 
     void RigidBody::SetCollisionDetectionMode(const ECollisionDetectionMode p_mode)
     {
+        const PxRigidBodyFlags flags = m_pxBody->getRigidBodyFlags()
+            & ~(PxRigidBodyFlag::eENABLE_CCD | PxRigidBodyFlag::eENABLE_SPECULATIVE_CCD);
+
         switch (m_collisionDetectionMode = p_mode)
         {
         case ECollisionDetectionMode::DISCRETE:
-            m_pxBody->setRigidBodyFlag(PxRigidBodyFlag::eENABLE_CCD, false);
-            m_pxBody->setRigidBodyFlag(PxRigidBodyFlag::eENABLE_SPECULATIVE_CCD, false);
+            m_pxBody->setRigidBodyFlags(flags);
             break;
         case ECollisionDetectionMode::CONTINUOUS:
-            m_pxBody->setRigidBodyFlag(PxRigidBodyFlag::eENABLE_CCD, true);
-            m_pxBody->setRigidBodyFlag(PxRigidBodyFlag::eENABLE_SPECULATIVE_CCD, false);
+            m_pxBody->setRigidBodyFlags(flags | PxRigidBodyFlag::eENABLE_CCD);
             break;
         case ECollisionDetectionMode::CONTINUOUS_SPECULATIVE:
-            m_pxBody->setRigidBodyFlag(PxRigidBodyFlag::eENABLE_CCD, false);
-            m_pxBody->setRigidBodyFlag(PxRigidBodyFlag::eENABLE_SPECULATIVE_CCD, true);
+            m_pxBody->setRigidBodyFlags(flags | PxRigidBodyFlag::eENABLE_SPECULATIVE_CCD);
             break;
         }
     }
