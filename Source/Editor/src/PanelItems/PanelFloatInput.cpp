@@ -30,7 +30,7 @@ namespace SvEditor::PanelItems
     {
         static int flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll;
 
-        auto value = GetRef();
+        auto& value = GetRef();
         ImGui::Text(m_name.c_str());
         ImGui::SameLine();
 
