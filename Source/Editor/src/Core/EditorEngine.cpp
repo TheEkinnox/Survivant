@@ -253,7 +253,10 @@ namespace SvEditor::Core
 		SvScripting::LuaContext& luaContext = SvScripting::LuaContext::GetInstance();
 		luaContext.Reload();
 
-		pieWorld.CurrentScene() = ResourceManager::GetInstance().Load<Scene>(m_editorSelectedScene.GetPath());
+		ResourceManager& resourceManager = ResourceManager::GetInstance();
+		resourceManager.ReloadAll<SvScripting::LuaScript>();
+
+		pieWorld.CurrentScene() = resourceManager.Load<Scene>(m_editorSelectedScene.GetPath());
 
 		pieWorld.m_inputs = ToRemove::SetupGameInputs();
 		pieWorld.SetCamera(pieWorld.GetFirstCamera());
