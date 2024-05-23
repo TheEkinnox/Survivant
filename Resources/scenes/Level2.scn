@@ -1,5 +1,5 @@
 {
-    "entities": 59,
+    "entities": 58,
     "components": [
         {
             "type": "Camera",
@@ -23,29 +23,89 @@
             ]
         },
         {
-            "type": "SphereCollider",
+            "type": "ScriptList",
             "data": [
                 {
                     "owner": 0,
-                    "data": {
-                        "material": {
-                            "path": ""
+                    "data": [
+                        {
+                            "name": "scripts.Player.move",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "mouse_sensitivity"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 0.005
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "max_acceleration"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 10.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "rotation_speed"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Degree",
+                                            "data": 300.0
+                                        }
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "max_speed"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 4.0
+                                    }
+                                }
+                            ]
                         },
-                        "offset": "{0,0,0}",
-                        "is_trigger": false,
-                        "radius": 1.0
-                    }
+                        {
+                            "name": "scripts.Player.jump",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "jump_force"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 5.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "ground_steepness"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 0.5
+                                    }
+                                }
+                            ]
+                        }
+                    ]
                 },
                 {
-                    "owner": 11,
-                    "data": {
-                        "material": {
-                            "path": ""
-                        },
-                        "offset": "{0,0,0}",
-                        "is_trigger": false,
-                        "radius": 1.0
-                    }
+                    "owner": 1,
+                    "data": []
                 }
             ]
         },
@@ -55,17 +115,17 @@
                 {
                     "owner": 0,
                     "data": {
-                        "position": "{0,0,0}",
+                        "position": "{0,2,0}",
                         "rotation": "{0,0,0,1}",
                         "scale": "{1,1,1}"
                     }
                 },
                 {
-                    "owner": 1,
+                    "owner": 56,
                     "data": {
-                        "position": "{0,5,0}",
+                        "position": "{0,0,0}",
                         "rotation": "{0,0,0,1}",
-                        "scale": "{1,1,1}"
+                        "scale": "{13,1,3}"
                     }
                 },
                 {
@@ -73,7 +133,7 @@
                     "data": {
                         "position": "{4,0,-17}",
                         "rotation": "{0,0,0,1}",
-                        "scale": "{3,1,2}"
+                        "scale": "{2,1,3}"
                     }
                 },
                 {
@@ -144,7 +204,7 @@
                     "owner": 11,
                     "data": {
                         "position": "{0,2,0}",
-                        "rotation": "{0,0,0,1}",
+                        "rotation": "{3.54569e-08,0.173648,-5.06377e-08,0.984808}",
                         "scale": "{1,1,1}"
                     }
                 },
@@ -213,10 +273,10 @@
                     }
                 },
                 {
-                    "owner": 26,
+                    "owner": 20,
                     "data": {
-                        "position": "{0,0,0}",
-                        "rotation": "{0,0,0,1}",
+                        "position": "{9,-3,-7}",
+                        "rotation": "{0,-0.707107,0,0.707107}",
                         "scale": "{1,1,1}"
                     }
                 },
@@ -229,27 +289,27 @@
                     }
                 },
                 {
-                    "owner": 50,
+                    "owner": 22,
                     "data": {
-                        "position": "{9,-3,-7}",
-                        "rotation": "{0,-0.707107,0,0.707107}",
-                        "scale": "{1,1,1}"
-                    }
-                },
-                {
-                    "owner": 23,
-                    "data": {
-                        "position": "{2,1,-9.53674e-07}",
+                        "position": "{2,1,0}",
                         "rotation": "{0,0,0,1}",
                         "scale": "{1,3,5}"
                     }
                 },
                 {
-                    "owner": 22,
+                    "owner": 23,
                     "data": {
-                        "position": "{-2.38419e-07,-0.5,-9.53674e-07}",
+                        "position": "{0,-0.5,0}",
                         "rotation": "{0,0,0,1}",
                         "scale": "{1.75,0.59,1.05}"
+                    }
+                },
+                {
+                    "owner": 26,
+                    "data": {
+                        "position": "{0,1.25,0}",
+                        "rotation": "{-0.436017,0,0,0.899939}",
+                        "scale": "{2,5.5,1}"
                     }
                 },
                 {
@@ -261,19 +321,19 @@
                     }
                 },
                 {
-                    "owner": 20,
+                    "owner": 25,
                     "data": {
-                        "position": "{-2,2,-9.53674e-07}",
+                        "position": "{0,3,-2.1}",
                         "rotation": "{0,0,0,1}",
-                        "scale": "{1,7,5}"
+                        "scale": "{2,0.75,0.5}"
                     }
                 },
                 {
-                    "owner": 25,
+                    "owner": 27,
                     "data": {
-                        "position": "{0,-0.04,0}",
-                        "rotation": "{0.189095,-0,0,0.981959}",
-                        "scale": "{3,1,5.793}"
+                        "position": "{-2,2.5,0}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,6,5}"
                     }
                 },
                 {
@@ -312,7 +372,7 @@
                     "owner": 32,
                     "data": {
                         "position": "{2.5,1,0}",
-                        "rotation": "{0,-0,0,1}",
+                        "rotation": "{0,0,0,1}",
                         "scale": "{1,7,9}"
                     }
                 },
@@ -327,7 +387,7 @@
                 {
                     "owner": 35,
                     "data": {
-                        "position": "{0,1.5,-17}",
+                        "position": "{4,1.5,-21}",
                         "rotation": "{0,0,0,1}",
                         "scale": "{3,2,1}"
                     }
@@ -335,9 +395,9 @@
                 {
                     "owner": 37,
                     "data": {
-                        "position": "{-4,0,-11}",
+                        "position": "{-5,0,-11}",
                         "rotation": "{0,0,0,1}",
-                        "scale": "{3,1,5}"
+                        "scale": "{3,1,3}"
                     }
                 },
                 {
@@ -437,7 +497,7 @@
                     }
                 },
                 {
-                    "owner": 51,
+                    "owner": 50,
                     "data": {
                         "position": "{9,-1,-3}",
                         "rotation": "{0,0.707107,0,0.707107}",
@@ -445,33 +505,41 @@
                     }
                 },
                 {
+                    "owner": 51,
+                    "data": {
+                        "position": "{-2,1,-9.53674e-07}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,5,5}"
+                    }
+                },
+                {
                     "owner": 52,
                     "data": {
-                        "position": "{-2.38419e-07,0,-9.53674e-07}",
-                        "rotation": "{0,0,0,1}",
-                        "scale": "{1,1,1}"
-                    }
-                },
-                {
-                    "owner": 53,
-                    "data": {
-                        "position": "{-2.38419e-07,-0.04,-9.53674e-07}",
-                        "rotation": "{0.189095,-9.64797e-15,0,0.981959}",
-                        "scale": "{3,1,5.793}"
-                    }
-                },
-                {
-                    "owner": 55,
-                    "data": {
-                        "position": "{-2.38419e-07,-0.5,-1.90735e-06}",
+                        "position": "{-2.38419e-07,-0.5,-9.53674e-07}",
                         "rotation": "{0,0,0,1}",
                         "scale": "{1.75,0.59,1.05}"
                     }
                 },
                 {
-                    "owner": 56,
+                    "owner": 53,
                     "data": {
-                        "position": "{2,2,-1.90735e-06}",
+                        "position": "{0,1.25,0}",
+                        "rotation": "{-0.436017,-3.15818e-14,0,0.899938}",
+                        "scale": "{2,5.5,1}"
+                    }
+                },
+                {
+                    "owner": 54,
+                    "data": {
+                        "position": "{0,3,-2.1}",
+                        "rotation": "{0,-2.84217e-14,0,1}",
+                        "scale": "{2,0.75,0.5}"
+                    }
+                },
+                {
+                    "owner": 55,
+                    "data": {
+                        "position": "{2,2,-9.53674e-07}",
                         "rotation": "{0,0,0,1}",
                         "scale": "{1,3,5}"
                     }
@@ -479,86 +547,9 @@
                 {
                     "owner": 57,
                     "data": {
-                        "position": "{-2,1,-1.90735e-06}",
+                        "position": "{0,1.5,-17}",
                         "rotation": "{0,0,0,1}",
-                        "scale": "{1,5,5}"
-                    }
-                },
-                {
-                    "owner": 58,
-                    "data": {
-                        "position": "{0,0,0}",
-                        "rotation": "{0,0,0,1}",
-                        "scale": "{13,1,3}"
-                    }
-                }
-            ]
-        },
-        {
-            "type": "ScriptList",
-            "data": [
-                {
-                    "owner": 0,
-                    "data": [
-                        {
-                            "name": "scripts.freeLook",
-                            "data": [
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "move_speed"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 3.0
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "rotation_speed"
-                                    },
-                                    "value": {
-                                        "type": 7,
-                                        "data": {
-                                            "type": "Degree",
-                                            "data": 90.0
-                                        }
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "mouse_sensitivity"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 0.005
-                                    }
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "RigidBody",
-            "data": [
-                {
-                    "owner": 0,
-                    "data": {
-                        "mass": 1.0,
-                        "is_kinematic": true,
-                        "use_gravity": true
-                    }
-                },
-                {
-                    "owner": 11,
-                    "data": {
-                        "mass": 1.0,
-                        "is_kinematic": false,
-                        "use_gravity": true
+                        "scale": "{3,2,1}"
                     }
                 }
             ]
@@ -573,7 +564,7 @@
                             "path": "models/cube.obj"
                         },
                         "material": {
-                            "path": "materials/magenta.mat"
+                            "path": "materials/green.mat"
                         }
                     }
                 },
@@ -647,7 +638,7 @@
                     "owner": 11,
                     "data": {
                         "model": {
-                            "path": "models/sphere.obj"
+                            "path": "models/cube.obj"
                         },
                         "material": {
                             "path": "materials/unlitWhite.mat"
@@ -743,13 +734,24 @@
                     }
                 },
                 {
-                    "owner": 24,
+                    "owner": 22,
                     "data": {
                         "model": {
                             "path": "models/cube.obj"
                         },
                         "material": {
-                            "path": "materials/magenta.mat"
+                            "path": "materials/blue.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 23,
+                    "data": {
+                        "model": {
+                            "path": "importedModels/Stairs/objStair.obj"
+                        },
+                        "material": {
+                            "path": "importedModels/Stairs/blue.mat"
                         }
                     }
                 },
@@ -765,35 +767,24 @@
                     }
                 },
                 {
-                    "owner": 20,
+                    "owner": 26,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/red.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 27,
                     "data": {
                         "model": {
                             "path": "models/cube.obj"
                         },
                         "material": {
                             "path": "materials/blue.mat"
-                        }
-                    }
-                },
-                {
-                    "owner": 23,
-                    "data": {
-                        "model": {
-                            "path": "models/cube.obj"
-                        },
-                        "material": {
-                            "path": "materials/blue.mat"
-                        }
-                    }
-                },
-                {
-                    "owner": 22,
-                    "data": {
-                        "model": {
-                            "path": "importedModels/Stairs/objStair.obj"
-                        },
-                        "material": {
-                            "path": "importedModels/Stairs/blue.mat"
                         }
                     }
                 },
@@ -985,6 +976,28 @@
                     }
                 },
                 {
+                    "owner": 24,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/magenta.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 51,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/blue.mat"
+                        }
+                    }
+                },
+                {
                     "owner": 53,
                     "data": {
                         "model": {
@@ -996,7 +1009,18 @@
                     }
                 },
                 {
-                    "owner": 55,
+                    "owner": 54,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/red.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 52,
                     "data": {
                         "model": {
                             "path": "importedModels/Stairs/objStair.obj"
@@ -1007,13 +1031,24 @@
                     }
                 },
                 {
-                    "owner": 56,
+                    "owner": 55,
                     "data": {
                         "model": {
                             "path": "models/cube.obj"
                         },
                         "material": {
                             "path": "materials/blue.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 56,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/unlitWhite.mat"
                         }
                     }
                 },
@@ -1024,19 +1059,29 @@
                             "path": "models/cube.obj"
                         },
                         "material": {
-                            "path": "materials/blue.mat"
+                            "path": "materials/magenta.mat"
                         }
+                    }
+                }
+            ]
+        },
+        {
+            "type": "RigidBody",
+            "data": [
+                {
+                    "owner": 0,
+                    "data": {
+                        "mass": 10.0,
+                        "is_kinematic": false,
+                        "use_gravity": true
                     }
                 },
                 {
-                    "owner": 58,
+                    "owner": 11,
                     "data": {
-                        "model": {
-                            "path": "models/cube.obj"
-                        },
-                        "material": {
-                            "path": "materials/unlitWhite.mat"
-                        }
+                        "mass": 1.0,
+                        "is_kinematic": false,
+                        "use_gravity": true
                     }
                 }
             ]
@@ -1063,9 +1108,15 @@
                     }
                 },
                 {
-                    "owner": 1,
+                    "owner": 56,
                     "data": {
-                        "parent": 18446744073709551615
+                        "parent": 8
+                    }
+                },
+                {
+                    "owner": 8,
+                    "data": {
+                        "parent": 7
                     }
                 },
                 {
@@ -1114,12 +1165,6 @@
                     "owner": 9,
                     "data": {
                         "parent": 8
-                    }
-                },
-                {
-                    "owner": 8,
-                    "data": {
-                        "parent": 7
                     }
                 },
                 {
@@ -1207,39 +1252,39 @@
                     }
                 },
                 {
-                    "owner": 50,
+                    "owner": 20,
                     "data": {
                         "parent": 13
                     }
                 },
                 {
-                    "owner": 23,
-                    "data": {
-                        "parent": 50
-                    }
-                },
-                {
                     "owner": 22,
                     "data": {
-                        "parent": 50
+                        "parent": 20
                     }
                 },
                 {
-                    "owner": 26,
+                    "owner": 23,
                     "data": {
-                        "parent": 50
-                    }
-                },
-                {
-                    "owner": 27,
-                    "data": {
-                        "parent": 26
+                        "parent": 20
                     }
                 },
                 {
                     "owner": 25,
                     "data": {
-                        "parent": 26
+                        "parent": 23
+                    }
+                },
+                {
+                    "owner": 26,
+                    "data": {
+                        "parent": 23
+                    }
+                },
+                {
+                    "owner": 27,
+                    "data": {
+                        "parent": 20
                     }
                 },
                 {
@@ -1339,9 +1384,15 @@
                     }
                 },
                 {
-                    "owner": 20,
+                    "owner": 51,
                     "data": {
                         "parent": 50
+                    }
+                },
+                {
+                    "owner": 50,
+                    "data": {
+                        "parent": 13
                     }
                 },
                 {
@@ -1353,13 +1404,7 @@
                 {
                     "owner": 52,
                     "data": {
-                        "parent": 51
-                    }
-                },
-                {
-                    "owner": 51,
-                    "data": {
-                        "parent": 13
+                        "parent": 50
                     }
                 },
                 {
@@ -1371,25 +1416,13 @@
                 {
                     "owner": 55,
                     "data": {
-                        "parent": 51
-                    }
-                },
-                {
-                    "owner": 56,
-                    "data": {
-                        "parent": 51
+                        "parent": 50
                     }
                 },
                 {
                     "owner": 57,
                     "data": {
-                        "parent": 51
-                    }
-                },
-                {
-                    "owner": 58,
-                    "data": {
-                        "parent": 8
+                        "parent": 36
                     }
                 }
             ]
@@ -1398,36 +1431,24 @@
             "type": "Tag",
             "data": [
                 {
-                    "owner": 22,
-                    "data": "Mesh"
+                    "owner": 20,
+                    "data": "stair1"
                 },
                 {
                     "owner": 36,
                     "data": "platforms"
                 },
                 {
-                    "owner": 51,
-                    "data": "stair1"
+                    "owner": 13,
+                    "data": "STAIRS"
                 },
                 {
                     "owner": 50,
-                    "data": "stair2"
+                    "data": "stair1"
                 },
                 {
-                    "owner": 26,
-                    "data": "Colliderawsdwds"
-                },
-                {
-                    "owner": 52,
-                    "data": "Colliderawsdwds"
-                },
-                {
-                    "owner": 55,
-                    "data": "Mesh"
-                },
-                {
-                    "owner": 13,
-                    "data": "STRAIR"
+                    "owner": 0,
+                    "data": "player"
                 }
             ]
         },
@@ -1435,7 +1456,7 @@
             "type": "BoxCollider",
             "data": [
                 {
-                    "owner": 58,
+                    "owner": 11,
                     "data": {
                         "material": {
                             "path": ""
@@ -1446,84 +1467,7 @@
                     }
                 },
                 {
-                    "owner": 32,
-                    "data": {
-                        "material": {
-                            "path": ""
-                        },
-                        "offset": "{0,0,0}",
-                        "is_trigger": false,
-                        "size": "{1,1,1}"
-                    }
-                },
-                {
-                    "owner": 40,
-                    "data": {
-                        "material": {
-                            "path": ""
-                        },
-                        "offset": "{0,0,0}",
-                        "is_trigger": false,
-                        "size": "{1,1,1}"
-                    }
-                },
-                {
-                    "owner": 20,
-                    "data": {
-                        "material": {
-                            "path": ""
-                        },
-                        "offset": "{0,0,0}",
-                        "is_trigger": false,
-                        "size": "{1,1,1}"
-                    }
-                },
-                {
-                    "owner": 34,
-                    "data": {
-                        "material": {
-                            "path": ""
-                        },
-                        "offset": "{0,0,0}",
-                        "is_trigger": false,
-                        "size": "{1,1,1}"
-                    }
-                },
-                {
-                    "owner": 23,
-                    "data": {
-                        "material": {
-                            "path": ""
-                        },
-                        "offset": "{0,0,0}",
-                        "is_trigger": false,
-                        "size": "{1,1,1}"
-                    }
-                },
-                {
-                    "owner": 30,
-                    "data": {
-                        "material": {
-                            "path": ""
-                        },
-                        "offset": "{0,0,0}",
-                        "is_trigger": false,
-                        "size": "{1,1,1}"
-                    }
-                },
-                {
-                    "owner": 31,
-                    "data": {
-                        "material": {
-                            "path": ""
-                        },
-                        "offset": "{0,0,0}",
-                        "is_trigger": false,
-                        "size": "{1,1,1}"
-                    }
-                },
-                {
-                    "owner": 46,
+                    "owner": 5,
                     "data": {
                         "material": {
                             "path": ""
@@ -1535,6 +1479,17 @@
                 },
                 {
                     "owner": 3,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 56,
                     "data": {
                         "material": {
                             "path": ""
@@ -1567,128 +1522,7 @@
                     }
                 },
                 {
-                    "owner": 10,
-                    "data": {
-                        "material": {
-                            "path": ""
-                        },
-                        "offset": "{0,0,0}",
-                        "is_trigger": false,
-                        "size": "{1,1,1}"
-                    }
-                },
-                {
-                    "owner": 12,
-                    "data": {
-                        "material": {
-                            "path": ""
-                        },
-                        "offset": "{0,0,0}",
-                        "is_trigger": false,
-                        "size": "{1,1,1}"
-                    }
-                },
-                {
-                    "owner": 18,
-                    "data": {
-                        "material": {
-                            "path": ""
-                        },
-                        "offset": "{0,0,0}",
-                        "is_trigger": false,
-                        "size": "{1,1,1}"
-                    }
-                },
-                {
-                    "owner": 9,
-                    "data": {
-                        "material": {
-                            "path": ""
-                        },
-                        "offset": "{0,0,0}",
-                        "is_trigger": false,
-                        "size": "{1,1,1}"
-                    }
-                },
-                {
                     "owner": 24,
-                    "data": {
-                        "material": {
-                            "path": ""
-                        },
-                        "offset": "{0,0,0}",
-                        "is_trigger": false,
-                        "size": "{1,1,1}"
-                    }
-                },
-                {
-                    "owner": 16,
-                    "data": {
-                        "material": {
-                            "path": ""
-                        },
-                        "offset": "{0,0,0}",
-                        "is_trigger": false,
-                        "size": "{1,1,1}"
-                    }
-                },
-                {
-                    "owner": 48,
-                    "data": {
-                        "material": {
-                            "path": ""
-                        },
-                        "offset": "{0,0,0}",
-                        "is_trigger": false,
-                        "size": "{1,1,1}"
-                    }
-                },
-                {
-                    "owner": 29,
-                    "data": {
-                        "material": {
-                            "path": ""
-                        },
-                        "offset": "{0,0,0}",
-                        "is_trigger": false,
-                        "size": "{1,1,1}"
-                    }
-                },
-                {
-                    "owner": 25,
-                    "data": {
-                        "material": {
-                            "path": ""
-                        },
-                        "offset": "{0,0,0}",
-                        "is_trigger": false,
-                        "size": "{1,1,1}"
-                    }
-                },
-                {
-                    "owner": 41,
-                    "data": {
-                        "material": {
-                            "path": ""
-                        },
-                        "offset": "{0,0,0}",
-                        "is_trigger": false,
-                        "size": "{1,1,1}"
-                    }
-                },
-                {
-                    "owner": 19,
-                    "data": {
-                        "material": {
-                            "path": ""
-                        },
-                        "offset": "{0,0,0}",
-                        "is_trigger": false,
-                        "size": "{1,1,1}"
-                    }
-                },
-                {
-                    "owner": 17,
                     "data": {
                         "material": {
                             "path": ""
@@ -1721,17 +1555,6 @@
                     }
                 },
                 {
-                    "owner": 2,
-                    "data": {
-                        "material": {
-                            "path": ""
-                        },
-                        "offset": "{0,0,0}",
-                        "is_trigger": false,
-                        "size": "{1,1,1}"
-                    }
-                },
-                {
                     "owner": 35,
                     "data": {
                         "material": {
@@ -1743,7 +1566,7 @@
                     }
                 },
                 {
-                    "owner": 49,
+                    "owner": 2,
                     "data": {
                         "material": {
                             "path": ""
@@ -1754,95 +1577,7 @@
                     }
                 },
                 {
-                    "owner": 44,
-                    "data": {
-                        "material": {
-                            "path": ""
-                        },
-                        "offset": "{0,0,0}",
-                        "is_trigger": false,
-                        "size": "{1,1,1}"
-                    }
-                },
-                {
-                    "owner": 15,
-                    "data": {
-                        "material": {
-                            "path": ""
-                        },
-                        "offset": "{0,0,0}",
-                        "is_trigger": false,
-                        "size": "{1,1,1}"
-                    }
-                },
-                {
-                    "owner": 21,
-                    "data": {
-                        "material": {
-                            "path": ""
-                        },
-                        "offset": "{0,0,0}",
-                        "is_trigger": false,
-                        "size": "{1,1,1}"
-                    }
-                },
-                {
-                    "owner": 42,
-                    "data": {
-                        "material": {
-                            "path": ""
-                        },
-                        "offset": "{0,0,0}",
-                        "is_trigger": false,
-                        "size": "{1,1,1}"
-                    }
-                },
-                {
-                    "owner": 47,
-                    "data": {
-                        "material": {
-                            "path": ""
-                        },
-                        "offset": "{0,0,0}",
-                        "is_trigger": false,
-                        "size": "{1,1,1}"
-                    }
-                },
-                {
-                    "owner": 43,
-                    "data": {
-                        "material": {
-                            "path": ""
-                        },
-                        "offset": "{0,0,0}",
-                        "is_trigger": false,
-                        "size": "{1,1,1}"
-                    }
-                },
-                {
-                    "owner": 45,
-                    "data": {
-                        "material": {
-                            "path": ""
-                        },
-                        "offset": "{0,0,0}",
-                        "is_trigger": false,
-                        "size": "{1,1,1}"
-                    }
-                },
-                {
-                    "owner": 53,
-                    "data": {
-                        "material": {
-                            "path": ""
-                        },
-                        "offset": "{0,0,0}",
-                        "is_trigger": false,
-                        "size": "{1,1,1}"
-                    }
-                },
-                {
-                    "owner": 56,
+                    "owner": 9,
                     "data": {
                         "material": {
                             "path": ""
@@ -1862,27 +1597,23 @@
                         "is_trigger": false,
                         "size": "{1,1,1}"
                     }
-                },
+                }
+            ]
+        },
+        {
+            "type": "CapsuleCollider",
+            "data": [
                 {
-                    "owner": 5,
+                    "owner": 0,
                     "data": {
                         "material": {
                             "path": ""
                         },
                         "offset": "{0,0,0}",
                         "is_trigger": false,
-                        "size": "{1,1,1}"
-                    }
-                },
-                {
-                    "owner": 11,
-                    "data": {
-                        "material": {
-                            "path": ""
-                        },
-                        "offset": "{0,0,0}",
-                        "is_trigger": true,
-                        "size": "{1,1,1}"
+                        "axis": "{1,0,0}",
+                        "height": 1.0,
+                        "radius": 0.5
                     }
                 }
             ]
