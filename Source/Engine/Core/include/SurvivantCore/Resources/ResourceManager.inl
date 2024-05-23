@@ -84,4 +84,14 @@ namespace SvCore::Resources
 
         return resources;
     }
+
+    template <typename T>
+    void ResourceManager::RemoveAll()
+    {
+        for (auto it = m_resources.begin(); it != m_resources.end(); ++it)
+        {
+            if (it->second && it->second->CanCastTo<T>())
+                it = m_resources.erase(it);
+        }
+    }
 }

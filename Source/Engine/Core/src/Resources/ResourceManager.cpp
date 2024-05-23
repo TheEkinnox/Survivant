@@ -154,6 +154,22 @@ namespace SvCore::Resources
         m_resources.erase(GetRelativePath(p_path));
     }
 
+    void ResourceManager::RemoveAll(const std::string& p_type)
+    {
+        for (auto it = m_resources.begin(); it != m_resources.end(); ++it)
+        {
+            auto& resource = it->second;
+
+            if (!resource)
+                continue;
+
+            const GenericResourceRef* genericResource = dynamic_cast<GenericResourceRef*>(resource.get());
+
+            if ((genericResource && genericResource->GetType() == p_type) || (*resource && (*resource)->GetTypeName() == p_type))
+                it = m_resources.erase(it);
+        }
+    }
+
     void ResourceManager::Clear()
     {
         m_resources.clear();

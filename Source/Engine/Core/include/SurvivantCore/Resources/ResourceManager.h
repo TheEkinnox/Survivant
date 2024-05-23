@@ -142,6 +142,19 @@ namespace SvCore::Resources
         void Remove(const std::string& p_path);
 
         /**
+         * \brief Removes all the loaded resources of the given type from the manager
+         * \tparam T The target resource type
+         */
+        template <typename T>
+        void RemoveAll();
+
+        /**
+         * \brief Removes all the loaded resources of the given type from the manager
+         * \param p_type The target resource type
+         */
+        void RemoveAll(const std::string& p_type);
+
+        /**
          * \brief Removes all loaded resources from the manager
          */
         void Clear();
