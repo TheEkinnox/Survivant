@@ -99,6 +99,7 @@ namespace SvScripting::Bindings
         using Get = GenericResourceRef(ResourceManager::*)(const std::string&, const std::string&) const;
         using GetOrCreate = GenericResourceRef(ResourceManager::*)(const std::string&, const std::string&);
         using GetAll = std::vector<GenericResourceRef>(ResourceManager::*)(const std::string&) const;
+        using ReloadAll = void(ResourceManager::*)(const std::string&);
         using RemoveAll = void(ResourceManager::*)(const std::string&);
 
         sol::usertype logType = p_luaState.new_usertype<ResourceManager>(
@@ -108,6 +109,7 @@ namespace SvScripting::Bindings
             "Get", static_cast<Get>(&ResourceManager::Get),
             "GetOrCreate", static_cast<GetOrCreate>(&ResourceManager::GetOrCreate),
             "GetAll", static_cast<GetAll>(&ResourceManager::GetAll),
+            "ReloadAll", static_cast<ReloadAll>(&ResourceManager::ReloadAll),
             "Remove", &ResourceManager::Remove,
             "RemoveAll", static_cast<RemoveAll>(&ResourceManager::RemoveAll),
             "Clear", &ResourceManager::Clear,

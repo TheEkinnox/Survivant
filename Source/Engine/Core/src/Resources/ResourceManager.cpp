@@ -127,6 +127,20 @@ namespace SvCore::Resources
         return resources;
     }
 
+    void ResourceManager::ReloadAll(const std::string& p_type)
+    {
+        for (const auto& resource : m_resources | std::ranges::views::values)
+        {
+            if (!resource)
+                continue;
+
+            const GenericResourceRef* genericResource = dynamic_cast<GenericResourceRef*>(resource.get());
+
+            if ((genericResource && genericResource->GetType() == p_type) || (*resource && (*resource)->GetTypeName() == p_type))
+                Create(p_type, resource->GetPath());
+        }
+    }
+
     std::vector<char> ResourceManager::ReadFile(const std::string& p_path) const
     {
         if (p_path.empty())

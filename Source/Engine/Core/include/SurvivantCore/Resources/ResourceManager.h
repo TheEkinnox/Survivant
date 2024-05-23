@@ -129,6 +129,19 @@ namespace SvCore::Resources
         std::vector<GenericResourceRef> GetAll(const std::string& p_type) const;
 
         /**
+         * \brief Reloads all the loaded resources of the given type
+         * \tparam T The target resource type
+         */
+        template <typename T>
+        void ReloadAll();
+
+        /**
+         * \brief Reloads all the loaded resources of the given type
+         * \param p_type The target resource type
+         */
+        void ReloadAll(const std::string& p_type);
+
+        /**
          * \brief Reads the content of the resource at the given path
          * \param p_path The path of the resource file to read
          * \return The resource's file content

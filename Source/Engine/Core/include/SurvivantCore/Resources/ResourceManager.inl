@@ -86,6 +86,16 @@ namespace SvCore::Resources
     }
 
     template <typename T>
+    void ResourceManager::ReloadAll()
+    {
+        for (const auto& resource : m_resources | std::ranges::views::values)
+        {
+            if (resource && resource->CanCastTo<T>())
+                Load<T>(resource->GetPath());
+        }
+    }
+
+    template <typename T>
     void ResourceManager::RemoveAll()
     {
         for (auto it = m_resources.begin(); it != m_resources.end(); ++it)
