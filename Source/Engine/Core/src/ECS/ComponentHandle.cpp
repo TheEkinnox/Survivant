@@ -14,6 +14,14 @@ namespace SvCore::ECS
         return m_owner && m_owner.GetScene()->GetStorage(m_typeId).Contains(m_owner);
     }
 
+    void ComponentHandle::Destroy()
+    {
+        if (m_typeId == 0)
+            return;
+
+        m_owner.Remove(m_typeId);
+    }
+
     template <>
     bool ComponentRegistry::ToJson(const ComponentHandle& p_value, JsonWriter& p_writer, const EntitiesMap& p_toSerialized)
     {
