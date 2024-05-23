@@ -22,9 +22,18 @@ function ResourceManager.Get(type, path) end
 ---@return Resource
 function ResourceManager.GetOrCreate(type, path) end
 
----Unloads the resource at the given path
+---Gets all the loaded resources of the given type
+---@param type string
+---@return table<number, Resource>
+function ResourceManager.GetAll(type, path) end
+
+---Removes the resource at the given path from the resource manager
 ---@param path string
 function ResourceManager.Remove(path) end
+
+---Removes all the resources of the given type from the resource manager
+---@param type string
+function ResourceManager.RemoveAll(type) end
 
 ---Unloads all the currently loaded resources
 function ResourceManager.Clear() end
