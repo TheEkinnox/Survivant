@@ -1,22 +1,6 @@
 {
-    "entities": 53,
+    "entities": 58,
     "components": [
-        {
-            "type": "SphereCollider",
-            "data": [
-                {
-                    "owner": 0,
-                    "data": {
-                        "material": {
-                            "path": ""
-                        },
-                        "offset": "{0,0,0}",
-                        "is_trigger": false,
-                        "radius": 1.0
-                    }
-                }
-            ]
-        },
         {
             "type": "Camera",
             "data": [
@@ -39,50 +23,18 @@
             ]
         },
         {
-            "type": "ScriptList",
+            "type": "SphereCollider",
             "data": [
                 {
                     "owner": 0,
-                    "data": [
-                        {
-                            "name": "scripts.freeLook",
-                            "data": [
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "mouse_sensitivity"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 0.005
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "move_speed"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 3.0
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "rotation_speed"
-                                    },
-                                    "value": {
-                                        "type": 7,
-                                        "data": {
-                                            "type": "Degree",
-                                            "data": 90.0
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    ]
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "radius": 1.0
+                    }
                 }
             ]
         },
@@ -92,7 +44,7 @@
                 {
                     "owner": 0,
                     "data": {
-                        "position": "{0,0,0}",
+                        "position": "{8,3,-13}",
                         "rotation": "{0,0,0,1}",
                         "scale": "{1,1,1}"
                     }
@@ -212,7 +164,7 @@
                 {
                     "owner": 9,
                     "data": {
-                        "position": "{0,0.5,-2}",
+                        "position": "{0,0,-2}",
                         "rotation": "{0,0,0,1}",
                         "scale": "{1,1,1}"
                     }
@@ -468,9 +420,9 @@
                 {
                     "owner": 48,
                     "data": {
-                        "position": "{0,0.25,0}",
+                        "position": "{0,1,0}",
                         "rotation": "{0,0,0,1}",
-                        "scale": "{3,0.5,0.9}"
+                        "scale": "{3,3,0.8}"
                     }
                 },
                 {
@@ -492,7 +444,7 @@
                 {
                     "owner": 51,
                     "data": {
-                        "position": "{-8,1.25,-17}",
+                        "position": "{0,8,-29}",
                         "rotation": "{0,0,0,1}",
                         "scale": "{1.5,1.5,1.5}"
                     }
@@ -504,367 +456,289 @@
                         "rotation": "{0,0,0,1}",
                         "scale": "{1.5,1.5,1.5}"
                     }
+                },
+                {
+                    "owner": 53,
+                    "data": {
+                        "position": "{3,0.525,-3}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,0.2,1}"
+                    }
+                },
+                {
+                    "owner": 54,
+                    "data": {
+                        "position": "{-8,1.25,-17}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1.5,1.5,1.5}"
+                    }
+                },
+                {
+                    "owner": 55,
+                    "data": {
+                        "position": "{-3,6,-26}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1.5,1.5,1.5}"
+                    }
+                },
+                {
+                    "owner": 56,
+                    "data": {
+                        "position": "{0,0.525,-3}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,0.2,1}"
+                    }
+                },
+                {
+                    "owner": 57,
+                    "data": {
+                        "position": "{3,6,-26}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1.5,1.5,1.5}"
+                    }
                 }
             ]
         },
         {
-            "type": "Tag",
+            "type": "ScriptList",
             "data": [
                 {
-                    "owner": 29,
-                    "data": "Collider"
+                    "owner": 0,
+                    "data": [
+                        {
+                            "name": "scripts.Player.jump",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "jump_force"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 5.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "ground_steepness"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 0.5
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "scripts.Player.move",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "mouse_sensitivity"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 0.005
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "rotation_speed"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Degree",
+                                            "data": 300.0
+                                        }
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "max_speed"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 4.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "max_acceleration"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 12.0
+                                    }
+                                }
+                            ]
+                        }
+                    ]
                 },
                 {
-                    "owner": 13,
-                    "data": "STRAIR"
-                },
-                {
-                    "owner": 31,
-                    "data": "stair2"
-                },
-                {
-                    "owner": 12,
-                    "data": "stair1"
-                },
-                {
-                    "owner": 11,
-                    "data": "Collider"
-                },
-                {
-                    "owner": 7,
-                    "data": "start"
-                },
-                {
-                    "owner": 37,
-                    "data": "to_scale(1-22)"
-                },
-                {
-                    "owner": 38,
-                    "data": "bridge"
-                },
-                {
-                    "owner": 42,
-                    "data": "to_move(0-4)"
+                    "owner": 53,
+                    "data": [
+                        {
+                            "name": "scripts.Door.button",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "onActiveYScaleMult"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 0.5
+                                    }
+                                }
+                            ]
+                        }
+                    ]
                 },
                 {
                     "owner": 9,
-                    "data": "to_scale(1-4)"
+                    "data": [
+                        {
+                            "name": "scripts.Door.door",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "numButtonsToMove"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 2.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "length"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 2.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "length_and_dir"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": -1.9
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "move_speed"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 1.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "localLength"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 0.0
+                                    }
+                                }
+                            ]
+                        }
+                    ]
                 },
                 {
-                    "owner": 23,
-                    "data": "end"
-                },
-                {
-                    "owner": 14,
-                    "data": "mid"
-                },
-                {
-                    "owner": 32,
-                    "data": "top_of_stairs"
+                    "owner": 56,
+                    "data": [
+                        {
+                            "name": "scripts.Door.button",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "onActiveYScaleMult"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 0.5
+                                    }
+                                }
+                            ]
+                        }
+                    ]
                 }
             ]
         },
         {
-            "type": "Hierarchy",
+            "type": "RigidBody",
             "data": [
                 {
-                    "owner": 7,
+                    "owner": 0,
                     "data": {
-                        "parent": 18446744073709551615
+                        "mass": 1.0,
+                        "is_kinematic": false,
+                        "use_gravity": true
                     }
                 },
                 {
-                    "owner": 31,
+                    "owner": 51,
                     "data": {
-                        "parent": 13
+                        "mass": 1.0,
+                        "is_kinematic": false,
+                        "use_gravity": true
                     }
                 },
                 {
-                    "owner": 13,
+                    "owner": 52,
                     "data": {
-                        "parent": 18446744073709551615
+                        "mass": 1.0,
+                        "is_kinematic": false,
+                        "use_gravity": true
                     }
                 },
                 {
-                    "owner": 29,
+                    "owner": 54,
                     "data": {
-                        "parent": 31
+                        "mass": 1.0,
+                        "is_kinematic": false,
+                        "use_gravity": true
                     }
                 },
                 {
-                    "owner": 1,
+                    "owner": 55,
                     "data": {
-                        "parent": 18446744073709551615
-                    }
-                },
-                {
-                    "owner": 3,
-                    "data": {
-                        "parent": 7
-                    }
-                },
-                {
-                    "owner": 4,
-                    "data": {
-                        "parent": 7
-                    }
-                },
-                {
-                    "owner": 5,
-                    "data": {
-                        "parent": 7
-                    }
-                },
-                {
-                    "owner": 6,
-                    "data": {
-                        "parent": 7
-                    }
-                },
-                {
-                    "owner": 30,
-                    "data": {
-                        "parent": 24
-                    }
-                },
-                {
-                    "owner": 24,
-                    "data": {
-                        "parent": 32
-                    }
-                },
-                {
-                    "owner": 33,
-                    "data": {
-                        "parent": 14
-                    }
-                },
-                {
-                    "owner": 9,
-                    "data": {
-                        "parent": 23
-                    }
-                },
-                {
-                    "owner": 23,
-                    "data": {
-                        "parent": 18446744073709551615
-                    }
-                },
-                {
-                    "owner": 8,
-                    "data": {
-                        "parent": 7
-                    }
-                },
-                {
-                    "owner": 10,
-                    "data": {
-                        "parent": 8
-                    }
-                },
-                {
-                    "owner": 11,
-                    "data": {
-                        "parent": 12
-                    }
-                },
-                {
-                    "owner": 19,
-                    "data": {
-                        "parent": 11
-                    }
-                },
-                {
-                    "owner": 18,
-                    "data": {
-                        "parent": 23
-                    }
-                },
-                {
-                    "owner": 28,
-                    "data": {
-                        "parent": 23
-                    }
-                },
-                {
-                    "owner": 2,
-                    "data": {
-                        "parent": 29
-                    }
-                },
-                {
-                    "owner": 14,
-                    "data": {
-                        "parent": 18446744073709551615
-                    }
-                },
-                {
-                    "owner": 16,
-                    "data": {
-                        "parent": 23
-                    }
-                },
-                {
-                    "owner": 17,
-                    "data": {
-                        "parent": 14
-                    }
-                },
-                {
-                    "owner": 20,
-                    "data": {
-                        "parent": 22
-                    }
-                },
-                {
-                    "owner": 22,
-                    "data": {
-                        "parent": 23
-                    }
-                },
-                {
-                    "owner": 12,
-                    "data": {
-                        "parent": 13
-                    }
-                },
-                {
-                    "owner": 21,
-                    "data": {
-                        "parent": 22
-                    }
-                },
-                {
-                    "owner": 15,
-                    "data": {
-                        "parent": 42
-                    }
-                },
-                {
-                    "owner": 25,
-                    "data": {
-                        "parent": 22
-                    }
-                },
-                {
-                    "owner": 27,
-                    "data": {
-                        "parent": 22
-                    }
-                },
-                {
-                    "owner": 26,
-                    "data": {
-                        "parent": 22
-                    }
-                },
-                {
-                    "owner": 32,
-                    "data": {
-                        "parent": 18446744073709551615
-                    }
-                },
-                {
-                    "owner": 34,
-                    "data": {
-                        "parent": 24
-                    }
-                },
-                {
-                    "owner": 35,
-                    "data": {
-                        "parent": 24
-                    }
-                },
-                {
-                    "owner": 36,
-                    "data": {
-                        "parent": 24
-                    }
-                },
-                {
-                    "owner": 37,
-                    "data": {
-                        "parent": 32
-                    }
-                },
-                {
-                    "owner": 38,
-                    "data": {
-                        "parent": 37
-                    }
-                },
-                {
-                    "owner": 39,
-                    "data": {
-                        "parent": 14
-                    }
-                },
-                {
-                    "owner": 40,
-                    "data": {
-                        "parent": 14
-                    }
-                },
-                {
-                    "owner": 41,
-                    "data": {
-                        "parent": 14
-                    }
-                },
-                {
-                    "owner": 42,
-                    "data": {
-                        "parent": 14
-                    }
-                },
-                {
-                    "owner": 43,
-                    "data": {
-                        "parent": 42
-                    }
-                },
-                {
-                    "owner": 44,
-                    "data": {
-                        "parent": 8
-                    }
-                },
-                {
-                    "owner": 45,
-                    "data": {
-                        "parent": 14
-                    }
-                },
-                {
-                    "owner": 46,
-                    "data": {
-                        "parent": 23
-                    }
-                },
-                {
-                    "owner": 47,
-                    "data": {
-                        "parent": 23
+                        "mass": 1.0,
+                        "is_kinematic": false,
+                        "use_gravity": true
                     }
                 },
                 {
                     "owner": 48,
                     "data": {
-                        "parent": 9
+                        "mass": 1.0,
+                        "is_kinematic": true,
+                        "use_gravity": true
                     }
                 },
                 {
-                    "owner": 49,
+                    "owner": 57,
                     "data": {
-                        "parent": 14
-                    }
-                },
-                {
-                    "owner": 50,
-                    "data": {
-                        "parent": 14
+                        "mass": 1.0,
+                        "is_kinematic": false,
+                        "use_gravity": true
                     }
                 }
             ]
@@ -1082,10 +956,10 @@
                     }
                 },
                 {
-                    "owner": 9,
+                    "owner": 48,
                     "data": {
                         "model": {
-                            "path": "models/sphere.obj"
+                            "path": "models/cube.obj"
                         },
                         "material": {
                             "path": "materials/red.mat"
@@ -1247,10 +1121,10 @@
                     }
                 },
                 {
-                    "owner": 48,
+                    "owner": 0,
                     "data": {
                         "model": {
-                            "path": "models/cube.obj"
+                            "path": ""
                         },
                         "material": {
                             "path": "materials/green.mat"
@@ -1300,35 +1174,451 @@
                             "path": "materials/magenta.mat"
                         }
                     }
+                },
+                {
+                    "owner": 53,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/green.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 54,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/magenta.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 55,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/magenta.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 56,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/green.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 57,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/magenta.mat"
+                        }
+                    }
                 }
             ]
         },
         {
-            "type": "RigidBody",
+            "type": "Hierarchy",
             "data": [
                 {
+                    "owner": 7,
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
+                },
+                {
+                    "owner": 31,
+                    "data": {
+                        "parent": 13
+                    }
+                },
+                {
+                    "owner": 13,
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
+                },
+                {
+                    "owner": 29,
+                    "data": {
+                        "parent": 31
+                    }
+                },
+                {
+                    "owner": 1,
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
+                },
+                {
+                    "owner": 3,
+                    "data": {
+                        "parent": 7
+                    }
+                },
+                {
+                    "owner": 4,
+                    "data": {
+                        "parent": 7
+                    }
+                },
+                {
+                    "owner": 5,
+                    "data": {
+                        "parent": 7
+                    }
+                },
+                {
+                    "owner": 6,
+                    "data": {
+                        "parent": 7
+                    }
+                },
+                {
+                    "owner": 30,
+                    "data": {
+                        "parent": 24
+                    }
+                },
+                {
+                    "owner": 24,
+                    "data": {
+                        "parent": 32
+                    }
+                },
+                {
+                    "owner": 32,
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
+                },
+                {
+                    "owner": 33,
+                    "data": {
+                        "parent": 14
+                    }
+                },
+                {
+                    "owner": 14,
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
+                },
+                {
+                    "owner": 9,
+                    "data": {
+                        "parent": 23
+                    }
+                },
+                {
+                    "owner": 23,
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
+                },
+                {
+                    "owner": 8,
+                    "data": {
+                        "parent": 7
+                    }
+                },
+                {
+                    "owner": 10,
+                    "data": {
+                        "parent": 8
+                    }
+                },
+                {
+                    "owner": 11,
+                    "data": {
+                        "parent": 12
+                    }
+                },
+                {
+                    "owner": 12,
+                    "data": {
+                        "parent": 13
+                    }
+                },
+                {
+                    "owner": 19,
+                    "data": {
+                        "parent": 11
+                    }
+                },
+                {
+                    "owner": 18,
+                    "data": {
+                        "parent": 23
+                    }
+                },
+                {
+                    "owner": 28,
+                    "data": {
+                        "parent": 23
+                    }
+                },
+                {
+                    "owner": 2,
+                    "data": {
+                        "parent": 29
+                    }
+                },
+                {
+                    "owner": 16,
+                    "data": {
+                        "parent": 23
+                    }
+                },
+                {
+                    "owner": 17,
+                    "data": {
+                        "parent": 14
+                    }
+                },
+                {
+                    "owner": 20,
+                    "data": {
+                        "parent": 22
+                    }
+                },
+                {
+                    "owner": 22,
+                    "data": {
+                        "parent": 23
+                    }
+                },
+                {
+                    "owner": 21,
+                    "data": {
+                        "parent": 22
+                    }
+                },
+                {
+                    "owner": 15,
+                    "data": {
+                        "parent": 42
+                    }
+                },
+                {
+                    "owner": 42,
+                    "data": {
+                        "parent": 14
+                    }
+                },
+                {
+                    "owner": 25,
+                    "data": {
+                        "parent": 22
+                    }
+                },
+                {
+                    "owner": 27,
+                    "data": {
+                        "parent": 22
+                    }
+                },
+                {
+                    "owner": 26,
+                    "data": {
+                        "parent": 22
+                    }
+                },
+                {
+                    "owner": 34,
+                    "data": {
+                        "parent": 24
+                    }
+                },
+                {
+                    "owner": 35,
+                    "data": {
+                        "parent": 24
+                    }
+                },
+                {
+                    "owner": 36,
+                    "data": {
+                        "parent": 24
+                    }
+                },
+                {
+                    "owner": 37,
+                    "data": {
+                        "parent": 32
+                    }
+                },
+                {
+                    "owner": 38,
+                    "data": {
+                        "parent": 37
+                    }
+                },
+                {
+                    "owner": 39,
+                    "data": {
+                        "parent": 14
+                    }
+                },
+                {
+                    "owner": 40,
+                    "data": {
+                        "parent": 14
+                    }
+                },
+                {
+                    "owner": 41,
+                    "data": {
+                        "parent": 14
+                    }
+                },
+                {
+                    "owner": 43,
+                    "data": {
+                        "parent": 42
+                    }
+                },
+                {
+                    "owner": 44,
+                    "data": {
+                        "parent": 8
+                    }
+                },
+                {
+                    "owner": 45,
+                    "data": {
+                        "parent": 14
+                    }
+                },
+                {
+                    "owner": 46,
+                    "data": {
+                        "parent": 23
+                    }
+                },
+                {
+                    "owner": 47,
+                    "data": {
+                        "parent": 23
+                    }
+                },
+                {
+                    "owner": 48,
+                    "data": {
+                        "parent": 9
+                    }
+                },
+                {
+                    "owner": 49,
+                    "data": {
+                        "parent": 14
+                    }
+                },
+                {
+                    "owner": 50,
+                    "data": {
+                        "parent": 14
+                    }
+                },
+                {
+                    "owner": 53,
+                    "data": {
+                        "parent": 9
+                    }
+                },
+                {
+                    "owner": 56,
+                    "data": {
+                        "parent": 9
+                    }
+                }
+            ]
+        },
+        {
+            "type": "Tag",
+            "data": [
+                {
+                    "owner": 29,
+                    "data": "Collider"
+                },
+                {
+                    "owner": 13,
+                    "data": "STRAIR"
+                },
+                {
+                    "owner": 31,
+                    "data": "stair2"
+                },
+                {
+                    "owner": 12,
+                    "data": "stair1"
+                },
+                {
+                    "owner": 11,
+                    "data": "Collider"
+                },
+                {
+                    "owner": 7,
+                    "data": "start"
+                },
+                {
+                    "owner": 37,
+                    "data": "to_scale(1-22)"
+                },
+                {
+                    "owner": 38,
+                    "data": "bridge"
+                },
+                {
+                    "owner": 42,
+                    "data": "to_move(0-4)"
+                },
+                {
+                    "owner": 9,
+                    "data": "end_door"
+                },
+                {
+                    "owner": 23,
+                    "data": "end"
+                },
+                {
+                    "owner": 14,
+                    "data": "mid"
+                },
+                {
+                    "owner": 32,
+                    "data": "top_of_stairs"
+                },
+                {
                     "owner": 0,
-                    "data": {
-                        "mass": 1.0,
-                        "is_kinematic": true,
-                        "use_gravity": true
-                    }
+                    "data": "player"
                 },
                 {
-                    "owner": 51,
-                    "data": {
-                        "mass": 1.0,
-                        "is_kinematic": false,
-                        "use_gravity": true
-                    }
+                    "owner": 48,
+                    "data": "wall"
                 },
                 {
-                    "owner": 52,
-                    "data": {
-                        "mass": 1.0,
-                        "is_kinematic": false,
-                        "use_gravity": true
-                    }
+                    "owner": 53,
+                    "data": "button_2"
+                },
+                {
+                    "owner": 56,
+                    "data": "button_1"
                 }
             ]
         },
@@ -1678,6 +1968,83 @@
                 },
                 {
                     "owner": 52,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 5,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 48,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,-0.04,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 53,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0.5,0}",
+                        "is_trigger": true,
+                        "size": "{1,0.3,1}"
+                    }
+                },
+                {
+                    "owner": 54,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 55,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 56,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0.5,0}",
+                        "is_trigger": true,
+                        "size": "{1,0.3,1}"
+                    }
+                },
+                {
+                    "owner": 57,
                     "data": {
                         "material": {
                             "path": ""
