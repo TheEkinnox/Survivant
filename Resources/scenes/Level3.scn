@@ -1,5 +1,5 @@
 {
-    "entities": 58,
+    "entities": 61,
     "components": [
         {
             "type": "Camera",
@@ -27,6 +27,17 @@
             "data": [
                 {
                     "owner": 0,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "radius": 1.0
+                    }
+                },
+                {
+                    "owner": 60,
                     "data": {
                         "material": {
                             "path": ""
@@ -333,16 +344,16 @@
                     "owner": 37,
                     "data": {
                         "position": "{0,0,-5}",
-                        "rotation": "{0,0,0,1}",
+                        "rotation": "{0,-0,0,1}",
                         "scale": "{1,1,1}"
                     }
                 },
                 {
                     "owner": 38,
                     "data": {
-                        "position": "{-0.25,0,-0.25}",
-                        "rotation": "{0,0,0,1}",
-                        "scale": "{5,0.9,0.5}"
+                        "position": "{-0.25,0,6}",
+                        "rotation": "{0.707107,0,0,0.707107}",
+                        "scale": "{5,13,0.9}"
                     }
                 },
                 {
@@ -380,9 +391,9 @@
                 {
                     "owner": 43,
                     "data": {
-                        "position": "{1.5,0.75,0}",
+                        "position": "{0.333,0.55,0}",
                         "rotation": "{0,0,0,1}",
-                        "scale": "{2,0.5,5}"
+                        "scale": "{0.333,0.1,1}"
                     }
                 },
                 {
@@ -444,9 +455,9 @@
                 {
                     "owner": 51,
                     "data": {
-                        "position": "{0,8,-29}",
-                        "rotation": "{0,0,0,1}",
-                        "scale": "{1.5,1.5,1.5}"
+                        "position": "{13,-3.475,-1.5}",
+                        "rotation": "{0,-0,0,1}",
+                        "scale": "{1,0.2,1}"
                     }
                 },
                 {
@@ -460,7 +471,7 @@
                 {
                     "owner": 53,
                     "data": {
-                        "position": "{3,0.525,-3}",
+                        "position": "{3,0.525,-1.5}",
                         "rotation": "{0,0,0,1}",
                         "scale": "{1,0.2,1}"
                     }
@@ -476,15 +487,15 @@
                 {
                     "owner": 55,
                     "data": {
-                        "position": "{-3,6,-26}",
+                        "position": "{-3,0.525,-4.5}",
                         "rotation": "{0,0,0,1}",
-                        "scale": "{1.5,1.5,1.5}"
+                        "scale": "{1,0.2,1}"
                     }
                 },
                 {
                     "owner": 56,
                     "data": {
-                        "position": "{0,0.525,-3}",
+                        "position": "{-3,0.525,-1.5}",
                         "rotation": "{0,0,0,1}",
                         "scale": "{1,0.2,1}"
                     }
@@ -492,9 +503,25 @@
                 {
                     "owner": 57,
                     "data": {
-                        "position": "{3,6,-26}",
+                        "position": "{2,0.525,-16}",
+                        "rotation": "{0,-0,0,1}",
+                        "scale": "{1,0.2,1}"
+                    }
+                },
+                {
+                    "owner": 58,
+                    "data": {
+                        "position": "{-4,0.525,7}",
                         "rotation": "{0,0,0,1}",
-                        "scale": "{1.5,1.5,1.5}"
+                        "scale": "{1,0.2,1}"
+                    }
+                },
+                {
+                    "owner": 60,
+                    "data": {
+                        "position": "{2,1,-10}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{0.5,0.5,0.5}"
                     }
                 }
             ]
@@ -546,6 +573,16 @@
                                 {
                                     "key": {
                                         "type": 4,
+                                        "data": "max_speed"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 4.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
                                         "data": "rotation_speed"
                                     },
                                     "value": {
@@ -554,16 +591,6 @@
                                             "type": "Degree",
                                             "data": 300.0
                                         }
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "max_speed"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 4.0
                                     }
                                 },
                                 {
@@ -613,7 +640,17 @@
                                     },
                                     "value": {
                                         "type": 3,
-                                        "data": 2.0
+                                        "data": 3.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "localLength"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 0.0
                                     }
                                 },
                                 {
@@ -645,16 +682,6 @@
                                         "type": 3,
                                         "data": 1.0
                                     }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "localLength"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 0.0
-                                    }
                                 }
                             ]
                         }
@@ -662,6 +689,166 @@
                 },
                 {
                     "owner": 56,
+                    "data": [
+                        {
+                            "name": "scripts.Door.button",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "onActiveYScaleMult"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 0.5
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "owner": 55,
+                    "data": [
+                        {
+                            "name": "scripts.Door.button",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "onActiveYScaleMult"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 0.5
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "owner": 37,
+                    "data": [
+                        {
+                            "name": "scripts.Door.door",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "numButtonsToMove"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 1.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "move_speed"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 1.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "length_and_dir"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": -11.0
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "owner": 51,
+                    "data": [
+                        {
+                            "name": "scripts.Door.button",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "onActiveYScaleMult"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 0.5
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "owner": 57,
+                    "data": [
+                        {
+                            "name": "scripts.Door.button",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "onActiveYScaleMult"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 0.5
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "owner": 42,
+                    "data": [
+                        {
+                            "name": "scripts.Door.door",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "numButtonsToMove"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 1.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "move_speed"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 1.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "length_and_dir"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 4.0
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "owner": 58,
                     "data": [
                         {
                             "name": "scripts.Door.button",
@@ -694,11 +881,11 @@
                     }
                 },
                 {
-                    "owner": 51,
+                    "owner": 38,
                     "data": {
                         "mass": 1.0,
-                        "is_kinematic": false,
-                        "use_gravity": true
+                        "is_kinematic": true,
+                        "use_gravity": false
                     }
                 },
                 {
@@ -718,25 +905,33 @@
                     }
                 },
                 {
-                    "owner": 55,
-                    "data": {
-                        "mass": 1.0,
-                        "is_kinematic": false,
-                        "use_gravity": true
-                    }
-                },
-                {
                     "owner": 48,
                     "data": {
                         "mass": 1.0,
                         "is_kinematic": true,
-                        "use_gravity": true
+                        "use_gravity": false
                     }
                 },
                 {
-                    "owner": 57,
+                    "owner": 15,
                     "data": {
                         "mass": 1.0,
+                        "is_kinematic": true,
+                        "use_gravity": false
+                    }
+                },
+                {
+                    "owner": 43,
+                    "data": {
+                        "mass": 1.0,
+                        "is_kinematic": true,
+                        "use_gravity": false
+                    }
+                },
+                {
+                    "owner": 60,
+                    "data": {
+                        "mass": 0.009999999776482582,
                         "is_kinematic": false,
                         "use_gravity": true
                     }
@@ -1160,7 +1355,7 @@
                             "path": "models/cube.obj"
                         },
                         "material": {
-                            "path": "materials/magenta.mat"
+                            "path": "materials/green.mat"
                         }
                     }
                 },
@@ -1182,7 +1377,7 @@
                             "path": "models/cube.obj"
                         },
                         "material": {
-                            "path": "materials/green.mat"
+                            "path": "materials/red.mat"
                         }
                     }
                 },
@@ -1204,7 +1399,7 @@
                             "path": "models/cube.obj"
                         },
                         "material": {
-                            "path": "materials/magenta.mat"
+                            "path": "materials/red.mat"
                         }
                     }
                 },
@@ -1215,7 +1410,7 @@
                             "path": "models/cube.obj"
                         },
                         "material": {
-                            "path": "materials/green.mat"
+                            "path": "materials/red.mat"
                         }
                     }
                 },
@@ -1226,7 +1421,29 @@
                             "path": "models/cube.obj"
                         },
                         "material": {
-                            "path": "materials/magenta.mat"
+                            "path": "materials/green.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 58,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/yellow.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 60,
+                    "data": {
+                        "model": {
+                            "path": "models/sphere.obj"
+                        },
+                        "material": {
+                            "path": "materials/yellow.mat"
                         }
                     }
                 }
@@ -1490,7 +1707,7 @@
                 {
                     "owner": 43,
                     "data": {
-                        "parent": 42
+                        "parent": 15
                     }
                 },
                 {
@@ -1546,6 +1763,42 @@
                     "data": {
                         "parent": 9
                     }
+                },
+                {
+                    "owner": 55,
+                    "data": {
+                        "parent": 9
+                    }
+                },
+                {
+                    "owner": 51,
+                    "data": {
+                        "parent": 37
+                    }
+                },
+                {
+                    "owner": 57,
+                    "data": {
+                        "parent": 37
+                    }
+                },
+                {
+                    "owner": 0,
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
+                },
+                {
+                    "owner": 58,
+                    "data": {
+                        "parent": 42
+                    }
+                },
+                {
+                    "owner": 59,
+                    "data": {
+                        "parent": 15
+                    }
                 }
             ]
         },
@@ -1578,11 +1831,11 @@
                 },
                 {
                     "owner": 37,
-                    "data": "to_scale(1-22)"
+                    "data": "wall"
                 },
                 {
                     "owner": 38,
-                    "data": "bridge"
+                    "data": "wall"
                 },
                 {
                     "owner": 42,
@@ -1618,7 +1871,31 @@
                 },
                 {
                     "owner": 56,
+                    "data": "button_3"
+                },
+                {
+                    "owner": 55,
                     "data": "button_1"
+                },
+                {
+                    "owner": 51,
+                    "data": "button_1"
+                },
+                {
+                    "owner": 57,
+                    "data": "button_1"
+                },
+                {
+                    "owner": 15,
+                    "data": "wall"
+                },
+                {
+                    "owner": 59,
+                    "data": "remove_me"
+                },
+                {
+                    "owner": 58,
+                    "data": "button"
                 }
             ]
         },
@@ -1956,13 +2233,13 @@
                     }
                 },
                 {
-                    "owner": 51,
+                    "owner": 57,
                     "data": {
                         "material": {
                             "path": ""
                         },
                         "offset": "{0,0,0}",
-                        "is_trigger": false,
+                        "is_trigger": true,
                         "size": "{1,1,1}"
                     }
                 },
@@ -1994,7 +2271,7 @@
                         "material": {
                             "path": ""
                         },
-                        "offset": "{0,-0.04,0}",
+                        "offset": "{0,-0.045,0}",
                         "is_trigger": false,
                         "size": "{1,1,1}"
                     }
@@ -2005,9 +2282,9 @@
                         "material": {
                             "path": ""
                         },
-                        "offset": "{0,0.5,0}",
+                        "offset": "{0,0,0}",
                         "is_trigger": true,
-                        "size": "{1,0.3,1}"
+                        "size": "{1,1,1}"
                     }
                 },
                 {
@@ -2022,13 +2299,13 @@
                     }
                 },
                 {
-                    "owner": 55,
+                    "owner": 51,
                     "data": {
                         "material": {
                             "path": ""
                         },
                         "offset": "{0,0,0}",
-                        "is_trigger": false,
+                        "is_trigger": true,
                         "size": "{1,1,1}"
                     }
                 },
@@ -2044,13 +2321,57 @@
                     }
                 },
                 {
-                    "owner": 57,
+                    "owner": 38,
                     "data": {
                         "material": {
                             "path": ""
                         },
                         "offset": "{0,0,0}",
                         "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 55,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0.5,0}",
+                        "is_trigger": true,
+                        "size": "{1,0.3,1}"
+                    }
+                },
+                {
+                    "owner": 15,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 43,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 58,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": true,
                         "size": "{1,1,1}"
                     }
                 }
