@@ -1,21 +1,7 @@
 //InspectorItemManager.cpp
 #include "SurvivantEditor/Core/InspectorItemManager.h"
 
-#include "SurvivantApp/Core/IEngine.h"
-#include "SurvivantCore/Debug/Assertion.h"
-
-#include "SurvivantCore/ECS/Components/Hierarchy.h"
-#include "SurvivantCore/ECS/Components/TagComponent.h"
-#include "SurvivantCore/ECS/Scene.h"
-#include "SurvivantRendering/Components/CameraComponent.h"
-#include "SurvivantRendering/Components/LightComponent.h"
-#include "SurvivantRendering/Components/ModelComponent.h"
-#include "SurvivantRendering/Enums/EShaderDataType.h"
-#include "SurvivantRendering/Resources/Material.h"
-#include "SurvivantRendering/Resources/Model.h"
-#include "SurvivantRendering/RHI/IShader.h"
-#include "SurvivantRendering/RHI/ITexture.h"
-
+#include "SurvivantEditor/Core/EditorEngine.h"
 #include "SurvivantEditor/Panels/HierarchyPanel.h"
 #include "SurvivantEditor/PanelItems/PanelButton.h"
 #include "SurvivantEditor/PanelItems/PanelCheckbox.h"
@@ -34,6 +20,22 @@
 #include "SurvivantEditor/PanelItems/PanelVec3Input.h"
 #include "SurvivantEditor/PanelItems/PanelCheckbox.h"
 #include "SurvivantEditor/PanelItems/PanelScriptList.h"
+
+#include <SurvivantApp/Core/IEngine.h>
+
+#include <SurvivantCore/Debug/Assertion.h>
+
+#include <SurvivantCore/ECS/Components/Hierarchy.h>
+#include <SurvivantCore/ECS/Components/TagComponent.h>
+#include <SurvivantCore/ECS/Scene.h>
+#include <SurvivantRendering/Components/CameraComponent.h>
+#include <SurvivantRendering/Components/LightComponent.h>
+#include <SurvivantRendering/Components/ModelComponent.h>
+#include <SurvivantRendering/Enums/EShaderDataType.h>
+#include <SurvivantRendering/Resources/Material.h>
+#include <SurvivantRendering/Resources/Model.h>
+#include <SurvivantRendering/RHI/IShader.h>
+#include <SurvivantRendering/RHI/ITexture.h>
 
 #include <SurvivantPhysics/RigidBody.h>
 #include <SurvivantPhysics/Collider/BoxCollider.h>
@@ -161,18 +163,19 @@ namespace SvEditor::Core
 	{
 		static size_t Prio = 2;
 
-		auto component = PanelComponent(ComponentRegistry::GetInstance().GetRegisteredTypeName<Transform>(),
+		return std::make_shared<PanelComponent>(PanelComponent(ComponentRegistry::GetInstance().GetRegisteredTypeName<Transform>(),
 			PanelComponent::Items({
 					std::make_shared<PanelTransformInput>(PanelTransformInput(
 						PanelTransformInput::GetRefFunc(
 							[e = p_entity]() mutable -> Transform&
 							{
 								return *e.Get<Transform>();
-							}))
-				)}),
-			Prio);
-
-		return std::make_shared<PanelComponent>(std::move(component));
+							}),
+						PanelTransformInput::Callback([](PanelTransformInput::CallbackParams)
+							{ SV_EVENT_MANAGER().Invoke<Core::EditorEngine::OnEditorModifiedScene>(); })
+					)
+				) }),
+			Prio));
 	}
 
 	InspectorItemManager::PanelableComponent InspectorItemManager::AddComponentHierarchy(

@@ -18,8 +18,6 @@ namespace SvEditor::Core
 {
 	void EditorEngine::Init()
 	{
-		using namespace RuntimeBuild;
-
 		s_engine = this;
 
 		//create scenes
@@ -31,19 +29,7 @@ namespace SvEditor::Core
 		m_editorWorld->SetInputs();
 
 		//setup events
-		SV_EVENT_MANAGER().AddListenner<OnCreateBuildGame>(OnCreateBuildGame::EventDelegate(
-			[](	const std::string& p_buildFileName,
-				const SvApp::Core::BuildConfig& p_buildInfo)
-			{
-				BuildManager::GetInstance().CreateBuild(p_buildFileName, p_buildInfo);
-			}));
-
-		SV_EVENT_MANAGER().AddListenner<OnCreateBuildAndRun>(OnCreateBuildAndRun::EventDelegate(
-			[](	const std::string& p_buildFileName,
-				const SvApp::Core::BuildConfig& p_buildInfo)
-			{
-				BuildManager::GetInstance().CreateAndRunBuild(p_buildFileName, p_buildInfo);
-			}));
+		SetupEditorEvents();
 	}
 
 	void EditorEngine::Update()
@@ -267,6 +253,50 @@ namespace SvEditor::Core
 		return CHECK(luaContext.IsValid(), "Failed to start lua context");
 	}
 
+	void SvEditor::Core::EditorEngine::SetupEditorEvents()
+	{
+		using namespace RuntimeBuild;
+
+		SV_EVENT_MANAGER().AddListenner<OnCreateBuildGame>(OnCreateBuildGame::EventDelegate(
+			[](const std::string& p_buildFileName,
+				const SvApp::Core::BuildConfig& p_buildInfo)
+			{
+				BuildManager::GetInstance().CreateBuild(p_buildFileName, p_buildInfo);
+			}));
+
+		SV_EVENT_MANAGER().AddListenner<OnCreateBuildAndRun>(OnCreateBuildAndRun::EventDelegate(
+			[](const std::string& p_buildFileName,
+				const SvApp::Core::BuildConfig& p_buildInfo)
+			{
+				BuildManager::GetInstance().CreateAndRunBuild(p_buildFileName, p_buildInfo);
+			}));
+
+		SV_EVENT_MANAGER().AddListenner<OnSave>(OnSave::EventDelegate(
+			[this]()
+			{ 
+				auto& engine = *this;
+				if (engine.IsPlayInEditor())
+				{
+					SV_LOG_WARNING("Can't save scene during play mode");
+					return;
+				}
+
+				OnSave::s_saveSucceded = m_editorWorld->Save(true);
+				if (OnSave::s_saveSucceded)
+				{
+					m_isEditorModifiedScene = false;
+					SV_LOG("Scene successfully saved to \"%s\"", m_editorWorld->CurrentScene().GetFullPath().c_str());
+				}
+			}));
+
+		SV_EVENT_MANAGER().AddListenner<OnEditorModifiedScene>(OnEditorModifiedScene::EventDelegate(
+			[this]()
+			{ 
+				if (!this->IsPlayInEditor())
+					m_isEditorModifiedScene = true;
+			}));
+	}
+
 	std::string EditorEngine::GetTemporaryScenePath() const
 	{
 		if (!m_editorSelectedScene)
@@ -291,7 +321,8 @@ namespace SvEditor::Core
 				m_editorSelectedScene.GetFullPath().c_str(), GetTemporaryScenePath().c_str(), err.message().c_str()))
 			return false;
 
-		return m_editorWorld->Save(true);
+		SV_EVENT_MANAGER().Invoke<OnSave>();
+		return OnSave::s_saveSucceded;
 	}
 
 	bool EditorEngine::RestoreSceneState()
@@ -332,6 +363,11 @@ namespace SvEditor::Core
 		return m_isRunning;
 	}
 
+	bool SvEditor::Core::EditorEngine::IsEditorModifiedScene()
+	{
+		return m_isEditorModifiedScene;
+	}
+
 	void EditorEngine::SetupUI(Core::EditorWindow* p_window, const std::array<std::function<void()>, 3>p_playPauseFrameCallbacks)
 	{
 		p_window->SetupUI(
@@ -350,11 +386,11 @@ namespace SvEditor::Core
 
 	bool EditorEngine::ChangeScene(const std::string& p_scenePath)
 	{
-		//ASSERT(!m_allLevels.empty(), "No levels to browse to");
-		//ASSERT(p_worldContext.CurrentScene != nullptr); can have no current if first browse
-
-		//auto& rm = ResourceManager::GetInstance();
 		auto& world = m_gameInstance? *m_PIEWorld.lock() : *m_editorWorld;
+
+		if (!m_gameInstance && m_isEditorModifiedScene)
+			SV_EVENT_MANAGER().Invoke<OnSave>();
+
 
 		//couldnt browse to scene
 		if (!BrowseToScene(world, p_scenePath))

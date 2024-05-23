@@ -1,9 +1,10 @@
 //SavePanel.cpp
-
 #include "SurvivantEditor/Panels/SavePanel.h"
 
-#include "SurvivantCore/Events/EventManager.h"
-#include "SurvivantApp/Windows/Window.h"
+#include "SurvivantEditor/Core/EditorEngine.h"
+
+#include <SurvivantCore/Events/EventManager.h>
+#include <SurvivantApp/Windows/Window.h>
 
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
@@ -18,7 +19,13 @@ namespace SvEditor::Panels
         m_name = NAME;
 
         m_options.m_buttons.push_back(PanelButton("Save",
-            []() { SvCore::Events::EventManager::GetInstance().Invoke<SvApp::Window::WindowClosing>(); }));
+            []() 
+            { 
+                SV_EVENT_MANAGER().Invoke<Core::EditorEngine::OnSave>();
+
+                if (Core::EditorEngine::OnSave::s_saveSucceded)
+                    SvCore::Events::EventManager::GetInstance().Invoke<SvApp::Window::WindowClosing>(); 
+            }));
         m_options.m_buttons.push_back(PanelButton("Don't Save",
             []() { SvCore::Events::EventManager::GetInstance().Invoke<SvApp::Window::WindowClosing>(); }));
         m_options.m_buttons.push_back(PanelButton("Close",

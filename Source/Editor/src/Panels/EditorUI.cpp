@@ -4,10 +4,9 @@
 
 #include "SurvivantApp/Inputs/InputManager.h"
 #include "SurvivantApp/Windows/Window.h"
-#include "SurvivantCore/Debug/Assertion.h"
-#include "SurvivantCore/Events/EventManager.h"
-#include "SurvivantCore/Utility/Utility.h"
+
 #include "SurvivantEditor/Core/IUI.h"
+#include "SurvivantEditor/Core/EditorEngine.h"
 #include "SurvivantEditor/Core/InspectorItemManager.h"
 #include "SurvivantEditor/MenuItems/MenuButton.h"
 #include "SurvivantEditor/Panels/ConsolePanel.h"
@@ -22,6 +21,9 @@
 #include "SurvivantEditor/Panels/BuildPanel.h"
 #include "SurvivantEditor/PanelItems/PanelButton.h"
 
+#include <SurvivantCore/Debug/Assertion.h>
+#include <SurvivantCore/Events/EventManager.h>
+#include <SurvivantCore/Utility/Utility.h>
 
 #include "Vector/Vector2.h"
 
@@ -273,15 +275,7 @@ namespace SvEditor::Core
             "Save",
             [p_world](char)
             {
-                auto& engine = SV_ENGINE();
-                if (engine->IsPlayInEditor())
-                {
-                    SV_LOG_WARNING("Can't save scene during play mode");
-                    return;
-                }
-
-                if (p_world.lock()->Save(true))
-                    SV_LOG("Scene successfully saved to \"%s\"", p_world.lock()->CurrentScene().GetFullPath().c_str());
+                SV_EVENT_MANAGER().Invoke<EditorEngine::OnSave>();
             },
             InputManager::KeyboardKeyType(EKey::S, EKeyState::PRESSED, EInputModifier::MOD_CONTROL),
             *m_inputs
@@ -433,14 +427,11 @@ namespace SvEditor::Core
 
     void EditorUI::TryCreateSavePanel()
     {
-        //TODO: add save boolean here
-        std::srand((int)std::time(0));
-        //auto val = std::rand();
-        //if (val % 20 == 0)
-        //{
+        if (dynamic_cast<Core::EditorEngine*>(SV_ENGINE())->IsEditorModifiedScene())
+        {
             CreateSavePanel();
             SvApp::Window::WindowCloseRequest::InterceptCloseRequest();
-        //}
+        }
     }
 
     std::shared_ptr<Panel> EditorUI::CreateSavePanel()

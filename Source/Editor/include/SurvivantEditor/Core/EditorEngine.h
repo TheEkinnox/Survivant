@@ -20,12 +20,21 @@ namespace SvEditor::Core
 	class EditorEngine : public SvApp::Core::IEngine
 	{
 	public:
+		//Events
 		class OnCreateBuildGame : public SvCore::Events::Event<
 			std::string /*p_buildFileName*/,
 			SvApp::Core::BuildConfig /*p_buildInfo*/> {};
+
 		class OnCreateBuildAndRun : public SvCore::Events::Event<
 			std::string /*p_buildFileName*/,
 			SvApp::Core::BuildConfig /*p_buildInfo*/> {};
+
+		class OnSave : public SvCore::Events::Event<> 
+		{
+		public:
+			static inline bool s_saveSucceded = false;
+		};
+		class OnEditorModifiedScene : public SvCore::Events::Event<> {};
 
 		EditorEngine() = default;
 		~EditorEngine() = default;
@@ -41,19 +50,9 @@ namespace SvEditor::Core
 
 		void RenderWorlds();
 		bool IsRunning();
+		bool IsEditorModifiedScene();
 
 		void SetupUI(Core::EditorWindow* p_window, const std::array<std::function<void()>, 3> p_playPauseFrameCallbacks);
-
-		//bool StartScene(WorldContext& p_worldContext) override;
-
-
-		////scene panel, where you mofi
-		//void CreateEditorWorld();
-		//void CreatePIEWorld();
-
-		//on level switch, will ref new level
-		//Scene* GetGameScene();
-		//std::shared_ptr<IEngine::WorldContext> GetPIEWorldContext();
 
 		//create PIE after press play
 		std::weak_ptr<GameInstance> CreatePIEGameInstance();
@@ -63,6 +62,7 @@ namespace SvEditor::Core
 		using Inputs = SvApp::InputManager::InputBindings;
 
 		bool InitializePlayInEditorGameInstance();
+		void SetupEditorEvents();
 
 		std::string GetTemporaryScenePath() const;
 		bool		SaveSceneState() const;
@@ -72,8 +72,9 @@ namespace SvEditor::Core
 		std::shared_ptr<WorldContext>	CreatePIEWorld();
 		std::shared_ptr<Inputs>			CreateEditorInputs();
 
-		SvCore::Utility::Timer			m_time;
-		bool							m_isRunning = true;
+		SvCore::Utility::Timer	m_time;
+		bool					m_isRunning = true;
+		bool					m_isEditorModifiedScene = false;
 
 		//always exists
 		std::shared_ptr<WorldContext>	m_editorWorld;
