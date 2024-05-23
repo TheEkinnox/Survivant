@@ -31,12 +31,13 @@ namespace SvEditor::Panels
     {
         m_name = NAME;
 
-        m_buttonList.m_buttons.reserve(1);
-        m_buttonList.m_buttons.emplace_back(PanelButton("Refresh", [this]() {
-                SetupTree();
-                m_tree->ForceCloseChildren(true);
-                m_tree->Select();
-            }));
+        m_buttonList.m_buttons.emplace_back(PanelButton("Refresh", [this]()
+        {
+            ResourceManager::GetInstance().Clear();
+            SetupTree();
+            m_tree->ForceCloseChildren(true);
+            m_tree->Select();
+        }));
 
         SetupTree();
 
