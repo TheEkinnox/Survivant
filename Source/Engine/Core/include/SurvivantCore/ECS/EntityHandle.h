@@ -158,7 +158,7 @@ namespace SvCore::ECS
         EntityHandle GetChild(Entity::Index p_index) const;
 
         /**
-         * \brief Sets the linked entity's parent
+         * \brief Adds a new child entity to this one
          */
         EntityHandle AddChild() const;
 
@@ -353,6 +353,12 @@ namespace SvCore::ECS
          * \return A handle to the created component on success. An empty handle otherwise
          */
         ComponentHandle GetOrCreate(Utility::TypeId p_type) const;
+
+        /**
+         * \brief Removes the component of the given type from the linked entity
+         * \param p_type The component's type
+         */
+        void Remove(Utility::TypeId p_type) const;
 
         /**
          * \brief Gets the number of components owned by the linked entity

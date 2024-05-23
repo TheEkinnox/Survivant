@@ -284,6 +284,12 @@ namespace SvCore::ECS
         return {};
     }
 
+    void EntityHandle::Remove(const TypeId p_type) const
+    {
+        if (m_scene)
+            m_scene->GetStorage(p_type).Remove(m_entity);
+    }
+
     Entity::Id EntityHandle::GetComponentCount() const
     {
         return m_scene ? m_scene->GetComponentCount(m_entity) : 0;
