@@ -31,10 +31,6 @@ function Jump:OnUpdate(deltaTime)
     UpdateJump(self, deltaTime)
 end
 
-function Jump:OnStop()
-    transform = nil
-end
-
 ---@param collisionInfo CollisionInfo
 local function EvaluateCollision(self, collisionInfo)
     local mult
