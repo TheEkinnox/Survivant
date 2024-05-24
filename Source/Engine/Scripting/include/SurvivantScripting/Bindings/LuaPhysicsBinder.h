@@ -31,6 +31,12 @@ namespace SvScripting::Bindings
         static void BindRigidBody(sol::state& p_luaState);
 
         /**
+         * \brief Creates or updates the axis lock flags in the given lua state
+         * \param p_luaState The target lua state
+         */
+        static void BindAxisLockFlags(sol::state& p_luaState);
+
+        /**
          * \brief Creates or updates the collision information bindings in the given lua state
          * \param p_luaState The target lua state
          */

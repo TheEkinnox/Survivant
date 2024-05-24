@@ -11,7 +11,7 @@ namespace SvEditor::PanelItems
 	{
 	public:
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="p_selectable">Displayed options</param>
 		/// <param name="p_callback">callback with the new selected index as parameter</param>
@@ -31,7 +31,7 @@ namespace SvEditor::PanelItems
 			const GetCopyFunc& p_getCopy,
 			const Callback& p_callback);
 
-		virtual void DisplayAndUpdatePanel() override;
+		void DisplayAndUpdatePanel() override;
 
 	private:
 		std::string GetDisplayString(int p_selection);
@@ -39,6 +39,5 @@ namespace SvEditor::PanelItems
 		std::string					m_name;
 		std::vector<std::string>	m_items;
 		std::string					m_displayString;
-		size_t						m_count;
 	};
 }

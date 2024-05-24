@@ -10,6 +10,16 @@ using namespace physx;
 
 namespace SvPhysics
 {
+    // Ensure our lock flags are compatible with PhysX lock flags
+    static_assert(
+        static_cast<PxRigidDynamicLockFlag::Enum>(EAxisLock::X_POSITION) == PxRigidDynamicLockFlag::eLOCK_LINEAR_X &&
+        static_cast<PxRigidDynamicLockFlag::Enum>(EAxisLock::Y_POSITION) == PxRigidDynamicLockFlag::eLOCK_LINEAR_Y &&
+        static_cast<PxRigidDynamicLockFlag::Enum>(EAxisLock::Z_POSITION) == PxRigidDynamicLockFlag::eLOCK_LINEAR_Z &&
+        static_cast<PxRigidDynamicLockFlag::Enum>(EAxisLock::X_ROTATION) == PxRigidDynamicLockFlag::eLOCK_ANGULAR_X &&
+        static_cast<PxRigidDynamicLockFlag::Enum>(EAxisLock::Y_ROTATION) == PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y &&
+        static_cast<PxRigidDynamicLockFlag::Enum>(EAxisLock::Z_ROTATION) == PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z
+    );
+
     PxForceMode::Enum ToPxForceMode(const EForceMode p_mode)
     {
         switch (p_mode)
@@ -42,6 +52,10 @@ namespace SvPhysics
 
         p_writer.Key("use_gravity");
         if (!CHECK(p_writer.Bool(m_useGravity), "Failed to write rigid body use gravity flag"))
+            return false;
+
+        p_writer.Key("axis_locks");
+        if (!CHECK(p_writer.Uint(m_axisLocks), "Failed to write rigid body axis locks"))
             return false;
 
         p_writer.Key("collision_mode");
@@ -82,6 +96,19 @@ namespace SvPhysics
             return false;
 
         m_useGravity = it->value.GetBool();
+
+        it = p_json.FindMember("axis_locks");
+        if (it != p_json.MemberEnd())
+        {
+            if (!CHECK(it->value.IsUint(), "Unable to deserialize rigid body axis locks - Json value should be a uint"))
+                return false;
+
+            m_axisLocks = static_cast<EAxisLockFlags::DataType>(it->value.GetUint());
+        }
+        else
+        {
+            m_axisLocks = EAxisLock::NONE;
+        }
 
         it = p_json.FindMember("collision_mode");
         if (it != p_json.MemberEnd())
@@ -155,6 +182,17 @@ namespace SvPhysics
     {
         m_useGravity = p_useGravity;
         m_pxBody->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, !m_useGravity);
+    }
+
+    EAxisLockFlags RigidBody::GetAxisLocks() const
+    {
+        return m_axisLocks;
+    }
+
+    void RigidBody::SetAxisLocks(const EAxisLockFlags p_mode)
+    {
+        m_axisLocks = p_mode;
+        m_pxBody->setRigidDynamicLockFlags(static_cast<PxRigidDynamicLockFlags>(p_mode));
     }
 
     ECollisionDetectionMode RigidBody::GetCollisionDetectionMode() const

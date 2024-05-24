@@ -6,6 +6,7 @@
 ---@field public angularVelocity Vector3
 ---@field public isKinematic boolean
 ---@field public useGravity boolean
+---@field public axisLocks EAxisLockFlags
 ---@field public collisionDetectionMode ECollisionDetectionMode
 ---@field public isSleeping boolean
 RigidBody = {}

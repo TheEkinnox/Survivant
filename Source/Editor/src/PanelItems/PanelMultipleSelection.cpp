@@ -2,35 +2,32 @@
 
 #include "SurvivantEditor/PanelItems/PanelMultipleSelection.h"
 
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_opengl3.h"
+#include <imgui.h>
 
 namespace SvEditor::PanelItems
 {
     PanelMultipleSelection::PanelMultipleSelection(
-        const std::string& p_name, const std::vector<std::string>& p_selectable, 
+        const std::string& p_name, const std::vector<std::string>& p_selectable,
         int& p_currentSelection, const Callback& p_callback) :
         PanelMultipleSelection(p_name, p_selectable,
             GetRefFunc([p_currentSelection]() mutable -> int& { return p_currentSelection; }), p_callback)
     {}
 
     PanelMultipleSelection::PanelMultipleSelection(
-        const std::string& p_name, const std::vector<std::string>& p_selectable, 
+        const std::string& p_name, const std::vector<std::string>& p_selectable,
         const GetRefFunc& p_getRef, const Callback& p_callback) :
         PanelInputBase(p_getRef, p_callback),
         m_name(p_name),
-        m_count(static_cast<int>(p_selectable.size())),
         m_items(p_selectable)
     {
         m_displayString = GetDisplayString(GetRef());
     }
 
     PanelMultipleSelection::PanelMultipleSelection(
-        const std::string& p_name, const std::vector<std::string>& p_selectable, 
+        const std::string& p_name, const std::vector<std::string>& p_selectable,
         const GetCopyFunc& p_getCopy, const Callback& p_callback) :
         PanelInputBase(p_getCopy, p_callback),
         m_name(p_name),
-        m_count(static_cast<int>(p_selectable.size())),
         m_items(p_selectable)
     {
         m_displayString = GetDisplayString(GetRef());
@@ -47,7 +44,7 @@ namespace SvEditor::PanelItems
         ImGui::PushID(m_name.c_str());
         if (ImGui::BeginCombo("##", m_displayString.c_str()))
         {
-            for (int i = 0; i < m_items.size(); i++)
+            for (int i = 0; i < static_cast<int>(m_items.size()); i++)
             {
                 int flag = 1 << i;
                 bool is_selected = (newSelection & flag);

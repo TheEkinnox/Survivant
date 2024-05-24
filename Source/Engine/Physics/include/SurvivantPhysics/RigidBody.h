@@ -1,4 +1,5 @@
 #pragma once
+#include "SurvivantPhysics/EAxisLock.h"
 #include "SurvivantPhysics/ECollisionDetectionMode.h"
 #include "SurvivantPhysics/EForceMode.h"
 
@@ -128,6 +129,18 @@ namespace SvPhysics
         void SetUseGravity(bool p_useGravity);
 
         /**
+         * \brief Gets the rigid body's axis locks
+         * \return The rigid body's axis locks
+         */
+        EAxisLockFlags GetAxisLocks() const;
+
+        /**
+         * \brief Sets the rigid body's axis locks
+         * \param p_mode The rigid body's new axis locks
+         */
+        void SetAxisLocks(EAxisLockFlags p_mode);
+
+        /**
          * \brief Gets the rigid body's collision detection mode
          * \return The rigid body's collision detection mode
          */
@@ -176,8 +189,11 @@ namespace SvPhysics
 
         float m_mass = 1.f;
 
-        bool                    m_isKinematic            = false;
-        bool                    m_useGravity             = true;
+        bool m_isKinematic = false;
+        bool m_useGravity  = true;
+
+        EAxisLockFlags m_axisLocks = EAxisLock::NONE;
+
         ECollisionDetectionMode m_collisionDetectionMode = ECollisionDetectionMode::DISCRETE;
 
         physx::PxRigidDynamic* m_pxBody;

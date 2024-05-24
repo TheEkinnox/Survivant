@@ -459,7 +459,7 @@ namespace SvEditor::Core
 		const std::string typeName = ComponentRegistry::GetInstance().GetRegisteredTypeName<RigidBody>();
 
 		return std::make_shared<PanelComponent>(typeName, PanelComponent::Items({
-			std::make_shared<PanelFloatInput>("Mass\t\t",
+			std::make_shared<PanelFloatInput>("Mass           ",
 				[p_entity]
 				{
 					return p_entity.Get<RigidBody>()->GetMass();
@@ -469,7 +469,7 @@ namespace SvEditor::Core
 					entity.Get<RigidBody>()->SetMass(p_value);
 				}
 			),
-			std::make_shared<PanelCheckbox>("Is Kinematic\t\t",
+			std::make_shared<PanelCheckbox>("Is Kinematic   ",
 				[p_entity]
 				{
 					return p_entity.Get<RigidBody>()->IsKinematic();
@@ -479,7 +479,7 @@ namespace SvEditor::Core
 					entity.Get<RigidBody>()->SetKinematic(p_value);
 				}
 			),
-			std::make_shared<PanelCheckbox>("Use Gravity\t\t",
+			std::make_shared<PanelCheckbox>("Use Gravity    ",
 				[p_entity]
 				{
 					return p_entity.Get<RigidBody>()->CanUseGravity();
@@ -489,7 +489,7 @@ namespace SvEditor::Core
 					entity.Get<RigidBody>()->SetUseGravity(p_value);
 				}
 			),
-			std::make_shared<PanelUniqueSelection>("Collision Detection\t",
+			std::make_shared<PanelUniqueSelection>("Collision Mode ",
 				std::vector<std::string>({ "Discrete", "Continuous", "Continuous Speculative" }),
 				[p_entity]
 				{
@@ -497,24 +497,18 @@ namespace SvEditor::Core
 				},
 				[entity = p_entity](const int p_value) mutable
 				{
-					ECollisionDetectionMode detectionMode;
-					switch (p_value)
-					{
-					case 0:
-						detectionMode = ECollisionDetectionMode::DISCRETE;
-						break;
-					case 1:
-						detectionMode = ECollisionDetectionMode::CONTINUOUS;
-						break;
-					case 2:
-						detectionMode = ECollisionDetectionMode::CONTINUOUS_SPECULATIVE;
-						break;
-					default:
-						ASSERT(false, "Unsupported collision detection mode");
-						return;
-					}
-
-					entity.Get<RigidBody>()->SetCollisionDetectionMode(detectionMode);
+					entity.Get<RigidBody>()->SetCollisionDetectionMode(static_cast<ECollisionDetectionMode>(p_value));
+				}
+			),
+			std::make_shared<PanelMultipleSelection>("Axis Locks     ",
+				std::vector<std::string>({ "X Position", "Y Position", "Z Position", "X Rotation", "Y Rotation", "Z Rotation" }),
+				[p_entity]() -> EAxisLockFlags::DataType
+				{
+					return p_entity.Get<RigidBody>()->GetAxisLocks();
+				},
+				[entity = p_entity](const int p_value) mutable
+				{
+					entity.Get<RigidBody>()->SetAxisLocks(static_cast<EAxisLockFlags::DataType>(p_value));
 				}
 			)
 		}));
