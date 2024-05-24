@@ -19,6 +19,7 @@ namespace SvScripting::Bindings
     {
         BindLogger(p_luaState);
         BindTimer(p_luaState);
+        BindApplication(p_luaState);
     }
 
     void LuaUtilityBinder::BindLogger(sol::state& p_luaState)
