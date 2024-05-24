@@ -388,10 +388,9 @@ namespace SvEditor::Core
 	{
 		auto& world = m_gameInstance? *m_PIEWorld.lock() : *m_editorWorld;
 
-		if (!m_gameInstance && m_isEditorModifiedScene)
+		if (!m_gameInstance && m_isEditorModifiedScene && p_scenePath != world.CurrentScene().GetPath())
 			SV_EVENT_MANAGER().Invoke<OnSave>();
-
-
+		
 		//couldnt browse to scene
 		if (!BrowseToScene(world, p_scenePath))
 			return false;
@@ -399,6 +398,8 @@ namespace SvEditor::Core
 		//update editorWorld level. Dont bcs change back
 		if (!m_gameInstance)
 			m_editorSelectedScene = m_editorWorld->CurrentScene();
+
+		m_isEditorModifiedScene = false;
 
 		return true;
 	}
