@@ -151,7 +151,7 @@ namespace SvScripting::Bindings
     {
         static constexpr const char* typeName = "Layer";
 
-        p_luaState.new_enum(typeName,
+        p_luaState.new_enum<false>(typeName,
             "NONE", Layer::NONE,
             "ALL", Layer::ALL
         );
@@ -168,6 +168,18 @@ namespace SvScripting::Bindings
 
         static const LuaTypeInfo& typeInfo = LuaTypeRegistry::GetInstance().RegisterType<EProjectionType>(typeName);
         return (void)typeInfo;
+    }
+
+    void LuaRenderingBinder::BindClearFlags(sol::state& p_luaState)
+    {
+        static constexpr const char* typeName = "EClearFlag";
+
+        p_luaState.new_enum(typeName,
+            "NONE", 0,
+            "COLOR", CameraComponent::SV_CLEAR_COLOR_BIT,
+            "DEPTH", CameraComponent::SV_CLEAR_DEPTH_BIT,
+            "STENCIL", CameraComponent::SV_CLEAR_STENCIL_BIT
+        );
     }
 
     void LuaRenderingBinder::BindModelComponent(sol::state& p_luaState)
@@ -232,20 +244,6 @@ namespace SvScripting::Bindings
             "clearMask", sol::property(
                 sol::resolve<uint8_t() const>(&CameraComponent::GetClearMask),
                 sol::resolve<CameraComponent&(uint8_t)>(&CameraComponent::SetClearMask)
-            ),
-            "clearFlags", sol::property(
-                [](const CameraComponent& p_self)
-                -> std::tuple<bool, bool, bool>
-                {
-                    bool color, depth, stencil;
-                    p_self.GetClearMask(color, depth, stencil);
-                    return { color, depth, stencil };
-                },
-                [](CameraComponent& p_self, const std::tuple<bool, bool, bool>& p_clearFlags)
-                {
-                    auto [color, depth, stencil] = p_clearFlags;
-                    p_self.SetClearMask(color, depth, stencil);
-                }
             ),
             "cullingMask", sol::property(
                 &CameraComponent::GetCullingMask,

@@ -36,6 +36,12 @@ namespace SvScripting::Bindings
         static void BindProjectionTypes(sol::state& p_luaState);
 
         /**
+         * \brief Creates or updates the clear flag bindings in the given lua state
+         * \param p_luaState The target lua state
+         */
+        static void BindClearFlags(sol::state& p_luaState);
+
+        /**
          * \brief Creates or updates the model component bindings in the given lua state
          * \param p_luaState The target lua state
          */
