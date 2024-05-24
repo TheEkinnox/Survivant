@@ -1,14 +1,14 @@
 //ContentDrawerPanel.cpp
 #include "SurvivantEditor/Panels/ContentDrawerPanel.h"
 
-#include "SurvivantCore/Resources/ResourceRegistry.h"
-
+#include "SurvivantEditor/Core/EditorEngine.h"
 #include "SurvivantEditor/Core/EditorUI.h"
 #include "SurvivantEditor/Core/InspectorItemManager.h"
 #include "SurvivantEditor/Panels/InspectorPanel.h"
 
 #include <SurvivantApp/Core/IEngine.h>
 
+#include <SurvivantCore/Resources/ResourceRegistry.h>
 #include <SurvivantCore/ECS/Scene.h>
 
 #include <SurvivantRendering/Resources/Material.h>
@@ -284,7 +284,7 @@ namespace SvEditor::Panels
         const auto& rr = ResourceRegistry::GetInstance();
 
         if (s_fileExtensions.at(rr.GetRegisteredTypeName<Scene>()).contains(extension)
-            && !(SV_ENGINE()->IsPlayInEditor()))
+            && !(dynamic_cast<Core::EditorEngine*>(SV_ENGINE())->IsPlayInEditor()))
         {
             SV_ENGINE()->ChangeScene(path);
         }

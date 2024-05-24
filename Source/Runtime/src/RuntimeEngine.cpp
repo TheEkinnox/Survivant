@@ -151,9 +151,4 @@ namespace SvRuntime
 	{
 		return m_time.GetDeltaTime();
 	}
-
-	bool RuntimeEngine::IsPlayInEditor()
-	{
-		return false;
-	}
 }

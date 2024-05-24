@@ -26,7 +26,6 @@ namespace SvApp::Core
 	{
 		using FrameBufferArray = std::vector<std::unique_ptr<SvRendering::RHI::IFrameBuffer>>;
 		using DefaultTextureArray = std::vector<std::shared_ptr<SvRendering::RHI::ITexture>>;
-
 		using WorldCreator = std::function<std::shared_ptr<WorldContext>(const LibMath::Vector2I&)>;
 		using SceneRef = SvCore::Resources::ResourceRef<SvCore::ECS::Scene>;
 
@@ -71,7 +70,7 @@ namespace SvApp::Core
 
 		//editor only
 		std::shared_ptr<RenderingContext>	m_renderingContext;
-		bool								m_isFocused = false;
 		bool								m_isVisalbe;
+		bool								m_isFocused;
 	};
 }

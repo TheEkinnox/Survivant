@@ -33,7 +33,6 @@ namespace SvRuntime
 		bool	ChangeScene(const std::string& p_scenePath) override;
 		bool	ChangeCamera(const SvCore::ECS::EntityHandle& p_camera) override;
 		float	GetDeltaTime() override;
-		bool	IsPlayInEditor()override;
 
 		bool	IsRunning();
 

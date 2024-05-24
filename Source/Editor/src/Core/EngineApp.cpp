@@ -1,6 +1,7 @@
 #include "SurvivantEditor/Core/EngineApp.h"
 
 #include "SurvivantEditor/Core/InspectorItemManager.h"
+#include "SurvivantEditor/Core/LuaEditorBinder.h"
 #include "SurvivantEditor/Panels/HierarchyPanel.h"
 
 #include <SurvivantApp/Inputs/InputManager.h>
@@ -46,6 +47,7 @@ namespace SvEditor::Core
 		SvPhysics::PhysicsContext::GetInstance().Init();
 
 		//scripts
+		SvScripting::LuaContext::GetInstance().SetUserTypeBinders(&LuaEditorBinder::EditorUserTypeBindings);
 		SvScripting::LuaContext::GetInstance().Init();
 
 		//setup InspectorComponents

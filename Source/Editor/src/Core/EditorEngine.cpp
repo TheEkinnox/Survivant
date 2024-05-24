@@ -357,6 +357,11 @@ namespace SvEditor::Core
 		return m_isEditorModifiedScene;
 	}
 
+	bool SvEditor::Core::EditorEngine::IsGameFocused()
+	{
+		return !m_PIEWorld.expired() && m_PIEWorld.lock()->m_isFocused;
+	}
+
 	void EditorEngine::SetupUI(Core::EditorWindow* p_window, const std::array<std::function<void()>, 3>p_playPauseFrameCallbacks)
 	{
 		p_window->SetupUI(

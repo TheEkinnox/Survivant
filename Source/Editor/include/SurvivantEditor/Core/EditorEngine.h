@@ -46,11 +46,13 @@ namespace SvEditor::Core
 		bool ChangeScene(const std::string& p_scenePath) override;
 		bool ChangeCamera(const SvCore::ECS::EntityHandle& p_camera) override;
 		float GetDeltaTime() override;
-		bool IsPlayInEditor()override;
 
 		void RenderWorlds();
+
+		bool IsPlayInEditor();
 		bool IsRunning();
 		bool IsEditorModifiedScene();
+		bool IsGameFocused();
 
 		void SetupUI(Core::EditorWindow* p_window, const std::array<std::function<void()>, 3> p_playPauseFrameCallbacks);
 

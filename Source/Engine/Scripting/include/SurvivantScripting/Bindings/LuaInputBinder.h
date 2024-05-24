@@ -16,7 +16,6 @@ namespace SvScripting::Bindings
          */
         static void Bind(sol::state& p_luaState);
 
-    private:
         /**
          * \brief Creates or updates the key bindings in the given lua state
          * \param p_luaState The target lua state

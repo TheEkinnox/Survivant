@@ -479,21 +479,24 @@
                                 {
                                     "key": {
                                         "type": 4,
-                                        "data": "mouse_sensitivity"
+                                        "data": "rotation_speed"
                                     },
                                     "value": {
-                                        "type": 3,
-                                        "data": 0.005
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Degree",
+                                            "data": 300.0
+                                        }
                                     }
                                 },
                                 {
                                     "key": {
                                         "type": 4,
-                                        "data": "max_acceleration"
+                                        "data": "mouse_sensitivity"
                                     },
                                     "value": {
                                         "type": 3,
-                                        "data": 10.0
+                                        "data": 0.005
                                     }
                                 },
                                 {
@@ -509,14 +512,11 @@
                                 {
                                     "key": {
                                         "type": 4,
-                                        "data": "rotation_speed"
+                                        "data": "max_acceleration"
                                     },
                                     "value": {
-                                        "type": 7,
-                                        "data": {
-                                            "type": "Degree",
-                                            "data": 300.0
-                                        }
+                                        "type": 3,
+                                        "data": 10.0
                                     }
                                 }
                             ]
@@ -527,21 +527,21 @@
                                 {
                                     "key": {
                                         "type": 4,
-                                        "data": "jump_force"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 5.0
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
                                         "data": "ground_steepness"
                                     },
                                     "value": {
                                         "type": 3,
                                         "data": 0.5
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "jump_force"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 5.0
                                     }
                                 }
                             ]

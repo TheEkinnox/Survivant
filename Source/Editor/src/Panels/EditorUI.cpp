@@ -288,7 +288,7 @@ namespace SvEditor::Core
             "Reload",
             [p_world](char)
             {
-                auto& engine = SV_ENGINE();
+                auto engine = dynamic_cast<Core::EditorEngine*>(SV_ENGINE());
                 if (engine->IsPlayInEditor())
                 {
                     SV_LOG_WARNING("Can't reload scene during play mode");

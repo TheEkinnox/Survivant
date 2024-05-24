@@ -31,7 +31,6 @@ namespace SvApp::Core
 		virtual bool	ChangeCamera(const SvCore::ECS::EntityHandle& p_camera) = 0;
 		virtual float	GetDeltaTime() = 0;
 		virtual void	BakeLights() = 0;
-		virtual bool	IsPlayInEditor() = 0;
 
 
 		static std::shared_ptr<WorldContext>	CreateNewWorldContext(WorldContext::EWorldType p_worldType);

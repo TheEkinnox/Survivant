@@ -51,7 +51,7 @@ namespace SvScripting
         m_state->add_package_loader(&LoadModule);
         m_isValid = true;
 
-        BindUserTypes(*m_state);
+        s_userTypeBinders(*m_state);
         LinkPhysicsEvents();
     }
 
@@ -308,6 +308,11 @@ namespace SvScripting
         return empty;
     }
 
+    void LuaContext::SetUserTypeBinders(Binder p_binder)
+    {
+        s_userTypeBinders = p_binder;
+    }
+
     int LuaContext::LoadModule(lua_State* p_luaState)
     {
         const std::string& module = GetModulePath(sol::stack::get<std::string>(p_luaState, 1));
@@ -326,7 +331,7 @@ namespace SvScripting
         return 1;
     }
 
-    void LuaContext::BindUserTypes(sol::state& p_luaState)
+    void LuaContext::DefaultUserTypeBindings(sol::state& p_luaState)
     {
         Bindings::LuaECSBinder::Bind(p_luaState);
         Bindings::LuaMathBinder::Bind(p_luaState);
