@@ -6,4 +6,4 @@ Application = {}
 
 ---Switches to the given scene
 ---@param scene Resource | string
-function Application.ChangeScene(scene) end
+function Application:ChangeScene(scene) end
