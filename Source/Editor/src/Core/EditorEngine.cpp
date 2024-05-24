@@ -399,13 +399,14 @@ namespace SvEditor::Core
 
 	bool EditorEngine::ChangeScene(const std::string& p_scenePath)
 	{
-		auto& world = m_gameInstance ? *m_PIEWorld.lock() : *m_editorWorld;
-
-		if (!m_gameInstance && m_isEditorModifiedScene && p_scenePath != world.CurrentScene().GetPath())
+		if (!m_gameInstance && m_isEditorModifiedScene && p_scenePath != m_editorWorld->CurrentScene().GetPath())
 			SV_EVENT_MANAGER().Invoke<OnSave>();
 
 		//couldnt browse to scene
-		if (!BrowseToScene(world, p_scenePath))
+		if (!BrowseToScene(*m_editorWorld, p_scenePath))
+			return false;
+
+		if (m_gameInstance && !BrowseToScene(*m_PIEWorld.lock(), p_scenePath))
 			return false;
 
 		//update editorWorld level. Dont bcs change back
