@@ -4,15 +4,23 @@
 #include "SurvivantEditor/Core/EditorWindow.h"
 #include "SurvivantEditor/RuntimeBuild/BuildManager.h"
 
-#include <SurvivantApp/Core/TempDefaultScene.h>
-
 #include <SurvivantCore/Debug/Assertion.h>
 
 #include <SurvivantPhysics/PhysicsContext.h>
 
 #include <SurvivantScripting/LuaContext.h>
 
+using namespace LibMath;
+
 using namespace SvApp::Core;
+
+using namespace SvCore::Resources;
+using namespace SvCore::Utility;
+
+using namespace SvRendering::RHI;
+using namespace SvRendering::Core;
+using namespace SvRendering::Components;
+using namespace SvRendering::Enums;
 
 namespace SvEditor::Core
 {
@@ -71,9 +79,12 @@ namespace SvEditor::Core
 
 		luaContext.Start();
 		if (!CHECK(luaContext.IsValid(), "Failed to start lua context"))
+		{
+			m_gameInstance.reset();
 			return {};
+		}
 
-		return std::weak_ptr<GameInstance>(m_gameInstance);
+		return { m_gameInstance };
 	}
 
 	void EditorEngine::DestroyGameInstance()
@@ -111,21 +122,6 @@ namespace SvEditor::Core
 		return pieWorld;
 	}
 
-	std::tuple<int, int> AddInputTranslate(char i)
-	{
-		return { i, 10 };
-	}
-
-	std::tuple<int, int> AddMouseTranslate(float i, float j)
-	{
-		return { (int)i, (int)j };
-	}
-
-	std::tuple<> SpaceTranslate(char /*c*/)
-	{
-		return { };
-	}
-
 	std::shared_ptr<EditorEngine::Inputs> EditorEngine::CreateEditorInputs()
 	{
 		using namespace SvCore;
@@ -139,12 +135,12 @@ namespace SvEditor::Core
 		//move camera in scene
 		k.emplace(InputManager::KeyboardKeyType{ EKey::W, EKeyState::PRESSED, EInputModifier::MOD_ANY }, [this](const char)
 			{
-				m_editorWorld->m_renderingContext->CameraMoveInput().m_y += 1;
+				++m_editorWorld->m_renderingContext->CameraMoveInput().m_y;
 			});
 
 		k.emplace(InputManager::KeyboardKeyType{ EKey::W, EKeyState::RELEASED, EInputModifier::MOD_ANY }, [this](const char)
 			{
-				m_editorWorld->m_renderingContext->CameraMoveInput().m_y -= 1;
+				--m_editorWorld->m_renderingContext->CameraMoveInput().m_y;
 			});
 
 		k.emplace(InputManager::KeyboardKeyType{ EKey::S, EKeyState::PRESSED, EInputModifier::MOD_ANY }, [this](const char)
@@ -244,27 +240,27 @@ namespace SvEditor::Core
 		return world;
 	}
 
-	void SvEditor::Core::EditorEngine::SetupEditorEvents()
+	void EditorEngine::SetupEditorEvents()
 	{
 		using namespace RuntimeBuild;
 
 		SV_EVENT_MANAGER().AddListenner<OnCreateBuildGame>(OnCreateBuildGame::EventDelegate(
 			[](const std::string& p_buildFileName,
-				const SvApp::Core::BuildConfig& p_buildInfo)
+				const BuildConfig& p_buildInfo)
 			{
 				BuildManager::GetInstance().CreateBuild(p_buildFileName, p_buildInfo);
 			}));
 
 		SV_EVENT_MANAGER().AddListenner<OnCreateBuildAndRun>(OnCreateBuildAndRun::EventDelegate(
 			[](const std::string& p_buildFileName,
-				const SvApp::Core::BuildConfig& p_buildInfo)
+				const BuildConfig& p_buildInfo)
 			{
 				BuildManager::GetInstance().CreateAndRunBuild(p_buildFileName, p_buildInfo);
 			}));
 
 		SV_EVENT_MANAGER().AddListenner<OnSave>(OnSave::EventDelegate(
-			[this]()
-			{ 
+			[this]
+			{
 				auto& engine = *this;
 				if (engine.IsPlayInEditor())
 				{
@@ -281,8 +277,8 @@ namespace SvEditor::Core
 			}));
 
 		SV_EVENT_MANAGER().AddListenner<OnEditorModifiedScene>(OnEditorModifiedScene::EventDelegate(
-			[this]()
-			{ 
+			[this]
+			{
 				if (!this->IsPlayInEditor())
 					m_isEditorModifiedScene = true;
 			}));
@@ -354,11 +350,27 @@ namespace SvEditor::Core
 		return m_isRunning;
 	}
 
-	bool SvEditor::Core::EditorEngine::IsEditorModifiedScene()
+	bool EditorEngine::IsEditorModifiedScene()
 	{
 		return m_isEditorModifiedScene;
 	}
 
+	void EditorEngine::TogglePause()
+	{
+		m_isPaused = !m_isPaused;
+	}
+
+	void EditorEngine::SetPaused(const bool p_state)
+	{
+		m_isPaused = p_state;
+	}
+
+	bool EditorEngine::IsPaused() const
+	{
+		return m_isPaused;
+	}
+
+	void EditorEngine::SetupUI(EditorWindow* p_window, const std::array<std::function<void()>, 3>p_playPauseFrameCallbacks)
 	bool SvEditor::Core::EditorEngine::IsGameFocused()
 	{
 		return !m_PIEWorld.expired() && m_PIEWorld.lock()->m_isFocused;
@@ -368,25 +380,31 @@ namespace SvEditor::Core
 	{
 		p_window->SetupUI(
 			m_editorWorld,
-			[this](const LibMath::Vector2I&)
+			[this](const Vector2I&)
 			{
 				ASSERT(m_PIEWorld.expired(), "Tried to create PIE world when already exists");
 
 				auto PIEWorld =	CreatePIEWorld();
-				m_PIEWorld = std::weak_ptr<WorldContext>(PIEWorld);
+				m_PIEWorld = std::weak_ptr(PIEWorld);
 
 				return PIEWorld;
 			},
 			p_playPauseFrameCallbacks);
 	}
 
+	IEngine::SceneRef EditorEngine::GetCurrentScene() const
+	{
+		auto& world = m_gameInstance ? *m_PIEWorld.lock() : *m_editorWorld;
+		return world.CurrentScene();
+	}
+
 	bool EditorEngine::ChangeScene(const std::string& p_scenePath)
 	{
-		auto& world = m_gameInstance? *m_PIEWorld.lock() : *m_editorWorld;
+		auto& world = m_gameInstance ? *m_PIEWorld.lock() : *m_editorWorld;
 
 		if (!m_gameInstance && m_isEditorModifiedScene && p_scenePath != world.CurrentScene().GetPath())
 			SV_EVENT_MANAGER().Invoke<OnSave>();
-		
+
 		//couldnt browse to scene
 		if (!BrowseToScene(world, p_scenePath))
 			return false;
@@ -405,12 +423,12 @@ namespace SvEditor::Core
 		return m_time.GetDeltaTime();
 	}
 
-	bool SvEditor::Core::EditorEngine::IsPlayInEditor()
+	bool EditorEngine::IsPlayInEditor()
 	{
 		return m_gameInstance.get();
 	}
 
-	bool SvEditor::Core::EditorEngine::ChangeCamera(const SvCore::ECS::EntityHandle& p_camera)
+	bool EditorEngine::ChangeCamera(const SvCore::ECS::EntityHandle& p_camera)
 	{
 		if (!p_camera)
 			return false;

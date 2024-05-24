@@ -18,21 +18,24 @@ namespace SvEditor::PanelItems
 			const Callback& p_callback = Callback(),
 			float p_min = -FLT_MAX,
 			float p_max = FLT_MAX);
+
 		PanelVec2Input(
 			const std::string& p_name,
 			const GetRefFunc& p_getRef,
 			const Callback& p_callback = Callback(),
 			float p_min = -FLT_MAX,
 			float p_max = FLT_MAX);
+
 		PanelVec2Input(
 			const std::string& p_name,
 			const GetCopyFunc& p_getCopy,
 			const Callback& p_callback,
 			float p_min = -FLT_MAX,
 			float p_max = FLT_MAX);
-		~PanelVec2Input() = default;
 
-		virtual void DisplayAndUpdatePanel() override;
+		~PanelVec2Input() override = default;
+
+		void DisplayAndUpdatePanel() override;
 
 	private:
 		std::string	m_name;

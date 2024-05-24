@@ -3,17 +3,18 @@
 
 #include "SurvivantApp/Core/RenderingContext.h"
 #include "SurvivantApp/Inputs/InputManager.h"
-#include "SurvivantCore/ECS/Scene.h"
-#include "SurvivantCore/ECS/EntityHandle.h"
-#include "SurvivantCore/Resources/ResourceRef.h"
-#include "SurvivantRendering/RHI/IShaderStorageBuffer.h"
-#include "SurvivantRendering/RHI/IFrameBuffer.h"
-#include "SurvivantRendering/Components/CameraComponent.h"
 
-#include "Vector/Vector2.h"
-#include "Transform.h"
+#include <SurvivantCore/ECS/EntityHandle.h>
+#include <SurvivantCore/ECS/Scene.h>
+#include <SurvivantCore/Resources/ResourceRef.h>
 
-#include <string>
+#include <SurvivantRendering/Components/CameraComponent.h>
+#include <SurvivantRendering/RHI/IFrameBuffer.h>
+#include <SurvivantRendering/RHI/IShaderStorageBuffer.h>
+
+#include <Transform.h>
+#include <Vector/Vector2.h>
+
 #include <memory>
 #include <vector>
 
@@ -44,7 +45,6 @@ namespace SvApp::Core
 		};
 
 		void BeginPlay();
-		//void Update();
 		bool Save(bool p_pretty = false);
 		void BakeLighting();
 

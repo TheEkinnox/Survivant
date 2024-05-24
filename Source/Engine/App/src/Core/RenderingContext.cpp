@@ -1,12 +1,23 @@
 //WorldContext.cpp
-
 #include "SurvivantApp/Core/RenderingContext.h"
+
 #include "SurvivantApp/Core/TempDefaultScene.h"
+
+#include <SurvivantRendering/RHI/IFrameBuffer.h>
+#include <SurvivantRendering/RHI/IRenderAPI.h>
+#include <SurvivantRendering/RHI/ITexture.h>
+
+using namespace LibMath;
+
+using namespace SvRendering::RHI;
+using namespace SvRendering::Core;
+using namespace SvRendering::Enums;
+using namespace SvRendering::Components;
 
 namespace SvApp::Core
 {
     RenderingContext::RenderingContext(
-        const MainCamera::Cam& p_cam, const LibMath::Transform& p_trans):
+        const MainCamera::Cam& p_cam, const Transform& p_trans):
         m_mainCamera(p_cam, p_trans)
     {
     }

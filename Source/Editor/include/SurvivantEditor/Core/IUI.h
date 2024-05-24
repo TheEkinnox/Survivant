@@ -20,6 +20,7 @@ namespace SvEditor::Core
 	class IUI
 	{
 	public:
+		virtual         ~IUI() = default;
 		virtual ImFont* GetFontDefault() = 0;
 		virtual ImFont* GetIconFont() = 0;
 

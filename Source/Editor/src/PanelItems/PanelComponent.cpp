@@ -22,6 +22,8 @@ namespace SvEditor::PanelItems
         bool open = ImGui::CollapsingHeader(m_name.c_str(), &m_isActive, flags);
         ImGui::PushID(m_name.c_str());
 
+        ImGui::Spacing();
+
         ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 20);
         ImGui::BeginGroup();
         if (open)

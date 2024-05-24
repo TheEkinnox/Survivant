@@ -26,7 +26,7 @@ namespace SvRuntime
 
 	RuntimeApp::~RuntimeApp()
 	{
-		m_window.release();
+		m_window.reset();
 	}
 
 	void RuntimeApp::Init()
@@ -48,7 +48,7 @@ namespace SvRuntime
 			.SetCullFace(ECullFace::BACK);
 
 
-		SV_EVENT_MANAGER().AddListenner<Window::OnFrameBufferSize>([this](int p_width, int p_height) { 
+		SV_EVENT_MANAGER().AddListenner<Window::OnFrameBufferSize>([this](int p_width, int p_height) {
 			m_runEngine.SetViewport({ p_width, p_height }); });
 
 		SvApp::InputManager::GetInstance().InitWindow(m_window.get());

@@ -100,6 +100,17 @@ namespace SvCore::ECS
         T* Get(Entity p_owner);
 
         /**
+         * \brief Sorts the target storage and scene entities using the given sorting function
+         * \tparam T The component type to fetch
+         * \param p_comparator A comparison function taking in two const T& and
+         * returning true if the left element should be placed before the right element
+         * \note Entity and EntityHandle are valid types and iterate over the scene's entities
+         * \warning This function sorts the scene's storages - references, pointers and iterators WILL be invalidated
+         */
+        template <typename T, typename Comparator>
+        void Sort(Comparator p_comparator);
+
+        /**
          * \brief Gets the components handled by the scene view owned by the given entity
          * \param p_owner The searched components' owner
          * \return A tuple of pointers to the found components on success. Not found components are null
@@ -157,6 +168,9 @@ namespace SvCore::ECS
          */
         template <typename T, typename... Remainder>
         void InitializeView();
+
+        template <typename T, typename... Remainder>
+        void SortStorages();
     };
 }
 

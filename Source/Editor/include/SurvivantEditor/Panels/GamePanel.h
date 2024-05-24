@@ -34,6 +34,7 @@ namespace SvEditor::Panels
 		static size_t AddFrameListenner(const PanelButton::OnButtonPressEvent::EventDelegate& p_callback);
 
 		static constexpr char NAME[] = "Game";
+
 	private:
 		static inline WorldContext::WorldCreator			s_worldCreator;
 		static inline PanelButton::OnButtonPressEvent		s_playListenners;
@@ -41,7 +42,7 @@ namespace SvEditor::Panels
 		static inline PanelButton::OnButtonPressEvent		s_frameListenners;
 
 		std::shared_ptr<WorldContext>	m_world;
-		PanelButtonList					m_buttons;
+		std::unique_ptr<IPanelable>		m_buttons[3];
 		PanelImage						m_image;
 		bool							m_prevFocus;
 		LibMath::Vector2				m_imageSize;

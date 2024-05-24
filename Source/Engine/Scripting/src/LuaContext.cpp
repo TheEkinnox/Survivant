@@ -124,8 +124,13 @@ namespace SvScripting
         sol::table resultTable = result[0].as<sol::table>();
 
         if (p_handle.m_table != sol::nil)
+        {
             for (auto& [key, value] : p_handle.m_table)
-                resultTable[key] = value;
+            {
+                if (resultTable[key].valid())
+                    resultTable[key] = value;
+            }
+        }
 
         resultTable["owner"] = static_cast<const EntityHandle&>(p_handle.m_owner);
 

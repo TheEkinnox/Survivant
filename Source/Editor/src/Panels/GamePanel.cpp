@@ -2,32 +2,44 @@
 
 #include "SurvivantEditor/Panels/GamePanel.h"
 
-#include "SurvivantCore/Debug/Assertion.h"
-#include "SurvivantCore/Events/EventManager.h"
-#include "SurvivantEditor/Core/EditorUI.h"
-#include "SurvivantApp/Core/WorldContext.h"
+#include "SurvivantEditor/Core/EditorEngine.h"
+#include "SurvivantEditor/PanelItems/PanelConditionalDisplay.h"
 
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_opengl3.h"
+#include <imgui.h>
 
 using namespace SvApp::Core;
 
 namespace SvEditor::Panels
 {
-	GamePanel::GamePanel()
+	GamePanel::GamePanel() : m_prevFocus(false)
 	{
-		m_name = NAME; 
+		m_name = NAME;
 
-		m_buttons.m_buttons.reserve(3);
-		m_buttons.m_buttons.push_back(PanelButton(" Start |> ", s_playListenners));
-		m_buttons.m_buttons.push_back(PanelButton(" Pause || ", s_pauseListenners));
-		m_buttons.m_buttons.push_back(PanelButton(" Frame -> ", s_frameListenners));
+		m_buttons[0] = std::make_unique<PanelConditionalDisplay>(
+			std::make_unique<PanelButton>(" Stop X ", s_playListenners),
+			std::make_unique<PanelButton>(" Start |> ", s_playListenners),
+			PanelConditionalDisplay::GetStateFunc([]
+			{
+				return SV_ENGINE()->IsPlayInEditor();
+			})
+		);
+
+		m_buttons[1] = std::make_unique<PanelConditionalDisplay>(
+			std::make_unique<PanelButton>(" Resume |> ", s_pauseListenners),
+			std::make_unique<PanelButton>(" Pause || ", s_pauseListenners),
+			PanelConditionalDisplay::GetStateFunc([]
+			{
+				return dynamic_cast<const Core::EditorEngine&>(*SV_ENGINE()).IsPaused();
+			})
+		);
+
+		m_buttons[2] = std::make_unique<PanelButton>(" Frame -> ", s_frameListenners);
 
 		m_world = s_worldCreator({ 0, 0 });
 		m_prevFocus = false;
 
 		m_image.SetTexture(m_world->m_renderingContext->GetTextureId(RenderingContext::ETextureType::COLOR));
-			
+
 		m_onResize.AddListener([this](const LibMath::Vector2& p_size)
 			{
 				m_world->m_renderingContext->Resize(p_size);
@@ -54,7 +66,7 @@ namespace SvEditor::Panels
 		bool showWindow = true;
 		ERenderFlags flags = ERenderFlags();
 
-		if (m_world->m_isVisalbe = ImGui::Begin(m_name.c_str(), &showWindow, window_flags))
+		if ((m_world->m_isVisalbe = ImGui::Begin(m_name.c_str(), &showWindow, window_flags)))
 		{
 			//focus
 			auto val = IsGainedFocus(m_prevFocus);
@@ -72,12 +84,16 @@ namespace SvEditor::Panels
 			}
 
 			if (IsWindowDifferentSize(m_imageSize))
-			{
 				m_onResize.Invoke(m_imageSize);
-				m_image.SetTexture(m_world->m_renderingContext->GetTextureId(RenderingContext::ETextureType::COLOR));
+
+			for (uint8_t i = 0; i < 3; ++i)
+			{
+				if (i != 0)
+					ImGui::SameLine();
+
+				m_buttons[i]->DisplayAndUpdatePanel();
 			}
 
-			m_buttons.DisplayAndUpdatePanel();
 			m_image.DisplayAndUpdatePanel();
 		}
 		ImGui::End();

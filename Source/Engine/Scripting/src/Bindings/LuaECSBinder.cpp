@@ -174,7 +174,8 @@ namespace SvScripting::Bindings
 
                     LuaTypeRegistry::GetInstance().GetTypeInfo(p_self.m_typeId).FromLua(p_self.Get(), p_value);
                 }
-            )
+            ),
+            "Destroy", &ComponentHandle::Destroy
         );
 
         componentType["__type"]["name"] = typeName;

@@ -1,4 +1,5 @@
 #pragma once
+#include <climits>
 #include <type_traits>
 
 namespace SvCore::Utility
@@ -41,4 +42,10 @@ namespace SvCore::Utility
     std::conditional_t<Size <= 8, uint8_t,
         std::conditional_t<Size <= 16, uint16_t,
             std::conditional_t<Size <= 32, uint32_t, uint64_t>>>;
+
+    template <typename T>
+    using SmallestIntT = SmallestInt<sizeof(T) * CHAR_BIT + (std::is_unsigned_v<T> ? 1 : 0)>;
+
+    template <typename T>
+    using SmallestUnsignedT = SmallestUnsigned<sizeof(T) * CHAR_BIT>;
 }

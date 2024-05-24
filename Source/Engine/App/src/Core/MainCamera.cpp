@@ -1,25 +1,21 @@
-//WorldContext.cpp
+//MainCamera.cpp
 
 #include "SurvivantApp/Core/MainCamera.h"
 
 #include "SurvivantApp/Core/IEngine.h"
-#include "SurvivantApp/Core/TempDefaultScene.h"
-
 
 using namespace LibMath;
 
 namespace SvApp::Core
 {
     MainCamera::MainCamera(
-        const Cam& p_cam, const LibMath::Transform& p_trans) :
-        m_union(p_cam, p_trans),
-        m_hasEntity(false)
+        const Cam& p_cam, const Transform& p_trans) :
+        m_union(p_cam, p_trans)
     {
     }
 
-    MainCamera::MainCamera(SvCore::ECS::EntityHandle p_entity) :
-        m_union(p_entity),
-        m_hasEntity(false)
+    MainCamera::MainCamera(const SvCore::ECS::EntityHandle p_entity) :
+        m_union(p_entity)
     {
     }
 
@@ -41,21 +37,20 @@ namespace SvApp::Core
         if (m_hasEntity)
             return;
 
-        m_union.m_camInfo.m_cam;
-        if (!(m_moveInput.m_x || m_moveInput.m_y || m_rotateInput.m_x || m_rotateInput.m_y))
+        if (!(m_moveInput.magnitudeSquared() > 0.f || m_rotateInput.magnitudeSquared() > 0.f))
             return;
 
         m_union.m_camInfo.m_trans = MoveTransformInput(
             m_union.m_camInfo.m_trans, m_moveInput, m_rotateInput, SV_DELTA_TIME());
     }
 
-    void MainCamera::SetEntity(SvCore::ECS::EntityHandle p_entity)
+    void MainCamera::SetEntity(const SvCore::ECS::EntityHandle p_entity)
     {
         m_union.m_entity = p_entity;
         m_hasEntity = true;
     }
 
-    void MainCamera::SetCamera(const Cam& p_cam, const LibMath::Transform& p_trans)
+    void MainCamera::SetCamera(const Cam& p_cam, const Transform& p_trans)
     {
         m_union.m_camInfo = { p_cam, p_trans };
         m_hasEntity = false;
@@ -72,19 +67,19 @@ namespace SvApp::Core
     }
 
 
-    LibMath::Transform MainCamera::MoveTransformInput(
-        const LibMath::Transform& p_trans, 
+    Transform MainCamera::MoveTransformInput(
+        const Transform& p_trans,
         const Vec2& p_move, const Vec2& p_rotation, const float p_dt)
     {
-        constexpr float  CAM_MOVE_SPEED = 10.f;
-        constexpr Radian CAM_ROTATION_SPEED = 180_deg;
+        static constexpr float  CAM_MOVE_SPEED = 10.f;
+        static constexpr Radian CAM_ROTATION_SPEED = 180_deg;
 
         Vector3    newPos = p_trans.getPosition();
         Quaternion newRot = p_trans.getRotation();
 
         if (p_move.magnitudeSquared() > 0.f)
         {
-            const Vector3 moveDir = p_move.m_x * p_trans.worldRight() + p_move.m_y * p_trans.worldBack();
+            const Vector3 moveDir = p_move.m_x * p_trans.right() + p_move.m_y * p_trans.back();
             newPos += moveDir.normalized() * (CAM_MOVE_SPEED * p_dt);
         }
 
@@ -99,6 +94,6 @@ namespace SvApp::Core
             newRot = Quaternion::fromEuler(angles, ERotationOrder::YXZ);
         }
 
-        return Transform(newPos, newRot, Vector3::one());
+        return { newPos, newRot, Vector3::one() };
     }
 }

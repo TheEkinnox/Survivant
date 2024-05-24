@@ -13,9 +13,6 @@
 #include <array>
 #include <memory>
 
-using namespace SvApp::Core;
-using namespace LibMath;
-
 namespace SvRuntime
 {
 	class EditorWindow;
@@ -24,17 +21,18 @@ namespace SvRuntime
 	{
 	public:
 		RuntimeEngine() = default;
-		~RuntimeEngine() = default;
+		~RuntimeEngine() override = default;
 
 		// Inherited via IEngine
-		void	Update() override;
-		void	Init() override;
-		void	BakeLights() override;
-		bool	ChangeScene(const std::string& p_scenePath) override;
-		bool	ChangeCamera(const SvCore::ECS::EntityHandle& p_camera) override;
-		float	GetDeltaTime() override;
+		void		Update() override;
+		void		Init() override;
+		void		BakeLights() override;
+		SceneRef	GetCurrentScene() const override;
+		bool		ChangeScene(const std::string& p_scenePath) override;
+		bool		ChangeCamera(const SvCore::ECS::EntityHandle& p_camera) override;
+		float		GetDeltaTime() override;
 
-		bool	IsRunning();
+		bool		IsRunning();
 
 		//create PIE after press play
 		void DestroyGameInstance();
@@ -50,7 +48,7 @@ namespace SvRuntime
 
 		WorldContextPtr				CreateGameWorld();
 		GameInstancePtr				CreateGameInstance();
-		WorldContext::SceneRef		GetStartScene();
+		SceneRef					GetStartScene();
 
 		SvCore::Utility::Timer		m_time;
 		bool						m_isRunning = true;

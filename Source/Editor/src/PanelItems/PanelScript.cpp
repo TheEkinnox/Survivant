@@ -272,10 +272,19 @@ namespace SvEditor::PanelItems
         const bool wasActive = m_isActive;
 
         if (m_items.empty())
+        {
             ImGui::CollapsingHeader(m_script.m_name.c_str(), &m_isActive, flags | ImGuiTreeNodeFlags_Leaf);
+        }
         else if (ImGui::CollapsingHeader(m_script.m_name.c_str(), &m_isActive, flags))
+        {
+            ImGui::PushID(m_script.m_name.c_str());
+            ImGui::Spacing();
+
             for (const auto& item : m_items)
                 item->DisplayAndUpdatePanel();
+
+            ImGui::PopID();
+        }
 
         if (wasActive && !m_isActive)
         {

@@ -22,7 +22,7 @@ namespace SvEditor::PanelItems
 
     template <typename T>
     PanelTreeBranch<T>::PanelTreeBranch(
-            const std::string& p_name, 
+            const std::string& p_name,
             const Children & p_branches,
             bool p_hideLeafs,
             const T& p_value) :
@@ -121,13 +121,13 @@ namespace SvEditor::PanelItems
     }
 
     template <typename T>
-    inline void PanelTreeBranch<T>::ForceCloseChildreen(bool p_closeSelf)
+    inline void PanelTreeBranch<T>::ForceCloseChildren(bool p_closeSelf)
     {
         if (p_closeSelf)
             m_forceState = EForceState::FORCE_CLOSE;
 
         for (auto& child : m_children)
-            child.second->ForceCloseChildreen(true);
+            child.second->ForceCloseChildren(true);
     }
 
     template <typename T>
@@ -176,7 +176,7 @@ namespace SvEditor::PanelItems
     //}
 
     template <typename T>
-    inline size_t PanelTreeBranch<T>::HasChildreenPriority(const PanelTreeBranch& p_branch)
+    inline size_t PanelTreeBranch<T>::HasChildrenPriority(const PanelTreeBranch& p_branch)
     {
         return p_branch.GetChildren().empty() ? 0 : 1;
     }
@@ -187,7 +187,7 @@ namespace SvEditor::PanelItems
         std::vector<std::unique_ptr<IMenuable>> menu;
 
         menu.emplace_back(std::make_unique<MenuButton>("Open All", [this](char) { ForceOpenAll(); }));
-        menu.emplace_back(std::make_unique<MenuButton>("Close All", [this](char) { ForceCloseChildreen(); }));
+        menu.emplace_back(std::make_unique<MenuButton>("Close All", [this](char) { ForceCloseChildren(); }));
         menu.emplace_back(std::make_unique<MenuButton>("Test3", [this](char) {}));
 
         return menu;
@@ -266,7 +266,7 @@ namespace SvEditor::PanelItems
             ImGui::SetNextItemOpen(true, ImGuiCond_::ImGuiCond_Always);
             break;
         case PanelTreeBranch<T>::EForceState::FORCE_CLOSE:
-            ForceCloseChildreen();
+            ForceCloseChildren();
             ImGui::SetNextItemOpen(false, ImGuiCond_::ImGuiCond_Always);
             break;
         case PanelTreeBranch<T>::EForceState::NOTHING:

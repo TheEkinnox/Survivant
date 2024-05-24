@@ -1,6 +1,7 @@
 #include "SurvivantScripting/Bindings/LuaPhysicsBinder.h"
 
 #include "SurvivantScripting/LuaTypeRegistry.h"
+#include "SurvivantScripting/Bindings/LuaEnumFlagsBinder.h"
 
 #include <SurvivantPhysics/Material.h>
 #include <SurvivantPhysics/PhysicsContext.h>
@@ -14,6 +15,7 @@ namespace SvScripting::Bindings
     {
         BindContext(p_luaState);
         BindRigidBody(p_luaState);
+        BindAxisLockFlags(p_luaState);
         BindCollisionInfo(p_luaState);
         BindTriggerInfo(p_luaState);
         BindForceModes(p_luaState);
@@ -51,6 +53,7 @@ namespace SvScripting::Bindings
             "angularVelocity", sol::property(&RigidBody::GetAngularVelocity, &RigidBody::SetAngularVelocity),
             "isKinematic", sol::property(&RigidBody::IsKinematic, &RigidBody::SetKinematic),
             "useGravity", sol::property(&RigidBody::CanUseGravity, &RigidBody::SetUseGravity),
+            "lockFlags", sol::property(&RigidBody::GetAxisLocks, &RigidBody::SetAxisLocks),
             "collisionDetectionMode", sol::property(&RigidBody::GetCollisionDetectionMode, &RigidBody::SetCollisionDetectionMode),
             "isSleeping", sol::property(&RigidBody::IsSleeping, [](RigidBody& p_self, const bool p_isSleeping)
             {
@@ -85,6 +88,26 @@ namespace SvScripting::Bindings
         resourceType["__type"]["name"] = typeName;
 
         static const LuaTypeInfo& typeInfo = LuaTypeRegistry::GetInstance().RegisterType<RigidBody>(typeName);
+        return (void)typeInfo;
+    }
+
+    void LuaPhysicsBinder::BindAxisLockFlags(sol::state& p_luaState)
+    {
+        BindEnumFlags<EAxisLock, EAxisLockFlags::DataType>("EAxisLockFlags", p_luaState);
+
+        static constexpr const char* typeName = "EAxisLock";
+
+        p_luaState.new_enum(typeName,
+            "NONE", EAxisLock::NONE,
+            "X_POSITION", EAxisLock::X_POSITION,
+            "Y_POSITION", EAxisLock::Y_POSITION,
+            "Z_POSITION", EAxisLock::Z_POSITION,
+            "X_ROTATION", EAxisLock::X_ROTATION,
+            "Y_ROTATION", EAxisLock::Y_ROTATION,
+            "Z_ROTATION", EAxisLock::Z_ROTATION
+        );
+
+        static const LuaTypeInfo& typeInfo = LuaTypeRegistry::GetInstance().RegisterType<EAxisLock>(typeName);
         return (void)typeInfo;
     }
 

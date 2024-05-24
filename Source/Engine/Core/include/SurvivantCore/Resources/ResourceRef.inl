@@ -230,13 +230,11 @@ namespace SvCore::Resources
         if (m_refCount && --(*m_refCount) == 0)
         {
             delete m_refCount;
-
-            if (m_resource)
-            {
-                delete m_resource;
-                m_resource = nullptr;
-            }
+            delete m_resource;
         }
+
+        m_refCount = nullptr;
+        m_resource = nullptr;
     }
 
     template <class T>

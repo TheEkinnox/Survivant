@@ -31,12 +31,13 @@ namespace SvEditor::Panels
     {
         m_name = NAME;
 
-        m_buttonList.m_buttons.reserve(1);
-        m_buttonList.m_buttons.emplace_back(PanelButton("Refresh", [this]() {  
-                SetupTree(); 
-                m_tree->ForceCloseChildreen(true);
-                m_tree->Select();
-            }));
+        m_buttonList.m_buttons.emplace_back(PanelButton("Refresh", [this]()
+        {
+            ResourceManager::GetInstance().Clear();
+            SetupTree();
+            m_tree->ForceCloseChildren(true);
+            m_tree->Select();
+        }));
 
         SetupTree();
 
@@ -125,12 +126,12 @@ namespace SvEditor::Panels
     bool ContentDrawerPanel::SetGridDisplay(ResourceBranch& p_branch)
     {
         p_branch.ForceOpenParents();
-        auto& childreen = p_branch.GetChildren();
+        auto& children = p_branch.GetChildren();
 
         //"cast" from PanelTreeBranch to ISelectionBoxable
         PanelSelectionBox::SelectableMap gridItems;
 
-        for (auto& pair : childreen)
+        for (auto& pair : children)
             gridItems.insert(pair);
 
         m_grid.SetSelectionBoxable(gridItems);
@@ -157,7 +158,7 @@ namespace SvEditor::Panels
         m_tree           = std::make_shared<ResourceBranch>(root.filename().string());
 
         SetupBranches(m_tree, root);
-        m_tree->SetAllPriority(&ResourceBranch::HasChildreenPriority);
+        m_tree->SetAllPriority(&ResourceBranch::HasChildrenPriority);
     }
 
     void ContentDrawerPanel::SetupBranches(std::shared_ptr<ResourceBranch> p_parent, const std::filesystem::path& p_filePath)

@@ -119,4 +119,12 @@ namespace SvRendering::Core
         Color& operator*=(float p_scalar);
         Color& operator/=(float p_scalar);
     };
+
+    /**
+     * \brief Adds a color's string representation to an output stream
+     * \param p_stream The output stream
+     * \param p_color The input color
+     * \return The modified stream
+     */
+    std::ostream& operator<<(std::ostream& p_stream, const Color& p_color);
 }

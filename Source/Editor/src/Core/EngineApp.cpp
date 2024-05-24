@@ -22,11 +22,11 @@ using namespace SvRendering::RHI;
 using namespace SvRendering::Enums;
 
 using namespace SvCore::Utility;
+using namespace SvApp::Core;
 
 namespace SvEditor::Core
 {
-	EngineApp::EngineApp() :
-		m_gameIsPaused(false)
+	EngineApp::EngineApp()
 	{
 		m_gameInstance = std::weak_ptr<GameInstance>();
 	}
@@ -38,10 +38,8 @@ namespace SvEditor::Core
 
 	void EngineApp::Init()
 	{
-		m_gameIsPaused = false;
-
 		SvCore::Debug::Logger::GetInstance().SetFile("debug.log");
-        SvCore::Resources::ResourceManager::GetInstance().AddSearchPath("assets");
+		SvCore::Resources::ResourceManager::GetInstance().AddSearchPath("assets");
 
 		//physics
 		SvPhysics::PhysicsContext::GetInstance().Init();
@@ -84,12 +82,9 @@ namespace SvEditor::Core
 			m_window->Update();
 			SvApp::InputManager::GetInstance().Update();
 
-			if (!m_gameInstance.expired() && !m_gameIsPaused)
-			{
-				Timer::GetInstance().Tick();
-				UpdateScripts();
-				UpdatePhysics();
-			}
+			Timer::GetInstance().Tick();
+			if (!m_gameInstance.expired() && !m_editorEngine.IsPaused())
+				UpdatePIE();
 
 			m_window->RenderUI();			//update UI
 			m_editorEngine.RenderWorlds();	//render worlds
@@ -110,15 +105,18 @@ namespace SvEditor::Core
 
 		if (!m_gameInstance.expired()) //game is running
 		{
+			m_editorEngine.SetPaused(false);
 			m_editorEngine.DestroyGameInstance();
-			m_window->GetUI().ForceSceneFocus();
 		}
 		else //game not running
 		{
 			m_gameInstance = m_editorEngine.CreatePIEGameInstance();
-			m_gameInstance.lock()->Start();
-			m_window->GetUI().ForceGameFocus();
-			//this is tmp game
+
+			if (!m_gameInstance.expired())
+			{
+				m_gameInstance.lock()->Start();
+				m_window->GetUI().ForceGameFocus();
+			}
 		}
 
 		HierarchyPanel::ToggleSelectable(currentSelection);
@@ -126,12 +124,18 @@ namespace SvEditor::Core
 
 	void EngineApp::TogglePausePIE()
 	{
-		//TODO: toggle pause
+		m_editorEngine.TogglePause();
 	}
 
 	void EngineApp::PressFramePIE()
 	{
-		//TODO: press frame
+		UpdatePIE();
+	}
+
+	void EngineApp::UpdatePIE()
+	{
+		UpdateScripts();
+		UpdatePhysics();
 	}
 
 	void EngineApp::UpdateScripts()

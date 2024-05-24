@@ -1,6 +1,7 @@
 #include "SurvivantCore/ECS/EntityHandle.h"
 
 #include "SurvivantCore/ECS/ComponentHandle.h"
+#include "SurvivantCore/ECS/EntityHandleIterator.h"
 #include "SurvivantCore/ECS/Scene.h"
 #include "SurvivantCore/ECS/Components/Hierarchy.h"
 #include "SurvivantCore/ECS/Components/TagComponent.h"
@@ -18,6 +19,11 @@ namespace SvCore::ECS
     bool EntityHandle::operator==(const EntityHandle& p_other) const
     {
         return m_entity == p_other.m_entity && m_scene == p_other.m_scene;
+    }
+
+    bool EntityHandle::operator==(const Entity p_entity) const
+    {
+        return m_entity == p_entity;
     }
 
     EntityHandle::operator bool() const
@@ -78,16 +84,7 @@ namespace SvCore::ECS
 
     void EntityHandle::SetParent(const EntityHandle p_parent)
     {
-        HierarchyComponent* hierarchy = Get<HierarchyComponent>();
-
-        if (!hierarchy)
-        {
-            Make<HierarchyComponent>(p_parent);
-            return;
-        }
-
-        hierarchy->SetParent(p_parent);
-        Set<HierarchyComponent>(*hierarchy);
+        Make<HierarchyComponent>(p_parent);
     }
 
     void EntityHandle::SetParent(const EntityHandle p_parent, const bool p_keepWorld)
@@ -125,14 +122,14 @@ namespace SvCore::ECS
         return { m_scene, hierarchy ? hierarchy->GetPreviousSibling() : NULL_ENTITY };
     }
 
-    size_t EntityHandle::GetChildCount() const
+    Entity::Index EntityHandle::GetChildCount() const
     {
         const HierarchyComponent* hierarchy = Get<HierarchyComponent>();
 
         return hierarchy ? hierarchy->GetChildCount() : 0;
     }
 
-    EntityHandle EntityHandle::GetChild(size_t p_index) const
+    EntityHandle EntityHandle::GetChild(Entity::Index p_index) const
     {
         const HierarchyComponent* hierarchy = Get<HierarchyComponent>();
 
@@ -157,23 +154,29 @@ namespace SvCore::ECS
         return child;
     }
 
+    EntityHandle::iterator EntityHandle::begin() const
+    {
+        return { GetChild(0) };
+    }
+
+    EntityHandle::iterator EntityHandle::end() const
+    {
+        return { { m_scene, NULL_ENTITY } };
+    }
+
+    EntityHandle::reverse_iterator EntityHandle::rbegin() const
+    {
+        return { GetChild(GetChildCount() - 1) };
+    }
+
+    EntityHandle::reverse_iterator EntityHandle::rend() const
+    {
+        return { { m_scene, NULL_ENTITY } };
+    }
+
     std::vector<EntityHandle> EntityHandle::GetChildren() const
     {
-        const HierarchyComponent* hierarchy = Get<HierarchyComponent>();
-
-        if (!hierarchy || hierarchy->GetChildCount() == 0)
-            return {};
-
-        std::vector<EntityHandle> children;
-        EntityHandle              child = { m_scene, hierarchy->GetFirstChild() };
-
-        while (child)
-        {
-            children.push_back(child);
-            child = child.GetNextSibling();
-        }
-
-        return children;
+        return { begin(), end() };
     }
 
     EntityHandle EntityHandle::Copy() const
@@ -190,6 +193,101 @@ namespace SvCore::ECS
             m_scene->Destroy(m_entity);
 
         m_entity = NULL_ENTITY;
+    }
+
+    bool EntityHandle::Has(const TypeId p_type) const
+    {
+        if (!m_scene)
+            return false;
+
+        return m_scene->GetStorage(p_type).Contains(m_entity);
+    }
+
+    ComponentHandle EntityHandle::Get(const TypeId p_type) const
+    {
+        if (m_scene)
+            return { *this, p_type };
+
+        return {};
+    }
+
+    ComponentHandle EntityHandle::GetInParent(const TypeId p_type) const
+    {
+        ComponentHandle current{ *this, p_type };
+
+        if (current)
+            return current;
+
+        EntityHandle parent = GetParent();
+
+        while (parent)
+        {
+            if ((current = { parent, p_type }))
+                return current;
+
+            parent = parent.GetParent();
+        }
+
+        return {};
+    }
+
+    ComponentHandle EntityHandle::GetInChildren(const TypeId p_type) const
+    {
+        if (const ComponentHandle component = Get(p_type))
+            return component;
+
+        for (const EntityHandle& child : *this)
+        {
+            if (const ComponentHandle component = child.GetInChildren(p_type))
+                return component;
+        }
+
+        return {};
+    }
+
+    ComponentHandle EntityHandle::GetInHierarchy(const TypeId p_type, const EComponentSearchOrigin p_searchOrigin) const
+    {
+        switch (p_searchOrigin)
+        {
+        case EComponentSearchOrigin::ROOT:
+        {
+            return GetRoot().GetInChildren(p_type);
+        }
+        case EComponentSearchOrigin::PARENT:
+        {
+            if (const ComponentHandle component = GetInParent(p_type))
+                return component;
+
+            return GetInChildren(p_type);
+        }
+        case EComponentSearchOrigin::CHILDREN:
+        {
+            if (const ComponentHandle component = GetInChildren(p_type))
+                return component;
+
+            return GetInParent(p_type);
+        }
+        default:
+            ASSERT(false, "Invalid component search origin");
+            return {};
+        }
+    }
+
+    ComponentHandle EntityHandle::GetOrCreate(const TypeId p_type) const
+    {
+        if (!m_scene)
+            return {};
+
+        if (m_scene->GetStorage(p_type).GetOrCreateRaw(m_entity))
+            return { *this, p_type };
+
+        return {};
+    }
+
+    void EntityHandle::Remove(const TypeId p_type) const
+    {
+        if (m_scene)
+            m_scene->GetStorage(p_type).Remove(m_entity);
     }
 
     Entity::Id EntityHandle::GetComponentCount() const

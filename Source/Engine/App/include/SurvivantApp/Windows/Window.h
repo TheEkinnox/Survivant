@@ -65,9 +65,9 @@ namespace SvApp
 		class WindowMinimize : public SvCore::Events::Event<bool> {};
 
 
-		Window(std::string p_name = "Window");
-		Window(std::string p_name, int p_width, int p_height, int p_x, int p_y);
-		~Window();
+		Window(const std::string& p_name = "Window", bool p_startMaximized = true);
+		Window(const std::string& p_name, int p_width, int p_height, int p_x, int p_y);
+		virtual ~Window();
 
 		Window(Window&&) = delete;
 		Window(const Window&) = delete;

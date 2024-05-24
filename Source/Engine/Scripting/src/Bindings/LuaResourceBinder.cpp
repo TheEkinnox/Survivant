@@ -32,6 +32,7 @@ namespace SvScripting::Bindings
             "isValid", sol::readonly_property(&GenericResourceRef::operator bool),
             "type", sol::readonly_property(&GenericResourceRef::GetType),
             "path", sol::readonly_property(&GenericResourceRef::GetPath),
+            "fullPath", sol::readonly_property(&GenericResourceRef::GetFullPath),
             sol::meta_function::index, [&p_luaState](const GenericResourceRef& p_self, const sol::object& p_index) -> sol::object
             {
                 const LuaTypeInfo& typeInfo = LuaTypeRegistry::GetInstance().GetTypeInfo(p_self.GetType());
@@ -97,6 +98,9 @@ namespace SvScripting::Bindings
 
         using Get = GenericResourceRef(ResourceManager::*)(const std::string&, const std::string&) const;
         using GetOrCreate = GenericResourceRef(ResourceManager::*)(const std::string&, const std::string&);
+        using GetAll = std::vector<GenericResourceRef>(ResourceManager::*)(const std::string&) const;
+        using ReloadAll = void(ResourceManager::*)(const std::string&);
+        using RemoveAll = void(ResourceManager::*)(const std::string&);
 
         sol::usertype logType = p_luaState.new_usertype<ResourceManager>(
             typeName,
@@ -104,7 +108,10 @@ namespace SvScripting::Bindings
             "Load", &ResourceManager::Create,
             "Get", static_cast<Get>(&ResourceManager::Get),
             "GetOrCreate", static_cast<GetOrCreate>(&ResourceManager::GetOrCreate),
+            "GetAll", static_cast<GetAll>(&ResourceManager::GetAll),
+            "ReloadAll", static_cast<ReloadAll>(&ResourceManager::ReloadAll),
             "Remove", &ResourceManager::Remove,
+            "RemoveAll", static_cast<RemoveAll>(&ResourceManager::RemoveAll),
             "Clear", &ResourceManager::Clear,
             "searchPaths", sol::property(&ResourceManager::GetSearchPaths, &ResourceManager::SetSearchPaths),
             "AddSearchPath", &ResourceManager::AddSearchPath,

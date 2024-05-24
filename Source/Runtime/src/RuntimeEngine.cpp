@@ -1,11 +1,24 @@
 //RuntimeEngine.cpp
 #include "SurvivantRuntime/RuntimeEngine.h"
 
-#include "SurvivantCore/Debug/Assertion.h"
-#include "SurvivantRuntime/RuntimeWindow.h"
-#include "SurvivantApp/Core/BuildConfig.h"
+#include <SurvivantApp/Core/BuildConfig.h>
+#include <SurvivantApp/Core/TempDefaultScene.h>
 
-#include "SurvivantApp/Core/TempDefaultScene.h"
+#include <SurvivantCore/Debug/Assertion.h>
+
+#include <SurvivantRendering/RHI/IRenderAPI.h>
+
+using namespace LibMath;
+
+using namespace SvApp::Core;
+
+using namespace SvCore::ECS;
+using namespace SvCore::Resources;
+
+using namespace SvRendering::RHI;
+using namespace SvRendering::Core;
+using namespace SvRendering::Enums;
+using namespace SvRendering::Components;
 
 namespace SvRuntime
 {
@@ -118,6 +131,14 @@ namespace SvRuntime
 	void RuntimeEngine::BakeLights()
 	{
 		m_world->BakeLighting();
+	}
+
+	IEngine::SceneRef RuntimeEngine::GetCurrentScene() const
+	{
+		if (!m_world)
+			return {};
+
+		return m_world->m_currentSceneRef ? *m_world->m_currentSceneRef : SceneRef();
 	}
 
 	bool RuntimeEngine::IsRunning()

@@ -10,15 +10,15 @@
 
 #include <array>
 
-using namespace SvApp::Core;
-using namespace LibMath;
-
 namespace SvEditor::Core
 {
 	class EditorWindow;
 
 	class EditorEngine : public SvApp::Core::IEngine
 	{
+		using WorldContext = SvApp::Core::WorldContext;
+		using GameInstance = SvApp::Core::GameInstance;
+
 	public:
 		//Events
 		class OnCreateBuildGame : public SvCore::Events::Event<
@@ -29,7 +29,7 @@ namespace SvEditor::Core
 			std::string /*p_buildFileName*/,
 			SvApp::Core::BuildConfig /*p_buildInfo*/> {};
 
-		class OnSave : public SvCore::Events::Event<> 
+		class OnSave : public SvCore::Events::Event<>
 		{
 		public:
 			static inline bool s_saveSucceded = false;
@@ -37,12 +37,13 @@ namespace SvEditor::Core
 		class OnEditorModifiedScene : public SvCore::Events::Event<> {};
 
 		EditorEngine() = default;
-		~EditorEngine() = default;
+		~EditorEngine() override = default;
 
 		// Inherited via IEngine
 		void Init() override;
 		void Update() override;
 		void BakeLights() override;
+		SceneRef GetCurrentScene() const override;
 		bool ChangeScene(const std::string& p_scenePath) override;
 		bool ChangeCamera(const SvCore::ECS::EntityHandle& p_camera) override;
 		float GetDeltaTime() override;
@@ -52,6 +53,9 @@ namespace SvEditor::Core
 		bool IsPlayInEditor();
 		bool IsRunning();
 		bool IsEditorModifiedScene();
+		void TogglePause();
+		void SetPaused(bool p_state);
+		bool IsPaused() const;
 		bool IsGameFocused();
 
 		void SetupUI(Core::EditorWindow* p_window, const std::array<std::function<void()>, 3> p_playPauseFrameCallbacks);
@@ -75,6 +79,7 @@ namespace SvEditor::Core
 
 		SvCore::Utility::Timer	m_time;
 		bool					m_isRunning = true;
+		bool					m_isPaused  = false;
 		bool					m_isEditorModifiedScene = false;
 
 		//always exists

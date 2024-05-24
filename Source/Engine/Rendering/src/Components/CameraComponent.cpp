@@ -32,6 +32,9 @@ namespace SvRendering::Components
         p_writer.Key("active");
         p_writer.Bool(m_isActive);
 
+        p_writer.Key("order");
+        p_writer.Int(m_order);
+
         p_writer.Key("clear_mask");
         p_writer.Uint(m_clearMask);
 
@@ -83,6 +86,20 @@ namespace SvRendering::Components
 
         m_isActive = it->value.GetBool();
 
+        it = p_json.FindMember("order");
+
+        if (it != p_json.MemberEnd())
+        {
+            if (!CHECK(it->value.IsInt(), "Unable to deserialize camera component's order"))
+                return false;
+
+            m_order = it->value.GetInt();
+        }
+        else
+        {
+            m_order = 0;
+        }
+
         it = p_json.FindMember("clear_mask");
 
         if (!CHECK(it != p_json.MemberEnd() && it->value.IsUint(), "Unable to deserialize camera component's clear mask"))
@@ -108,7 +125,7 @@ namespace SvRendering::Components
         if (!CHECK(it != p_json.MemberEnd() && it->value.IsUint(), "Unable to deserialize camera component's culling mask"))
             return false;
 
-        m_cullingMask = static_cast<uint8_t>(it->value.GetUint());
+        m_cullingMask = static_cast<LayerMask>(it->value.GetUint());
 
         it = p_json.FindMember("perspective_fov");
 
@@ -168,6 +185,16 @@ namespace SvRendering::Components
         m_isActive = p_isActive;
     }
 
+    int CameraComponent::GetOrder() const
+    {
+        return m_order;
+    }
+
+    void CameraComponent::SetOrder(const int p_order)
+    {
+        m_order = p_order;
+    }
+
     void CameraComponent::Recalculate(const Matrix4& p_view)
     {
         BuildProjection();
@@ -189,6 +216,11 @@ namespace SvRendering::Components
         return *this;
     }
 
+    Color CameraComponent::GetClearColor() const
+    {
+        return m_clearColor;
+    }
+
     CameraComponent& CameraComponent::SetClearColor(const Color& p_color)
     {
         if (static_cast<const Vector4&>(m_clearColor) == static_cast<const Vector4&>(p_color))
@@ -202,11 +234,6 @@ namespace SvRendering::Components
     CameraComponent& CameraComponent::SetClearColor(const float p_r, const float p_g, const float p_b, const float p_a)
     {
         return SetClearColor({ p_r, p_g, p_b, p_a });
-    }
-
-    Color CameraComponent::GetClearColor() const
-    {
-        return m_clearColor;
     }
 
     void CameraComponent::Clear() const

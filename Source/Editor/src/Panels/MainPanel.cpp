@@ -37,7 +37,7 @@ namespace SvEditor::Panels
         windowFlags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
         windowFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
-        //always begin bcs if not lose docked childreen
+        //always begin bcs if not lose docked children
         ImGui::Begin("DockSpace Demo", &open, windowFlags);
 
         //?

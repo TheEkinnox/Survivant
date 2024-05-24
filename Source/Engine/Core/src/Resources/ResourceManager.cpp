@@ -127,6 +127,20 @@ namespace SvCore::Resources
         return resources;
     }
 
+    void ResourceManager::ReloadAll(const std::string& p_type)
+    {
+        for (const auto& resource : m_resources | std::ranges::views::values)
+        {
+            if (!resource)
+                continue;
+
+            const GenericResourceRef* genericResource = dynamic_cast<GenericResourceRef*>(resource.get());
+
+            if ((genericResource && genericResource->GetType() == p_type) || (*resource && (*resource)->GetTypeName() == p_type))
+                Create(p_type, resource->GetPath());
+        }
+    }
+
     std::vector<char> ResourceManager::ReadFile(const std::string& p_path) const
     {
         if (p_path.empty())
@@ -152,6 +166,22 @@ namespace SvCore::Resources
     void ResourceManager::Remove(const std::string& p_path)
     {
         m_resources.erase(GetRelativePath(p_path));
+    }
+
+    void ResourceManager::RemoveAll(const std::string& p_type)
+    {
+        for (auto it = m_resources.begin(); it != m_resources.end(); ++it)
+        {
+            auto& resource = it->second;
+
+            if (!resource)
+                continue;
+
+            const GenericResourceRef* genericResource = dynamic_cast<GenericResourceRef*>(resource.get());
+
+            if ((genericResource && genericResource->GetType() == p_type) || (*resource && (*resource)->GetTypeName() == p_type))
+                it = m_resources.erase(it);
+        }
     }
 
     void ResourceManager::Clear()

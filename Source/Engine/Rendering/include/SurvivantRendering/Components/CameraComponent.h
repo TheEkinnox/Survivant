@@ -93,6 +93,18 @@ namespace SvRendering::Components
         void SetActive(bool p_isActive);
 
         /**
+         * \brief Gets the camera component's rendering order
+         * \return The camera component's order
+         */
+        int GetOrder() const;
+
+        /**
+         * \brief Sets the camera component's rendering order
+         * \param p_order The camera component's new rendering order
+         */
+        void SetOrder(int p_order);
+
+        /**
          * \brief Recalculates the camera's view-projection matrix
          * \param p_view The camera's view matrix
          */
@@ -112,6 +124,12 @@ namespace SvRendering::Components
         CameraComponent& SetProjectionType(Enums::EProjectionType p_projectionType);
 
         /**
+         * \brief Gets the camera's current clear color
+         * \return The camera's current clear color
+         */
+        Core::Color GetClearColor() const;
+
+        /**
          * \brief Sets the camera's clear color
          * \param p_color The new clear color
          * \return A reference to the modified component
@@ -127,12 +145,6 @@ namespace SvRendering::Components
          * \return A reference to the modified component
          */
         CameraComponent& SetClearColor(float p_r, float p_g, float p_b, float p_a = 1.f);
-
-        /**
-         * \brief Gets the camera's current clear color
-         * \return The camera's current clear color
-         */
-        Core::Color GetClearColor() const;
 
         /**
          * \brief Clears the current frame buffer using the camera's info
@@ -327,6 +339,8 @@ namespace SvRendering::Components
         float m_orthographicFar;
 
         float m_aspect;
+
+        int m_order;
 
         bool m_isActive = true;
         bool m_isDirty;

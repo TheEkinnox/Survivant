@@ -1,5 +1,6 @@
 #pragma once
 #include "SurvivantCore/ECS/EntityHandle.h"
+#include "SurvivantCore/ECS/EntityHandleIterator.h"
 
 #include "SurvivantCore/ECS/Scene.h"
 
@@ -40,7 +41,7 @@ namespace SvCore::ECS
 
         while (parent)
         {
-            if (T* component = parent.GetInParent<T>())
+            if (T* component = parent.Get<T>())
                 return component;
 
             parent = parent.GetParent();
@@ -52,20 +53,7 @@ namespace SvCore::ECS
     template <typename T>
     const T* EntityHandle::GetInParent() const
     {
-        if (const T* component = Get<T>())
-            return component;
-
-        EntityHandle parent = GetParent();
-
-        while (parent)
-        {
-            if (const T* component = parent.GetInParent<T>())
-                return component;
-
-            parent = parent.GetParent();
-        }
-
-        return nullptr;
+        return const_cast<EntityHandle*>(this)->GetInParent<T>();
     }
 
     template <typename T>
@@ -74,9 +62,7 @@ namespace SvCore::ECS
         if (T* component = Get<T>())
             return component;
 
-        const std::vector<EntityHandle> children = GetChildren();
-
-        for (const EntityHandle& child : children)
+        for (const EntityHandle& child : *this)
         {
             if (T* component = child.GetInChildren<T>())
                 return component;
@@ -88,18 +74,7 @@ namespace SvCore::ECS
     template <typename T>
     const T* EntityHandle::GetInChildren() const
     {
-        if (const T* component = Get<T>())
-            return component;
-
-        const std::vector<EntityHandle> children = GetChildren();
-
-        for (const EntityHandle& child : children)
-        {
-            if (const T* component = child.GetInChildren<T>())
-                return component;
-        }
-
-        return nullptr;
+        return const_cast<EntityHandle*>(this)->GetInChildren<T>();
     }
 
     template <typename T>
@@ -134,30 +109,7 @@ namespace SvCore::ECS
     template <typename T>
     const T* EntityHandle::GetInHierarchy(const EComponentSearchOrigin p_searchOrigin) const
     {
-        switch (p_searchOrigin)
-        {
-        case EComponentSearchOrigin::ROOT:
-        {
-            return GetRoot().GetInChildren<T>();
-        }
-        case EComponentSearchOrigin::PARENT:
-        {
-            if (const T* component = GetInParent<T>())
-                return component;
-
-            return GetInChildren<T>();
-        }
-        case EComponentSearchOrigin::CHILDREN:
-        {
-            if (const T* component = GetInChildren<T>())
-                return component;
-
-            return GetInParent<T>();
-        }
-        default:
-            ASSERT(false, "Invalid component search origin");
-            return nullptr;
-        }
+        return const_cast<EntityHandle*>(this)->GetInHierarchy<T>(p_searchOrigin);
     }
 
     template <typename T>
