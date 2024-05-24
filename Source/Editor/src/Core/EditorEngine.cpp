@@ -335,6 +335,21 @@ namespace SvEditor::Core
 		return m_isRunning;
 	}
 
+	void EditorEngine::TogglePause()
+	{
+		m_isPaused = !m_isPaused;
+	}
+
+	void EditorEngine::SetPaused(const bool p_state)
+	{
+		m_isPaused = p_state;
+	}
+
+	bool EditorEngine::IsPaused() const
+	{
+		return m_isPaused;
+	}
+
 	void EditorEngine::SetupUI(Core::EditorWindow* p_window, const std::array<std::function<void()>, 3>p_playPauseFrameCallbacks)
 	{
 		p_window->SetupUI(

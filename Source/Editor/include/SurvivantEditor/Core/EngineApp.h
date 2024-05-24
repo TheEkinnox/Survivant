@@ -7,8 +7,6 @@
 #include <SurvivantApp/Core/GameInstance.h>
 #include <SurvivantApp/Core/IApp.h>
 
-using namespace LibMath;
-
 namespace SvEditor::Core
 {
 	class EngineApp : public SvApp::Core::IApp
@@ -36,9 +34,8 @@ namespace SvEditor::Core
 
 		//class GameLoopEvent : public SvCore::Events::Event<> {};
 
-		std::unique_ptr<Core::EditorWindow>			m_window;
-		bool										m_gameIsPaused;
-		std::weak_ptr<GameInstance>					m_gameInstance;
-		EditorEngine								m_editorEngine;
+		std::unique_ptr<EditorWindow>			m_window;
+		std::weak_ptr<GameInstance>				m_gameInstance;
+		EditorEngine							m_editorEngine;
 	};
 }

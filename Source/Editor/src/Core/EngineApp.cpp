@@ -21,11 +21,11 @@ using namespace SvRendering::RHI;
 using namespace SvRendering::Enums;
 
 using namespace SvCore::Utility;
+using namespace SvApp::Core;
 
 namespace SvEditor::Core
 {
-	EngineApp::EngineApp() :
-		m_gameIsPaused(false)
+	EngineApp::EngineApp()
 	{
 		m_gameInstance = std::weak_ptr<GameInstance>();
 	}
@@ -37,8 +37,6 @@ namespace SvEditor::Core
 
 	void EngineApp::Init()
 	{
-		m_gameIsPaused = false;
-
 		SvCore::Debug::Logger::GetInstance().SetFile("debug.log");
         SvCore::Resources::ResourceManager::GetInstance().AddSearchPath("assets");
 
@@ -83,7 +81,7 @@ namespace SvEditor::Core
 			SvApp::InputManager::GetInstance().Update();
 
 			Timer::GetInstance().Tick();
-			if (!m_gameInstance.expired() && !m_gameIsPaused)
+			if (!m_gameInstance.expired() && !m_editorEngine.IsPaused())
 				UpdatePIE();
 
 			m_editorEngine.RenderWorlds();
@@ -102,10 +100,10 @@ namespace SvEditor::Core
 	{
 		const auto currentSelection = RenderingContext::s_editorSelectedEntity.GetEntity().GetIndex();
 		HierarchyPanel::ToggleSelectable(SvCore::ECS::NULL_ENTITY.GetIndex());
-		m_gameIsPaused = false;
 
 		if (!m_gameInstance.expired()) //game is running
 		{
+			m_editorEngine.SetPaused(false);
 			m_editorEngine.DestroyGameInstance();
 			m_window->GetUI().ForceSceneFocus();
 		}
@@ -122,7 +120,7 @@ namespace SvEditor::Core
 
 	void EngineApp::TogglePausePIE()
 	{
-		m_gameIsPaused = !m_gameIsPaused;
+		m_editorEngine.TogglePause();
 	}
 
 	void EngineApp::PressFramePIE()

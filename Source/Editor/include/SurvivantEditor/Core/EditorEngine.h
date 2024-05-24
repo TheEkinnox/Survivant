@@ -10,15 +10,15 @@
 
 #include <array>
 
-using namespace SvApp::Core;
-using namespace LibMath;
-
 namespace SvEditor::Core
 {
 	class EditorWindow;
 
 	class EditorEngine : public SvApp::Core::IEngine
 	{
+		using WorldContext = SvApp::Core::WorldContext;
+		using GameInstance = SvApp::Core::GameInstance;
+
 	public:
 		class OnCreateBuildGame : public SvCore::Events::Event<
 			std::string /*p_buildFileName*/,
@@ -43,6 +43,9 @@ namespace SvEditor::Core
 
 		void RenderWorlds();
 		bool IsRunning();
+		void TogglePause();
+		void SetPaused(bool p_state);
+		bool IsPaused() const;
 
 		void SetupUI(Core::EditorWindow* p_window, const std::array<std::function<void()>, 3> p_playPauseFrameCallbacks);
 
@@ -76,6 +79,7 @@ namespace SvEditor::Core
 
 		SvCore::Utility::Timer			m_time;
 		bool							m_isRunning = true;
+		bool							m_isPaused = false;
 
 		//always exists
 		std::shared_ptr<WorldContext>	m_editorWorld;
