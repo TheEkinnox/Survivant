@@ -3,17 +3,18 @@
 
 #include "SurvivantApp/Core/RenderingContext.h"
 #include "SurvivantApp/Inputs/InputManager.h"
-#include "SurvivantCore/ECS/Scene.h"
-#include "SurvivantCore/ECS/EntityHandle.h"
-#include "SurvivantCore/Resources/ResourceRef.h"
-#include "SurvivantRendering/RHI/IShaderStorageBuffer.h"
-#include "SurvivantRendering/RHI/IFrameBuffer.h"
-#include "SurvivantRendering/Components/CameraComponent.h"
 
-#include "Vector/Vector2.h"
-#include "Transform.h"
+#include <SurvivantCore/ECS/EntityHandle.h>
+#include <SurvivantCore/ECS/Scene.h>
+#include <SurvivantCore/Resources/ResourceRef.h>
 
-#include <string>
+#include <SurvivantRendering/Components/CameraComponent.h>
+#include <SurvivantRendering/RHI/IFrameBuffer.h>
+#include <SurvivantRendering/RHI/IShaderStorageBuffer.h>
+
+#include <Transform.h>
+#include <Vector/Vector2.h>
+
 #include <memory>
 #include <vector>
 
@@ -45,7 +46,6 @@ namespace SvApp::Core
 		};
 
 		void BeginPlay();
-		//void Update();
 		bool Save(bool p_pretty = false);
 		void BakeLighting();
 
@@ -64,12 +64,14 @@ namespace SvApp::Core
 
 		EWorldType				m_worldType = EWorldType::NONE;
 		GameInstance*			m_owningGameInstance = nullptr;
-
 		std::shared_ptr<InputManager::InputBindings>				m_inputs;
-		std::shared_ptr<RenderingContext>							m_renderingContext;
-		bool														m_isVisalbe;
 		std::unique_ptr<SvRendering::RHI::IShaderStorageBuffer>		m_lightsSSBO = nullptr;
 
 		std::shared_ptr<SceneRef>	m_currentSceneRef = std::make_shared<SceneRef>(SceneRef());
+
+		//editor only
+		std::shared_ptr<RenderingContext>	m_renderingContext;
+		bool								m_isFocused = false;
+		bool								m_isVisalbe;
 	};
 }

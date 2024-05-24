@@ -22,7 +22,7 @@ namespace SvEditor::PanelItems
 
     void PanelTransformInput::DisplayAndUpdatePanel()
     {
-        static auto speedSlider = 1.0f;
+        static int flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll;
         static auto minSlider = -FLT_MAX;
         static auto maxSlider = FLT_MAX;
 
@@ -34,7 +34,7 @@ namespace SvEditor::PanelItems
         ImGui::Text("Position");
         ImGui::SameLine();
         ImGui::PushID(0);
-        if (ImGui::DragFloat3("##", position.getArray(), speedSlider, minSlider, maxSlider))
+        if (ImGui::InputFloat3("##", position.getArray(), "%.3f", flags))
         {
             trans.setPosition(position);
 
@@ -44,12 +44,12 @@ namespace SvEditor::PanelItems
         ImGui::PopID();
 
 
-        LibMath::Vector3 asDegree = YPRToDegree(m_yawPitchRoll);
+        LibMath::Vector3 asDegree = YPRToDegree(rotation.toYawPitchRoll());
 
         ImGui::Text("Rotation");
         ImGui::SameLine();
         ImGui::PushID(1);
-        if (ImGui::DragFloat3("##", asDegree.getArray(), speedSlider, minSlider, maxSlider))
+        if (ImGui::InputFloat3("##", asDegree.getArray(), "%.3f", flags))
         {
             //LibMath::Vector3 diffDegree = asDegree - YPRToDegree(m_yawPitchRoll); //m_yawPitchRoll hasnt been modified so still prev
 
@@ -69,7 +69,7 @@ namespace SvEditor::PanelItems
         ImGui::Text("Scale   ");
         ImGui::SameLine();
         ImGui::PushID(2);
-        if (ImGui::DragFloat3("##", scale.getArray(), speedSlider, minSlider, maxSlider))
+        if (ImGui::InputFloat3("##", scale.getArray(), "%.3f", flags))
         {
             if (scale.m_x == 0)
                 scale.m_x = FLT_MIN;

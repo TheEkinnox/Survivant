@@ -378,6 +378,8 @@ namespace SvPhysics
         ASSERT(pxRigidBody, "Failed to create PhysX rigid body");
 
         pxRigidBody->setRigidBodyFlag(PxRigidBodyFlag::eENABLE_POSE_INTEGRATION_PREVIEW, true);
+        pxRigidBody->setRigidDynamicLockFlag(PxRigidDynamicLockFlag::eLOCK_ANGULAR_X, true);
+        pxRigidBody->setRigidDynamicLockFlag(PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z, true);
         CHECK(m_scene->addActor(*pxRigidBody), "Failed to add rigid body to PhysX scene");
         p_rigidBody.m_pxBody = pxRigidBody;
         p_rigidBody.Refresh();

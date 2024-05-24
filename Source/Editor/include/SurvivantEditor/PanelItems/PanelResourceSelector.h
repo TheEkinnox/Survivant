@@ -17,6 +17,7 @@ namespace SvEditor::PanelItems
 	{
 	public:
 		using Ref = PanelInputBase<SvCore::Resources::ResourceRef<T>>::GetRefFunc;
+		using Copy = PanelInputBase<SvCore::Resources::ResourceRef<T>>::GetCopyFunc;
 		using Callback = PanelInputBase<SvCore::Resources::ResourceRef<T>>::Callback;
 
 		PanelResourceSelector(

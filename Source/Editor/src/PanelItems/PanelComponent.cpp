@@ -20,6 +20,7 @@ namespace SvEditor::PanelItems
 
         //ImGui::Text("   "); ImGui::SameLine();
         bool open = ImGui::CollapsingHeader(m_name.c_str(), &m_isActive, flags);
+        ImGui::PushID(m_name.c_str());
 
         ImGui::Spacing();
 
@@ -31,6 +32,8 @@ namespace SvEditor::PanelItems
                 item->DisplayAndUpdatePanel();
         }
         ImGui::EndGroup();
+
+        ImGui::PopID();
 	}
 
     bool PanelComponent::NeedToRemove()const

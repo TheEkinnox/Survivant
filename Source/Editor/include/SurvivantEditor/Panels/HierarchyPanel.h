@@ -52,13 +52,14 @@ namespace SvEditor::Panels
 		static inline EntityBranchMap		s_entities;
 
 		void	RemoveListeners(SvCore::ECS::Scene& p_scene);
-		void	UpdateScene();
+		void	SetScene();
+		void	SetSceneName();
 		void	SetupTree();
 		void	SetupEntityBranch(HierarchyBranch& p_parent, const SvCore::ECS::EntityHandle& p_entity);
 		void				AddEntityBranch(HierarchyBranch& p_parent, std::shared_ptr<HierarchyBranch> p_childBranch);
 		SvCore::ECS::Scene& GetScene();
 
-		
+		std::string			m_sceneName;
 		HierarchyBranch		m_tree;
 		SceneRefPtr			m_scene;
 		PanelButton			m_addEntity;

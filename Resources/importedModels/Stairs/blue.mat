@@ -12,18 +12,18 @@
             "name": "u_diffuse",
             "type": 10,
             "value": {
-                "path": ""
+                "path": "importedModels/Stairs/slat39XL.jpg"
             }
         },
         {
             "name": "u_shininess",
             "type": 4,
-            "value": 0.0
+            "value": 10000.0
         },
         {
             "name": "u_specularColor",
             "type": 7,
-            "value": "{0,1,0.481013,0}"
+            "value": "{1,1,1,0}"
         }
     ]
 }

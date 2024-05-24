@@ -2,48 +2,15 @@
 
 #include "SurvivantApp/Core/WorldContext.h"
 
-#include "SurvivantApp/Core/IEngine.h"
-#include "SurvivantApp/Core/TempDefaultScene.h"
-
+using namespace SvCore::ECS;
+using namespace SvRendering::Core;
+using namespace SvRendering::Components;
 
 namespace SvApp::Core
 {
     void WorldContext::BeginPlay()
     {
-        using namespace ToRemove;
-
-
-        //TODO : Save resource ref in begin play
-        //static int i = 0;
-        //if (i == 0)
-        //{
-        //ToRemove::MakeScene(*CurrentScene());
-        //CurrentScene()->Save("assets/scenes/DefaultScene.scn");
-            //i++;
-        //}
-        //else
-        //{
-        //    CurrentScene()->Save("assets/scenes/TestScene1.scn");
-        //}
-
-        //CurrentScene()->Clear();
-        //CurrentScene()->Save("assets/scenes/EmptyScene.scn");
-
-        TestLevelBeginPlay(*CurrentScene());
     }
-
-    //void WorldContext::Update()
-    //{
-    //    using namespace ToRemove;
-
-    //    SceneView<Temporary>                  temporariesView(*CurrentScene());
-    //    SceneView<const UserInput, Transform> userInputsView(*CurrentScene());
-    //    SceneView<const Rotator, Transform>   rotatorsView(*CurrentScene());
-
-    //    UpdateTemporaries(temporariesView, SV_DELTA_TIME());
-    //    UpdateInput(userInputsView, ToRemove::GameInfo::moveInput, ToRemove::GameInfo::rotateInput, SV_DELTA_TIME());
-    //    UpdateRotators(rotatorsView, SV_DELTA_TIME());
-    //}
 
     bool WorldContext::Save(const bool p_pretty)
     {
@@ -55,7 +22,7 @@ namespace SvApp::Core
         Renderer::UpdateLightSSBO(CurrentScene().Get(), *m_lightsSSBO);
     }
 
-    SvCore::ECS::EntityHandle WorldContext::GetFirstCamera()
+    EntityHandle WorldContext::GetFirstCamera()
     {
         SceneView<CameraComponent> cameras(*CurrentScene());
 
@@ -66,13 +33,13 @@ namespace SvApp::Core
         return entity;
     }
 
-    void WorldContext::SetCamera(const SvRendering::Components::CameraComponent& p_cam, const LibMath::Transform& p_trans)
+    void WorldContext::SetCamera(const CameraComponent& p_cam, const LibMath::Transform& p_trans)
     {
         m_renderingContext->m_mainCamera.SetCamera(p_cam, p_trans);
         m_renderingContext->ResetCameraAspect();
     }
 
-    void WorldContext::SetCamera(const SvCore::ECS::EntityHandle& p_camera)
+    void WorldContext::SetCamera(const EntityHandle& p_camera)
     {
         m_renderingContext->m_mainCamera.SetEntity(p_camera);
         m_renderingContext->ResetCameraAspect();

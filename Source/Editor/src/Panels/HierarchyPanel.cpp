@@ -1,15 +1,16 @@
 //HierarchyPanel.cpp
-
 #include "SurvivantEditor/Panels/HierarchyPanel.h"
 
-#include "SurvivantCore/Events/EventManager.h"
-#include "SurvivantCore/Utility/Utility.h"
+#include "SurvivantEditor/Core/EditorEngine.h"
 #include "SurvivantEditor/Core/EditorUI.h"
 #include "SurvivantEditor/Core/InspectorItemManager.h"
 #include "SurvivantEditor/PanelItems/PanelEntity.h"
 #include "SurvivantEditor/Panels/ExamplGameObj.h"
 #include "SurvivantEditor/Panels/ScenePanel.h"
 #include "SurvivantEditor/Panels/InspectorPanel.h"
+
+#include <SurvivantCore/Events/EventManager.h>
+#include <SurvivantCore/Utility/Utility.h>
 
 #include <imgui.h>
 
@@ -24,8 +25,7 @@ namespace SvEditor::Panels
         s_getCurrentScene().lock()->Get()->Create(); })
     {
         m_name = NAME;
-
-        UpdateScene();
+        SetScene();
 
         //propagate selection
         auto selectFunc = [this](HierarchyBranch& p_branch)
@@ -79,7 +79,7 @@ namespace SvEditor::Panels
         p_scene.GetStorage<SvCore::ECS::TagComponent>().m_onChange.RemoveListener(m_onModifTag[2]);
     }
 
-    void HierarchyPanel::UpdateScene()
+    void HierarchyPanel::SetScene()
     {
         ASSERT(s_getCurrentScene, "Current Scene Getter not set");
 
@@ -99,6 +99,8 @@ namespace SvEditor::Panels
         if (!oldScene.expired())
             RemoveListeners(*oldScene.lock()->Get());
 
+        //new scene
+        SetSceneName();
 
         //tag dirty on hierarchy change
         m_onModifEntity[0] = GetScene().GetStorage<Entity>().m_onAdd.AddListener(
@@ -141,6 +143,12 @@ namespace SvEditor::Panels
         m_onModifTag[0] = GetScene().GetStorage<SvCore::ECS::TagComponent>().m_onAdd.AddListener(modifTag);
         m_onModifTag[1] = GetScene().GetStorage<SvCore::ECS::TagComponent>().m_onRemove.AddListener(modifTag);
         m_onModifTag[2] = GetScene().GetStorage<SvCore::ECS::TagComponent>().m_onChange.AddListener(modifTag);
+    }
+
+    void HierarchyPanel::SetSceneName()
+    {
+        std::string path = m_scene.lock()->GetFullPath();
+        m_sceneName = path.substr(path.find_last_of('\\') + 1);
     }
 
     void HierarchyPanel::SetupTree()
@@ -205,18 +213,25 @@ namespace SvEditor::Panels
     Panel::ERenderFlags HierarchyPanel::Render()
     {
         bool open = true;
+        auto windowFlags = ImGuiWindowFlags_NoNav | (dynamic_cast<Core::EditorEngine*>(SV_ENGINE())->IsEditorModifiedScene() ?
+             ImGuiWindowFlags_UnsavedDocument : ImGuiWindowFlags_None);
 
         if (m_scene.expired() || m_isDirty)
         {
-            UpdateScene();
+            if (!m_scene.expired())
+                SV_EVENT_MANAGER().Invoke<Core::EditorEngine::OnEditorModifiedScene>();
+
+            SetScene();
             m_isDirty = false;
         }
 
-        if (!ImGui::Begin(m_name.c_str(), &open))
+        if (!ImGui::Begin(m_name.c_str(), &open, windowFlags))
         {
             ImGui::End();
             return Panel::ERenderFlags();
         }
+
+        ImGui::Text(m_sceneName.c_str());
 
         for (auto& branch : m_tree.GetChildren())
             branch.second->DisplayAndUpdatePanel();

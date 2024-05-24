@@ -24,15 +24,16 @@ namespace SvEditor::PanelItems
 
 		// Inherited via IInspectorable
 		void DisplayAndUpdatePanel() override;
-
-		// Inherited via IInspectorable
 		const std::string& GetIcon() override;
 		const std::string& GetName() override;
+
+		void SetItems(const Items& p_items, size_t p_keep = 0);
 
 	private:
 		SvCore::Resources::GenericResourceRef m_resource;
 		std::string		m_name;
 		std::string		m_icon;
 		Items			m_items;
+		bool			m_dirty;
 	};
 }

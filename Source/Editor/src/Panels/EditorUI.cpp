@@ -2,36 +2,32 @@
 
 #include "SurvivantEditor/Core/EditorUI.h"
 
-#include "SurvivantApp/Inputs/InputManager.h"
-#include "SurvivantApp/Windows/Window.h"
-#include "SurvivantCore/Debug/Assertion.h"
-#include "SurvivantCore/Events/EventManager.h"
-#include "SurvivantCore/Utility/Utility.h"
-#include "SurvivantEditor/Core/IUI.h"
-#include "SurvivantEditor/Core/InspectorItemManager.h"
-#include "SurvivantEditor/MenuItems/MenuButton.h"
+#include "SurvivantEditor/Core/EditorEngine.h"
+#include "SurvivantEditor/Panels/BuildPanel.h"
 #include "SurvivantEditor/Panels/ConsolePanel.h"
-#include "SurvivantEditor/Panels/ContentDrawerPanel.h"
 #include "SurvivantEditor/Panels/GamePanel.h"
 #include "SurvivantEditor/Panels/HierarchyPanel.h"
-#include "SurvivantEditor/Panels/ImagePanel.h"
 #include "SurvivantEditor/Panels/InspectorPanel.h"
 #include "SurvivantEditor/Panels/SavePanel.h"
 #include "SurvivantEditor/Panels/ScenePanel.h"
 #include "SurvivantEditor/Panels/TestPanel.h"
-#include "SurvivantEditor/Panels/BuildPanel.h"
-#include "SurvivantEditor/PanelItems/PanelButton.h"
 
+#include <SurvivantApp/Core/IEngine.h>
+#include <SurvivantApp/Inputs/InputManager.h>
+#include <SurvivantApp/Windows/Window.h>
 
-#include "Vector/Vector2.h"
+#include <SurvivantCore/Debug/Assertion.h>
+#include <SurvivantCore/Events/EventManager.h>
+#include <SurvivantCore/Utility/Utility.h>
 
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_opengl3.h"
-#include "imgui_internal.h"
+#include <SurvivantRendering/Components/ModelComponent.h>
 
-#include "SurvivantApp/Core/IEngine.h"
+#include <Vector/Vector2.h>
 
-#include "SurvivantRendering/Components/ModelComponent.h"
+#include <imgui_internal.h>
+
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_opengl3.h>
 
 namespace SvEditor::Core
 {
@@ -75,7 +71,7 @@ namespace SvEditor::Core
         m_fonts.push_back(io.Fonts->AddFontDefault(&config));
 
         //UIManager
-        SvEditor::Core::IUI::m_currentUI = this;
+        m_currentUI = this;
 
         //Propagate selection
         ISelectable::s_onSelected.AddListener([this](ISelectable* p_selected)
@@ -114,7 +110,7 @@ namespace SvEditor::Core
         ScenePanel::SetSceneWorld(p_world);
 
         ScenePanel::AddClickSceneListenner(
-            [p_world](const LibMath::Vector2& p_uv)
+            [p_world](const Vector2& p_uv)
             {
                 auto& scene = p_world.lock()->CurrentScene();
                 auto entity = p_world.lock()->
@@ -138,7 +134,7 @@ namespace SvEditor::Core
             });
 
         ScenePanel::AddResizeListenner(
-            [p_world](const LibMath::Vector2& p_size)
+            [p_world](const Vector2& p_size)
             {
                 p_world.lock()->m_renderingContext->Resize(p_size);
                 SV_LOG(SvCore::Utility::FormatString("Size = %f, %f", p_size.m_x, p_size.m_y).c_str());
@@ -254,6 +250,9 @@ namespace SvEditor::Core
         MenuBar menuBar;
         auto& menuList = menuBar.m_menus;
 
+        m_inputs = Inputs(p_world.lock()->m_inputs);
+        auto inputs = m_inputs.lock();
+
         //add menu 'File' to menu list
         Menu& menu1 = menuList.emplace_back("Test");
         //add buttons to menu that triggers an event
@@ -268,7 +267,7 @@ namespace SvEditor::Core
                 EKey::F11,
                 EKeyState::PRESSED,
                 EInputModifier::MOD_ALT),
-            *m_inputs
+            *inputs
         ));
 
         Menu& menu2 = menuList.emplace_back("Edit");
@@ -279,7 +278,7 @@ namespace SvEditor::Core
                 EKey::F11,
                 EKeyState::PRESSED,
                 EInputModifier(EInputModifier::MOD_ALT | EInputModifier::MOD_CONTROL)),
-            *m_inputs
+            *inputs
         ));
         menu2.m_items.emplace_back(std::make_unique<MenuButton>(
             "Cut",
@@ -308,20 +307,12 @@ namespace SvEditor::Core
 
         sceneMenu.m_items.emplace_back(std::make_unique<MenuButton>(MenuButton(
             "Save",
-            [p_world](char)
+            [](char)
             {
-                auto& engine = SV_ENGINE();
-                if (engine->IsPlayInEditor())
-                {
-                    SV_LOG_WARNING("Can't save scene during play mode");
-                    return;
-                }
-
-                if (p_world.lock()->Save(true))
-                    SV_LOG("Scene successfully saved to \"%s\"", p_world.lock()->CurrentScene().GetFullPath().c_str());
+                SV_EVENT_MANAGER().Invoke<EditorEngine::OnSave>();
             },
             InputManager::KeyboardKeyType(EKey::S, EKeyState::PRESSED, EInputModifier::MOD_CONTROL),
-            *m_inputs
+            *inputs
         )));
 
         sceneMenu.m_items.emplace_back(std::make_unique<MenuButton>(MenuButton(
@@ -339,7 +330,7 @@ namespace SvEditor::Core
                 SV_LOG("Scene reloaded successfully");
             },
             InputManager::KeyboardKeyType(EKey::R, EKeyState::PRESSED, EInputModifier::MOD_CONTROL),
-            *m_inputs
+            *inputs
         )));
 
         Menu& entityMenu = menuList.emplace_back("Entity");
@@ -355,7 +346,7 @@ namespace SvEditor::Core
                 EKey::N, EKeyState::PRESSED,
                 static_cast<EInputModifier>(EInputModifier::MOD_CONTROL | EInputModifier::MOD_SHIFT)
             ),
-            *m_inputs
+            *inputs
         ));
 
         entityMenu.m_items.emplace_back(std::make_unique<MenuButton>(
@@ -374,7 +365,7 @@ namespace SvEditor::Core
                 EKey::N, EKeyState::PRESSED,
                 static_cast<EInputModifier>(EInputModifier::MOD_CONTROL | EInputModifier::MOD_ALT)
             ),
-            *m_inputs
+            *inputs
         ));
 
         entityMenu.m_items.emplace_back(std::make_unique<MenuButton>(
@@ -396,7 +387,7 @@ namespace SvEditor::Core
                 EKey::N, EKeyState::PRESSED,
                 static_cast<EInputModifier>(EInputModifier::MOD_ALT | EInputModifier::MOD_SHIFT)
             ),
-            *m_inputs
+            *inputs
         ));
 
         entityMenu.m_items.emplace_back(std::make_unique<MenuButton>(
@@ -417,7 +408,7 @@ namespace SvEditor::Core
                 SetFocusPerspective(*cam, *camTransform, entity);
             },
             InputManager::KeyboardKeyType(EKey::F, EKeyState::PRESSED, EInputModifier()),
-            *m_inputs
+            *inputs
         ));
 
         entityMenu.m_items.emplace_back(std::make_unique<MenuButton>(
@@ -430,7 +421,7 @@ namespace SvEditor::Core
                 (void)entity.Copy();
             },
             InputManager::KeyboardKeyType(EKey::D, EKeyState::PRESSED, EInputModifier::MOD_CONTROL),
-            *m_inputs
+            *inputs
         ));
 
         entityMenu.m_items.emplace_back(std::make_unique<MenuButton>(
@@ -443,7 +434,7 @@ namespace SvEditor::Core
                 entity.Destroy();
             },
             InputManager::KeyboardKeyType(EKey::DEL, EKeyState::PRESSED, EInputModifier()),
-            *m_inputs
+            *inputs
         ));
 
         Menu& panelsMenu = menuList.emplace_back("Panels");
@@ -452,49 +443,49 @@ namespace SvEditor::Core
             "Build",
             [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateBuildPanel); },
             InputManager::KeyboardKeyType(EKey::B, EKeyState::PRESSED, EInputModifier::MOD_ALT),
-            *m_inputs
+            *inputs
         ));
 
         panelsMenu.m_items.emplace_back(std::make_unique<MenuButton>(
             "Console",
             [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateConsolePanel); },
             InputManager::KeyboardKeyType(EKey::C, EKeyState::PRESSED, EInputModifier::MOD_ALT),
-            *m_inputs
+            *inputs
         ));
 
         panelsMenu.m_items.emplace_back(std::make_unique<MenuButton>(
             "Assets",
             [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateContentPanel); },
             InputManager::KeyboardKeyType(EKey::A, EKeyState::PRESSED, EInputModifier::MOD_ALT),
-            *m_inputs
+            *inputs
         ));
 
         panelsMenu.m_items.emplace_back(std::make_unique<MenuButton>(
             "Game",
             [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateGamePanel); },
             InputManager::KeyboardKeyType(EKey::G, EKeyState::PRESSED, EInputModifier::MOD_ALT),
-            *m_inputs
+            *inputs
         ));
 
         panelsMenu.m_items.emplace_back(std::make_unique<MenuButton>(
             "Hierarchy",
             [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateHierarchyPanel); },
             InputManager::KeyboardKeyType(EKey::H, EKeyState::PRESSED, EInputModifier::MOD_ALT),
-            *m_inputs
+            *inputs
         ));
 
         panelsMenu.m_items.emplace_back(std::make_unique<MenuButton>(
             "Inspector",
             [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateInspectorPanel); },
             InputManager::KeyboardKeyType(EKey::I, EKeyState::PRESSED, EInputModifier::MOD_ALT),
-            *m_inputs
+            *inputs
         ));
 
         panelsMenu.m_items.emplace_back(std::make_unique<MenuButton>(
             "Scene",
             [this](char) { m_endFrameCallbacks.push_back(&EditorUI::CreateScenePanel); },
             InputManager::KeyboardKeyType(EKey::S, EKeyState::PRESSED, EInputModifier::MOD_ALT),
-            *m_inputs
+            *inputs
         ));
 
         return menuBar;
@@ -506,7 +497,7 @@ namespace SvEditor::Core
             m_currentPanels.erase(p_name);
 
         if (p_flags & Panel::DefaultInputs)
-            SvApp::InputManager::GetInstance().SetInputBindings(m_inputs);
+            SvApp::InputManager::GetInstance().SetInputBindings(m_inputs.lock());
     }
 
     ISelectable* EditorUI::GetSelected()
@@ -535,10 +526,7 @@ namespace SvEditor::Core
 
     void EditorUI::TryCreateSavePanel()
     {
-        //TODO: add save boolean here
-        std::srand((int)std::time(0));
-        auto val = std::rand();
-        if (val % 20 == 0)
+        if (dynamic_cast<EditorEngine*>(SV_ENGINE())->IsEditorModifiedScene())
         {
             CreateSavePanel();
             SvApp::Window::WindowCloseRequest::InterceptCloseRequest();
@@ -606,7 +594,7 @@ namespace SvEditor::Core
             { GamePanel::NAME, std::make_shared<GamePanel>() }).first->second;
     }
 
-    std::shared_ptr<Panel> Core::EditorUI::CreateScenePanel()
+    std::shared_ptr<Panel> EditorUI::CreateScenePanel()
     {
         auto panel = m_currentPanels.find(ScenePanel::NAME);
         if (panel != m_currentPanels.end())

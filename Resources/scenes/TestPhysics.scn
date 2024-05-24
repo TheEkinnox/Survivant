@@ -1,0 +1,708 @@
+{
+    "entities": 17,
+    "components": [
+        {
+            "type": "Model",
+            "data": [
+                {
+                    "owner": 1,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/lit.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 13,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "importedModels/Stairs/blue.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 3,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/litRed.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 4,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/litRed.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 5,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/litRed.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 6,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/litRed.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 7,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/litRed.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 8,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "importedModels/Stairs/blue.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 9,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "importedModels/Stairs/blue.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 10,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "importedModels/Stairs/blue.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 11,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/litRed.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 12,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/litRed.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 14,
+                    "data": {
+                        "model": {
+                            "path": "models/sphere.obj"
+                        },
+                        "material": {
+                            "path": "materials/yellow.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 15,
+                    "data": {
+                        "model": {
+                            "path": "models/sphere.obj"
+                        },
+                        "material": {
+                            "path": "materials/yellow.mat"
+                        }
+                    }
+                },
+                {
+                    "owner": 16,
+                    "data": {
+                        "model": {
+                            "path": "models/sphere.obj"
+                        },
+                        "material": {
+                            "path": "materials/yellow.mat"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "type": "Tag",
+            "data": [
+                {
+                    "owner": 2,
+                    "data": "Cam"
+                },
+                {
+                    "owner": 14,
+                    "data": "Light"
+                },
+                {
+                    "owner": 15,
+                    "data": "Light"
+                },
+                {
+                    "owner": 16,
+                    "data": "Light"
+                }
+            ]
+        },
+        {
+            "type": "Hierarchy",
+            "data": [
+                {
+                    "owner": 1,
+                    "data": {
+                        "parent": 0
+                    }
+                },
+                {
+                    "owner": 0,
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
+                },
+                {
+                    "owner": 3,
+                    "data": {
+                        "parent": 0
+                    }
+                }
+            ]
+        },
+        {
+            "type": "ScriptList",
+            "data": [
+                {
+                    "owner": 0,
+                    "data": []
+                },
+                {
+                    "owner": 2,
+                    "data": [
+                        {
+                            "name": "scripts.freeLook",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "rotation_speed"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Degree",
+                                            "data": 90.0
+                                        }
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "mouse_sensitivity"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 0.005
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "move_speed"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 3.0
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "owner": 3,
+                    "data": [
+                        {
+                            "name": "scripts.deathZone",
+                            "data": []
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "Transform",
+            "data": [
+                {
+                    "owner": 1,
+                    "data": {
+                        "position": "{0,0,0}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{15,0.1,15}"
+                    }
+                },
+                {
+                    "owner": 2,
+                    "data": {
+                        "position": "{0,7.5,11}",
+                        "rotation": "{-0.130526,0,0,0.991445}",
+                        "scale": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 3,
+                    "data": {
+                        "position": "{0,4,-7.5}",
+                        "rotation": "{0,0.707107,0,0.707107}",
+                        "scale": "{0.1,8,15}"
+                    }
+                },
+                {
+                    "owner": 4,
+                    "data": {
+                        "position": "{-1.5,2,-5}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 5,
+                    "data": {
+                        "position": "{-0.5,2,-5}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 6,
+                    "data": {
+                        "position": "{0.5,2,-5}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 7,
+                    "data": {
+                        "position": "{1.5,2,-5}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 8,
+                    "data": {
+                        "position": "{1,4,-5}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 9,
+                    "data": {
+                        "position": "{0,4,-5}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 10,
+                    "data": {
+                        "position": "{-1,4,-5}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 11,
+                    "data": {
+                        "position": "{-0.5,6,-5}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 12,
+                    "data": {
+                        "position": "{0.5,6,-5}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 13,
+                    "data": {
+                        "position": "{0,8,-5}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 0,
+                    "data": {
+                        "position": "{0,0,-5}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 14,
+                    "data": {
+                        "position": "{0,10,0}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{0.2,0.2,0.2}"
+                    }
+                },
+                {
+                    "owner": 15,
+                    "data": {
+                        "position": "{0,10,0}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{0.2,0.2,0.2}"
+                    }
+                },
+                {
+                    "owner": 16,
+                    "data": {
+                        "position": "{0,0,0}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{0.2,0.2,0.2}"
+                    }
+                }
+            ]
+        },
+        {
+            "type": "Camera",
+            "data": [
+                {
+                    "owner": 2,
+                    "data": {
+                        "type": "perspective",
+                        "active": true,
+                        "clear_mask": 7,
+                        "clear_color": "{0.142445,0.265823,0.258014,1}",
+                        "culling_mask": 255,
+                        "perspective_fov": 45.0,
+                        "perspective_near": 0.0010000000474974513,
+                        "perspective_far": 50.0,
+                        "orthographic_size": 0.0,
+                        "orthographic_near": 0.0,
+                        "orthographic_far": 0.0
+                    }
+                }
+            ]
+        },
+        {
+            "type": "Light",
+            "data": [
+                {
+                    "owner": 14,
+                    "data": {
+                        "type": "ambient",
+                        "data": {
+                            "color": "{1,1,1,0.25098}"
+                        }
+                    }
+                },
+                {
+                    "owner": 15,
+                    "data": {
+                        "type": "directional",
+                        "data": {
+                            "color": "{0.666667,1,0.751055,0.25098}",
+                            "direction": "{0,-1,0}"
+                        }
+                    }
+                },
+                {
+                    "owner": 16,
+                    "data": {
+                        "type": "spot",
+                        "data": {
+                            "color": "{1,1,1,1}",
+                            "position": "{0,-1,-1}",
+                            "direction": "{0,3,0}",
+                            "attenuation": {
+                                "constant": 1.0,
+                                "linear": 1.0,
+                                "quadratic": 0.0
+                            },
+                            "cutoff": {
+                                "inner": 1.0,
+                                "outer": 0.8999999761581421
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "type": "BoxCollider",
+            "data": [
+                {
+                    "owner": 1,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 13,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 3,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 4,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 5,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 6,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 7,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 8,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 9,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 10,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 11,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 12,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                }
+            ]
+        },
+        {
+            "type": "RigidBody",
+            "data": [
+                {
+                    "owner": 4,
+                    "data": {
+                        "mass": 1.0,
+                        "is_kinematic": false,
+                        "use_gravity": true
+                    }
+                },
+                {
+                    "owner": 5,
+                    "data": {
+                        "mass": 1.0,
+                        "is_kinematic": false,
+                        "use_gravity": true
+                    }
+                },
+                {
+                    "owner": 6,
+                    "data": {
+                        "mass": 1.0,
+                        "is_kinematic": false,
+                        "use_gravity": true
+                    }
+                },
+                {
+                    "owner": 7,
+                    "data": {
+                        "mass": 1.0,
+                        "is_kinematic": false,
+                        "use_gravity": true
+                    }
+                },
+                {
+                    "owner": 8,
+                    "data": {
+                        "mass": 1.0,
+                        "is_kinematic": false,
+                        "use_gravity": true
+                    }
+                },
+                {
+                    "owner": 9,
+                    "data": {
+                        "mass": 1.0,
+                        "is_kinematic": false,
+                        "use_gravity": true
+                    }
+                },
+                {
+                    "owner": 10,
+                    "data": {
+                        "mass": 1.0,
+                        "is_kinematic": false,
+                        "use_gravity": true
+                    }
+                },
+                {
+                    "owner": 11,
+                    "data": {
+                        "mass": 1.0,
+                        "is_kinematic": false,
+                        "use_gravity": true
+                    }
+                },
+                {
+                    "owner": 12,
+                    "data": {
+                        "mass": 1.0,
+                        "is_kinematic": false,
+                        "use_gravity": true
+                    }
+                },
+                {
+                    "owner": 13,
+                    "data": {
+                        "mass": 1.0,
+                        "is_kinematic": false,
+                        "use_gravity": true
+                    }
+                }
+            ]
+        }
+    ]
+}

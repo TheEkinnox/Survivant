@@ -34,7 +34,7 @@ namespace SvApp::Core
     {
         p_context.m_currentSceneRef.reset();
         p_context.m_currentSceneRef = std::make_shared<WorldContext::SceneRef>(p_newLevel);
-        //p_context.BakeLighting();
+        p_context.BakeLighting();
 
         return true;
     }
@@ -49,8 +49,6 @@ namespace SvApp::Core
         using namespace LibMath;
         using namespace SvCore::ECS;
         using namespace SvRendering::Components;
-
-        static CameraComponent EditorCameraComponent = CameraComponent();
 
         std::shared_ptr<WorldContext> wrdPtr = std::make_shared<WorldContext>();
         WorldContext& world = *wrdPtr;

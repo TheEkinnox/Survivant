@@ -1,11 +1,12 @@
-//RenderingContext.h
+//MainCamera.h
 #pragma once
 
-#include "SurvivantCore/ECS/EntityHandle.h"
-#include "SurvivantRendering/Components/CameraComponent.h"	
+#include <SurvivantCore/ECS/EntityHandle.h>
 
-#include "Transform.h"
-#include "Vector/Vector2.h"
+#include <SurvivantRendering/Components/CameraComponent.h>
+
+#include <Transform.h>
+#include <Vector/Vector2.h>
 
 namespace SvApp::Core
 {
@@ -26,15 +27,17 @@ namespace SvApp::Core
 		void	SetCamera(const Cam& p_cam, const LibMath::Transform& p_trans);
 		void	SetEntity(SvCore::ECS::EntityHandle p_entity);
 		CamInfo GetCamInfo();
+
+		void	SetCanMove(bool p_canMove);
 		void	UpdateInput();
 
 		Vec2* MoveInput();
 		Vec2* RotateInput();
 
 	private:
-		LibMath::Transform MoveTransformInput(
-			const LibMath::Transform& p_trans, 
-			const Vec2& p_move, const Vec2& p_rotation, const float p_dt);
+		static LibMath::Transform MoveTransformInput(
+			const LibMath::Transform& p_trans,
+			const Vec2& p_move, const Vec2& p_rotation, float p_dt);
 
 		union UnionCam
 		{
@@ -54,6 +57,7 @@ namespace SvApp::Core
 		}m_union;
 
 		bool m_hasEntity = false;
+		bool m_canMove = false;
 
 		Vec2 m_moveInput = Vec2::zero();
 		Vec2 m_rotateInput = Vec2::zero();

@@ -7,12 +7,12 @@
 
 #include <imgui.h>
 
+using namespace SvApp::Core;
+
 namespace SvEditor::Panels
 {
 	GamePanel::GamePanel() : m_prevFocus(false)
 	{
-		using namespace SvApp::Core;
-
 		m_name = NAME;
 
 		m_buttons[0] = std::make_unique<PanelConditionalDisplay>(

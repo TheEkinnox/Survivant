@@ -1,20 +1,7 @@
 //InspectorItemManager.cpp
 #include "SurvivantEditor/Core/InspectorItemManager.h"
 
-#include "SurvivantApp/Core/IEngine.h"
-#include "SurvivantCore/Debug/Assertion.h"
-
-#include "SurvivantCore/ECS/Components/Hierarchy.h"
-#include "SurvivantCore/ECS/Components/TagComponent.h"
-#include "SurvivantCore/ECS/Scene.h"
-#include "SurvivantRendering/Components/CameraComponent.h"
-#include "SurvivantRendering/Components/LightComponent.h"
-#include "SurvivantRendering/Components/ModelComponent.h"
-#include "SurvivantRendering/Resources/Material.h"
-#include "SurvivantRendering/Resources/Model.h"
-#include "SurvivantRendering/RHI/IShader.h"
-#include "SurvivantRendering/RHI/ITexture.h"
-
+#include "SurvivantEditor/Core/EditorEngine.h"
 #include "SurvivantEditor/Panels/HierarchyPanel.h"
 #include "SurvivantEditor/PanelItems/PanelButton.h"
 #include "SurvivantEditor/PanelItems/PanelCheckbox.h"
@@ -31,8 +18,25 @@
 #include "SurvivantEditor/PanelItems/PanelUInt32Input.h"
 #include "SurvivantEditor/PanelItems/PanelVec2Input.h"
 #include "SurvivantEditor/PanelItems/PanelVec3Input.h"
+#include "SurvivantEditor/PanelItems/PanelCheckbox.h"
 #include "SurvivantEditor/PanelItems/PanelScriptList.h"
 #include "SurvivantEditor/PanelItems/PanelSeparator.h"
+
+#include <SurvivantApp/Core/IEngine.h>
+
+#include <SurvivantCore/Debug/Assertion.h>
+
+#include <SurvivantCore/ECS/Components/Hierarchy.h>
+#include <SurvivantCore/ECS/Components/TagComponent.h>
+#include <SurvivantCore/ECS/Scene.h>
+#include <SurvivantRendering/Components/CameraComponent.h>
+#include <SurvivantRendering/Components/LightComponent.h>
+#include <SurvivantRendering/Components/ModelComponent.h>
+#include <SurvivantRendering/Enums/EShaderDataType.h>
+#include <SurvivantRendering/Resources/Material.h>
+#include <SurvivantRendering/Resources/Model.h>
+#include <SurvivantRendering/RHI/IShader.h>
+#include <SurvivantRendering/RHI/ITexture.h>
 
 #include <SurvivantPhysics/RigidBody.h>
 #include <SurvivantPhysics/Collider/BoxCollider.h>
@@ -42,6 +46,16 @@
 #include <SurvivantScripting/LuaScriptList.h>
 
 #include <Transform.h>
+
+#define PROPERTY_TO_PANELABLE(mat, name, panelType) \
+	std::make_shared<panelType>(panelType( \
+		name, \
+		panelType::GetRefFunc([mat = p_material, name]() mutable -> panelType::Value& { \
+			return std::any_cast<panelType::Value&>(mat->GetProperty(name).m_value); }), \
+		panelType::Callback([mat = p_material, name](panelType::Value p_val) { \
+			mat->GetProperty(name).m_value.emplace<panelType::Value>(p_val); \
+			mat.Export(true); })) \
+		)
 
 using namespace LibMath;
 using namespace SvCore::ECS;
@@ -55,15 +69,18 @@ using namespace SvPhysics;
 
 using Material = SvRendering::Resources::Material;
 using PhysicsMaterial = SvPhysics::Material;
+using namespace SvRendering::Resources;
+using namespace SvRendering::RHI;
+using namespace SvCore::Resources;
 
 namespace SvEditor::Core
 {
 	void InspectorItemManager::Init()
 	{
 		//resources
-		CHECK(AddResourceToPanelable<Scene>(&AddResourceDefault, "Scene"),			"Couldn't init resource type : Scene");
+		CHECK(AddResourceToPanelable<Scene>(&AddResourceScene, "Scene"),			"Couldn't init resource type : Scene");
 		CHECK(AddResourceToPanelable<Model>(&AddResourceDefault, "Model"),			"Couldn't init resource type : Model");
-		CHECK(AddResourceToPanelable<::Material>(&AddResourceDefault, "Material"),	"Couldn't init resource type : Material");
+		CHECK(AddResourceToPanelable<::Material>(&AddResourceMaterial, "Material"),	"Couldn't init resource type : Material");
 		CHECK(AddResourceToPanelable<LuaScript>(&AddResourceDefault, "Script"),		"Couldn't init resource type : Script");
 		CHECK(AddResourceToPanelable<IShader>(&AddResourceDefault, "Shader"),		"Couldn't init resource type : Shader");
 		CHECK(AddResourceToPanelable<ITexture>(&AddResourceDefault, "Texture"),		"Couldn't init resource type : Texture");
@@ -88,7 +105,7 @@ namespace SvEditor::Core
 	}
 
 	InspectorItemManager::PanelableEntity InspectorItemManager::GetPanelableEntity(
-		const SvCore::ECS::EntityHandle& p_entity)
+		const EntityHandle& p_entity)
 	{
 		//auto& registry = ComponentRegistry::GetInstance();
 		auto components = p_entity.GetComponents();
@@ -110,9 +127,8 @@ namespace SvEditor::Core
 	}
 
 	InspectorItemManager::PanelableResource InspectorItemManager::GetPanelableResource(
-		const SvCore::Resources::GenericResourceRef& p_resource)
+		const GenericResourceRef& p_resource)
 	{
-		using namespace SvCore::Resources;
 		auto& registry = ResourceRegistry::GetInstance();
 
 		PanelableResource panel = nullptr;
@@ -127,7 +143,7 @@ namespace SvEditor::Core
 	}
 
 	InspectorItemManager::PanelableComponent InspectorItemManager::AddPanelableComponent(
-		const ComponentInfo& p_typeInfo, const SvCore::ECS::EntityHandle& p_entity)
+		const ComponentInfo& p_typeInfo, const EntityHandle& p_entity)
 	{
 		PanelableComponent panel = nullptr;
 
@@ -137,7 +153,7 @@ namespace SvEditor::Core
 		return panel;
 	}
 
-	InspectorItemManager::PanelableComponent InspectorItemManager::GetPanelableComponent(const SvCore::Utility::TypeId& p_type, const SvCore::ECS::EntityHandle& p_entity)
+	InspectorItemManager::PanelableComponent InspectorItemManager::GetPanelableComponent(const SvCore::Utility::TypeId& p_type, const EntityHandle& p_entity)
 	{
 		auto& registry = ComponentRegistry::GetInstance();
 
@@ -154,29 +170,28 @@ namespace SvEditor::Core
 	}
 
 	InspectorItemManager::PanelableComponent InspectorItemManager::AddComponentTransform(
-		const SvCore::ECS::EntityHandle& p_entity)
+		const EntityHandle& p_entity)
 	{
 		static size_t Prio = 2;
 
-		auto component = PanelComponent(ComponentRegistry::GetInstance().GetRegisteredTypeName<Transform>(),
+		return std::make_shared<PanelComponent>(PanelComponent(ComponentRegistry::GetInstance().GetRegisteredTypeName<Transform>(),
 			PanelComponent::Items({
 					std::make_shared<PanelTransformInput>(PanelTransformInput(
 						PanelTransformInput::GetRefFunc(
 							[e = p_entity]() mutable -> Transform&
 							{
 								return *e.Get<Transform>();
-							}))
-				)}),
-			Prio);
-
-		return std::make_shared<PanelComponent>(std::move(component));
+							}),
+						PanelTransformInput::Callback([](PanelTransformInput::CallbackParams)
+							{ SV_EVENT_MANAGER().Invoke<Core::EditorEngine::OnEditorModifiedScene>(); })
+					)
+				) }),
+			Prio));
 	}
 
 	InspectorItemManager::PanelableComponent InspectorItemManager::AddComponentHierarchy(
-		const SvCore::ECS::EntityHandle& p_entity)
+		const EntityHandle& p_entity)
 	{
-		using namespace SvEditor::Panels;
-
 		auto component = PanelComponent(ComponentRegistry::GetInstance().GetRegisteredTypeName<HierarchyComponent>(),
 			PanelComponent::Items({
 				std::make_shared<PanelUInt32Input>(PanelUInt32Input(
@@ -205,7 +220,7 @@ namespace SvEditor::Core
 	}
 
 	InspectorItemManager::PanelableComponent InspectorItemManager::AddComponentCamera(
-		const SvCore::ECS::EntityHandle& p_entity)
+		const EntityHandle& p_entity)
 	{
 		std::vector<std::string> enumNames;
 		for (int i = 0; i <= static_cast<int>(EProjectionType::ORTHOGRAPHIC); i++)
@@ -216,34 +231,35 @@ namespace SvEditor::Core
 		//Perspective
 		display.emplace_back(PanelSelectionDisplay::SelectedDisplay({
 				std::make_shared<PanelFloatInput>(PanelFloatInput(
-					"FovY     ",
+					"FovY         ",
 					[entity = p_entity]() mutable -> float { return
 						entity.Get<CameraComponent>()->GetFovY().degree(true); },
 					[entity = p_entity](const float& p_val) mutable {
-						entity.Get<CameraComponent>()->SetFovY(LibMath::Degree(std::fmodf(p_val, 360))); }
+						entity.Get<CameraComponent>()->SetFovY(Degree(std::fmodf(p_val, 360))); }
 				)),
 				std::make_shared<PanelVec2Input>(PanelVec2Input(
-					"Near/Far ",
+					"Near/Far     ",
 					[p_entity]() -> Vector2 {
 						const CameraComponent* cam = p_entity.Get<CameraComponent>();
 						return { cam->GetPerspectiveNear(), cam->GetPerspectiveFar() }; },
 					[entity = p_entity](const Vector2& p_val) mutable {
 						CameraComponent* cam = entity.Get<CameraComponent>();
-						cam->SetPerspectiveNear(p_val.m_x).SetPerspectiveFar(p_val.m_y); }
+					    cam->SetPerspectiveNear(p_val.m_x).SetPerspectiveFar(p_val.m_y); },
+                    0.001f, FLT_MAX
 				))
 			}));
 
 		//Orthographic
 		display.emplace_back(PanelSelectionDisplay::SelectedDisplay({
 		std::make_shared<PanelFloatInput>(PanelFloatInput(
-			"Size     ",
+			"Size        ",
 			[entity = p_entity]() mutable -> float { return
 				entity.Get<CameraComponent>()->GetOrthographicSize(); },
 			[entity = p_entity](const float& p_val) mutable {
 				entity.Get<CameraComponent>()->SetOrthographicSize(p_val); }
 		)),
 		std::make_shared<PanelVec2Input>(PanelVec2Input(
-			"Near/Far ",
+			"Near/Far     ",
 			[entity = p_entity]() mutable -> Vector2 { return Vector2(
 				entity.Get<CameraComponent>()->GetOrthographicNear(),
 				entity.Get<CameraComponent>()->GetOrthographicFar()); },
@@ -305,7 +321,7 @@ namespace SvEditor::Core
 	}
 
 	InspectorItemManager::PanelableComponent InspectorItemManager::AddComponentTag(
-		const SvCore::ECS::EntityHandle& p_entity)
+		const EntityHandle& p_entity)
 	{
 		static size_t Prio = 3;
 
@@ -327,10 +343,8 @@ namespace SvEditor::Core
 	}
 
 	InspectorItemManager::PanelableComponent InspectorItemManager::AddComponentLight(
-		const SvCore::ECS::EntityHandle& p_entity)
+		const EntityHandle& p_entity)
 	{
-		using namespace SvRendering::Core;
-
 		std::vector<std::string> enumNames;
 		for (int i = 0; i <= static_cast<int>(ELightType::SPOT); i++)
 			enumNames.emplace_back(std::string(LightTypeToString(ELightType(i))));
@@ -374,7 +388,7 @@ namespace SvEditor::Core
 				)),
 				std::make_shared<PanelVec3Input>(PanelVec3Input(
 					"Attenuation ",
-					[entity = p_entity]() mutable -> LibMath::Vector3& { return //cast from (float[3])[0] to &Vec3
+					[entity = p_entity]() mutable -> Vector3& { return //cast from (float[3])[0] to &Vec3
 						*(Vector3*)&(entity.Get<LightComponent>()->m_point.m_attenuationData.m_constant); }
 				))
 			}));
@@ -398,13 +412,13 @@ namespace SvEditor::Core
 				)),
 				std::make_shared<PanelVec3Input>(PanelVec3Input(
 					"Attenuation ",
-					[entity = p_entity]() mutable -> LibMath::Vector3& { return //cast from (float[3])[0] to &Vec3
-						*(Vector3*)&(entity.Get<LightComponent>()->m_spot.m_attenuationData.m_constant); }
+					[entity = p_entity]() mutable -> Vector3& { return //cast from (float[3])[0] to &Vec3
+						reinterpret_cast<Vector3&>(entity.Get<LightComponent>()->m_spot.m_attenuationData); }
 				)),
 				std::make_shared<PanelVec2Input>(PanelVec2Input(
 					"Cutoff      ",
-					[entity = p_entity]() mutable -> LibMath::Vector2& { return //cast from (float[2])[0] to &Vec2
-						*(Vector2*)&(entity.Get<LightComponent>()->m_spot.m_cutoff.m_inner); }
+					[entity = p_entity]() mutable -> Vector2& { return //cast from (float[2])[0] to &Vec2
+						reinterpret_cast<Vector2&>(entity.Get<LightComponent>()->m_spot.m_cutoff); }
 				))
 			}));
 
@@ -426,22 +440,26 @@ namespace SvEditor::Core
 	}
 
 	InspectorItemManager::PanelableComponent InspectorItemManager::AddComponentModel(
-		const SvCore::ECS::EntityHandle& p_entity)
+		const EntityHandle& p_entity)
 	{
-		using namespace SvRendering::Resources;
-		using namespace SvCore::Resources;
-
-		//auto& ref = *p_entity.Get<ModelComponent>();
-
 		auto component = PanelComponent(ComponentRegistry::GetInstance().GetRegisteredTypeName<ModelComponent>(),
 			PanelComponent::Items({
 					std::make_shared<PanelResourceSelector<Model>>(PanelResourceSelector<Model>(
-						"Model    ", [entity = p_entity]() mutable -> ResourceRef<Model>& { return
+						"Model     ", [entity = p_entity]() mutable -> ResourceRef<Model>& { return
 							entity.Get<ModelComponent>()->m_model; }
 					)),
 					std::make_shared<PanelResourceSelector<::Material>>(PanelResourceSelector<::Material>(
-						"Material ", [entity = p_entity]() mutable -> ResourceRef<::Material>&{ return
+						"Material  ", [entity = p_entity]() mutable -> ResourceRef<::Material>&{ return
 							entity.Get<ModelComponent>()->m_material; }
+					)),
+					std::make_shared<PanelUInt32Input>(PanelUInt32Input(
+						"Layer Mask ",[entity = p_entity]() mutable -> PanelUInt32Input::Value&{ return
+							entity.Get<ModelComponent>()->m_layerMask; }
+					)),
+					std::make_shared<PanelButton>(PanelButton(
+						"All Layers",
+						PanelButton::OnButtonPressEvent::EventDelegate([entity = p_entity]() mutable {
+							entity.Get<ModelComponent>()->m_layerMask = SvRendering::Core::Layer::ALL; })
 					))
 				}));
 
@@ -521,20 +539,20 @@ namespace SvEditor::Core
 		{
 			static_assert(std::is_base_of_v<ICollider, T>);
 
-			p_items.emplace(p_items.begin(), std::make_shared<PanelVec3Input>("Offset\t\t",
+			p_items.emplace(p_items.begin(), std::make_shared<PanelVec3Input>("Offset     ",
 				[entity = p_entity]() mutable -> Vector3& {
 					return static_cast<ICollider*>(entity.Get<T>())->m_offset;
 				}
 			));
 
-			p_items.emplace(p_items.begin(), std::make_shared<PanelCheckbox>("Is Trigger\t",
+			p_items.emplace(p_items.begin(), std::make_shared<PanelCheckbox>("Is Trigger ",
 				[entity = p_entity]() mutable -> bool& {
 					return static_cast<ICollider*>(entity.Get<T>())->m_isTrigger;
 				}
 			));
 
-			p_items.emplace(p_items.begin(), std::make_shared<PanelResourceSelector<PhysicsMaterial>>("Material\t",
-				[entity = p_entity]() mutable -> SvCore::Resources::ResourceRef<PhysicsMaterial>& {
+			p_items.emplace(p_items.begin(), std::make_shared<PanelResourceSelector<PhysicsMaterial>>(" Material ",
+				[entity = p_entity]() mutable -> ResourceRef<PhysicsMaterial>& {
 					return static_cast<ICollider*>(entity.Get<T>())->m_material;
 				}
 			));
@@ -549,7 +567,7 @@ namespace SvEditor::Core
 	{
 		PanelComponent::Items items
 		({
-			std::make_shared<PanelVec3Input>("Size\t\t", [entity = p_entity]() mutable -> Vector3& {
+			std::make_shared<PanelVec3Input>("Size       ", [entity = p_entity]() mutable -> Vector3& {
 				return entity.Get<BoxCollider>()->m_size;
 			})
 		});
@@ -562,7 +580,7 @@ namespace SvEditor::Core
 	{
 		PanelComponent::Items items
 		({
-			std::make_shared<PanelFloatInput>("Radius\t\t", [entity = p_entity]() mutable -> float& {
+			std::make_shared<PanelFloatInput>("Radius     ", [entity = p_entity]() mutable -> float& {
 				return entity.Get<SphereCollider>()->m_radius;
 			})
 		});
@@ -575,13 +593,13 @@ namespace SvEditor::Core
 	{
 		PanelComponent::Items items
 		({
-			std::make_shared<PanelVec3Input>("Axis\t\t", [entity = p_entity]() mutable -> Vector3& {
+			std::make_shared<PanelVec3Input>("Axis       ", [entity = p_entity]() mutable -> Vector3& {
 				return entity.Get<CapsuleCollider>()->m_axis;
 			}),
-			std::make_shared<PanelFloatInput>("Height\t\t", [entity = p_entity]() mutable -> float& {
+			std::make_shared<PanelFloatInput>("Height     ", [entity = p_entity]() mutable -> float& {
 				return entity.Get<CapsuleCollider>()->m_height;
 			}),
-			std::make_shared<PanelFloatInput>("Radius\t\t", [entity = p_entity]() mutable -> float& {
+			std::make_shared<PanelFloatInput>("Radius     ", [entity = p_entity]() mutable -> float& {
 				return entity.Get<CapsuleCollider>()->m_radius;
 			})
 		});
@@ -589,36 +607,99 @@ namespace SvEditor::Core
 		return MakePanelCollider<CapsuleCollider>(p_entity, std::move(items));
 	}
 
-	InspectorItemManager::PanelableResource InspectorItemManager::AddResourceMaterial(
-		const SvCore::Resources::GenericResourceRef& p_resource)
+	namespace
 	{
-		using namespace SvRendering::Resources;
-		using namespace SvRendering::RHI;
-		using namespace SvCore::Resources;
+		PanelResourceDisplay::Items GetPropertyItems(const ResourceRef<::Material>& p_material)
+		{
+			PanelResourceDisplay::Items items;
+			for (auto& [name, property] : p_material->GetProperties())
+			{
+				auto& [type, value] = property;
+				switch (type)
+				{
+				case EShaderDataType::UNKNOWN:
+					break;
+				case EShaderDataType::BOOL:
+					items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelCheckbox));
+					break;
+				case EShaderDataType::INT:
+					items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelIntInput));
+					break;
+				case EShaderDataType::UNSIGNED_INT:
+					items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelUInt32Input));
+					break;
+				case EShaderDataType::FLOAT:
+					items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelFloatInput));
+					break;
+				case EShaderDataType::VEC2:
+					items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelVec2Input));
+					break;
+				case EShaderDataType::VEC3:
+					items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelVec3Input));
+					break;
+				case EShaderDataType::VEC4: //Assume to be a color
+					items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelColorInput));
+					break;
+				case EShaderDataType::TEXTURE:
+					items.emplace_back(PROPERTY_TO_PANELABLE(p_material, name, PanelResourceSelector<ITexture>));
+					break;
+				case EShaderDataType::MAT3:
+				case EShaderDataType::MAT4:
+				default:
+					ASSERT(false, "Unsuported EShaderDataType");
+					break;
+				}
+			}
 
-		ResourceRef<::Material> resource = p_resource;
+			return items;
+		}
 
-		auto component = PanelResourceDisplay(p_resource, "Ma",
-			PanelResourceDisplay::Items({
-					std::make_shared<PanelResourceSelector<IShader>>(
-						"Material ", [resource]() mutable -> ResourceRef<IShader>&{
-							static ResourceRef<IShader> ref = resource->GetShaderRef();
-							return ref; },
-						[resource](PanelResourceSelector<IShader>::CallbackParams p_params) {
-							resource->SetShader(p_params);
-						}
-					)
-				}));
+		void CreateResourceItems(
+			const std::weak_ptr<PanelResourceDisplay>& p_resourceDisplay,
+			const ResourceRef<::Material>& p_mat)
+		{
+			PanelResourceDisplay::Items items = PanelResourceDisplay::Items({
+				std::make_shared<PanelResourceSelector<IShader>>(
+					"Shader ", [p_mat]() mutable -> ResourceRef<IShader>&{
+						static ResourceRef<IShader> ref = p_mat->GetShaderRef();
+						return ref;
+					},
+					[p_mat, p_resourceDisplay](PanelResourceSelector<IShader>::CallbackParams p_params) {
+						p_mat->SetShader(p_params);
+						p_mat.Export(true);
+						p_resourceDisplay.lock()->SetItems(GetPropertyItems(p_mat), 1);
+					})
+				});
 
-		return std::make_shared<PanelResourceDisplay>(std::move(component));
+			p_resourceDisplay.lock()->SetItems(items);
+			p_resourceDisplay.lock()->SetItems(GetPropertyItems(p_mat), 1);
+		}
+	}
+
+	InspectorItemManager::PanelableResource InspectorItemManager::AddResourceMaterial(
+		const GenericResourceRef& p_resource)
+	{
+		ResourceRef<::Material> mat = p_resource;
+
+		auto componentPtr = std::make_shared<PanelResourceDisplay>(PanelResourceDisplay(
+			p_resource, "Ma",
+			PanelResourceDisplay::Items()));
+
+		CreateResourceItems(std::weak_ptr(componentPtr), mat);
+
+		return componentPtr;
+	}
+
+	InspectorItemManager::PanelableResource InspectorItemManager::AddResourceScene(
+		const GenericResourceRef& /*p_resource*/)
+	{
+		ASSERT(false, "Do not Inspect scene bcs needs to load ref");
+		return {};
 	}
 
 	InspectorItemManager::PanelableResource InspectorItemManager::AddResourceDefault(
-		const SvCore::Resources::GenericResourceRef& p_resource)
+		const GenericResourceRef& p_resource)
 	{
-		using namespace SvRendering::Resources;
-		using namespace SvRendering::RHI;
-		using namespace SvCore::Resources;
 		using namespace SvCore::Serialization;
 
 		JsonStringBuffer buffer;
@@ -638,14 +719,6 @@ namespace SvEditor::Core
 
 		return std::make_shared<PanelResourceDisplay>(std::move(component));
 	}
-
-	std::string InspectorItemManager::GetEntityName(const SvCore::ECS::EntityHandle& p_entity)
-	{
-		auto val = p_entity.Get<TagComponent>();
-		if (val)
-			return val->m_tag + ("(" + std::to_string(p_entity.GetEntity().GetIndex()) + ')');
-
-		return "(" + std::to_string(p_entity.GetEntity().GetIndex()) + ')';
-	}
 }
 
+#undef PROPERTY_TO_PANELABLE

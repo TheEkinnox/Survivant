@@ -38,7 +38,6 @@ namespace SvEditor::PanelItems
 		static inline const std::string LOGO = "En";
 
 		void AddAndSortComponent(std::shared_ptr<PanelComponent> p_component);
-
 		void GetAllComponents();
 
 		Components::iterator RemoveComponent(const Components::iterator& p_it);

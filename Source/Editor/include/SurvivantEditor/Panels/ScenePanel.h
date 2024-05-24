@@ -54,7 +54,6 @@ namespace SvEditor::Panels
 		static constexpr char NAME[] = "Scene";
 
 	private:
-		void ToggleTexture();
 		LibMath::Vector2 CalculateUVCords(const LibMath::Vector2& p_cursorPos);
 
 		static inline ClickEvent					s_onClickSceneEvent;
