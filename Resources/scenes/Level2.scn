@@ -479,24 +479,11 @@
                                 {
                                     "key": {
                                         "type": 4,
-                                        "data": "rotation_speed"
-                                    },
-                                    "value": {
-                                        "type": 7,
-                                        "data": {
-                                            "type": "Degree",
-                                            "data": 300.0
-                                        }
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "mouse_sensitivity"
+                                        "data": "max_acceleration"
                                     },
                                     "value": {
                                         "type": 3,
-                                        "data": 0.005
+                                        "data": 10.0
                                     }
                                 },
                                 {
@@ -512,11 +499,24 @@
                                 {
                                     "key": {
                                         "type": 4,
-                                        "data": "max_acceleration"
+                                        "data": "mouse_sensitivity"
                                     },
                                     "value": {
                                         "type": 3,
-                                        "data": 10.0
+                                        "data": 0.005
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "rotation_speed"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Degree",
+                                            "data": 300.0
+                                        }
                                     }
                                 }
                             ]

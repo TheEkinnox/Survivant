@@ -35,7 +35,9 @@ namespace SvEditor::Core
 	void EditorEngine::Update()
 	{
 		m_time.Tick();
-		m_editorWorld->m_renderingContext->UpdateCameraInput();
+
+		if (m_editorWorld->m_isFocused)
+			m_editorWorld->m_renderingContext->UpdateCameraInput();
 	}
 
 	std::weak_ptr<GameInstance> EditorEngine::CreatePIEGameInstance()

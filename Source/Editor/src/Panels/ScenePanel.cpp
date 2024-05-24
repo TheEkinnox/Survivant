@@ -39,11 +39,7 @@ namespace SvEditor::Panels
 		if (s_world.lock()->m_isVisalbe = ImGui::Begin(m_name.c_str(), &showWindow, window_flags))
 		{
 			//focus
-			auto val = IsGainedFocus(m_prevFocus);
-			if (val == 1)
-				s_world.lock()->m_renderingContext->SetCanMove(true);
-			else if (val == -1)
-				s_world.lock()->m_renderingContext->SetCanMove(false);
+			s_world.lock()->m_isFocused = ImGui::IsWindowFocused();
 
 			//panelables
 			m_buttons.DisplayAndUpdatePanel();

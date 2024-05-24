@@ -27,7 +27,6 @@ namespace SvApp::Core
 		void	SetEntity(SvCore::ECS::EntityHandle p_entity);
 		CamInfo GetCamInfo();
 
-		void	SetCanMove(bool p_canMove);
 		void	UpdateInput();
 
 		Vec2* MoveInput();
@@ -56,7 +55,6 @@ namespace SvApp::Core
 		}m_union;
 
 		bool m_hasEntity = false;
-		bool m_canMove = false;
 
 		Vec2 m_moveInput = Vec2::zero();
 		Vec2 m_rotateInput = Vec2::zero();

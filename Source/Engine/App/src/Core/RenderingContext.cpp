@@ -216,11 +216,6 @@ namespace SvApp::Core
             cam->SetAspect(GetAspect());
     }
 
-    void RenderingContext::SetCanMove(bool p_canMove)
-    {
-        m_mainCamera.SetCanMove(p_canMove);
-    }
-
     const Renderer& RenderingContext::GetRenderer() const
     {
         return m_renderer;

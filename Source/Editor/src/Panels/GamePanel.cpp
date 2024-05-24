@@ -52,7 +52,18 @@ namespace SvEditor::Panels
 
 		if (m_world->m_isVisalbe = ImGui::Begin(m_name.c_str(), &showWindow, window_flags))
 		{
-			m_world->m_isFocused = ImGui::IsWindowFocused();
+			//focus
+			auto val = IsGainedFocus(m_prevFocus);
+			if (val == 1 && m_world->m_owningGameInstance)
+			{
+				m_world->m_isFocused = true;
+				m_world->SetInputs();
+			}
+			else if (val == -1)
+			{
+				m_world->m_isFocused = false;
+				flags = ERenderFlags(flags | DefaultInputs);
+			}
 
 			if (IsWindowDifferentSize(m_imageSize))
 			{

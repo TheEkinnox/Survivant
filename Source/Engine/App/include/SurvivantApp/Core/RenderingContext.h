@@ -70,7 +70,6 @@ namespace SvApp::Core
 		void		Resize(const LibMath::TVector2<int>& p_size);
 		float		GetAspect() const;
 		void		ResetCameraAspect();
-		void		SetCanMove(bool p_canMove);
 
 		const SvRendering::Core::Renderer& GetRenderer() const;
 
