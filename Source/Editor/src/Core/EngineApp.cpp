@@ -105,7 +105,6 @@ namespace SvEditor::Core
 		{
 			m_editorEngine.SetPaused(false);
 			m_editorEngine.DestroyGameInstance();
-			m_window->GetUI().ForceSceneFocus();
 		}
 		else //game not running
 		{
