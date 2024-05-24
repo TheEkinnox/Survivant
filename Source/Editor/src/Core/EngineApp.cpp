@@ -38,7 +38,7 @@ namespace SvEditor::Core
 	void EngineApp::Init()
 	{
 		SvCore::Debug::Logger::GetInstance().SetFile("debug.log");
-        SvCore::Resources::ResourceManager::GetInstance().AddSearchPath("assets");
+		SvCore::Resources::ResourceManager::GetInstance().AddSearchPath("assets");
 
 		//physics
 		SvPhysics::PhysicsContext::GetInstance().Init();
@@ -110,9 +110,12 @@ namespace SvEditor::Core
 		else //game not running
 		{
 			m_gameInstance = m_editorEngine.CreatePIEGameInstance();
-			m_gameInstance.lock()->Start();
-			m_window->GetUI().ForceGameFocus();
-			//this is tmp game
+
+			if (!m_gameInstance.expired())
+			{
+				m_gameInstance.lock()->Start();
+				m_window->GetUI().ForceGameFocus();
+			}
 		}
 
 		HierarchyPanel::ToggleSelectable(currentSelection);

@@ -64,7 +64,10 @@ namespace SvEditor::Core
 		m_gameInstance = std::make_shared<GameInstance>();
 
 		if (!InitializePlayInEditorGameInstance())
+		{
+			m_gameInstance.reset();
 			return std::weak_ptr<GameInstance>();
+		}
 
 		return std::weak_ptr<GameInstance>(m_gameInstance);
 	}
