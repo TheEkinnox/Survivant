@@ -47,6 +47,9 @@ namespace SvCore::Serialization
         if (!CHECK(it != p_json.MemberEnd(), "Failed to deserialize model component - Missing material"))
             return false;
 
+        if (!p_out.m_material.FromJson(it->value))
+            return false;
+
         it = p_json.FindMember("layers");
 
         if (it != p_json.MemberEnd())
@@ -62,6 +65,6 @@ namespace SvCore::Serialization
             p_out.m_layerMask = Layer::ALL;
         }
 
-        return p_out.m_material.FromJson(it->value);
+        return true;
     }
 }

@@ -123,7 +123,6 @@ namespace SvPhysics
             m_collisionDetectionMode = ECollisionDetectionMode::DISCRETE;
         }
 
-        m_useGravity = it->value.GetBool();
         return true;
     }
 
