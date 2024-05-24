@@ -2,70 +2,6 @@
     "entities": 32,
     "components": [
         {
-            "type": "Hierarchy",
-            "data": [
-                {
-                    "owner": 1,
-                    "data": {
-                        "parent": 0
-                    }
-                },
-                {
-                    "owner": 0,
-                    "data": {
-                        "parent": 18446744073709551615
-                    }
-                },
-                {
-                    "owner": 3,
-                    "data": {
-                        "parent": 0
-                    }
-                }
-            ]
-        },
-        {
-            "type": "Tag",
-            "data": [
-                {
-                    "owner": 2,
-                    "data": "Cam"
-                },
-                {
-                    "owner": 14,
-                    "data": "Light"
-                },
-                {
-                    "owner": 15,
-                    "data": "Light"
-                },
-                {
-                    "owner": 16,
-                    "data": "Light"
-                },
-                {
-                    "owner": 17,
-                    "data": "Light"
-                },
-                {
-                    "owner": 18,
-                    "data": "Light"
-                },
-                {
-                    "owner": 19,
-                    "data": "Light"
-                },
-                {
-                    "owner": 9,
-                    "data": "ball"
-                },
-                {
-                    "owner": 21,
-                    "data": "Light"
-                }
-            ]
-        },
-        {
             "type": "Model",
             "data": [
                 {
@@ -401,6 +337,159 @@
             ]
         },
         {
+            "type": "Tag",
+            "data": [
+                {
+                    "owner": 2,
+                    "data": "Cam"
+                },
+                {
+                    "owner": 14,
+                    "data": "Light"
+                },
+                {
+                    "owner": 15,
+                    "data": "Light"
+                },
+                {
+                    "owner": 16,
+                    "data": "Light"
+                },
+                {
+                    "owner": 17,
+                    "data": "Light"
+                },
+                {
+                    "owner": 18,
+                    "data": "Light"
+                },
+                {
+                    "owner": 19,
+                    "data": "Light"
+                },
+                {
+                    "owner": 9,
+                    "data": "ball"
+                },
+                {
+                    "owner": 21,
+                    "data": "Light"
+                }
+            ]
+        },
+        {
+            "type": "Hierarchy",
+            "data": [
+                {
+                    "owner": 1,
+                    "data": {
+                        "parent": 0
+                    }
+                },
+                {
+                    "owner": 0,
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
+                },
+                {
+                    "owner": 3,
+                    "data": {
+                        "parent": 0
+                    }
+                }
+            ]
+        },
+        {
+            "type": "ScriptList",
+            "data": [
+                {
+                    "owner": 0,
+                    "data": []
+                },
+                {
+                    "owner": 2,
+                    "data": [
+                        {
+                            "name": "scripts.freeLook",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "mouse_sensitivity"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 0.005
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "rotation_speed"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Degree",
+                                            "data": 90.0
+                                        }
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "move_speed"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 3.0
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "owner": 3,
+                    "data": []
+                },
+                {
+                    "owner": 9,
+                    "data": [
+                        {
+                            "name": "scripts.tests.addForce",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "force"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 450.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "direction"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Vector3",
+                                            "data": "{0,0,-1}"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
             "type": "Transform",
             "data": [
                 {
@@ -658,95 +747,6 @@
                         "rotation": "{0,0,0,1}",
                         "scale": "{1,1,1}"
                     }
-                }
-            ]
-        },
-        {
-            "type": "ScriptList",
-            "data": [
-                {
-                    "owner": 0,
-                    "data": []
-                },
-                {
-                    "owner": 2,
-                    "data": [
-                        {
-                            "name": "scripts.freeLook",
-                            "data": [
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "mouse_sensitivity"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 0.005
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "move_speed"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 3.0
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "rotation_speed"
-                                    },
-                                    "value": {
-                                        "type": 7,
-                                        "data": {
-                                            "type": "Degree",
-                                            "data": 90.0
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "owner": 3,
-                    "data": []
-                },
-                {
-                    "owner": 9,
-                    "data": [
-                        {
-                            "name": "scripts.tests.addForce",
-                            "data": [
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "force"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 450.0
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "direction"
-                                    },
-                                    "value": {
-                                        "type": 7,
-                                        "data": {
-                                            "type": "Vector3",
-                                            "data": "{0,0,-1}"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    ]
                 }
             ]
         },
