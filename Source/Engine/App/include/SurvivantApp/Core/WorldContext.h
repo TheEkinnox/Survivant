@@ -64,12 +64,14 @@ namespace SvApp::Core
 
 		EWorldType				m_worldType = EWorldType::NONE;
 		GameInstance*			m_owningGameInstance = nullptr;
-
 		std::shared_ptr<InputManager::InputBindings>				m_inputs;
-		std::shared_ptr<RenderingContext>							m_renderingContext;
-		bool														m_isVisalbe;
 		std::unique_ptr<SvRendering::RHI::IShaderStorageBuffer>		m_lightsSSBO = nullptr;
 
 		std::shared_ptr<SceneRef>	m_currentSceneRef = std::make_shared<SceneRef>(SceneRef());
+
+		//editor only
+		std::shared_ptr<RenderingContext>	m_renderingContext;
+		bool								m_isFocused = false;
+		bool								m_isVisalbe;
 	};
 }

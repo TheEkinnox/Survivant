@@ -36,9 +36,14 @@ namespace SvApp::Core
         return { &m_union.m_camInfo.m_cam, &m_union.m_camInfo.m_trans };
     }
 
+    void MainCamera::SetCanMove(bool p_canMove)
+    {
+        m_canMove = p_canMove;
+    }
+
     void MainCamera::UpdateInput()
     {
-        if (m_hasEntity)
+        if (m_hasEntity || !m_canMove)
             return;
 
         m_union.m_camInfo.m_cam;

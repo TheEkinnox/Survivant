@@ -74,7 +74,7 @@ namespace SvEditor::Core
 
 	private:
 		typedef std::shared_ptr<Panel> (EditorUI::* CreatePanelCallback)();
-		using Inputs = std::shared_ptr<SvApp::InputManager::InputBindings>;
+		using Inputs = std::weak_ptr<SvApp::InputManager::InputBindings>;
 
 		MenuBar CreateMenuBar(std::weak_ptr<WorldContext> p_world);
 		void HandlePanelFlags(const std::string& p_name, Panel::ERenderFlags p_flags);
