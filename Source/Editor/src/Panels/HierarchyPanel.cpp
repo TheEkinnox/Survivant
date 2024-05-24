@@ -22,7 +22,8 @@ namespace SvEditor::Panels
     HierarchyPanel::HierarchyPanel() :
         m_tree("All", HierarchyBranch::Children(), false),
         m_addEntity( "Add Entity", []() {
-        s_getCurrentScene().lock()->Get()->Create(); })
+        s_getCurrentScene().lock()->Get()->Create(); }),
+        m_currentSelected(NULL_ENTITY)
     {
         m_name = NAME;
         SetScene();
