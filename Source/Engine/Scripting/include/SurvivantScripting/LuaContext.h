@@ -188,7 +188,7 @@ namespace SvScripting
         static int LoadModule(lua_State* p_luaState);
 
         /**
-         * \brief Binds the necessary custom types
+         * \brief Binds the known user types to the given lua state
          * \param p_luaState The lua state to bind to
          */
         static void BindUserTypes(sol::state& p_luaState);
