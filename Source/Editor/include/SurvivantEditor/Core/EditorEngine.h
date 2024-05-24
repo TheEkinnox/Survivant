@@ -61,7 +61,6 @@ namespace SvEditor::Core
 	private:
 		using Inputs = SvApp::InputManager::InputBindings;
 
-		bool InitializePlayInEditorGameInstance();
 		void SetupEditorEvents();
 
 		std::string GetTemporaryScenePath() const;

@@ -47,10 +47,29 @@ namespace SvEditor::Core
 			m_PIEWorld = CreatePIEWorld();
 		}
 
-		m_gameInstance = std::make_shared<GameInstance>();
+		if (!SaveSceneState())
+			return {};
 
-		if (!InitializePlayInEditorGameInstance())
-			return std::weak_ptr<GameInstance>();
+		SvPhysics::PhysicsContext::GetInstance().Reload();
+		Timer::GetInstance().Refresh();
+		SvScripting::LuaContext& luaContext = SvScripting::LuaContext::GetInstance();
+		luaContext.Reload();
+
+		auto& pieWorld = *m_PIEWorld.lock();
+		pieWorld.CurrentScene() = ResourceManager::GetInstance().Load<Scene>(m_editorSelectedScene.GetPath());
+		pieWorld.m_inputs = std::make_shared<SvApp::InputManager::InputBindings>();
+		pieWorld.SetCamera(pieWorld.GetFirstCamera());
+		pieWorld.SetInputs();
+		pieWorld.BakeLighting();
+
+		//init
+		m_gameInstance = std::make_shared<GameInstance>();
+		m_gameInstance->Init(m_PIEWorld);
+		pieWorld.m_owningGameInstance = m_gameInstance.get();
+
+		luaContext.Start();
+		if (!CHECK(luaContext.IsValid(), "Failed to start lua context"))
+			return {};
 
 		return std::weak_ptr<GameInstance>(m_gameInstance);
 	}
@@ -221,36 +240,6 @@ namespace SvEditor::Core
 		//world->m_persistentLevel = nullptr;
 
 		return world;
-	}
-
-	bool EditorEngine::InitializePlayInEditorGameInstance()
-	{
-		auto& pieWorld = *m_PIEWorld.lock();
-
-		if (!SaveSceneState())
-			return false;
-
-		SvPhysics::PhysicsContext::GetInstance().Reload();
-
-		Timer::GetInstance().Refresh();
-
-		SvScripting::LuaContext& luaContext = SvScripting::LuaContext::GetInstance();
-		luaContext.Reload();
-
-		pieWorld.CurrentScene() = ResourceManager::GetInstance().Load<Scene>(m_editorSelectedScene.GetPath());
-
-		pieWorld.m_inputs = std::make_shared<SvApp::InputManager::InputBindings>();
-		//pieWorld.m_inputs = ToRemove::SetupGameInputs();
-		pieWorld.SetCamera(pieWorld.GetFirstCamera());
-		pieWorld.SetInputs();
-		pieWorld.BakeLighting();
-
-		//init
-		m_gameInstance->Init(m_PIEWorld);
-		pieWorld.m_owningGameInstance = m_gameInstance.get();
-
-		luaContext.Start();
-		return CHECK(luaContext.IsValid(), "Failed to start lua context");
 	}
 
 	void SvEditor::Core::EditorEngine::SetupEditorEvents()
