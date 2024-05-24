@@ -119,6 +119,7 @@ namespace SvScripting::Bindings
             )
         );
 
+        ASSERT(SV_ENGINE(), "Attempted to bind engine functions for uninitialized engine");
         p_luaState[typeName] = SV_ENGINE();
     }
 }

@@ -2,6 +2,7 @@
 #include "SurvivantEditor/Core/EditorEngine.h"
 
 #include "SurvivantEditor/Core/EditorWindow.h"
+#include "SurvivantEditor/Core/LuaEditorBinder.h"
 #include "SurvivantEditor/RuntimeBuild/BuildManager.h"
 
 #include <SurvivantCore/Debug/Assertion.h>
@@ -27,6 +28,13 @@ namespace SvEditor::Core
 	void EditorEngine::Init()
 	{
 		s_engine = this;
+
+		//physics
+		SvPhysics::PhysicsContext::GetInstance().Init();
+
+		//scripts
+		SvScripting::LuaContext::SetUserTypeBinders(&LuaEditorBinder::EditorUserTypeBindings);
+		SvScripting::LuaContext::GetInstance().Init();
 
 		//create scenes
 		//BrowseToDefaultScene(*m_editorWorld); //cant use this func bcs world does not exist
