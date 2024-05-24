@@ -6,7 +6,7 @@
         {
             "name": "u_tint",
             "type": 7,
-            "value": "{0.776371,0.262066,0.262066,0}"
+            "value": "{1,0.797468,0.797468,0}"
         },
         {
             "name": "u_diffuse",
@@ -18,7 +18,7 @@
         {
             "name": "u_shininess",
             "type": 4,
-            "value": 512.0
+            "value": 0.0
         },
         {
             "name": "u_specularColor",
