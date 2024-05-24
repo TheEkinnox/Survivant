@@ -24,6 +24,8 @@ namespace SvEditor::Panels
 		m_buttons.m_buttons.push_back(PanelButton(" Frame -> ", s_frameListenners));
 
 		m_world = s_worldCreator({ 0, 0 });
+		m_prevFocus = false;
+
 		m_image.SetTexture(m_world->m_renderingContext->GetTextureId(RenderingContext::ETextureType::COLOR));
 			
 		m_onResize.AddListener([this](const LibMath::Vector2& p_size)
@@ -32,6 +34,8 @@ namespace SvEditor::Panels
 				m_world->m_renderingContext->Render(m_world->CurrentScene().Get());
 				SV_LOG(SvCore::Utility::FormatString("Size = %f, %f", p_size.m_x, p_size.m_y).c_str());
 			});
+
+
 	}
 
 	GamePanel::~GamePanel()
@@ -54,15 +58,17 @@ namespace SvEditor::Panels
 		{
 			//focus
 			auto val = IsGainedFocus(m_prevFocus);
-			if (val == 1 && m_world->m_owningGameInstance)
+			if (val == 1)
 			{
 				m_world->m_isFocused = true;
-				m_world->SetInputs();
+				if (m_world->m_owningGameInstance)
+					m_world->SetInputs();
 			}
 			else if (val == -1)
 			{
 				m_world->m_isFocused = false;
-				flags = ERenderFlags(flags | DefaultInputs);
+				if (m_world->m_owningGameInstance)
+					flags = ERenderFlags(flags | DefaultInputs);
 			}
 
 			if (IsWindowDifferentSize(m_imageSize))
