@@ -1,7 +1,7 @@
 ---@meta
 
 ---@class Application
----@field public isEditor boolean Read-Only
+---@field public isEditor boolean READ-ONLY
 ---@field public currentScene Resource | Scene
 Application = {}
 

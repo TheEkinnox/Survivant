@@ -1,10 +1,10 @@
 ---@meta
 
 ---@class Resource
----@field public isValid boolean Read-Only
----@field public type string Read-Only
----@field public path string Read-Only
----@field public fullPath string Read-Only
+---@field public isValid boolean READ-ONLY
+---@field public type string READ-ONLY
+---@field public path string READ-ONLY
+---@field public fullPath string READ-ONLY
 ---@field public self userdata
 Resource = {}
 

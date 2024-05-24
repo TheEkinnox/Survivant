@@ -1,4 +1,3 @@
---TODO: Entity lua api
 ---@meta
 
 ---@class EComponentSearchOrigin
@@ -9,16 +8,16 @@ EComponentSearchOrigin = {
 }
 
 ---@class Entity
----@field public isValid boolean READ_ONLY
----@field public scene Scene READ_ONLY
----@field public root Entity READ_ONLY
+---@field public isValid boolean READ-ONLY
+---@field public scene Scene READ-ONLY
+---@field public root Entity READ-ONLY
 ---@field public parent Entity
----@field public nextSibling Entity READ_ONLY
----@field public previousSibling Entity READ_ONLY
----@field public childCount number READ_ONLY
----@field public children number READ_ONLY | Note: Heavy engine call, to iterate over all children use childCount and GetChild
----@field public componentCount number READ_ONLY
----@field public components table<number, Component> READ_ONLY
+---@field public nextSibling Entity READ-ONLY
+---@field public previousSibling Entity READ-ONLY
+---@field public childCount number READ-ONLY
+---@field public children number READ-ONLY | Note: Heavy engine call, to iterate over all children use childCount and GetChild
+---@field public componentCount number READ-ONLY
+---@field public components table<number, Component> READ-ONLY
 Entity = {}
 
 ---Creates a copy of the entity
@@ -73,32 +72,38 @@ function Entity:RemoveScript(name) end
 function Entity:Has(type) end
 
 ---Gets the component of the given type on the entity
----@param type string|table
----@return Component The found component on success. An invalid component otherwise
+---@generic T: Component
+---@param type string|T
+---@return Component|T The found component on success. An invalid component otherwise
 function Entity:Get(type) end
 
 ---Gets or adds the component of the given type to the entity
----@param type string|table
----@return Component The found or added component on success. An invalid component otherwise
+---@generic T
+---@param type string|T
+---@return Component|T The found or added component on success. An invalid component otherwise
 function Entity:GetOrCreate(type) end
 
 ---Gets the component of the given type on the entity or one of its parents
----@param type string|table
----@return Component The found component on success. An invalid component otherwise
+---@generic T
+---@param type string|T
+---@return Component|T The found component on success. An invalid component otherwise
 function Entity:GetInParent(type) end
 
 ---Gets the component of the given type on the entity or in one of its child hierarchies
----@param type string|table
----@return Component The found component on success. An invalid component otherwise
+---@generic T
+---@param type string|T
+---@return Component|T The found component on success. An invalid component otherwise
 function Entity:GetInChildren(type) end
 
 ---Gets the component of the given type on the entity's hierarchy starting at the given origin
----@param type string|table
+---@generic T
+---@param type string|T
 ---@param searchOrigin EComponentSearchOrigin
----@return Component The found component on success. An invalid component otherwise
+---@return Component|T The found component on success. An invalid component otherwise
 function Entity:GetInHierarchy(type, searchOrigin) end
 
 ---Removes the given component from the entity
----@param type string|table
+---@generic T
+---@param type string|T
 ---@overload fun(component: Component)
 function Entity:Remove(type) end

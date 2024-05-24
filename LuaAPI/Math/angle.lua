@@ -1,7 +1,7 @@
 ---@meta
 
 ---@class Degree
----@field public raw number Read-Only
+---@field public raw number READ-ONLY
 Degree = {}
 
 ---Creates an angle in degrees
@@ -17,7 +17,7 @@ function Degree.new(angle) end
 function Degree:Wrap(useNegative) end
 
 ---@class Radian
----@field public raw number Read-Only
+---@field public raw number READ-ONLY
 Radian = {}
 
 ---Creates an angle in radian
