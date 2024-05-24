@@ -219,18 +219,24 @@ void SvApp::InputManager::CallInput(const KeyboardKeyType& p_type, char p_scanco
 	ASSERT(m_bindings.get() != nullptr, "Imput Bindings not set");
 
 	auto callback = m_bindings->m_keyCallbacks.find(p_type);
-
-	if (callback == m_bindings->m_keyCallbacks.end())
-		return;
-
-	if (p_callAtUpdate)
+	if (callback != m_bindings->m_keyCallbacks.end())
 	{
-		m_updateCallbacks.push_back(std::bind(callback->second, p_scancode));
-		return;
+		if (p_callAtUpdate)
+			m_updateCallbacks.push_back(std::bind(callback->second, p_scancode));
+		else
+			callback->second(p_scancode);
 	}
-
-	//calls keyboard callback with scancode
-	callback->second(p_scancode);
+	
+	//call MOD_ANY if exists
+	auto& [key, state, mod] = p_type.m_inputInfo;
+	callback = m_bindings->m_keyCallbacks.find(KeyboardKeyType(key, state, EInputModifier::MOD_ANY));
+	if (callback != m_bindings->m_keyCallbacks.end())
+	{
+		if (p_callAtUpdate)
+			m_updateCallbacks.push_back(std::bind(callback->second, p_scancode));
+		else
+			callback->second(p_scancode);
+	}
 }
 
 void SvApp::InputManager::CallInput(const MouseKeyType& p_type, float p_x, float p_y, bool p_callAtUpdate)
@@ -239,17 +245,24 @@ void SvApp::InputManager::CallInput(const MouseKeyType& p_type, float p_x, float
 
 	auto callback = m_bindings->m_mouseKeyCallbacks.find(p_type);
 
-	if (callback == m_bindings->m_mouseKeyCallbacks.end())
-		return;
-
-	if (p_callAtUpdate)
+	if (callback != m_bindings->m_mouseKeyCallbacks.end())
 	{
-		m_updateCallbacks.push_back(std::bind(callback->second, p_x, p_y));
-		return;
+		if (p_callAtUpdate)
+			m_updateCallbacks.push_back(std::bind(callback->second, p_x, p_y));
+		else
+			callback->second(p_x, p_y);
 	}
 
-	//calls mouse key callback with mous pos (x,y)
-	callback->second(p_x, p_y);
+	//call MOD_ANY if exists
+	auto& [key, state, mod] = p_type.m_inputInfo;
+	callback = m_bindings->m_mouseKeyCallbacks.find(MouseKeyType(key, state, EInputModifier::MOD_ANY));
+	if (callback != m_bindings->m_mouseKeyCallbacks.end())
+	{
+		if (p_callAtUpdate)
+			m_updateCallbacks.push_back(std::bind(callback->second, p_x, p_y));
+		else
+			callback->second(p_x, p_y);
+	}
 }
 
 void SvApp::InputManager::CallInput(const MouseKeyType& p_type, bool p_callAtUpdate)

@@ -116,82 +116,82 @@ namespace SvEditor::Core
 		auto& k = input->m_keyCallbacks;
 
 		//move camera in scene
-		k.emplace(InputManager::KeyboardKeyType{ EKey::W, EKeyState::PRESSED, EInputModifier() }, [this](const char)
+		k.emplace(InputManager::KeyboardKeyType{ EKey::W, EKeyState::PRESSED, EInputModifier::MOD_ANY }, [this](const char)
 			{
 				m_editorWorld->m_renderingContext->CameraMoveInput().m_y += 1;
 			});
 
-		k.emplace(InputManager::KeyboardKeyType{ EKey::W, EKeyState::RELEASED, EInputModifier() }, [this](const char)
+		k.emplace(InputManager::KeyboardKeyType{ EKey::W, EKeyState::RELEASED, EInputModifier::MOD_ANY }, [this](const char)
 			{
 				m_editorWorld->m_renderingContext->CameraMoveInput().m_y -= 1;
 			});
 
-		k.emplace(InputManager::KeyboardKeyType{ EKey::S, EKeyState::PRESSED, EInputModifier() }, [this](const char)
+		k.emplace(InputManager::KeyboardKeyType{ EKey::S, EKeyState::PRESSED, EInputModifier::MOD_ANY }, [this](const char)
 			{
 				--m_editorWorld->m_renderingContext->CameraMoveInput().m_y;
 			});
 
-		k.emplace(InputManager::KeyboardKeyType{ EKey::S, EKeyState::RELEASED, EInputModifier() }, [this](const char)
+		k.emplace(InputManager::KeyboardKeyType{ EKey::S, EKeyState::RELEASED, EInputModifier::MOD_ANY }, [this](const char)
 			{
 				++m_editorWorld->m_renderingContext->CameraMoveInput().m_y;
 			});
 
-		k.emplace(InputManager::KeyboardKeyType{ EKey::A, EKeyState::PRESSED, EInputModifier() }, [this](const char)
+		k.emplace(InputManager::KeyboardKeyType{ EKey::A, EKeyState::PRESSED, EInputModifier::MOD_ANY }, [this](const char)
 			{
 				--m_editorWorld->m_renderingContext->CameraMoveInput().m_x;
 			});
 
-		k.emplace(InputManager::KeyboardKeyType{ EKey::A, EKeyState::RELEASED, EInputModifier() }, [this](const char)
+		k.emplace(InputManager::KeyboardKeyType{ EKey::A, EKeyState::RELEASED, EInputModifier::MOD_ANY }, [this](const char)
 			{
 				++m_editorWorld->m_renderingContext->CameraMoveInput().m_x;
 			});
 
-		k.emplace(InputManager::KeyboardKeyType{ EKey::D, EKeyState::PRESSED, EInputModifier() }, [this](const char)
+		k.emplace(InputManager::KeyboardKeyType{ EKey::D, EKeyState::PRESSED, EInputModifier::MOD_ANY }, [this](const char)
 			{
 				++m_editorWorld->m_renderingContext->CameraMoveInput().m_x;
 			});
 
-		k.emplace(InputManager::KeyboardKeyType{ EKey::D, EKeyState::RELEASED, EInputModifier() }, [this](const char)
+		k.emplace(InputManager::KeyboardKeyType{ EKey::D, EKeyState::RELEASED, EInputModifier::MOD_ANY }, [this](const char)
 			{
 				--m_editorWorld->m_renderingContext->CameraMoveInput().m_x;
 			});
 
-		k.emplace(InputManager::KeyboardKeyType{ EKey::UP, EKeyState::PRESSED, EInputModifier() }, [this](const char)
+		k.emplace(InputManager::KeyboardKeyType{ EKey::UP, EKeyState::PRESSED, EInputModifier::MOD_ANY }, [this](const char)
 			{
 				++m_editorWorld->m_renderingContext->CameraRotateInput().m_y;
 			});
 
-		k.emplace(InputManager::KeyboardKeyType{ EKey::UP, EKeyState::RELEASED, EInputModifier() }, [this](const char)
+		k.emplace(InputManager::KeyboardKeyType{ EKey::UP, EKeyState::RELEASED, EInputModifier::MOD_ANY }, [this](const char)
 			{
 				--m_editorWorld->m_renderingContext->CameraRotateInput().m_y;
 			});
 
-		k.emplace(InputManager::KeyboardKeyType{ EKey::DOWN, EKeyState::PRESSED, EInputModifier() }, [this](const char)
+		k.emplace(InputManager::KeyboardKeyType{ EKey::DOWN, EKeyState::PRESSED, EInputModifier::MOD_ANY }, [this](const char)
 			{
 				--m_editorWorld->m_renderingContext->CameraRotateInput().m_y;
 			});
 
-		k.emplace(InputManager::KeyboardKeyType{ EKey::DOWN, EKeyState::RELEASED, EInputModifier() }, [this](const char)
+		k.emplace(InputManager::KeyboardKeyType{ EKey::DOWN, EKeyState::RELEASED, EInputModifier::MOD_ANY }, [this](const char)
 			{
 				++m_editorWorld->m_renderingContext->CameraRotateInput().m_y;
 			});
 
-		k.emplace(InputManager::KeyboardKeyType{ EKey::LEFT, EKeyState::PRESSED, EInputModifier() }, [this](const char)
+		k.emplace(InputManager::KeyboardKeyType{ EKey::LEFT, EKeyState::PRESSED, EInputModifier::MOD_ANY }, [this](const char)
 			{
 				--m_editorWorld->m_renderingContext->CameraRotateInput().m_x;
 			});
 
-		k.emplace(InputManager::KeyboardKeyType{ EKey::LEFT, EKeyState::RELEASED, EInputModifier() }, [this](const char)
+		k.emplace(InputManager::KeyboardKeyType{ EKey::LEFT, EKeyState::RELEASED, EInputModifier::MOD_ANY }, [this](const char)
 			{
 				++m_editorWorld->m_renderingContext->CameraRotateInput().m_x;
 			});
 
-		k.emplace(InputManager::KeyboardKeyType{ EKey::RIGHT, EKeyState::PRESSED, EInputModifier() }, [this](const char)
+		k.emplace(InputManager::KeyboardKeyType{ EKey::RIGHT, EKeyState::PRESSED, EInputModifier::MOD_ANY }, [this](const char)
 			{
 				++m_editorWorld->m_renderingContext->CameraRotateInput().m_x;
 			});
 
-		k.emplace(InputManager::KeyboardKeyType{ EKey::RIGHT, EKeyState::RELEASED, EInputModifier() }, [this](const char)
+		k.emplace(InputManager::KeyboardKeyType{ EKey::RIGHT, EKeyState::RELEASED, EInputModifier::MOD_ANY }, [this](const char)
 			{
 				--m_editorWorld->m_renderingContext->CameraRotateInput().m_x;
 			});
