@@ -2,7 +2,7 @@
     "entities": 61,
     "components": [
         {
-            "type": "SphereCollider",
+            "type": "CapsuleCollider",
             "data": [
                 {
                     "owner": 0,
@@ -12,9 +12,16 @@
                         },
                         "offset": "{0,0,0}",
                         "is_trigger": false,
-                        "radius": 1.0
+                        "axis": "{0,1,0}",
+                        "height": 2.0,
+                        "radius": 0.5
                     }
-                },
+                }
+            ]
+        },
+        {
+            "type": "SphereCollider",
+            "data": [
                 {
                     "owner": 60,
                     "data": {
@@ -36,6 +43,7 @@
                     "data": {
                         "type": "perspective",
                         "active": true,
+                        "order": 0,
                         "clear_mask": 7,
                         "clear_color": "{0.5,0.5,0.5,1}",
                         "culling_mask": 255,
@@ -86,11 +94,11 @@
                                 {
                                     "key": {
                                         "type": 4,
-                                        "data": "mouse_sensitivity"
+                                        "data": "max_acceleration"
                                     },
                                     "value": {
                                         "type": 3,
-                                        "data": 0.005
+                                        "data": 12.0
                                     }
                                 },
                                 {
@@ -109,21 +117,21 @@
                                 {
                                     "key": {
                                         "type": 4,
-                                        "data": "max_acceleration"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 12.0
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
                                         "data": "max_speed"
                                     },
                                     "value": {
                                         "type": 3,
                                         "data": 4.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "mouse_sensitivity"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 0.005
                                     }
                                 }
                             ]
@@ -159,11 +167,11 @@
                                 {
                                     "key": {
                                         "type": 4,
-                                        "data": "move_speed"
+                                        "data": "numButtonsToMove"
                                     },
                                     "value": {
                                         "type": 3,
-                                        "data": 1.0
+                                        "data": 3.0
                                     }
                                 },
                                 {
@@ -179,31 +187,11 @@
                                 {
                                     "key": {
                                         "type": 4,
-                                        "data": "localLength"
+                                        "data": "move_speed"
                                     },
                                     "value": {
                                         "type": 3,
-                                        "data": 0.0
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "numButtonsToMove"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 3.0
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "length"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 2.0
+                                        "data": 1.0
                                     }
                                 }
                             ]
@@ -259,21 +247,21 @@
                                 {
                                     "key": {
                                         "type": 4,
-                                        "data": "length_and_dir"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": -11.0
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
                                         "data": "numButtonsToMove"
                                     },
                                     "value": {
                                         "type": 3,
                                         "data": 1.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "length_and_dir"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": -11.0
                                     }
                                 },
                                 {
@@ -339,21 +327,21 @@
                                 {
                                     "key": {
                                         "type": 4,
-                                        "data": "length_and_dir"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 4.0
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
                                         "data": "numButtonsToMove"
                                     },
                                     "value": {
                                         "type": 3,
                                         "data": 1.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "length_and_dir"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 4.0
                                     }
                                 },
                                 {
@@ -870,103 +858,6 @@
             ]
         },
         {
-            "type": "Tag",
-            "data": [
-                {
-                    "owner": 29,
-                    "data": "Collider"
-                },
-                {
-                    "owner": 13,
-                    "data": "STRAIR"
-                },
-                {
-                    "owner": 31,
-                    "data": "stair2"
-                },
-                {
-                    "owner": 12,
-                    "data": "stair1"
-                },
-                {
-                    "owner": 11,
-                    "data": "Collider"
-                },
-                {
-                    "owner": 7,
-                    "data": "start"
-                },
-                {
-                    "owner": 37,
-                    "data": "wall"
-                },
-                {
-                    "owner": 38,
-                    "data": "wall"
-                },
-                {
-                    "owner": 42,
-                    "data": "to_move(0-4)"
-                },
-                {
-                    "owner": 9,
-                    "data": "end_door"
-                },
-                {
-                    "owner": 23,
-                    "data": "end"
-                },
-                {
-                    "owner": 14,
-                    "data": "mid"
-                },
-                {
-                    "owner": 32,
-                    "data": "top_of_stairs"
-                },
-                {
-                    "owner": 0,
-                    "data": "player"
-                },
-                {
-                    "owner": 48,
-                    "data": "wall"
-                },
-                {
-                    "owner": 53,
-                    "data": "button_2"
-                },
-                {
-                    "owner": 56,
-                    "data": "button_3"
-                },
-                {
-                    "owner": 55,
-                    "data": "button_1"
-                },
-                {
-                    "owner": 51,
-                    "data": "button_1"
-                },
-                {
-                    "owner": 57,
-                    "data": "button_1"
-                },
-                {
-                    "owner": 15,
-                    "data": "wall"
-                },
-                {
-                    "owner": 59,
-                    "data": "remove_me"
-                },
-                {
-                    "owner": 58,
-                    "data": "button"
-                }
-            ]
-        },
-        {
             "type": "Hierarchy",
             "data": [
                 {
@@ -1330,7 +1221,8 @@
                         },
                         "material": {
                             "path": "materials/red.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1341,7 +1233,8 @@
                         },
                         "material": {
                             "path": "materials/blue.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1352,7 +1245,8 @@
                         },
                         "material": {
                             "path": "materials/blue.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1363,7 +1257,8 @@
                         },
                         "material": {
                             "path": "materials/unlitWhite.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1374,7 +1269,8 @@
                         },
                         "material": {
                             "path": "materials/blue.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1385,7 +1281,8 @@
                         },
                         "material": {
                             "path": "materials/blue.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1396,7 +1293,8 @@
                         },
                         "material": {
                             "path": "materials/blue.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1407,7 +1305,8 @@
                         },
                         "material": {
                             "path": "materials/blue.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1418,7 +1317,8 @@
                         },
                         "material": {
                             "path": "materials/unlitWhite.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1429,7 +1329,8 @@
                         },
                         "material": {
                             "path": "materials/blue.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1440,7 +1341,8 @@
                         },
                         "material": {
                             "path": "materials/blue.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1451,7 +1353,8 @@
                         },
                         "material": {
                             "path": "materials/unlitWhite.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1462,7 +1365,8 @@
                         },
                         "material": {
                             "path": "materials/blue.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1473,7 +1377,8 @@
                         },
                         "material": {
                             "path": "materials/magenta.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1484,7 +1389,8 @@
                         },
                         "material": {
                             "path": "materials/red.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1495,7 +1401,8 @@
                         },
                         "material": {
                             "path": "materials/blue.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1506,7 +1413,8 @@
                         },
                         "material": {
                             "path": "materials/blue.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1517,7 +1425,8 @@
                         },
                         "material": {
                             "path": "materials/blue.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1528,7 +1437,8 @@
                         },
                         "material": {
                             "path": "materials/blue.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1539,7 +1449,8 @@
                         },
                         "material": {
                             "path": "materials/red.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1550,7 +1461,8 @@
                         },
                         "material": {
                             "path": "materials/unlitWhite.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1561,7 +1473,8 @@
                         },
                         "material": {
                             "path": "materials/blue.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1572,7 +1485,8 @@
                         },
                         "material": {
                             "path": "materials/blue.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1583,7 +1497,8 @@
                         },
                         "material": {
                             "path": "materials/red.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1594,7 +1509,8 @@
                         },
                         "material": {
                             "path": "materials/green.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1605,7 +1521,8 @@
                         },
                         "material": {
                             "path": "materials/unlitWhite.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1616,7 +1533,8 @@
                         },
                         "material": {
                             "path": "materials/unlitWhite.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1627,7 +1545,8 @@
                         },
                         "material": {
                             "path": "materials/unlitWhite.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1638,7 +1557,8 @@
                         },
                         "material": {
                             "path": "materials/red.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1649,7 +1569,8 @@
                         },
                         "material": {
                             "path": "materials/magenta.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1660,7 +1581,8 @@
                         },
                         "material": {
                             "path": "materials/blue.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1671,7 +1593,8 @@
                         },
                         "material": {
                             "path": "materials/blue.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1682,7 +1605,8 @@
                         },
                         "material": {
                             "path": "materials/unlitWhite.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1693,7 +1617,8 @@
                         },
                         "material": {
                             "path": "materials/blue.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1704,7 +1629,8 @@
                         },
                         "material": {
                             "path": "materials/green.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1715,7 +1641,8 @@
                         },
                         "material": {
                             "path": "materials/unlitWhite.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1726,7 +1653,8 @@
                         },
                         "material": {
                             "path": "materials/unlitWhite.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1737,7 +1665,8 @@
                         },
                         "material": {
                             "path": "materials/green.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1748,7 +1677,8 @@
                         },
                         "material": {
                             "path": "materials/magenta.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1759,7 +1689,8 @@
                         },
                         "material": {
                             "path": "materials/red.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1770,7 +1701,8 @@
                         },
                         "material": {
                             "path": "materials/magenta.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1781,7 +1713,8 @@
                         },
                         "material": {
                             "path": "materials/red.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1792,7 +1725,8 @@
                         },
                         "material": {
                             "path": "materials/red.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1803,7 +1737,8 @@
                         },
                         "material": {
                             "path": "materials/green.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1814,7 +1749,8 @@
                         },
                         "material": {
                             "path": "materials/yellow.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 },
                 {
@@ -1825,7 +1761,8 @@
                         },
                         "material": {
                             "path": "materials/yellow.mat"
-                        }
+                        },
+                        "layers": 4294967295
                     }
                 }
             ]
@@ -1838,7 +1775,9 @@
                     "data": {
                         "mass": 1.0,
                         "is_kinematic": false,
-                        "use_gravity": true
+                        "use_gravity": true,
+                        "axis_locks": 40,
+                        "collision_mode": 0
                     }
                 },
                 {
@@ -1846,7 +1785,9 @@
                     "data": {
                         "mass": 1.0,
                         "is_kinematic": true,
-                        "use_gravity": false
+                        "use_gravity": false,
+                        "axis_locks": 0,
+                        "collision_mode": 0
                     }
                 },
                 {
@@ -1854,7 +1795,9 @@
                     "data": {
                         "mass": 1.0,
                         "is_kinematic": false,
-                        "use_gravity": true
+                        "use_gravity": true,
+                        "axis_locks": 0,
+                        "collision_mode": 0
                     }
                 },
                 {
@@ -1862,7 +1805,9 @@
                     "data": {
                         "mass": 1.0,
                         "is_kinematic": false,
-                        "use_gravity": true
+                        "use_gravity": true,
+                        "axis_locks": 0,
+                        "collision_mode": 0
                     }
                 },
                 {
@@ -1870,7 +1815,9 @@
                     "data": {
                         "mass": 1.0,
                         "is_kinematic": true,
-                        "use_gravity": false
+                        "use_gravity": false,
+                        "axis_locks": 0,
+                        "collision_mode": 0
                     }
                 },
                 {
@@ -1878,7 +1825,9 @@
                     "data": {
                         "mass": 1.0,
                         "is_kinematic": true,
-                        "use_gravity": false
+                        "use_gravity": false,
+                        "axis_locks": 0,
+                        "collision_mode": 0
                     }
                 },
                 {
@@ -1886,7 +1835,9 @@
                     "data": {
                         "mass": 1.0,
                         "is_kinematic": true,
-                        "use_gravity": false
+                        "use_gravity": false,
+                        "axis_locks": 0,
+                        "collision_mode": 0
                     }
                 },
                 {
@@ -1894,8 +1845,107 @@
                     "data": {
                         "mass": 0.009999999776482582,
                         "is_kinematic": false,
-                        "use_gravity": true
+                        "use_gravity": true,
+                        "axis_locks": 0,
+                        "collision_mode": 0
                     }
+                }
+            ]
+        },
+        {
+            "type": "Tag",
+            "data": [
+                {
+                    "owner": 29,
+                    "data": "Collider"
+                },
+                {
+                    "owner": 13,
+                    "data": "STRAIR"
+                },
+                {
+                    "owner": 31,
+                    "data": "stair2"
+                },
+                {
+                    "owner": 12,
+                    "data": "stair1"
+                },
+                {
+                    "owner": 11,
+                    "data": "Collider"
+                },
+                {
+                    "owner": 7,
+                    "data": "start"
+                },
+                {
+                    "owner": 37,
+                    "data": "wall"
+                },
+                {
+                    "owner": 38,
+                    "data": "wall"
+                },
+                {
+                    "owner": 42,
+                    "data": "to_move(0-4)"
+                },
+                {
+                    "owner": 9,
+                    "data": "end_door"
+                },
+                {
+                    "owner": 23,
+                    "data": "end"
+                },
+                {
+                    "owner": 14,
+                    "data": "mid"
+                },
+                {
+                    "owner": 32,
+                    "data": "top_of_stairs"
+                },
+                {
+                    "owner": 0,
+                    "data": "player"
+                },
+                {
+                    "owner": 48,
+                    "data": "wall"
+                },
+                {
+                    "owner": 53,
+                    "data": "button_2"
+                },
+                {
+                    "owner": 56,
+                    "data": "button_3"
+                },
+                {
+                    "owner": 55,
+                    "data": "button_1"
+                },
+                {
+                    "owner": 51,
+                    "data": "button_1"
+                },
+                {
+                    "owner": 57,
+                    "data": "button_1"
+                },
+                {
+                    "owner": 15,
+                    "data": "wall"
+                },
+                {
+                    "owner": 59,
+                    "data": "remove_me"
+                },
+                {
+                    "owner": 58,
+                    "data": "button"
                 }
             ]
         },

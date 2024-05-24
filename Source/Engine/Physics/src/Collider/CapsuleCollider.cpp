@@ -91,7 +91,7 @@ namespace SvPhysics
         float   halfHeight = m_height * .5f;
         Vector3 offset     = m_offset;
 
-        const Quaternion rotation = Quaternion::fromTo(Vector3::up(), m_axis);
+        const Quaternion rotation = Quaternion::fromTo(Vector3::right(), m_axis);
 
         if (p_transform)
         {

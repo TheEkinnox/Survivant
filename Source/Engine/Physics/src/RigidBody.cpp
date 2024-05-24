@@ -247,6 +247,7 @@ namespace SvPhysics
         SetKinematic(m_isKinematic);
         SetUseGravity(m_useGravity);
         SetCollisionDetectionMode(m_collisionDetectionMode);
+        SetAxisLocks(m_axisLocks);
     }
 }
 
