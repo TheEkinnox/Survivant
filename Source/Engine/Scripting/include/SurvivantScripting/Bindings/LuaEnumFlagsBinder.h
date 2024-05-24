@@ -37,22 +37,19 @@ namespace SvScripting::Bindings
             ),
             sol::meta_function::bitwise_and, sol::overload(
                 sol::resolve<EnumFlagsT(EnumT) const>(&EnumFlagsT::operator&),
-                sol::resolve<EnumFlagsT(EnumFlagsT) const>(&EnumFlagsT::operator&),
-                sol::resolve<EnumFlagsT(EnumT, EnumFlagsT) const>(&operator&)
+                sol::resolve<EnumFlagsT(EnumFlagsT) const>(&EnumFlagsT::operator&)
             ),
             sol::meta_function::bitwise_or, sol::overload(
                 sol::resolve<EnumFlagsT(EnumT) const>(&EnumFlagsT::operator|),
-                sol::resolve<EnumFlagsT(EnumFlagsT) const>(&EnumFlagsT::operator|),
-                sol::resolve<EnumFlagsT(EnumT, EnumFlagsT) const>(&operator|)
+                sol::resolve<EnumFlagsT(EnumFlagsT) const>(&EnumFlagsT::operator|)
             ),
             sol::meta_function::bitwise_xor, sol::overload(
                 sol::resolve<EnumFlagsT(EnumT) const>(&EnumFlagsT::operator^),
-                sol::resolve<EnumFlagsT(EnumFlagsT) const>(&EnumFlagsT::operator^),
-                sol::resolve<EnumFlagsT(EnumT, EnumFlagsT) const>(&operator^)
+                sol::resolve<EnumFlagsT(EnumFlagsT) const>(&EnumFlagsT::operator^)
             ),
             sol::meta_function::bitwise_not, &EnumFlagsT::operator~,
             "raw", sol::property(
-                &EnumFlagsT::operator DataT(),
+                &EnumFlagsT::operator DataT,
                 [](EnumFlagsT& p_self, const DataT p_value)
                 {
                     return p_self = p_value;
