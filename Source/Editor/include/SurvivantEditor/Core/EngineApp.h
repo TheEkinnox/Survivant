@@ -29,6 +29,7 @@ namespace SvEditor::Core
 		void TogglePlayPIE();
 		void TogglePausePIE();
 		void PressFramePIE();
+		void UpdatePIE();
 
 		void UpdateScripts();
 		void UpdatePhysics();

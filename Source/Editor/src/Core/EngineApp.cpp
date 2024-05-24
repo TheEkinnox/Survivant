@@ -82,12 +82,9 @@ namespace SvEditor::Core
 			m_window->Update();
 			SvApp::InputManager::GetInstance().Update();
 
+			Timer::GetInstance().Tick();
 			if (!m_gameInstance.expired() && !m_gameIsPaused)
-			{
-				Timer::GetInstance().Tick();
-				UpdateScripts();
-				UpdatePhysics();
-			}
+				UpdatePIE();
 
 			m_editorEngine.RenderWorlds();
 
@@ -105,6 +102,7 @@ namespace SvEditor::Core
 	{
 		const auto currentSelection = RenderingContext::s_editorSelectedEntity.GetEntity().GetIndex();
 		HierarchyPanel::ToggleSelectable(SvCore::ECS::NULL_ENTITY.GetIndex());
+		m_gameIsPaused = false;
 
 		if (!m_gameInstance.expired()) //game is running
 		{
@@ -124,12 +122,18 @@ namespace SvEditor::Core
 
 	void EngineApp::TogglePausePIE()
 	{
-		//TODO: toggle pause
+		m_gameIsPaused = !m_gameIsPaused;
 	}
 
 	void EngineApp::PressFramePIE()
 	{
-		//TODO: press frame
+		UpdatePIE();
+	}
+
+	void EngineApp::UpdatePIE()
+	{
+		UpdateScripts();
+		UpdatePhysics();
 	}
 
 	void EngineApp::UpdateScripts()
