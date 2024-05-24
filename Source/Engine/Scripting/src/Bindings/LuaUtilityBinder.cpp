@@ -106,7 +106,6 @@ namespace SvScripting::Bindings
         sol::usertype logType = p_luaState.new_usertype<IEngine>(
             typeName,
             sol::meta_function::construct, sol::no_constructor,
-            "isEditor", sol::readonly_property(&IEngine::IsPlayInEditor),
             "currentScene", sol::property(
                 [](const IEngine& p_self) -> GenericResourceRef
                 {

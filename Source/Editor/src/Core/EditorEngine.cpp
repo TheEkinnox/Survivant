@@ -370,7 +370,6 @@ namespace SvEditor::Core
 		return m_isPaused;
 	}
 
-	void EditorEngine::SetupUI(EditorWindow* p_window, const std::array<std::function<void()>, 3>p_playPauseFrameCallbacks)
 	bool SvEditor::Core::EditorEngine::IsGameFocused()
 	{
 		return !m_PIEWorld.expired() && m_PIEWorld.lock()->m_isFocused;
@@ -423,7 +422,7 @@ namespace SvEditor::Core
 		return m_time.GetDeltaTime();
 	}
 
-	bool EditorEngine::IsPlayInEditor()
+	bool EditorEngine::IsPlayInEditor() const
 	{
 		return m_gameInstance.get();
 	}

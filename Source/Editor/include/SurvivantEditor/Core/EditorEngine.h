@@ -50,7 +50,7 @@ namespace SvEditor::Core
 
 		void RenderWorlds();
 
-		bool IsPlayInEditor();
+		bool IsPlayInEditor() const;
 		bool IsRunning();
 		bool IsEditorModifiedScene();
 		void TogglePause();

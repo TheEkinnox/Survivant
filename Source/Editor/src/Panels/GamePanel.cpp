@@ -20,7 +20,7 @@ namespace SvEditor::Panels
 			std::make_unique<PanelButton>(" Start |> ", s_playListenners),
 			PanelConditionalDisplay::GetStateFunc([]
 			{
-				return SV_ENGINE()->IsPlayInEditor();
+				return dynamic_cast<const Core::EditorEngine&>(*SV_ENGINE()).IsPlayInEditor();
 			})
 		);
 
