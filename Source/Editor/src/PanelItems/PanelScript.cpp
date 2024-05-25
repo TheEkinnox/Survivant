@@ -4,6 +4,7 @@
 #include "SurvivantEditor/PanelItems/PanelCheckbox.h"
 #include "SurvivantEditor/PanelItems/PanelDisabledTextInput.h"
 #include "SurvivantEditor/PanelItems/PanelDoubleInput.h"
+#include "SurvivantEditor/PanelItems/PanelEntitySelector.h"
 #include "SurvivantEditor/PanelItems/PanelFloatInput.h"
 #include "SurvivantEditor/PanelItems/PanelIntInput.h"
 #include "SurvivantEditor/PanelItems/PanelTextBox.h"
@@ -142,6 +143,20 @@ namespace SvEditor::PanelItems
                     {
                         p_table[p_key] = Quaternion::fromEuler(TVector3<Degree>(p_value), ERotationOrder::YXZ);
                     }
+                ));
+            }
+            else if (typeId == LuaTypeRegistry::GetTypeId<EntityHandle>())
+            {
+                p_items.emplace_back(std::make_shared<PanelEntitySelector>(PanelEntitySelector(p_displayName,
+                    [p_table, p_key]() mutable -> EntityHandle&
+                    {
+                        return *p_table[p_key].get<EntityHandle*>();
+                    }/*,
+                    [p_table, p_key](const EntityHandle& p_value) mutable
+                    {
+                        p_table[p_key] = p_value;
+                    }*/
+                    )
                 ));
             }
             else

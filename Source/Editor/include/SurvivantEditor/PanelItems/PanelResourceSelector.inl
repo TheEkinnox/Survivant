@@ -46,7 +46,7 @@ namespace SvEditor::PanelItems
 	inline PanelResourceSelector<T>::PanelResourceSelector(PanelResourceSelector&& p_other) noexcept :
 		PanelInputBase<SvCore::Resources::ResourceRef<T>>(std::move(p_other.m_getRef))
 	{
-		this->m_getRef = std::move(p_other.m_getRef);
+		//this->m_getRef = std::move(p_other.m_getRef);
 		this->m_name = std::move(p_other.m_name);
 		this->m_displayResource = std::move(p_other.m_displayResource);
 
@@ -60,7 +60,7 @@ namespace SvEditor::PanelItems
 	template<class T>
 	inline PanelResourceSelector<T>& PanelResourceSelector<T>::operator=(const PanelResourceSelector& p_other)
 	{
-		this->m_getRef = p_other.m_getRef;
+		//this->m_getRef = p_other.m_getRef;
 		this->m_name = p_other.m_name;
 		this->m_displayResource = p_other.m_displayResource;
 

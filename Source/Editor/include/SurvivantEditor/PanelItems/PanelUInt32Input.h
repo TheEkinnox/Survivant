@@ -28,7 +28,6 @@ namespace SvEditor::PanelItems
 
 		virtual void DisplayAndUpdatePanel() override;
 
-	private:
 		std::string			m_name;
 	};
 }
