@@ -6,6 +6,7 @@ local SwitchCam = {
 local playerCamera
 local otherCamera
 local holding_switch
+local isSwitchUnlocked
 
 function SwitchCam:OnInit()
 end
@@ -16,18 +17,28 @@ function SwitchCam:OnStart()
 
     playerCamera.isActive = true
     otherCamera.isActive = false
+
+    isSwitchUnlocked = false
 end
 
-function SwitchCam.IsPlayerCam()
-    return playerCamera.isActive
+local function Switch()
+    if isSwitchUnlocked then
+        playerCamera.isActive = not playerCamera.isActive
+        otherCamera.isActive = not otherCamera.isActive
+    end
 end
+
+function SwitchCam.UnlockSwitch()
+    isSwitchUnlocked = true
+    Switch()
+end
+
 
 local function UpdateKeyboardSwitch(self)
     local switchkey = Input.IsKeyDown(EKey.TAB)
     
     if not holding_switch and switchkey then
-        playerCamera.isActive = not playerCamera.isActive
-        otherCamera.isActive = not otherCamera.isActive
+        Switch()
     end
 
     holding_switch = switchkey
