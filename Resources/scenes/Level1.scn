@@ -1,12 +1,12 @@
 {
-    "entities": 32,
+    "entities": 29,
     "components": [
         {
             "type": "Tag",
             "data": [
                 {
-                    "owner": 1,
-                    "data": "Indicator"
+                    "owner": 20,
+                    "data": "goggle"
                 },
                 {
                     "owner": 9,
@@ -45,272 +45,30 @@
                     "data": "Wall2"
                 },
                 {
-                    "owner": 28,
+                    "owner": 3,
                     "data": "Wall3"
                 },
                 {
-                    "owner": 29,
+                    "owner": 4,
                     "data": "WALLS"
                 },
                 {
-                    "owner": 30,
-                    "data": "PLAYER"
+                    "owner": 0,
+                    "data": "player"
                 },
                 {
                     "owner": 12,
                     "data": "end"
                 },
                 {
-                    "owner": 20,
-                    "data": "goggle"
+                    "owner": 1,
+                    "data": "Cam"
                 }
             ]
         },
         {
             "type": "Model",
             "data": [
-                {
-                    "owner": 1,
-                    "data": {
-                        "model": {
-                            "path": "models/cube.obj"
-                        },
-                        "material": {
-                            "path": "materials/unlitWhite.mat"
-                        }
-                    }
-                },
-                {
-                    "owner": 2,
-                    "data": {
-                        "model": {
-                            "path": "models/cube.obj"
-                        },
-                        "material": {
-                            "path": "materials/unlitYellow.mat"
-                        }
-                    }
-                },
-                {
-                    "owner": 3,
-                    "data": {
-                        "model": {
-                            "path": "models/cube.obj"
-                        },
-                        "material": {
-                            "path": "materials/unlitRed.mat"
-                        }
-                    }
-                },
-                {
-                    "owner": 4,
-                    "data": {
-                        "model": {
-                            "path": "models/cube.obj"
-                        },
-                        "material": {
-                            "path": "materials/unlitBlue.mat"
-                        }
-                    }
-                },
-                {
-                    "owner": 6,
-                    "data": {
-                        "model": {
-                            "path": "models/cube.obj"
-                        },
-                        "material": {
-                            "path": "materials/blue.mat"
-                        }
-                    }
-                },
-                {
-                    "owner": 7,
-                    "data": {
-                        "model": {
-                            "path": "models/cube.obj"
-                        },
-                        "material": {
-                            "path": "materials/blue.mat"
-                        }
-                    }
-                },
-                {
-                    "owner": 8,
-                    "data": {
-                        "model": {
-                            "path": "models/cube.obj"
-                        },
-                        "material": {
-                            "path": "materials/blue.mat"
-                        }
-                    }
-                },
-                {
-                    "owner": 9,
-                    "data": {
-                        "model": {
-                            "path": "models/cube.obj"
-                        },
-                        "material": {
-                            "path": "materials/white.mat"
-                        }
-                    }
-                },
-                {
-                    "owner": 10,
-                    "data": {
-                        "model": {
-                            "path": "models/cube.obj"
-                        },
-                        "material": {
-                            "path": "materials/blue.mat"
-                        }
-                    }
-                },
-                {
-                    "owner": 12,
-                    "data": {
-                        "model": {
-                            "path": "models/sphere.obj"
-                        },
-                        "material": {
-                            "path": "materials/red.mat"
-                        }
-                    }
-                },
-                {
-                    "owner": 13,
-                    "data": {
-                        "model": {
-                            "path": "models/cube.obj"
-                        },
-                        "material": {
-                            "path": "materials/white.mat"
-                        }
-                    }
-                },
-                {
-                    "owner": 14,
-                    "data": {
-                        "model": {
-                            "path": "models/cube.obj"
-                        },
-                        "material": {
-                            "path": "materials/blue.mat"
-                        }
-                    }
-                },
-                {
-                    "owner": 15,
-                    "data": {
-                        "model": {
-                            "path": "models/cube.obj"
-                        },
-                        "material": {
-                            "path": "materials/blue.mat"
-                        }
-                    }
-                },
-                {
-                    "owner": 16,
-                    "data": {
-                        "model": {
-                            "path": "models/cube.obj"
-                        },
-                        "material": {
-                            "path": "materials/blue.mat"
-                        }
-                    }
-                },
-                {
-                    "owner": 17,
-                    "data": {
-                        "model": {
-                            "path": "models/cube.obj"
-                        },
-                        "material": {
-                            "path": "materials/blue.mat"
-                        }
-                    }
-                },
-                {
-                    "owner": 19,
-                    "data": {
-                        "model": {
-                            "path": "models/cube.obj"
-                        },
-                        "material": {
-                            "path": "materials/blue.mat"
-                        }
-                    }
-                },
-                {
-                    "owner": 20,
-                    "data": {
-                        "model": {
-                            "path": "models/sphere.obj"
-                        },
-                        "material": {
-                            "path": "materials/unlitYellow.mat"
-                        }
-                    }
-                },
-                {
-                    "owner": 21,
-                    "data": {
-                        "model": {
-                            "path": "models/cube.obj"
-                        },
-                        "material": {
-                            "path": "materials/blue.mat"
-                        }
-                    }
-                },
-                {
-                    "owner": 22,
-                    "data": {
-                        "model": {
-                            "path": "models/cube.obj"
-                        },
-                        "material": {
-                            "path": "materials/white.mat"
-                        }
-                    }
-                },
-                {
-                    "owner": 23,
-                    "data": {
-                        "model": {
-                            "path": "models/cube.obj"
-                        },
-                        "material": {
-                            "path": "materials/blue.mat"
-                        }
-                    }
-                },
-                {
-                    "owner": 24,
-                    "data": {
-                        "model": {
-                            "path": "models/cube.obj"
-                        },
-                        "material": {
-                            "path": "materials/blue.mat"
-                        }
-                    }
-                },
-                {
-                    "owner": 25,
-                    "data": {
-                        "model": {
-                            "path": "models/cube.obj"
-                        },
-                        "material": {
-                            "path": "materials/unlitMagenta.mat"
-                        }
-                    }
-                },
                 {
                     "owner": 26,
                     "data": {
@@ -319,7 +77,8 @@
                         },
                         "material": {
                             "path": "materials/unlitMagenta.mat"
-                        }
+                        },
+                        "layers": 2
                     }
                 },
                 {
@@ -330,29 +89,248 @@
                         },
                         "material": {
                             "path": "materials/unlitMagenta.mat"
-                        }
+                        },
+                        "layers": 2
                     }
                 },
                 {
-                    "owner": 28,
+                    "owner": 3,
                     "data": {
                         "model": {
                             "path": "models/cube.obj"
                         },
                         "material": {
                             "path": "materials/unlitMagenta.mat"
-                        }
+                        },
+                        "layers": 2
                     }
                 },
                 {
-                    "owner": 31,
+                    "owner": 25,
                     "data": {
                         "model": {
                             "path": "models/cube.obj"
                         },
                         "material": {
-                            "path": "materials/green.mat"
-                        }
+                            "path": "materials/unlitMagenta.mat"
+                        },
+                        "layers": 2
+                    }
+                },
+                {
+                    "owner": 6,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/blue.mat"
+                        },
+                        "layers": 4294967295
+                    }
+                },
+                {
+                    "owner": 7,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/blue.mat"
+                        },
+                        "layers": 4294967295
+                    }
+                },
+                {
+                    "owner": 8,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/blue.mat"
+                        },
+                        "layers": 4294967295
+                    }
+                },
+                {
+                    "owner": 9,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/white.mat"
+                        },
+                        "layers": 4294967295
+                    }
+                },
+                {
+                    "owner": 10,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/blue.mat"
+                        },
+                        "layers": 4294967295
+                    }
+                },
+                {
+                    "owner": 12,
+                    "data": {
+                        "model": {
+                            "path": "models/sphere.obj"
+                        },
+                        "material": {
+                            "path": "materials/red.mat"
+                        },
+                        "layers": 4294967295
+                    }
+                },
+                {
+                    "owner": 13,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/white.mat"
+                        },
+                        "layers": 4294967295
+                    }
+                },
+                {
+                    "owner": 14,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/blue.mat"
+                        },
+                        "layers": 4294967295
+                    }
+                },
+                {
+                    "owner": 15,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/blue.mat"
+                        },
+                        "layers": 4294967295
+                    }
+                },
+                {
+                    "owner": 16,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/blue.mat"
+                        },
+                        "layers": 4294967295
+                    }
+                },
+                {
+                    "owner": 17,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/blue.mat"
+                        },
+                        "layers": 4294967295
+                    }
+                },
+                {
+                    "owner": 19,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/blue.mat"
+                        },
+                        "layers": 4294967295
+                    }
+                },
+                {
+                    "owner": 20,
+                    "data": {
+                        "model": {
+                            "path": "models/sphere.obj"
+                        },
+                        "material": {
+                            "path": "materials/unlitYellow.mat"
+                        },
+                        "layers": 4294967295
+                    }
+                },
+                {
+                    "owner": 21,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/blue.mat"
+                        },
+                        "layers": 4294967295
+                    }
+                },
+                {
+                    "owner": 22,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/white.mat"
+                        },
+                        "layers": 4294967295
+                    }
+                },
+                {
+                    "owner": 23,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/blue.mat"
+                        },
+                        "layers": 4294967295
+                    }
+                },
+                {
+                    "owner": 24,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/blue.mat"
+                        },
+                        "layers": 4294967295
+                    }
+                },
+                {
+                    "owner": 28,
+                    "data": {
+                        "model": {
+                            "path": "models/Sting-Sword-lowpoly.obj"
+                        },
+                        "material": {
+                            "path": "materials/unlitGreen.mat"
+                        },
+                        "layers": 2
                     }
                 }
             ]
@@ -361,13 +339,13 @@
             "type": "Hierarchy",
             "data": [
                 {
-                    "owner": 2,
+                    "owner": 27,
                     "data": {
-                        "parent": 1
+                        "parent": 4
                     }
                 },
                 {
-                    "owner": 1,
+                    "owner": 4,
                     "data": {
                         "parent": 18446744073709551615
                     }
@@ -375,17 +353,17 @@
                 {
                     "owner": 3,
                     "data": {
-                        "parent": 1
+                        "parent": 4
                     }
                 },
                 {
-                    "owner": 4,
+                    "owner": 26,
                     "data": {
-                        "parent": 1
+                        "parent": 4
                     }
                 },
                 {
-                    "owner": 6,
+                    "owner": 24,
                     "data": {
                         "parent": 5
                     }
@@ -397,6 +375,18 @@
                     }
                 },
                 {
+                    "owner": 0,
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
+                },
+                {
+                    "owner": 6,
+                    "data": {
+                        "parent": 5
+                    }
+                },
+                {
                     "owner": 7,
                     "data": {
                         "parent": 5
@@ -423,13 +413,7 @@
                 {
                     "owner": 25,
                     "data": {
-                        "parent": 29
-                    }
-                },
-                {
-                    "owner": 29,
-                    "data": {
-                        "parent": 18446744073709551615
+                        "parent": 4
                     }
                 },
                 {
@@ -481,12 +465,6 @@
                     }
                 },
                 {
-                    "owner": 30,
-                    "data": {
-                        "parent": 18446744073709551615
-                    }
-                },
-                {
                     "owner": 21,
                     "data": {
                         "parent": 18
@@ -505,33 +483,9 @@
                     }
                 },
                 {
-                    "owner": 24,
-                    "data": {
-                        "parent": 5
-                    }
-                },
-                {
                     "owner": 28,
                     "data": {
-                        "parent": 29
-                    }
-                },
-                {
-                    "owner": 27,
-                    "data": {
-                        "parent": 29
-                    }
-                },
-                {
-                    "owner": 26,
-                    "data": {
-                        "parent": 29
-                    }
-                },
-                {
-                    "owner": 31,
-                    "data": {
-                        "parent": 30
+                        "parent": 0
                     }
                 }
             ]
@@ -540,35 +494,35 @@
             "type": "Transform",
             "data": [
                 {
-                    "owner": 1,
+                    "owner": 4,
                     "data": {
-                        "position": "{0,3,0}",
+                        "position": "{0,0,0}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 0,
+                    "data": {
+                        "position": "{0,2,0}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 12,
+                    "data": {
+                        "position": "{0,2,-21}",
                         "rotation": "{0,0,0,1}",
                         "scale": "{0.5,0.5,0.5}"
                     }
                 },
                 {
-                    "owner": 2,
+                    "owner": 1,
                     "data": {
-                        "position": "{0,2,0}",
-                        "rotation": "{0,0,0,1}",
-                        "scale": "{0.3,3,0.3}"
-                    }
-                },
-                {
-                    "owner": 3,
-                    "data": {
-                        "position": "{2,0,0}",
-                        "rotation": "{0,0,0,1}",
-                        "scale": "{3,0.3,0.3}"
-                    }
-                },
-                {
-                    "owner": 4,
-                    "data": {
-                        "position": "{0,0,2}",
-                        "rotation": "{0,0,0,1}",
-                        "scale": "{0.3,0.3,3}"
+                        "position": "{0,10,-10}",
+                        "rotation": "{-0.5,0.5,0.5,0.5}",
+                        "scale": "{1,1,1}"
                     }
                 },
                 {
@@ -684,7 +638,7 @@
                     }
                 },
                 {
-                    "owner": 0,
+                    "owner": 2,
                     "data": {
                         "position": "{0,0,0}",
                         "rotation": "{0,0,0,1}",
@@ -756,7 +710,7 @@
                     }
                 },
                 {
-                    "owner": 28,
+                    "owner": 3,
                     "data": {
                         "position": "{3.5,1.5,-14}",
                         "rotation": "{0,0,0,1}",
@@ -764,35 +718,11 @@
                     }
                 },
                 {
-                    "owner": 29,
+                    "owner": 28,
                     "data": {
                         "position": "{0,0,0}",
-                        "rotation": "{0,0,0,1}",
-                        "scale": "{1,1,1}"
-                    }
-                },
-                {
-                    "owner": 30,
-                    "data": {
-                        "position": "{0,2,0}",
-                        "rotation": "{0,0,0,1}",
-                        "scale": "{1,1,1}"
-                    }
-                },
-                {
-                    "owner": 12,
-                    "data": {
-                        "position": "{0,2,-21}",
-                        "rotation": "{0,0,0,1}",
-                        "scale": "{0.5,0.5,0.5}"
-                    }
-                },
-                {
-                    "owner": 31,
-                    "data": {
-                        "position": "{0,-1,0}",
-                        "rotation": "{0,0,0,1}",
-                        "scale": "{1,1,1}"
+                        "rotation": "{0.707107,-0,0,0.707107}",
+                        "scale": "{0.05,0.05,0.05}"
                     }
                 }
             ]
@@ -801,25 +731,40 @@
             "type": "ScriptList",
             "data": [
                 {
-                    "owner": 0,
+                    "owner": 2,
                     "data": []
                 },
                 {
-                    "owner": 30,
+                    "owner": 0,
                     "data": [
                         {
-                            "name": "scripts.freeLook",
+                            "name": "scripts.Player.jump",
                             "data": [
                                 {
                                     "key": {
                                         "type": 4,
-                                        "data": "move_speed"
+                                        "data": "jump_force"
                                     },
                                     "value": {
                                         "type": 3,
-                                        "data": 3.0
+                                        "data": 5.0
                                     }
                                 },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "ground_steepness"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 0.5
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "scripts.Player.move",
+                            "data": [
                                 {
                                     "key": {
                                         "type": 4,
@@ -833,14 +778,95 @@
                                 {
                                     "key": {
                                         "type": 4,
+                                        "data": "max_speed"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 4.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "max_acceleration"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 12.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
                                         "data": "rotation_speed"
                                     },
                                     "value": {
                                         "type": 7,
                                         "data": {
                                             "type": "Degree",
-                                            "data": 90.0
+                                            "data": 300.0
                                         }
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "scripts.Player.switchCam",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "otherCamera"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Entity",
+                                            "data": 1
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "owner": 20,
+                    "data": [
+                        {
+                            "name": "scripts.Scenes.gogglesTrigger",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "player"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Entity",
+                                            "data": 0
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "owner": 12,
+                    "data": [
+                        {
+                            "name": "scripts.Scenes.switchSceneTrigger",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "scenePath"
+                                    },
+                                    "value": {
+                                        "type": 4,
+                                        "data": "scenes/Level2.scn"
                                     }
                                 }
                             ]
@@ -853,13 +879,13 @@
             "type": "SphereCollider",
             "data": [
                 {
-                    "owner": 20,
+                    "owner": 12,
                     "data": {
                         "material": {
                             "path": ""
                         },
                         "offset": "{0,0,0}",
-                        "is_trigger": false,
+                        "is_trigger": true,
                         "radius": 1.0
                     }
                 }
@@ -869,13 +895,31 @@
             "type": "Camera",
             "data": [
                 {
-                    "owner": 30,
+                    "owner": 0,
                     "data": {
                         "type": "perspective",
                         "active": true,
+                        "order": 0,
                         "clear_mask": 7,
                         "clear_color": "{0,0,0,1}",
                         "culling_mask": 1,
+                        "perspective_fov": 90.0,
+                        "perspective_near": 0.0010000000474974513,
+                        "perspective_far": 50.0,
+                        "orthographic_size": 0.0,
+                        "orthographic_near": 0.0,
+                        "orthographic_far": 0.0
+                    }
+                },
+                {
+                    "owner": 1,
+                    "data": {
+                        "type": "perspective",
+                        "active": true,
+                        "order": 0,
+                        "clear_mask": 7,
+                        "clear_color": "{0,0,0,1}",
+                        "culling_mask": 4294967295,
                         "perspective_fov": 90.0,
                         "perspective_near": 0.0010000000474974513,
                         "perspective_far": 50.0,
@@ -912,7 +956,7 @@
                     }
                 },
                 {
-                    "owner": 30,
+                    "owner": 0,
                     "data": {
                         "material": {
                             "path": ""
@@ -1011,7 +1055,7 @@
                     }
                 },
                 {
-                    "owner": 28,
+                    "owner": 3,
                     "data": {
                         "material": {
                             "path": ""
@@ -1097,6 +1141,28 @@
                         "is_trigger": false,
                         "size": "{1,1,1}"
                     }
+                },
+                {
+                    "owner": 20,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": true,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 22,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
                 }
             ]
         },
@@ -1104,19 +1170,13 @@
             "type": "RigidBody",
             "data": [
                 {
-                    "owner": 30,
+                    "owner": 0,
                     "data": {
                         "mass": 1.0,
                         "is_kinematic": false,
-                        "use_gravity": true
-                    }
-                },
-                {
-                    "owner": 20,
-                    "data": {
-                        "mass": 1.0,
-                        "is_kinematic": false,
-                        "use_gravity": true
+                        "use_gravity": true,
+                        "axis_locks": 40,
+                        "collision_mode": 0
                     }
                 }
             ]
