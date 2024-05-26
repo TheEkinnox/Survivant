@@ -1,5 +1,5 @@
 {
-    "entities": 66,
+    "entities": 67,
     "components": [
         {
             "type": "Camera",
@@ -52,16 +52,6 @@
                                 {
                                     "key": {
                                         "type": 4,
-                                        "data": "max_acceleration"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 12.0
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
                                         "data": "rotation_speed"
                                     },
                                     "value": {
@@ -75,11 +65,11 @@
                                 {
                                     "key": {
                                         "type": 4,
-                                        "data": "mouse_sensitivity"
+                                        "data": "max_acceleration"
                                     },
                                     "value": {
                                         "type": 3,
-                                        "data": 0.005
+                                        "data": 12.0
                                     }
                                 },
                                 {
@@ -90,6 +80,16 @@
                                     "value": {
                                         "type": 3,
                                         "data": 4.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "mouse_sensitivity"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 0.005
                                     }
                                 }
                             ]
@@ -152,16 +152,6 @@
                                 {
                                     "key": {
                                         "type": 4,
-                                        "data": "numButtonsToMove"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 1.0
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
                                         "data": "length_and_dir"
                                     },
                                     "value": {
@@ -173,6 +163,16 @@
                                     "key": {
                                         "type": 4,
                                         "data": "move_speed"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 1.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "numButtonsToMove"
                                     },
                                     "value": {
                                         "type": 3,
@@ -192,16 +192,6 @@
                                 {
                                     "key": {
                                         "type": 4,
-                                        "data": "numButtonsToMove"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 1.0
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
                                         "data": "length_and_dir"
                                     },
                                     "value": {
@@ -213,6 +203,16 @@
                                     "key": {
                                         "type": 4,
                                         "data": "move_speed"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 1.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "numButtonsToMove"
                                     },
                                     "value": {
                                         "type": 3,
@@ -2399,6 +2399,31 @@
                         "axis": "{0,1,0}",
                         "height": 1.0,
                         "radius": 0.5
+                    }
+                }
+            ]
+        },
+        {
+            "type": "Light",
+            "data": [
+                {
+                    "owner": 66,
+                    "data": {
+                        "type": "spot",
+                        "data": {
+                            "color": "{0.603376,0.318236,0.318236,1}",
+                            "position": "{0,0,0}",
+                            "direction": "{0,0,0}",
+                            "attenuation": {
+                                "constant": 1.0,
+                                "linear": 0.0,
+                                "quadratic": 0.0
+                            },
+                            "cutoff": {
+                                "inner": 0.0,
+                                "outer": 0.0
+                            }
+                        }
                     }
                 }
             ]
