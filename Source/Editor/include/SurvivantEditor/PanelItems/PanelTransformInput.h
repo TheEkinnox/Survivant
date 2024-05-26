@@ -38,7 +38,6 @@ namespace SvEditor::PanelItems
 		static Vector3 								YPRToDegree(const LibMath::TVector3<LibMath::Radian>& p_radians);
 		static LibMath::TVector3<LibMath::Radian>	DegreeToYPR(const LibMath::Vector3& p_degrees);
 
-		TransformCallback					m_callback;
 		TVector3<LibMath::Radian>			m_yawPitchRoll;
 	};
 }

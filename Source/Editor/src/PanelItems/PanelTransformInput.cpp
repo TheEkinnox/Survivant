@@ -9,16 +9,15 @@ namespace SvEditor::PanelItems
 {
     PanelTransformInput::PanelTransformInput(
         const GetRefFunc& p_getRef, const TransformCallback& p_callback) :
-        BasePanelTransformInput(p_getRef, p_callback)
+        PanelInputBase(p_getRef, p_callback)
     {
         m_yawPitchRoll = GetRef().getRotation().toYawPitchRoll();
     }
 
     PanelTransformInput::PanelTransformInput(
         const BasePanelTransformInput::GetCopyFunc& p_getCopy, const TransformCallback& p_callback) :
-        BasePanelTransformInput(p_getCopy, p_callback)
-    {
-    }
+        PanelInputBase(p_getCopy, p_callback)
+    {}
 
     void PanelTransformInput::DisplayAndUpdatePanel()
     {
