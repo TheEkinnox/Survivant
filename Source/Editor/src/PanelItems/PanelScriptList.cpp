@@ -1,5 +1,7 @@
 #include "SurvivantEditor/PanelItems/PanelScriptList.h"
 
+#include "SurvivantEditor/Core/EditorEngine.h"
+
 #include <SurvivantScripting/LuaScriptList.h>
 
 #include <imgui.h>
@@ -144,5 +146,7 @@ namespace SvEditor::PanelItems
             m_items.insert(first, script);
         else
             m_items.insert(std::ranges::upper_bound(m_items, script, &CompareExecOrder), script);
+
+        SV_EVENT_MANAGER().Invoke<Core::EditorEngine::OnEditorModifiedScene>();
     }
 }
