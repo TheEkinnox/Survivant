@@ -104,7 +104,7 @@ namespace SvCore::Resources
     GenericResourceRef ResourceManager::GetOrCreate(const std::string& p_type, const std::string& p_path)
     {
         GenericResourceRef resource = Get(p_type, p_path);
-        return resource ? resource : Create(p_type, p_path);
+        return resource.Get() ? resource : Create(p_type, p_path);
     }
 
     std::vector<GenericResourceRef> ResourceManager::GetAll(const std::string& p_type) const
