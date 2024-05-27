@@ -15,7 +15,8 @@ using namespace SvApp::Core;
 
 namespace SvEditor::Panels
 {
-	ScenePanel::ScenePanel()
+	ScenePanel::ScenePanel() :
+		m_gizmos(s_world.lock()->m_renderingContext)
 	{
 		m_name = NAME;
 
@@ -36,6 +37,7 @@ namespace SvEditor::Panels
 		static ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoNavInputs;
 		bool showWindow = true;
 
+
 		if (s_world.lock()->m_isVisalbe = ImGui::Begin(m_name.c_str(), &showWindow, window_flags))
 		{
 			//focus
@@ -54,6 +56,7 @@ namespace SvEditor::Panels
 			auto pos = ImGui::GetCursorPos();
 			m_imagePos = { ImGui::GetCursorScreenPos().x , ImGui::GetCursorScreenPos().y };
 
+			ImGui::SetNextItemAllowOverlap();
 			m_image.DisplayAndUpdatePanel();
 
 			//click 
@@ -69,9 +72,13 @@ namespace SvEditor::Panels
 					s_onClickSceneEvent.Invoke(uv);
 				}
 			}
+
+			m_gizmos.RenderGizmos();
 		}
 
 		ImGui::End();
+
+
 
 		ERenderFlags flags = ERenderFlags();
 		if (!showWindow)

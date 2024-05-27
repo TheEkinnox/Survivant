@@ -1,6 +1,7 @@
 //ScenePanel.h
 #pragma once
 
+#include "SurvivantEditor/Gizmo/SceneGizmos.h"
 #include "SurvivantEditor/Panels/Panel.h"
 #include "SurvivantEditor/PanelItems/PanelImage.h"
 #include "SurvivantEditor/PanelItems/PanelButtonList.h"
@@ -66,5 +67,7 @@ namespace SvEditor::Panels
 		LibMath::Vector2	m_imagePos;
 		LibMath::Vector2	m_imageSize;
 		bool				m_prevFocus;
+
+		Gizmo::SceneGizmos	m_gizmos;
 	};
 }
