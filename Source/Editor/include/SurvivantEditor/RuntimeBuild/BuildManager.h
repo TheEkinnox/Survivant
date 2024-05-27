@@ -2,7 +2,6 @@
 #pragma once
 
 #include <SurvivantApp/Core/BuildConfig.h>
-#include <SurvivantCore/Resources/ResourceRef.h>
 
 #include <string>
 
@@ -11,7 +10,7 @@ namespace SvEditor::RuntimeBuild
 	class BuildManager
 	{
 	public:
-		BuildManager();
+		BuildManager() = default;
 		~BuildManager() = default;
 
 		static BuildManager& GetInstance();
@@ -21,13 +20,9 @@ namespace SvEditor::RuntimeBuild
 		void			RunBuild(std::string p_buildFilePath);
 
 	private:
-		static constexpr std::string_view RuntimeBuildLocalPath = "runtime\\Debug\\SurvivantRuntime.exe";
-		static constexpr std::string_view BuildConfigFileName = "buildConfig.txt";
-		static constexpr std::string_view AssetsDirLocalPath = "assets";
-		static constexpr std::string_view DefaultDownloadPath = "C:\\Users\\USER_NAME\\Downloads";
-		static inline std::string DefaultUserName = "USER_NAME"; //cant be constexpr bcs need to be std::string 
-
-		std::string m_downloadPath;
+		static constexpr const char* RUNTIME_BUILD_LOCAL_PATH = SV_RUNTIME_DIR "\\Debug\\" SV_RUNTIME_EXE;
+		static constexpr const char* BUILD_CONFIG_FILE_NAME = "buildConfig.txt";
+		static constexpr const char* ASSETS_DIR_LOCAL_PATH = "assets";
 	};
 }
 
