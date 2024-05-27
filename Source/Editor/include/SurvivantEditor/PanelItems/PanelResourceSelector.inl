@@ -13,66 +13,84 @@
 
 namespace SvEditor::PanelItems
 {
-	template<class T>
-	inline PanelResourceSelector<T>::PanelResourceSelector(
+	template<class T, class RefT>
+	PanelResourceSelector<T, RefT>::PanelResourceSelector(
 		const std::string& p_name, const Ref& p_resourceRef,
 		const Callback& p_callback) :
 		PanelResourceSelector(p_name, p_resourceRef, true, p_callback)
 	{}
 
-	template<class T>
-	inline PanelResourceSelector<T>::PanelResourceSelector(
+	template<class T, class RefT>
+	PanelResourceSelector<T, RefT>::PanelResourceSelector(
 		const std::string& p_name, const Ref& p_resourceRef, bool p_displayResource, const Callback& p_callback) :
-		PanelInputBase<SvCore::Resources::ResourceRef<T>>(p_resourceRef, p_callback)
+		PanelInputBase<RefT>(p_resourceRef, p_callback)
 	{
 		m_name = p_name;
 		m_displayResource = p_displayResource;
 
 		m_allResources = std::make_shared<PanelPopupMenuButton>(PanelPopupMenuButton(
 			m_name,
-			[this]() { this->GetAllResources(); },
+			[this]() { this->FetchAllResources(); },
 			[this]() { this->m_allResources->m_items.clear(); }
 		));
 	}
 
-	template<class T>
-	inline PanelResourceSelector<T>::PanelResourceSelector(const PanelResourceSelector& p_other) :
-		PanelInputBase<SvCore::Resources::ResourceRef<T>>(p_other.m_getRef)
+	template<class T, class RefT>
+	PanelResourceSelector<T, RefT>::PanelResourceSelector(const PanelResourceSelector& p_other) :
+		PanelInputBase<RefT>({})
 	{
 		*this = p_other;
 	}
 
-	template<class T>
-	inline PanelResourceSelector<T>::PanelResourceSelector(PanelResourceSelector&& p_other) noexcept :
-		PanelInputBase<SvCore::Resources::ResourceRef<T>>(std::move(p_other.m_getRef))
+	template<class T, class RefT>
+	PanelResourceSelector<T, RefT>::PanelResourceSelector(PanelResourceSelector&& p_other) noexcept :
+		PanelInputBase<RefT>({})
 	{
-		this->m_getRef = std::move(p_other.m_getRef);
-		this->m_name = std::move(p_other.m_name);
-		this->m_displayResource = std::move(p_other.m_displayResource);
-
-		m_allResources = std::make_shared<PanelPopupMenuButton>(PanelPopupMenuButton(
-			m_name,
-			[this]() { this->GetAllResources(); },
-			[this]() { this->m_allResources->m_items.clear(); }
-		));
+		*this = std::move(p_other);
 	}
 
-	template<class T>
-	inline PanelResourceSelector<T>& PanelResourceSelector<T>::operator=(const PanelResourceSelector& p_other)
+	template<class T, class RefT>
+	PanelResourceSelector<T, RefT>& PanelResourceSelector<T, RefT>::operator=(const PanelResourceSelector& p_other)
 	{
+		if (this == &p_other)
+			return *this;
+
 		this->m_getRef = p_other.m_getRef;
+		this->m_callback = p_other.m_callback;
 		this->m_name = p_other.m_name;
 		this->m_displayResource = p_other.m_displayResource;
 
 		m_allResources = std::make_shared<PanelPopupMenuButton>(PanelPopupMenuButton(
 			m_name,
-			[this]() { this->GetAllResources(); },
+			[this]() { this->FetchAllResources(); },
 			[this]() { this->m_allResources->m_items.clear(); }
 		));
+
+		return *this;
 	}
 
-	template<class T>
-	inline void PanelResourceSelector<T>::DisplayAndUpdatePanel()
+	template <class T, class RefT>
+	PanelResourceSelector<T, RefT>& PanelResourceSelector<T, RefT>::operator=(PanelResourceSelector&& p_other) noexcept
+	{
+		if (this == &p_other)
+			return *this;
+
+		this->m_getRef = std::move(p_other.m_getRef);
+		this->m_callback = std::move(p_other.m_callback);
+		this->m_name = std::move(p_other.m_name);
+		this->m_displayResource = std::move(p_other.m_displayResource);
+
+		m_allResources = std::make_shared<PanelPopupMenuButton>(PanelPopupMenuButton(
+			m_name,
+			[this]() { this->FetchAllResources(); },
+			[this]() { this->m_allResources->m_items.clear(); }
+		));
+
+		return *this;
+	}
+
+	template<class T, class RefT>
+	void PanelResourceSelector<T, RefT>::DisplayAndUpdatePanel()
 	{
 		static auto flag = ImGuiInputTextFlags_ReadOnly;
 
@@ -89,8 +107,8 @@ namespace SvEditor::PanelItems
 		}
 	}
 
-	template<class T>
-	inline void PanelResourceSelector<T>::GetAllResources()
+	template<class T, class RefT>
+	void PanelResourceSelector<T, RefT>::FetchAllResources()
 	{
 		using namespace SvCore::Resources;
 		using namespace SvEditor::Panels;
@@ -110,17 +128,20 @@ namespace SvEditor::PanelItems
 			}
 		)));
 
-		for (const std::string& resourcePath : all)
+		if constexpr (!std::is_abstract_v<T>)
 		{
-			m_allResources->m_items.emplace_back(std::make_unique<MenuButton>(MenuButton(
-				resourcePath, [this, resourcePath](char) mutable {
-					ResourceRef<T> resource = ResourceManager::GetInstance().Load<T>(resourcePath);
-					this->GetRef() = resource;
+			for (const std::string& resourcePath : all)
+			{
+				m_allResources->m_items.emplace_back(std::make_unique<MenuButton>(MenuButton(
+					resourcePath, [this, resourcePath](char) mutable {
+						RefT resource = ResourceManager::GetInstance().Load<T>(resourcePath);
+						this->GetRef() = resource;
 
-				    if (this->m_callback)
-				        this->m_callback(resource);
-				}
-			)));
+						if (this->m_callback)
+							this->m_callback(resource);
+					}
+				)));
+			}
 		}
 	}
 }

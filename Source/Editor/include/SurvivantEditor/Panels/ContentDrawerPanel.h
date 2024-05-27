@@ -27,6 +27,7 @@ namespace SvEditor::Panels
 	{
 	public:
 		using ResourceBranch = PanelTreeBranch<std::string>;
+		using TypeToBranch = std::unordered_map<std::string, std::vector<std::weak_ptr<ResourceBranch>>>;
 
 		ContentDrawerPanel();
 		~ContentDrawerPanel() = default;
@@ -39,11 +40,11 @@ namespace SvEditor::Panels
 
 		static constexpr char NAME[] = "ContentDrawer";
 
+		static const TypeToBranch& GetAllFilePaths();
 		static std::vector<std::string> GetAllFilePaths(const std::string& p_type);
 
 	private:
 		using TypeExtensions = std::unordered_map<std::string, std::set<std::string>>;
-		using TypeToBranch = std::unordered_map<std::string, std::vector<std::weak_ptr<ResourceBranch>>>;
 
 		static constexpr char DIRECTORY_PATH[] = "assets";
 

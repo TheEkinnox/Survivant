@@ -294,6 +294,11 @@ namespace SvEditor::Panels
         return false;
     }
 
+    const ContentDrawerPanel::TypeToBranch& ContentDrawerPanel::GetAllFilePaths()
+    {
+        return s_typedFiles;
+    }
+
     std::vector<std::string> ContentDrawerPanel::GetAllFilePaths(const std::string& p_type)
     {
         auto it = s_typedFiles.find(p_type);
@@ -305,7 +310,7 @@ namespace SvEditor::Panels
         paths.reserve(branches.size());
 
         for (auto& branch : branches)
-            paths.emplace_back(std::string(branch.lock()->GetPath()));
+            paths.emplace_back(branch.lock()->GetPath());
 
         return paths;
     }
