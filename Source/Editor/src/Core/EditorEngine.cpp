@@ -3,6 +3,7 @@
 
 #include "SurvivantEditor/Core/EditorWindow.h"
 #include "SurvivantEditor/Core/LuaEditorBinder.h"
+#include "SurvivantEditor/Panels/HierarchyPanel.h"
 #include "SurvivantEditor/RuntimeBuild/BuildManager.h"
 
 #include <SurvivantCore/Debug/Assertion.h>
@@ -407,6 +408,9 @@ namespace SvEditor::Core
 
 	bool EditorEngine::ChangeScene(const std::string& p_scenePath)
 	{
+		const auto currentSelection = RenderingContext::s_editorSelectedEntity.GetEntity().GetIndex();
+		HierarchyPanel::ToggleSelectable(SvCore::ECS::NULL_ENTITY.GetIndex());
+
 		auto& world = m_gameInstance ? *m_PIEWorld.lock() : *m_editorWorld;
 
 		if (!m_gameInstance && m_isEditorModifiedScene && p_scenePath != world.CurrentScene().GetPath())
@@ -421,6 +425,7 @@ namespace SvEditor::Core
 			m_editorSelectedScene = m_editorWorld->CurrentScene();
 
 		m_isEditorModifiedScene = false;
+		HierarchyPanel::ToggleSelectable(currentSelection);
 
 		return true;
 	}
