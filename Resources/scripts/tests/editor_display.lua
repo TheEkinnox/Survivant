@@ -21,7 +21,11 @@ local EditorDisplay = {
         transform = Transform.new(),
         degree = Degree.new(45),
         radian = Radian.new(Degree.new(45)),
-        quaternion = Quaternion.FromEuler(Degree.new(90), Degree.new(45), Degree.new(30), ERotationOrder.YXZ)
+        quaternion = Quaternion.FromEuler(Degree.new(90), Degree.new(45), Degree.new(30), ERotationOrder.YXZ),
+        emptyResourceRef = Resource.new(),
+        resourceType = Resource.new(),
+        sceneRef = Application.currentScene,
+        entity = Application.currentScene.entities[1]
     },
     "no key"
 }
