@@ -16,7 +16,10 @@ using namespace SvApp::Core;
 namespace SvEditor::Panels
 {
 	ScenePanel::ScenePanel() :
-		m_gizmos(s_world.lock()->m_renderingContext)
+		m_gizmos(s_world.lock()->m_renderingContext),
+		m_transformType("Transform", { "Translate", "Rotate", "Scale" }, 
+			PanelUniqueSelection::GetRefFunc([]() -> int& { static int val; return val; }), 
+			[this](int p_val) { SetGizmoTransformType(p_val); })
 	{
 		m_name = NAME;
 
@@ -37,14 +40,10 @@ namespace SvEditor::Panels
 		static ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoNavInputs;
 		bool showWindow = true;
 
-
 		if (s_world.lock()->m_isVisalbe = ImGui::Begin(m_name.c_str(), &showWindow, window_flags))
 		{
 			//focus
 			s_world.lock()->m_isFocused = ImGui::IsWindowFocused();
-
-			//panelables
-			m_buttons.DisplayAndUpdatePanel();
 
 			if (IsWindowDifferentSize(m_imageSize))
 			{
@@ -53,32 +52,28 @@ namespace SvEditor::Panels
 					RenderingContext::ETextureType::COLOR));
 			}
 
-			auto pos = ImGui::GetCursorPos();
+			auto topLeft = ImGui::GetCursorPos();
 			m_imagePos = { ImGui::GetCursorScreenPos().x , ImGui::GetCursorScreenPos().y };
 
 			ImGui::SetNextItemAllowOverlap();
 			m_image.DisplayAndUpdatePanel();
-
-			//click 
-			if (ImGui::IsMouseClicked(0) && ImGui::IsItemHovered())
-			{
-				auto mousePos = ImGui::GetMousePos();
-				auto uv = CalculateUVCords({ mousePos.x, mousePos.y });
-				
-				if (0 <= uv.m_x && uv.m_x <= 1 &&
-					0 <= uv.m_y && uv.m_y <= 1)
-				{
-					uv.m_y = 1.0f - uv.m_y;
-					s_onClickSceneEvent.Invoke(uv);
-				}
-			}
+			bool sceneHovered = ImGui::IsItemHovered();
 
 			m_gizmos.RenderGizmos();
+
+			ImGui::SetCursorPos(ImVec2(topLeft.x + Offset, topLeft.y  + Offset));
+			ImGui::SetNextItemAllowOverlap();
+
+			RenderInfoPanel();
+			sceneHovered &= !ImGui::IsItemHovered();
+
+			//click 
+			if (!m_gizmos.UsingGizmo() && ImGui::IsMouseClicked(0) && sceneHovered)
+				InvokeClickScene();
+
 		}
 
 		ImGui::End();
-
-
 
 		ERenderFlags flags = ERenderFlags();
 		if (!showWindow)
@@ -103,6 +98,44 @@ namespace SvEditor::Panels
 			return;
 
 		s_world.lock()->m_renderingContext->s_editorSelectedEntity = p_entity;
+	}
+
+	void ScenePanel::InvokeClickScene()
+	{
+		auto mousePos = ImGui::GetMousePos();
+		auto uv = CalculateUVCords({ mousePos.x, mousePos.y });
+
+		if (0 <= uv.m_x && uv.m_x <= 1 &&
+			0 <= uv.m_y && uv.m_y <= 1)
+		{
+			uv.m_y = 1.0f - uv.m_y;
+			s_onClickSceneEvent.Invoke(uv);
+		}
+	}
+
+	void ScenePanel::RenderInfoPanel()
+	{
+		if (ImGui::BeginChild("##", ImVec2(ImGui::GetContentRegionAvail().x / 2.f - (2.f * Offset), 0),
+			ImGuiChildFlags_FrameStyle | ImGuiChildFlags_AutoResizeY, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollWithMouse) &&
+			ImGui::CollapsingHeader("Info", ImGuiTreeNodeFlags_CollapsingHeader))
+		{
+			m_transformType.DisplayAndUpdatePanel();
+		}
+		ImGui::EndChild();
+	}
+
+	void ScenePanel::SetGizmoTransformType(int p_val)
+	{
+		ImGuizmo::OPERATION operation;
+
+		if (p_val == 0)
+			operation = ImGuizmo::OPERATION::TRANSLATE;
+		else if (p_val == 1)
+			operation = ImGuizmo::OPERATION::ROTATE;
+		else if (p_val == 2)
+			operation = ImGuizmo::OPERATION::SCALE;
+
+		m_gizmos.m_transform.SetOperation(operation);
 	}
 
 	LibMath::Vector2 ScenePanel::CalculateUVCords(const LibMath::Vector2& p_cursorPos)

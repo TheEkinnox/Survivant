@@ -18,7 +18,6 @@ namespace SvEditor::PanelItems
 	{
         static ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen;
 
-        //ImGui::Text("   "); ImGui::SameLine();
         bool open = ImGui::CollapsingHeader(m_name.c_str(), &m_isActive, flags);
         ImGui::PushID(m_name.c_str());
 

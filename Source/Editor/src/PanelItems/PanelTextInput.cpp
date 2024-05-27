@@ -36,6 +36,7 @@ namespace SvEditor::PanelItems
         ImGui::SameLine();
 
         ImGui::PushID(m_name.c_str());
+        PanelInputBase::DisplayAndUpdatePanel();
         if (ImGui::InputText("##", &buffer, input_text_flags, nullptr, this))
         {
             m_string = buffer;

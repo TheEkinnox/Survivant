@@ -5,6 +5,7 @@
 #include "SurvivantEditor/Panels/Panel.h"
 #include "SurvivantEditor/PanelItems/PanelImage.h"
 #include "SurvivantEditor/PanelItems/PanelButtonList.h"
+#include "SurvivantEditor/PanelItems/PanelUniqueSelection.h"
 
 #include <SurvivantCore/ECS/EntityHandle.h>
 #include <SurvivantCore/Events/Event.h>
@@ -55,14 +56,21 @@ namespace SvEditor::Panels
 		static constexpr char NAME[] = "Scene";
 
 	private:
-		LibMath::Vector2 CalculateUVCords(const LibMath::Vector2& p_cursorPos);
+		static inline constexpr float Offset = 30;
+
+		void				RenderInfoPanel();
+		void				SetGizmoTransformType(int p_val);
+		void				InvokeClickScene();
+		LibMath::Vector2	CalculateUVCords(const LibMath::Vector2& p_cursorPos);
+
 
 		static inline ClickEvent					s_onClickSceneEvent;
 		static inline ResizeEvent					s_onResizeEvent;
 		static inline std::weak_ptr<WorldContext>	s_world;
 
-		PanelButtonList		m_buttons;
-		PanelImage			m_image;
+		PanelButtonList			m_buttons;
+		PanelUniqueSelection	m_transformType;
+		PanelImage				m_image;
 
 		LibMath::Vector2	m_imagePos;
 		LibMath::Vector2	m_imageSize;

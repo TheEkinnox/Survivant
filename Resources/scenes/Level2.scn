@@ -52,21 +52,14 @@
                                 {
                                     "key": {
                                         "type": 4,
-                                        "data": "max_speed"
+                                        "data": "rotation_speed"
                                     },
                                     "value": {
-                                        "type": 3,
-                                        "data": 4.0
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "mouse_sensitivity"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 0.005
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Degree",
+                                            "data": 300.0
+                                        }
                                     }
                                 },
                                 {
@@ -82,14 +75,21 @@
                                 {
                                     "key": {
                                         "type": 4,
-                                        "data": "rotation_speed"
+                                        "data": "mouse_sensitivity"
                                     },
                                     "value": {
-                                        "type": 7,
-                                        "data": {
-                                            "type": "Degree",
-                                            "data": 300.0
-                                        }
+                                        "type": 3,
+                                        "data": 0.005
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "max_speed"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 4.0
                                     }
                                 }
                             ]
@@ -100,21 +100,21 @@
                                 {
                                     "key": {
                                         "type": 4,
-                                        "data": "jump_force"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 5.0
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
                                         "data": "ground_steepness"
                                     },
                                     "value": {
                                         "type": 3,
                                         "data": 0.5
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "jump_force"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 5.0
                                     }
                                 }
                             ]
@@ -314,7 +314,7 @@
                 {
                     "owner": 0,
                     "data": {
-                        "position": "{0,2,0}",
+                        "position": "{-0.29485,2.35355,0.163245}",
                         "rotation": "{0,0,0,1}",
                         "scale": "{1,1,1}"
                     }

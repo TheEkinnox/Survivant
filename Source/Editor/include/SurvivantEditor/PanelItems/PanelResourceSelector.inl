@@ -84,6 +84,7 @@ namespace SvEditor::PanelItems
 			std::string resourceName = this->GetRef().GetPath();
 			resourceName = resourceName.empty() ? "(none)" : resourceName;
 			ImGui::PushID(resourceName.c_str());
+			PanelInputBase<SvCore::Resources::ResourceRef<T>>::DisplayAndUpdatePanel();
 			ImGui::InputText("##", &resourceName[0], resourceName.size(), flag);
 			ImGui::PopID();
 		}

@@ -46,6 +46,7 @@ namespace SvEditor::PanelItems
         ImGui::SameLine();
 
         ImGui::PushID(m_name.c_str());
+        PanelInputBase::DisplayAndUpdatePanel();
         if (ImGui::Combo("##", &val, m_items.c_str()) && m_callback)
             m_callback(val);
 

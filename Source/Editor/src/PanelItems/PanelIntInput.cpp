@@ -31,6 +31,7 @@ namespace SvEditor::PanelItems
         ImGui::SameLine();
 
         ImGui::PushID(m_name.c_str());
+        PanelInputBase::DisplayAndUpdatePanel();
         if (ImGui::InputInt("##", &value, 0, 0, flags) && m_callback)
             m_callback(value);
 

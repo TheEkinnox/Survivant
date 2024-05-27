@@ -33,6 +33,7 @@ namespace SvEditor::PanelItems
         ImGui::Text("Position");
         ImGui::SameLine();
         ImGui::PushID(0);
+        PanelInputBase::DisplayAndUpdatePanel();
         if (ImGui::InputFloat3("##", position.getArray(), "%.3f", flags))
         {
             trans.setPosition(position);
@@ -48,6 +49,7 @@ namespace SvEditor::PanelItems
         ImGui::Text("Rotation");
         ImGui::SameLine();
         ImGui::PushID(1);
+        PanelInputBase::DisplayAndUpdatePanel();
         if (ImGui::InputFloat3("##", asDegree.getArray(), "%.3f", flags))
         {
             //LibMath::Vector3 diffDegree = asDegree - YPRToDegree(m_yawPitchRoll); //m_yawPitchRoll hasnt been modified so still prev
@@ -68,6 +70,7 @@ namespace SvEditor::PanelItems
         ImGui::Text("Scale   ");
         ImGui::SameLine();
         ImGui::PushID(2);
+        PanelInputBase::DisplayAndUpdatePanel();
         if (ImGui::InputFloat3("##", scale.getArray(), "%.3f", flags))
         {
             if (scale.m_x == 0)

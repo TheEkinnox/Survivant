@@ -1,9 +1,13 @@
 //SceneGizmos.h
 #pragma once
 
+#include "TransformGizmo.h"
+
 #include <SurvivantApp/Core/RenderingContext.h>
 
 #include <SurvivantCore/ECS/EntityHandle.h>
+
+#include "SurvivantEditor/PanelItems/PanelUniqueSelection.h"
 
 #include <functional>
 
@@ -19,9 +23,10 @@ namespace SvEditor::Gizmo
 
 		void RenderGizmos();
 
-	private:
-		void SetTransformGizmo();
+		bool UsingGizmo();
 
-		Context		m_context;
+		TransformGizmo						m_transform;
+	private:
+		Context								m_context;
 	};
 }
