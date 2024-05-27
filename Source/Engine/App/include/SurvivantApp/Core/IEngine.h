@@ -54,7 +54,6 @@ namespace SvApp::Core
 		//acces GameInstace members
 		std::weak_ptr<WorldContext>&	GetWorldContextRef(GameInstance& p_instance);
 
-	private:
 		bool PrepareSceneChange(WorldContext& p_context, WorldContext::SceneRef& p_newLevel, const std::string& p_path);
 		bool CommitSceneChange(WorldContext& p_context, const WorldContext::SceneRef& p_newLevel);
 	};

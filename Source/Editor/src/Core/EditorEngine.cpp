@@ -103,7 +103,8 @@ namespace SvEditor::Core
 
 		//while playing, loaded new scene, so go back to selected
 		if (scene != m_editorSelectedScene)
-			BrowseToScene(*m_editorWorld, m_editorSelectedScene.GetPath());
+			ChangeScene(m_editorSelectedScene.GetPath());
+			//BrowseToScene(*m_editorWorld, m_editorSelectedScene.GetPath());
 
 		m_editorWorld->SetInputs();
 
@@ -402,15 +403,24 @@ namespace SvEditor::Core
 		if (!m_gameInstance && m_isEditorModifiedScene && p_scenePath != m_editorWorld->CurrentScene().GetPath())
 			SV_EVENT_MANAGER().Invoke<OnSave>();
 
+		SvScripting::LuaContext& luaContext = SvScripting::LuaContext::GetInstance();
+
+		SvPhysics::PhysicsContext::GetInstance().Reload();
+		Timer::GetInstance().Refresh();
+
+		if (m_gameInstance)
+			luaContext.Stop();
+
 		//couldnt browse to scene
 		if (!BrowseToScene(*m_editorWorld, p_scenePath))
 			return false;
 
-		if (m_gameInstance && !BrowseToScene(*m_PIEWorld.lock(), p_scenePath))
-			return false;
-
-		//update editorWorld level. Dont bcs change back
-		if (!m_gameInstance)
+		if (m_gameInstance)
+		{
+			CommitSceneChange(*m_PIEWorld.lock(), m_editorWorld->CurrentScene());
+			luaContext.Start();
+		}
+		else //update editorWorld level. Dont bcs change back
 			m_editorSelectedScene = m_editorWorld->CurrentScene();
 
 		m_isEditorModifiedScene = false;
