@@ -321,6 +321,12 @@ namespace SvRendering::Components
          */
         CameraComponent& SetOrthographic(float p_size, float p_zNear, float p_zFar);
 
+        /// <summary>
+        /// Get cameras projection matrix
+        /// </summary>
+        /// <returns> A cont ref of the projection matrix </returns>
+        const LibMath::Matrix4& GetProjection() const;
+
     private:
         Core::Camera           m_camera;
         LibMath::Matrix4       m_projection;
