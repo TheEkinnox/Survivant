@@ -329,7 +329,7 @@ namespace SvCore::Resources
         return !m_resource || m_resource->GetTypeName() == p_type;
     }
 
-    inline std::string GenericResourceRef::GetType() const
+    inline const std::string& GenericResourceRef::GetType() const
     {
         return m_type;
     }

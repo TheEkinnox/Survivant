@@ -293,7 +293,7 @@ namespace SvCore::Resources
          * \brief Gets the referenced resource's type
          * \return The referenced resource's type
          */
-        std::string GetType() const;
+        const std::string& GetType() const;
 
         /**
          * \brief Serializes the generic resource reference to json
