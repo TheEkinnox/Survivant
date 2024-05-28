@@ -20,7 +20,6 @@ namespace SvEditor::Gizmo
 
 		void Render(const LibMath::Matrix4& p_view, const LibMath::Matrix4& p_proj);
 
-
 		bool IsUsing();
 
 		void SetEntity(const SvCore::ECS::EntityHandle& p_entity);

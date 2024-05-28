@@ -4,7 +4,7 @@
 #include <SurvivantCore/Debug/Assertion.h>
 
 #include "Vector/Vector3.h"
-#include "Matrix.h"
+#include "Matrix/Matrix4.h"
 
 #include <functional>
 
@@ -17,13 +17,14 @@ using namespace LibMath;
 namespace SvEditor::Gizmo
 {
 	SceneGizmos::SceneGizmos(const Context& p_context) :
-		m_context(p_context)
+		m_context(p_context),
+		m_orientation(Vector2(200, 200))
 	{
 		m_transform.SetEntity(p_context.lock()->s_editorSelectedEntity);
 	}
 
-	void SceneGizmos::RenderGizmos()
-	{
+	void SceneGizmos::RenderGizmos(const LibMath::Vector2& p_orientationPos, bool isSmallDisplay)
+	{	
 		ASSERT(!m_context.expired(), "SceneGizmos context not set");
 
 		ImGuizmo::SetOrthographic(false);
@@ -36,13 +37,32 @@ namespace SvEditor::Gizmo
 		auto [cam, cTrans] = m_context.lock()->GetCameraInfo();
 		ASSERT(cam && cTrans, "Camera or Transform in SceneGizmos is nullptr");
 
+		auto copyCProj = cam->GetProjection().transposed();
+		auto copyCTrans = cTrans->getMatrix();
+		float det = copyCTrans.determinant();
+		copyCTrans = copyCTrans.coMatrix();
+		copyCTrans /= det;
+
 		m_transform.SetEntity(m_context.lock()->s_editorSelectedEntity);
-		m_transform.Render(cTrans->getWorldMatrix().inverse().transposed(), cam->GetProjection().transposed());
+		m_transform.Render(copyCTrans, copyCProj);
+
+		
+		
+		if (isSmallDisplay)
+			return;
+
+		//not small display
+		m_orientation.Render(copyCTrans, copyCProj, p_orientationPos + Vector2(winPos.x, winPos.y));
+		//det = copyCTrans.determinant();
+		//copyCTrans = copyCTrans.coMatrix();
+		//copyCTrans /= det;
+		//cTrans->setMatrix(copyCTrans);
+		
 	}
 
 	bool SceneGizmos::UsingGizmo()
 	{
-		return m_transform.IsUsing();
+		return m_transform.IsUsing() || m_orientation.IsUsing();
 	}
 }
 

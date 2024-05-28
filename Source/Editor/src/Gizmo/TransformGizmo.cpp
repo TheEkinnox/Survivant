@@ -15,23 +15,21 @@ namespace SvEditor::Gizmo
 		const LibMath::Matrix4& p_view, 
 		const LibMath::Matrix4& p_proj)
 	{
-		if (m_entity.GetEntity() == NULL_ENTITY)
-			return;
+		//if (m_entity.GetEntity() == NULL_ENTITY)
+		//	return;
 
 		Transform* eTrans = m_entity.Get<Transform>();
 
-		if (!eTrans)
-			return;
+		//if (!eTrans)
+		//	return;
 
-		auto mat = eTrans->getMatrix().transposed();
+		Matrix4 mat = eTrans? eTrans->getWorldMatrix().transposed() : Matrix4(1);
 		ImGuizmo::Manipulate(p_view.getArray(), p_proj.getArray(), m_operation,
-			ImGuizmo::LOCAL, mat.getArray());
+			ImGuizmo::MODE::LOCAL, mat.getArray());
 
 		m_isUsing = ImGuizmo::IsUsing();
-		if (m_isUsing)
+		if (m_isUsing && eTrans)
 			eTrans->setMatrix(mat.transposed());
-		
-
 	}
 
 	void TransformGizmo::DrawNoTransform()

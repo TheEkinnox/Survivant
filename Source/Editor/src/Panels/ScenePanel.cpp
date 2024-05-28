@@ -8,10 +8,12 @@
 
 #include "SurvivantApp/Core/WorldContext.h"
 
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_opengl3.h"
+#include "Vector/Vector2.h"
+
+#include "imgui.h"
 
 using namespace SvApp::Core;
+using namespace LibMath;
 
 namespace SvEditor::Panels
 {
@@ -38,6 +40,7 @@ namespace SvEditor::Panels
 	Panel::ERenderFlags ScenePanel::Render()
 	{
 		static ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoNavInputs;
+		static float SMALL_DISPLAY = 450;
 		bool showWindow = true;
 
 		if (s_world.lock()->m_isVisalbe = ImGui::Begin(m_name.c_str(), &showWindow, window_flags))
@@ -52,25 +55,25 @@ namespace SvEditor::Panels
 					RenderingContext::ETextureType::COLOR));
 			}
 
-			auto topLeft = ImGui::GetCursorPos();
+			bool isSmallDisplay = m_imageSize.m_x <= SMALL_DISPLAY;
+			ImVec2 topLeft = ImVec2(ImGui::GetCursorPosX() + Offset, ImGui::GetCursorPosY() + Offset);
 			m_imagePos = { ImGui::GetCursorScreenPos().x , ImGui::GetCursorScreenPos().y };
 
 			ImGui::SetNextItemAllowOverlap();
 			m_image.DisplayAndUpdatePanel();
 			bool sceneHovered = ImGui::IsItemHovered();
 
-			m_gizmos.RenderGizmos();
+			m_gizmos.RenderGizmos(Vector2(m_imageSize.m_x - Offset, topLeft.y), isSmallDisplay);
 
-			ImGui::SetCursorPos(ImVec2(topLeft.x + Offset, topLeft.y  + Offset));
+			ImGui::SetCursorPos(topLeft);
 			ImGui::SetNextItemAllowOverlap();
 
-			RenderInfoPanel();
+			RenderInfoPanel(isSmallDisplay);
 			sceneHovered &= !ImGui::IsItemHovered();
 
 			//click 
 			if (!m_gizmos.UsingGizmo() && ImGui::IsMouseClicked(0) && sceneHovered)
 				InvokeClickScene();
-
 		}
 
 		ImGui::End();
@@ -113,9 +116,11 @@ namespace SvEditor::Panels
 		}
 	}
 
-	void ScenePanel::RenderInfoPanel()
+	void ScenePanel::RenderInfoPanel(bool p_isSmallDisplay)
 	{
-		if (ImGui::BeginChild("##", ImVec2(ImGui::GetContentRegionAvail().x / 2.f - (2.f * Offset), 0),
+		float width = p_isSmallDisplay? ImGui::GetContentRegionAvail().x - Offset:
+										(ImGui::GetContentRegionAvail().x - Offset) * 0.5f - Offset;
+		if (ImGui::BeginChild("##", ImVec2(width, 0),
 			ImGuiChildFlags_FrameStyle | ImGuiChildFlags_AutoResizeY, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollWithMouse) &&
 			ImGui::CollapsingHeader("Info", ImGuiTreeNodeFlags_CollapsingHeader))
 		{

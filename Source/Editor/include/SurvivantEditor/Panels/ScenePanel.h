@@ -58,7 +58,7 @@ namespace SvEditor::Panels
 	private:
 		static inline constexpr float Offset = 30;
 
-		void				RenderInfoPanel();
+		void				RenderInfoPanel(bool p_isSmallDisplay);
 		void				SetGizmoTransformType(int p_val);
 		void				InvokeClickScene();
 		LibMath::Vector2	CalculateUVCords(const LibMath::Vector2& p_cursorPos);
