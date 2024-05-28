@@ -46,18 +46,21 @@ namespace SvEditor::Gizmo
 		m_transform.SetEntity(m_context.lock()->s_editorSelectedEntity);
 		m_transform.Render(copyCTrans, copyCProj);
 
-		
-		
-		if (isSmallDisplay)
-			return;
+		Radian yaw = cTrans->getRotation().toYawPitchRoll().m_y;
+		yaw.wrap(true);
+		yaw = yaw * (yaw < Radian(0.f) ? -1.f : 1.f);
+		float percent = LibMath::sin(yaw);
 
-		//not small display
-		m_orientation.Render(copyCTrans, copyCProj, p_orientationPos + Vector2(winPos.x, winPos.y));
-		//det = copyCTrans.determinant();
-		//copyCTrans = copyCTrans.coMatrix();
-		//copyCTrans /= det;
-		//cTrans->setMatrix(copyCTrans);
+		m_grid.Render(*cam, copyCTrans, copyCProj, cTrans->getPosition(), percent);
 		
+		if (!isSmallDisplay)
+		{
+			m_orientation.Render(copyCTrans, copyCProj, p_orientationPos + Vector2(winPos.x, winPos.y));
+			//det = copyCTrans.determinant();
+			//copyCTrans = copyCTrans.coMatrix();
+			//copyCTrans /= det;
+			//cTrans->setMatrix(copyCTrans);
+		}
 	}
 
 	bool SceneGizmos::UsingGizmo()
