@@ -12,7 +12,7 @@ namespace SvEditor::PanelItems
         int& p_currentSelection,
         const Callback& p_callback) :
         PanelUniqueSelection(p_name, p_selectable,
-            GetRefFunc([p_currentSelection]() mutable -> int& { return p_currentSelection; }), p_callback)
+            GetRefFunc([&p_currentSelection]() mutable -> int& { return p_currentSelection; }), p_callback)
     {}
 
     PanelUniqueSelection::PanelUniqueSelection(
