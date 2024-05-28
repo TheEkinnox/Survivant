@@ -1,5 +1,6 @@
 ---@class EditorDisplay : Script
 local EditorDisplay = {
+    _hidden = "You can't see me",
     nil_obj = nil,
     string = "str",
     int = 123456,
@@ -8,10 +9,14 @@ local EditorDisplay = {
     table = {
         a = 1,
         [1] = "a",
-        subtable = {
+        sub_table = {
             b = 2,
             [2] = "b",
             a = "used name"
+        },
+        empty = {},
+        single_element = {
+            alone = "lonely"
         }
     },
     userdata = {
