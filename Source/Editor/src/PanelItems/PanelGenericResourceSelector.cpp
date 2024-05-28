@@ -25,7 +25,11 @@ namespace SvEditor::PanelItems
         m_resourceTypeSelection = std::make_shared<PanelUniqueSelection>(
             "type     ",
             m_resourceTypes,
-            m_currentType
+            m_currentType,
+            [this](const int)
+            {
+                FetchTypedResources();
+            }
         );
     }
 
@@ -49,8 +53,14 @@ namespace SvEditor::PanelItems
         if (ImGui::TreeNodeEx(m_label.c_str(), flags))
         {
             ImGui::PushID(m_label.c_str());
+            ImGui::Dummy({ X_OFFSET, 0.f });
+            ImGui::SameLine();
+            ImGui::BeginGroup();
+
             m_resourceTypeSelection->DisplayAndUpdatePanel();
             PanelResourceSelector::DisplayAndUpdatePanel();
+
+            ImGui::EndGroup();
             ImGui::PopID();
         }
     }
@@ -64,20 +74,16 @@ namespace SvEditor::PanelItems
         m_resourceTypes.insert(m_resourceTypes.end(), types.begin(), types.end());
 
         auto& resource = GetRef();
+        m_currentType  = 0;
 
         if (!resource.GetType().empty())
         {
-            const auto it = std::ranges::find(this->m_resourceTypes, resource.GetType());
+            const auto it = std::ranges::find(m_resourceTypes, resource.GetType());
 
             if (it != m_resourceTypes.end())
-            {
-                this->m_currentType = static_cast<int>(it - this->m_resourceTypes.begin());
-            }
+                m_currentType = static_cast<int>(it - m_resourceTypes.begin());
             else
-            {
-                this->m_currentType = 0;
-                resource            = {};
-            }
+                resource = {};
         }
     }
 
@@ -90,9 +96,9 @@ namespace SvEditor::PanelItems
         m_allResources->m_items.emplace_back(std::make_unique<MenuButton>(
             "(none)", [this](char) mutable
             {
-                this->GetRef() = {};
-                if (this->m_callback)
-                    this->m_callback({});
+                GetRef() = {};
+                if (m_callback)
+                    m_callback({});
             }
         ));
 
@@ -100,19 +106,19 @@ namespace SvEditor::PanelItems
         {
             for (const auto& branch : branches)
             {
-                const std::string& resourcePath = branch.lock()->GetPath();
+                const std::string& resourcePath = ResourceManager::GetInstance().GetRelativePath(branch.lock()->GetPath());
 
                 m_allResources->m_items.emplace_back(std::make_unique<MenuButton>(
                     resourcePath, [this, typeName, resourcePath](char) mutable
                     {
-                        const auto it       = std::ranges::find(this->m_resourceTypes, typeName);
-                        this->m_currentType = static_cast<int>(it - this->m_resourceTypes.begin());
+                        const auto it = std::ranges::find(m_resourceTypes, typeName);
+                        m_currentType = static_cast<int>(it - m_resourceTypes.begin());
 
-                        const GenericResourceRef resource = ResourceManager::GetInstance().Create(typeName, resourcePath);
-                        this->GetRef()                    = resource;
+                        const GenericResourceRef resource = { typeName, resourcePath };
+                        GetRef()                          = resource;
 
-                        if (this->m_callback)
-                            this->m_callback(resource);
+                        if (m_callback)
+                            m_callback(resource);
                     }
                 ));
             }
@@ -124,8 +130,13 @@ namespace SvEditor::PanelItems
         if (m_currentType == 0)
             return FetchAllResources();
 
-        const std::string typeName = ResourceRegistry::GetInstance().GetRegisteredNames()[m_currentType - 1];
+        const std::string typeName = m_resourceTypes[m_currentType];
         const auto        resPaths = ContentDrawerPanel::GetAllFilePaths(typeName);
+
+        auto& ref = GetRef();
+
+        if (!ref.GetType().empty() && ref.GetType() != typeName)
+            ref = {};
 
         m_allResources->m_items.clear();
         m_allResources->m_items.reserve(resPaths.size() + 1);
@@ -133,23 +144,24 @@ namespace SvEditor::PanelItems
         m_allResources->m_items.emplace_back(std::make_unique<MenuButton>(
             "(default)", [this](char) mutable
             {
-                this->GetRef() = {};
-                if (this->m_callback)
-                    this->m_callback({});
+                GetRef() = {};
+                if (m_callback)
+                    m_callback({});
             }
         ));
 
-        for (const std::string& resourcePath : resPaths)
+        for (std::string resourcePath : resPaths)
         {
+            resourcePath = ResourceManager::GetInstance().GetRelativePath(resourcePath);
+
             m_allResources->m_items.emplace_back(std::make_unique<MenuButton>(
                 resourcePath, [this, resourcePath](char) mutable
                 {
-                    const std::string        type     = this->m_resourceTypes[this->m_currentType];
-                    const GenericResourceRef resource = ResourceManager::GetInstance().Create(type, resourcePath);
-                    this->GetRef()                    = resource;
+                    const std::string         type     = m_resourceTypes[m_currentType];
+                    const GenericResourceRef& resource = (GetRef() = { type, resourcePath });
 
-                    if (this->m_callback)
-                        this->m_callback(resource);
+                    if (m_callback)
+                        m_callback(resource);
                 }
             ));
         }
