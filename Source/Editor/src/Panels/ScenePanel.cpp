@@ -56,14 +56,14 @@ namespace SvEditor::Panels
 			}
 
 			bool isSmallDisplay = m_imageSize.m_x <= SMALL_DISPLAY;
-			ImVec2 topLeft = ImVec2(ImGui::GetCursorPosX() + Offset, ImGui::GetCursorPosY() + Offset);
+			ImVec2 topLeft = ImVec2(ImGui::GetCursorPosX() + OFFSET, ImGui::GetCursorPosY() + OFFSET);
 			m_imagePos = { ImGui::GetCursorScreenPos().x , ImGui::GetCursorScreenPos().y };
 
 			ImGui::SetNextItemAllowOverlap();
 			m_image.DisplayAndUpdatePanel();
 			bool sceneHovered = ImGui::IsItemHovered();
 
-			m_gizmos.RenderGizmos(Vector2(m_imageSize.m_x - Offset, topLeft.y), isSmallDisplay);
+			m_gizmos.RenderGizmos(Vector2(m_imageSize.m_x - OFFSET, topLeft.y), isSmallDisplay);
 
 			ImGui::SetCursorPos(topLeft);
 			ImGui::SetNextItemAllowOverlap();
@@ -118,8 +118,8 @@ namespace SvEditor::Panels
 
 	void ScenePanel::RenderInfoPanel(bool p_isSmallDisplay)
 	{
-		float width = p_isSmallDisplay? ImGui::GetContentRegionAvail().x - Offset:
-										(ImGui::GetContentRegionAvail().x - Offset) * 0.5f - Offset;
+		float width = p_isSmallDisplay? ImGui::GetContentRegionAvail().x - OFFSET:
+										(ImGui::GetContentRegionAvail().x - OFFSET) * 0.5f - OFFSET;
 		if (ImGui::BeginChild("##", ImVec2(width, 0),
 			ImGuiChildFlags_FrameStyle | ImGuiChildFlags_AutoResizeY, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollWithMouse) &&
 			ImGui::CollapsingHeader("Info", ImGuiTreeNodeFlags_CollapsingHeader))

@@ -56,7 +56,7 @@ namespace SvEditor::Panels
 		static constexpr char NAME[] = "Scene";
 
 	private:
-		static inline constexpr float Offset = 30;
+		static inline constexpr float OFFSET = 30;
 
 		void				RenderInfoPanel(bool p_isSmallDisplay);
 		void				SetGizmoTransformType(int p_val);

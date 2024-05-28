@@ -43,15 +43,18 @@ namespace SvEditor::Gizmo
 		copyCTrans = copyCTrans.coMatrix();
 		copyCTrans /= det;
 
-		m_transform.SetEntity(m_context.lock()->s_editorSelectedEntity);
-		m_transform.Render(copyCTrans, copyCProj);
-
 		Radian yaw = cTrans->getRotation().toYawPitchRoll().m_y;
 		yaw.wrap(true);
 		yaw = yaw * (yaw < Radian(0.f) ? -1.f : 1.f);
 		float percent = LibMath::sin(yaw);
-
 		m_grid.Render(*cam, copyCTrans, copyCProj, cTrans->getPosition(), percent);
+
+		m_transform.SetEntity(m_context.lock()->s_editorSelectedEntity);
+		m_transform.Render(copyCTrans, copyCProj);
+
+		m_collider.SetEntity(m_context.lock()->s_editorSelectedEntity);
+		m_collider.Render(copyCTrans, copyCProj, (*cam)->GetViewProjection(), *cTrans);
+
 		
 		if (!isSmallDisplay)
 		{

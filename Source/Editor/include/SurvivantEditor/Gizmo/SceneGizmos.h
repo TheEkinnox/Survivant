@@ -4,6 +4,7 @@
 #include "TransformGizmo.h"
 #include "OrientationGizmo.h"
 #include "GridGizmo.h"
+#include "ColliderGizmo.h"
 
 #include <SurvivantApp/Core/RenderingContext.h>
 
@@ -33,6 +34,7 @@ namespace SvEditor::Gizmo
 		TransformGizmo		m_transform;
 		OrientationGizmo	m_orientation;
 		GridGizmo			m_grid;
+		ColliderGizmo		m_collider;
 	private:
 		Context				m_context;
 	};
