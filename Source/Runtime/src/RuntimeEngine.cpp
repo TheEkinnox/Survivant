@@ -146,13 +146,15 @@ namespace SvRuntime
 		return m_isRunning;
 	}
 
-	bool RuntimeEngine::ChangeScene(const std::string& p_scenePath)
+	void RuntimeEngine::ChangeScene(const std::string& /*p_scenePath*/)
 	{
+		//TODO: update change scene like in editor (update)
+		
 		//couldnt browse to scene
-		if (!BrowseToScene(*m_world, p_scenePath))
-			return false;
+		//if (!BrowseToScene(*m_world, p_scenePath))
+		//	return false;
 
-		return true;
+		//return void;
 	}
 
 	bool RuntimeEngine::ChangeCamera(const SvCore::ECS::EntityHandle& p_camera)
