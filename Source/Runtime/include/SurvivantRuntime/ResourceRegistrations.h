@@ -1,4 +1,5 @@
 #pragma once
+#include <SurvivantAudio/AudioClip.h>
 #include <SurvivantCore/ECS/Scene.h>
 
 #include <SurvivantRendering/Resources/Material.h>
@@ -7,6 +8,8 @@
 #include <SurvivantRendering/RHI/ITexture.h>
 
 #include <SurvivantScripting/LuaScript.h>
+
+REGISTER_RESOURCE_TYPE(AudioClip, SvAudio::AudioClip)
 
 REGISTER_RESOURCE_TYPE(Scene, SvCore::ECS::Scene)
 
