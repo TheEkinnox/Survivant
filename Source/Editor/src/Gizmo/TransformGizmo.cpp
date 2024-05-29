@@ -29,7 +29,7 @@ namespace SvEditor::Gizmo
 
 		m_isUsing = ImGuizmo::IsUsing();
 		if (m_isUsing && eTrans)
-			eTrans->setMatrix(mat.transposed());
+			eTrans->setWorldMatrix(mat.transposed());
 	}
 
 	void TransformGizmo::DrawNoTransform()
