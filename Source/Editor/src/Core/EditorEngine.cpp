@@ -1,6 +1,8 @@
 //EditorEngine.cpp
 #include "SurvivantEditor/Core/EditorEngine.h"
 
+#include "SurvivantAudio/AudioContext.h"
+
 #include "SurvivantEditor/Core/EditorWindow.h"
 #include "SurvivantEditor/Core/LuaEditorBinder.h"
 #include "SurvivantEditor/Panels/HierarchyPanel.h"
@@ -29,6 +31,10 @@ namespace SvEditor::Core
 	void EditorEngine::Init()
 	{
 		s_engine = this;
+
+		//audio
+		if (!SvAudio::AudioContext::GetInstance().Init())
+			ASSERT(false, "Failed to initialize audio context");
 
 		//physics
 		SvPhysics::PhysicsContext::GetInstance().Init();

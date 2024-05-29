@@ -24,6 +24,8 @@
 
 #include <SurvivantApp/Core/IEngine.h>
 
+#include <SurvivantAudio/AudioClip.h>
+
 #include <SurvivantCore/Debug/Assertion.h>
 
 #include <SurvivantCore/ECS/Components/Hierarchy.h>
@@ -58,6 +60,7 @@
 		)
 
 using namespace LibMath;
+using namespace SvAudio;
 using namespace SvCore::ECS;
 using namespace SvEditor::PanelItems;
 using namespace SvRendering::Components;
@@ -84,6 +87,7 @@ namespace SvEditor::Core
 		CHECK(AddResourceToPanelable<LuaScript>(&AddResourceDefault, "Script"),		"Couldn't init resource type : Script");
 		CHECK(AddResourceToPanelable<IShader>(&AddResourceDefault, "Shader"),		"Couldn't init resource type : Shader");
 		CHECK(AddResourceToPanelable<ITexture>(&AddResourceDefault, "Texture"),		"Couldn't init resource type : Texture");
+		CHECK(AddResourceToPanelable<AudioClip>(&AddResourceDefault, "AudioClip"),	"Couldn't init resource type : AudioClip");
 
 		CHECK(AddResourceToPanelable<PhysicsMaterial>(&AddResourceDefault, "PhysicsMaterial"),	"Couldn't init resource type : Physics Material");
 
