@@ -1,27 +1,9 @@
 #ifndef __LIBMATH__MATRIX__TMATRIX_H__
 #define __LIBMATH__MATRIX__TMATRIX_H__
-#include <exception>
 #include <string>
 
 namespace LibMath
 {
-    namespace Exceptions
-    {
-        class NonInvertibleMatrix : public std::exception
-        {
-        public:
-            NonInvertibleMatrix() noexcept
-                : exception()
-            {
-            }
-
-            [[nodiscard]] inline const char* what() const noexcept override
-            {
-                return "Non-invertible matrix";
-            }
-        };
-    }
-
     using length_t = int;
 
     template <length_t Rows, length_t Cols, typename DataT>
@@ -77,7 +59,7 @@ namespace LibMath
 
         constexpr bool operator==(const TMatrix& other) const;
         constexpr bool operator!=(const TMatrix& other) const;
-        bool           isIdentity() const;
+        constexpr bool isIdentity() const;
 
         static constexpr length_t getRowCount();
         static constexpr length_t getColumnCount();
@@ -116,6 +98,12 @@ namespace LibMath
         struct Determinant
         {
             static DataT compute(const TMatrix<Rows, Cols, DataT>& mat);
+        };
+
+        template <length_t Rows, length_t Cols, typename DataT>
+        struct Inverse
+        {
+            static TMatrix<Rows, Cols, DataT> compute(const TMatrix<Rows, Cols, DataT>& mat);
         };
     }
 }

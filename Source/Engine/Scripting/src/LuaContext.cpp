@@ -51,7 +51,7 @@ namespace SvScripting
         m_state->add_package_loader(&LoadModule);
         m_isValid = true;
 
-        s_userTypeBinders(*m_state);
+        s_userTypeBinders ? s_userTypeBinders(*m_state) : DefaultUserTypeBindings(*m_state);
         LinkPhysicsEvents();
     }
 
@@ -313,7 +313,7 @@ namespace SvScripting
         return empty;
     }
 
-    void LuaContext::SetUserTypeBinders(Binder p_binder)
+    void LuaContext::SetUserTypeBinders(const Binder p_binder)
     {
         s_userTypeBinders = p_binder;
     }

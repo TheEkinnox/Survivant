@@ -1,25 +1,22 @@
 //PanelComponent.h
 #pragma once
-
 #include "SurvivantEditor/Interfaces/IPanelable.h"
 
-
-#include <functional>
 #include <memory>
 #include <string>
-#include <type_traits>
+#include <vector>
 
 namespace SvEditor::PanelItems
 {
 	class PanelComponent : public Interfaces::IPanelable
 	{
 	public:
-		using Items = std::vector<std::shared_ptr<Interfaces::IPanelable>>;
+		using Items = std::vector<std::shared_ptr<IPanelable>>;
 
-		PanelComponent(const std::string& p_name, const Items& p_items, size_t p_prio = 0);
+		PanelComponent(std::string p_name, Items p_items, size_t p_prio = 0);
 		~PanelComponent() override = default;
 
-        void		DisplayAndUpdatePanel() override;
+		void		DisplayAndUpdatePanel() override;
 		bool		NeedToRemove() const;
 		size_t		GetPrio() const;
 

@@ -45,7 +45,7 @@ TEST_CASE("Matrix3", "[.all][matrix][Matrix3]")
         CHECK_MATRIX(copy, copyGlm);
 
         // assignment operator
-        empty = oneParam;
+        empty    = oneParam;
         emptyGlm = oneParamGlm;
         CHECK_MATRIX(empty, emptyGlm);
     }
@@ -392,7 +392,7 @@ TEST_CASE("Matrix3", "[.all][matrix][Matrix3]")
 
         SECTION("Transpose")
         {
-            LibMath::Matrix3 transposed = big.transposed();
+            LibMath::Matrix3 transposed    = big.transposed();
             glm::mat3        transposedGlm = glm::transpose(bigGlm);
 
             CHECK_MATRIX(transposed, transposedGlm);
@@ -415,7 +415,7 @@ TEST_CASE("Matrix3", "[.all][matrix][Matrix3]")
 
         SECTION("CofactorMatrix")
         {
-            LibMath::Matrix3 cofactorMat = big.coMatrix();
+            LibMath::Matrix3 cofactorMat    = big.coMatrix();
             glm::mat3        cofactorMatGlm = glm::transpose(glm::inverse(bigGlm) * glm::determinant(bigGlm));
 
             CHECK_MATRIX(cofactorMat, cofactorMatGlm);
@@ -424,7 +424,7 @@ TEST_CASE("Matrix3", "[.all][matrix][Matrix3]")
         SECTION("Inverse")
         {
             {
-                LibMath::Matrix3 inverse = big.inverse();
+                LibMath::Matrix3 inverse    = big.inverse();
                 glm::mat3        inverseGlm = glm::inverse(bigGlm);
 
                 CHECK_MATRIX(inverse, inverseGlm);
@@ -445,7 +445,21 @@ TEST_CASE("Matrix3", "[.all][matrix][Matrix3]")
                 nonInvertible[7] = 2.f;
                 nonInvertible[8] = 5.f;
 
-                CHECK_THROWS(nonInvertible.inverse());
+                glm::mat3 nonInvertibleGlm;
+                nonInvertibleGlm[0][0] = 1;
+                nonInvertibleGlm[0][1] = 6.f;
+                nonInvertibleGlm[0][2] = 4.f;
+                nonInvertibleGlm[1][0] = 2.f;
+                nonInvertibleGlm[1][1] = 4.f;
+                nonInvertibleGlm[1][2] = -1.f;
+                nonInvertibleGlm[2][0] = -1.f;
+                nonInvertibleGlm[2][1] = 2.f;
+                nonInvertibleGlm[2][2] = 5.f;
+
+                LibMath::Matrix3 inverse    = nonInvertible.inverse();
+                glm::mat3        inverseGlm = glm::inverse(nonInvertibleGlm);
+
+                CHECK_MATRIX(inverse, inverseGlm);
             }
         }
 
@@ -541,7 +555,7 @@ TEST_CASE("Matrix4", "[.all][matrix][Matrix4]")
         {
             SECTION("Axis")
             {
-                LibMath::Matrix4 rotate = LibMath::rotation(-3_rad, transformation);
+                LibMath::Matrix4 rotate    = LibMath::rotation(-3_rad, transformation);
                 glm::mat4        rotateGlm = glm::rotate(idMatGlm, -3.f, transformationGlm);
 
                 // Transpose since glm matrices are column major unlike ours
@@ -655,7 +669,7 @@ TEST_CASE("Matrix4", "[.all][matrix][Matrix4]")
             {
                 LibMath::Quaternion quat(LibMath::Radian{ transformation.m_x }, LibMath::Radian{ transformation.m_y },
                     LibMath::Radian{ transformation.m_z });
-                LibMath::Matrix4 rotate = LibMath::rotation(quat);
+                LibMath::Matrix4 rotate    = LibMath::rotation(quat);
                 glm::mat4        rotateGlm = glm::yawPitchRoll(transformationGlm.x, transformationGlm.y, transformationGlm.z);
 
                 // Transpose since glm matrices are column major unlike ours
@@ -666,16 +680,16 @@ TEST_CASE("Matrix4", "[.all][matrix][Matrix4]")
         SECTION("Projection")
         {
             constexpr float near = 0.f;
-            constexpr float far = 2.f;
+            constexpr float far  = 2.f;
 
             SECTION("Orthographic")
             {
-                constexpr float top = 1.f;
+                constexpr float top    = 1.f;
                 constexpr float bottom = -1.f;
-                constexpr float left = -1.f;
-                constexpr float right = 1.f;
+                constexpr float left   = -1.f;
+                constexpr float right  = 1.f;
 
-                LibMath::Matrix4 projection = LibMath::orthographicProjection(left, right, bottom, top, near, far);
+                LibMath::Matrix4 projection    = LibMath::orthographicProjection(left, right, bottom, top, near, far);
                 glm::mat4        projectionGlm = glm::ortho(left, right, bottom, top, near, far);
 
                 // Transpose since glm matrices are column major unlike ours
@@ -684,10 +698,10 @@ TEST_CASE("Matrix4", "[.all][matrix][Matrix4]")
 
             SECTION("Perspective")
             {
-                constexpr float fovY = 180.f;
+                constexpr float fovY   = 180.f;
                 constexpr float aspect = 16.f / 9.f;
 
-                LibMath::Matrix4 projection = LibMath::perspectiveProjection(LibMath::Degree(fovY), aspect, near, far);
+                LibMath::Matrix4 projection    = LibMath::perspectiveProjection(LibMath::Degree(fovY), aspect, near, far);
                 glm::mat4        projectionGlm = glm::perspective(glm::radians(fovY), aspect, near, far);
 
                 // Transpose since glm matrices are column major unlike ours

@@ -3,38 +3,42 @@
 
 #include "SurvivantCore/Utility/LeanWindows.h"
 #include "SurvivantCore/Utility/FileSystem.h"
-
-#include <tchar.h>
-#include <Lmcons.h>
 #include <filesystem>
 
+#ifdef _WIN32
+#include <shlobj.h>
+#else
+static_assert(false, "Non windows builds are not supported")
+#endif
 
 namespace SvEditor::RuntimeBuild
 {
-    BuildManager::BuildManager()
+    namespace
     {
-        std::string userName;
-        userName.resize(UNLEN + 1);
-        DWORD userNameLen = UNLEN + 1;
-
-        if (!GetUserNameA(userName.data(), &userNameLen))
+        const std::string& GetDownloadsPath()
         {
-            SV_LOG_ERROR("Can't get User Name to create Build");
-            return;
-        }
-        userName.resize(userNameLen - 1); //userNameLen includes \0
+            static std::string downloadsPath;
+            static bool        isInitialized = false;
 
-        m_downloadPath = DefaultDownloadPath;
-        size_t start_pos = m_downloadPath.find(DefaultUserName);
-        ASSERT(start_pos != std::string::npos);
-        m_downloadPath.replace(start_pos, DefaultUserName.length(), userName);
+            if (isInitialized)
+                return downloadsPath;
+
+            PWSTR out;
+            if (S_OK != SHGetKnownFolderPath(FOLDERID_Downloads, 0, nullptr, &out))
+                return downloadsPath; // Empty by default
+
+            downloadsPath = std::filesystem::path(out).string();
+            CoTaskMemFree(out);
+
+            isInitialized = true;
+            return downloadsPath;
+        }
     }
 
     BuildManager& BuildManager::GetInstance()
     {
-        static BuildManager s_instance;
-
-        return s_instance;
+        static BuildManager instance;
+        return instance;
     }
 
     std::string BuildManager::CreateBuild(const std::string& p_buildName, SvApp::Core::BuildConfig p_setup)
@@ -42,46 +46,69 @@ namespace SvEditor::RuntimeBuild
         using namespace SvCore::Utility;
         namespace fs = std::filesystem;
 
-        if (!PathExists(m_downloadPath))
+        static const auto& downloadPath = GetDownloadsPath();
+
+        if (!PathExists(downloadPath))
         {
-            SV_LOG_ERROR("Can't Create Build, Build path to Download directory doesn't exist: %s", m_downloadPath.c_str());
+            SV_LOG_ERROR("Can't Create Build, Path to Download directory doesn't exist: %s", downloadPath.c_str());
             return {};
         }
 
-        std::string buildDirPath = m_downloadPath + "\\" + p_buildName;
-        if (!PathExists(buildDirPath) && !CreateDirectoryA(buildDirPath.c_str(), NULL))
+        const std::string buildDirPath = AppendPath(downloadPath, p_buildName);
+        std::error_code   err;
+
+        if (!(fs::create_directories(buildDirPath.c_str(), err) || err.value() == 0))
         {
-            SV_LOG_ERROR("Can't Create Build, can't create directory for Build: %s", buildDirPath.c_str());
+            SV_LOG_ERROR("Can't Create Build, can't create directory for Build at \"%s\": %s",
+                buildDirPath.c_str(), err.message().c_str());
+
             return {};
         }
- 
-        if (!fs::is_empty(buildDirPath)) 
+
+        if (!fs::is_empty(buildDirPath, err))
         {
             SV_LOG_ERROR("Can't Create Build, Directory not Empty: %s", buildDirPath.c_str());
             return {};
         }
 
-        std::string buildFilePath = buildDirPath + "\\" + p_buildName + ".exe";
-        if (!CopyFileA(RuntimeBuildLocalPath.data(), buildFilePath.c_str(), TRUE))
+        if (err.value() != 0)
         {
-            SV_LOG_ERROR("Can't Create Build, Can't copy file RuntimeBuild: %s", buildFilePath.c_str());
+            SV_LOG_ERROR("Can't Create Build, Failed to check if directory \"%s\" is empty: %s",
+                buildDirPath.c_str(), err.message().c_str());
+
             return {};
         }
 
-        fs::path assetsSource = std::filesystem::current_path() / AssetsDirLocalPath;
-        fs::path assetsPath = fs::path(buildDirPath) / AssetsDirLocalPath;
-        try
+        std::string buildFilePath = buildDirPath + "\\" + p_buildName + ".exe";
+        if (!(fs::copy_file(RUNTIME_BUILD_LOCAL_PATH, buildFilePath, err) || err.value() == 0))
         {
-            fs::create_directories(assetsPath); // Recursively create assetsPath directory
-            fs::copy(assetsSource, assetsPath, fs::copy_options::recursive);
-        }
-        catch (std::exception& e)
-        {
-            SV_LOG_ERROR("Can't Create Build, can't copy Assets folder: %s", e.what());
+            SV_LOG_ERROR("Can't Create Build, Can't copy runtime from \"%s\" to \"%s\": %s",
+                RUNTIME_BUILD_LOCAL_PATH, buildFilePath.c_str(), err.message().c_str());
+
+            return {};
         }
 
-        fs::path configPath = fs::path(buildDirPath) / BuildConfigFileName;
-        if (!p_setup.Save(configPath.string()))
+        const fs::path assetsSource = ASSETS_DIR_LOCAL_PATH;
+        const fs::path assetsPath   = fs::path(buildDirPath) / ASSETS_DIR_LOCAL_PATH;
+
+        // Recursively create assetsPath directory
+        if (!(fs::create_directories(assetsPath, err) || err.value() == 0))
+        {
+            SV_LOG_ERROR("Can't Create Build, can't create Assets folder at \"%s\": %s", assetsPath.c_str(), err.message().c_str());
+            return {};
+        }
+
+        fs::copy(assetsSource, assetsPath, fs::copy_options::recursive, err);
+        if (err.value() != 0)
+        {
+            SV_LOG_ERROR("Can't Create Build, can't copy Assets folder from \"%s\" to \"%s\": %s",
+                assetsSource.c_str(), assetsPath.c_str(), err.message().c_str());
+
+            return {};
+        }
+
+        const std::string configPath = AppendPath(buildDirPath, BUILD_CONFIG_FILE_NAME);
+        if (!p_setup.Save(configPath))
         {
             SV_LOG_ERROR("Can't Create Build, can't save BuildConfig: %s", configPath.c_str());
             return {};
@@ -106,17 +133,17 @@ namespace SvEditor::RuntimeBuild
     {
         p_buildFilePath.resize(MAX_PATH);
 
-        STARTUPINFOA  si;
-        PROCESS_INFORMATION  pi;
+        STARTUPINFOA        si;
+        PROCESS_INFORMATION pi;
 
         ZeroMemory(&si, sizeof(si));
         si.cb = sizeof(si);
         ZeroMemory(&pi, sizeof(pi));
 
-        if(!CreateProcessA(
+        if (!CreateProcessA(
             NULL, p_buildFilePath.data(), NULL,
             NULL, NULL, FALSE, 0, NULL,
-            &si, &pi))  
+            &si, &pi))
         {
             SV_LOG_ERROR("Can't run build (%s): CreateProcess failed (%d).", p_buildFilePath.c_str(), GetLastError());
             return;

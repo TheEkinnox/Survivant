@@ -65,7 +65,7 @@ namespace SvCore::Resources
     ResourceRef<T> ResourceManager::GetOrCreate(const std::string& p_path)
     {
         ResourceRef<T> resource = Get<T>(p_path);
-        return resource ? resource : Load<T>(p_path);
+        return resource.Get() ? resource : Load<T>(p_path);
     }
 
     template <typename T>

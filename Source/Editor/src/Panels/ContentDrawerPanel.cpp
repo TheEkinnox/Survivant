@@ -8,6 +8,8 @@
 
 #include <SurvivantApp/Core/IEngine.h>
 
+#include <SurvivantAudio/AudioClip.h>
+
 #include <SurvivantCore/Resources/ResourceRegistry.h>
 #include <SurvivantCore/ECS/Scene.h>
 
@@ -212,6 +214,7 @@ namespace SvEditor::Panels
         using namespace SvRendering::Resources;
         using namespace SvRendering::RHI;
         using namespace SvScripting;
+        using namespace SvAudio;
 
         auto& rr = ResourceRegistry::GetInstance();
 
@@ -219,6 +222,8 @@ namespace SvEditor::Panels
         {
             auto& set = extensions[rr.GetRegisteredTypeName<Model>()];
             set.insert(".obj");
+            set.insert(".fbx");
+            set.insert(".gltf");
         }
         {
             auto& set = extensions[rr.GetRegisteredTypeName<Material>()];
@@ -242,6 +247,12 @@ namespace SvEditor::Panels
         {
             auto& set = extensions[rr.GetRegisteredTypeName<Scene>()];
             set.insert(".scn");
+        }
+        {
+            auto& set = extensions[rr.GetRegisteredTypeName<AudioClip>()];
+            set.insert(".wav");
+            set.insert(".mp3");
+            set.insert(".ogg");
         }
 
         return extensions;
@@ -294,6 +305,11 @@ namespace SvEditor::Panels
         return false;
     }
 
+    const ContentDrawerPanel::TypeToBranch& ContentDrawerPanel::GetAllFilePaths()
+    {
+        return s_typedFiles;
+    }
+
     std::vector<std::string> ContentDrawerPanel::GetAllFilePaths(const std::string& p_type)
     {
         auto it = s_typedFiles.find(p_type);
@@ -305,7 +321,7 @@ namespace SvEditor::Panels
         paths.reserve(branches.size());
 
         for (auto& branch : branches)
-            paths.emplace_back(std::string(branch.lock()->GetPath()));
+            paths.emplace_back(branch.lock()->GetPath());
 
         return paths;
     }

@@ -15,7 +15,7 @@ namespace SvCore::Resources
 
     template <class T>
     ResourceRef<T>::ResourceRef(const std::string& p_path)
-        : ResourceRef(ResourceManager::GetInstance().GetOrCreate<T>(p_path))
+        : ResourceRef(p_path, nullptr)
     {
     }
 
@@ -133,7 +133,7 @@ namespace SvCore::Resources
     template <class T>
     ResourceRef<T>::operator bool() const
     {
-        return m_refCount && GetOrDefault();
+        return GetOrDefault();
     }
 
     template <class T>
@@ -150,13 +150,16 @@ namespace SvCore::Resources
     template <class T>
     T* ResourceRef<T>::Get() const
     {
+        if (!m_resource && !m_path.empty())
+            const_cast<ResourceRef&>(*this).Reload();
+
         return m_resource;
     }
 
     template <class T>
     T* ResourceRef<T>::GetOrDefault() const
     {
-        return m_resource || !m_path.empty() ? m_resource : GetDefaultResource<T>();
+        return m_resource || !m_path.empty() ? Get() : GetDefaultResource<T>();
     }
 
     template <class T>
@@ -225,6 +228,15 @@ namespace SvCore::Resources
     }
 
     template <class T>
+    bool ResourceRef<T>::Reload()
+    {
+        if constexpr (!std::is_same_v<IResource, T>)
+            return (*this) = ResourceManager::GetInstance().GetOrCreate<T>(m_path);
+        else
+            return (*this) = ResourceManager::GetInstance().Get<T>(m_path);
+    }
+
+    template <class T>
     void ResourceRef<T>::Reset()
     {
         if (m_refCount && --(*m_refCount) == 0)
@@ -277,7 +289,7 @@ namespace SvCore::Resources
     }
 
     inline GenericResourceRef::GenericResourceRef(const std::string& p_type, const std::string& p_path)
-        : GenericResourceRef(ResourceManager::GetInstance().GetOrCreate(p_type, p_path))
+        : GenericResourceRef(p_type, p_path, nullptr)
     {
     }
 
@@ -329,7 +341,20 @@ namespace SvCore::Resources
         return !m_resource || m_resource->GetTypeName() == p_type;
     }
 
-    inline std::string GenericResourceRef::GetType() const
+    inline IResource* GenericResourceRef::Get() const
+    {
+        if (!m_resource && !m_type.empty() && !m_path.empty())
+            const_cast<GenericResourceRef&>(*this).Reload();
+
+        return m_resource;
+    }
+
+    inline bool GenericResourceRef::Reload()
+    {
+        return (*this) = ResourceManager::GetInstance().GetOrCreate(m_type, m_path);
+    }
+
+    inline const std::string& GenericResourceRef::GetType() const
     {
         return m_type;
     }

@@ -3,6 +3,8 @@
 
 #include "SurvivantEditor/Core/EditorEngine.h"
 
+#include "SurvivantScripting/Bindings/LuaAudioBinder.h"
+
 #include <SurvivantApp/Inputs/InputManager.h>
 
 #include <SurvivantScripting/Bindings/LuaECSBinder.h>
@@ -30,6 +32,7 @@ namespace SvEditor::Core
         LuaRenderingBinder::Bind(p_luaState);
         LuaResourceBinder::Bind(p_luaState);
         LuaPhysicsBinder::Bind(p_luaState);
+        LuaAudioBinder::Bind(p_luaState);
 	}
 
 	void LuaEditorBinder::EditorImputBinder(sol::state& p_luaState)
@@ -67,7 +70,7 @@ namespace SvEditor::Core
                 },
                 [](const EKey p_key, const EInputModifier p_modifier)
                 {
-                    return  dynamic_cast<EditorEngine*>(SV_ENGINE())->IsGameFocused() && 
+                    return  dynamic_cast<EditorEngine*>(SV_ENGINE())->IsGameFocused() &&
                             InputManager::GetInstance().EvaluateInput(
                                 KeyType(p_key, EKeyState::PRESSED, p_modifier));
                 }
@@ -75,13 +78,13 @@ namespace SvEditor::Core
             "IsKeyUp", sol::overload(
                 [](const EKey p_key)
                 {
-                    return  dynamic_cast<EditorEngine*>(SV_ENGINE())->IsGameFocused() && 
+                    return  dynamic_cast<EditorEngine*>(SV_ENGINE())->IsGameFocused() &&
                             InputManager::GetInstance().EvaluateInput(
                                 KeyType(p_key, EKeyState::RELEASED, EInputModifier::MOD_ANY));
                 },
                 [](const EKey p_key, const EInputModifier p_modifier)
                 {
-                    return  dynamic_cast<EditorEngine*>(SV_ENGINE())->IsGameFocused() && 
+                    return  dynamic_cast<EditorEngine*>(SV_ENGINE())->IsGameFocused() &&
                             InputManager::GetInstance().EvaluateInput(
                                 KeyType(p_key, EKeyState::RELEASED, p_modifier));
                 }
@@ -89,13 +92,13 @@ namespace SvEditor::Core
             "IsMouseButtonDown", sol::overload(
                 [](const EMouseButton p_btn)
                 {
-                    return  dynamic_cast<EditorEngine*>(SV_ENGINE())->IsGameFocused() && 
+                    return  dynamic_cast<EditorEngine*>(SV_ENGINE())->IsGameFocused() &&
                             InputManager::GetInstance().EvaluateInput(
                                  MouseType(p_btn, EMouseButtonState::PRESSED, EInputModifier::MOD_ANY));
                 },
                 [](const EMouseButton p_btn, const EInputModifier p_modifier)
                 {
-                    return  dynamic_cast<EditorEngine*>(SV_ENGINE())->IsGameFocused() && 
+                    return  dynamic_cast<EditorEngine*>(SV_ENGINE())->IsGameFocused() &&
                             InputManager::GetInstance().EvaluateInput(
                                 MouseType(p_btn, EMouseButtonState::PRESSED, p_modifier));
                 }
@@ -109,7 +112,7 @@ namespace SvEditor::Core
                 },
                 [](const EMouseButton p_btn, const EInputModifier p_modifier)
                 {
-                    return  dynamic_cast<EditorEngine*>(SV_ENGINE())->IsGameFocused() && 
+                    return  dynamic_cast<EditorEngine*>(SV_ENGINE())->IsGameFocused() &&
                             InputManager::GetInstance().EvaluateInput(
                                 MouseType(p_btn, EMouseButtonState::RELEASED, p_modifier));
                 }

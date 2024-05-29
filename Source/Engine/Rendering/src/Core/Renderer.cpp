@@ -187,7 +187,7 @@ namespace SvRendering::Core
         {
             const auto& [model, material, layerMask] = *drawables.Get<const ModelComponent>(drawableEntity);
 
-            if (!model || !material.GetOrDefault() || !(p_renderPass.m_cullingMask & layerMask))
+            if (!model || !material || !(p_renderPass.m_cullingMask & layerMask))
                 continue;
 
             const Transform& transform = *drawables.Get<const Transform>(drawableEntity);

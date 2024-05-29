@@ -1,7 +1,6 @@
 #include "SurvivantEditor/Core/EngineApp.h"
 
 #include "SurvivantEditor/Core/InspectorItemManager.h"
-#include "SurvivantEditor/Core/LuaEditorBinder.h"
 #include "SurvivantEditor/Panels/HierarchyPanel.h"
 
 #include <SurvivantApp/Inputs/InputManager.h>
@@ -40,13 +39,6 @@ namespace SvEditor::Core
 	{
 		SvCore::Debug::Logger::GetInstance().SetFile("debug.log");
 		SvCore::Resources::ResourceManager::GetInstance().AddSearchPath("assets");
-
-		//physics
-		SvPhysics::PhysicsContext::GetInstance().Init();
-
-		//scripts
-		SvScripting::LuaContext::GetInstance().SetUserTypeBinders(&LuaEditorBinder::EditorUserTypeBindings);
-		SvScripting::LuaContext::GetInstance().Init();
 
 		//setup InspectorComponents
 		InspectorItemManager::Init();

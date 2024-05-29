@@ -5,18 +5,24 @@
 
 namespace LibMath
 {
-	template<typename DataT>
-	struct Details::Determinant<3, 3, DataT>
-	{
-		static DataT	compute(const TMatrix<3, 3, DataT>& mat);
-	};
+    template <typename DataT>
+    struct Details::Determinant<3, 3, DataT>
+    {
+        static DataT compute(const TMatrix<3, 3, DataT>& mat);
+    };
 
-	typedef TMatrix<3, 2, float> Matrix3x2;
+    template <typename DataT>
+    struct Details::Inverse<3, 3, DataT>
+    {
+        static TMatrix<3, 3, DataT> compute(const TMatrix<3, 3, DataT>& mat);
+    };
 
-	typedef TMatrix<3, 3, float> Matrix3x3;
-	typedef Matrix3x3 Matrix3;
+    using Matrix3x2 = TMatrix<3, 2, float>;
 
-	typedef TMatrix<3, 4, float> Matrix3x4;
+    using Matrix3x3 = TMatrix<3, 3, float>;
+    using Matrix3 = Matrix3x3;
+
+    using Matrix3x4 = TMatrix<3, 4, float>;
 }
 
 #include "Matrix3.inl"

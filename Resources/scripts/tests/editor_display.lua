@@ -1,5 +1,6 @@
 ---@class EditorDisplay : Script
 local EditorDisplay = {
+    _hidden = "You can't see me",
     nil_obj = nil,
     string = "str",
     int = 123456,
@@ -8,10 +9,14 @@ local EditorDisplay = {
     table = {
         a = 1,
         [1] = "a",
-        subtable = {
+        sub_table = {
             b = 2,
             [2] = "b",
             a = "used name"
+        },
+        empty = {},
+        single_element = {
+            alone = "lonely"
         }
     },
     userdata = {
@@ -21,7 +26,11 @@ local EditorDisplay = {
         transform = Transform.new(),
         degree = Degree.new(45),
         radian = Radian.new(Degree.new(45)),
-        quaternion = Quaternion.FromEuler(Degree.new(90), Degree.new(45), Degree.new(30), ERotationOrder.YXZ)
+        quaternion = Quaternion.FromEuler(Degree.new(90), Degree.new(45), Degree.new(30), ERotationOrder.YXZ),
+        emptyResourceRef = Resource.new(),
+        resourceType = Resource.new(),
+        sceneRef = Application.currentScene,
+        entity = Application.currentScene.entities[1]
     },
     "no key"
 }

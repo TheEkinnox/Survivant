@@ -1,7 +1,11 @@
 //EditorEngine.cpp
 #include "SurvivantEditor/Core/EditorEngine.h"
 
+#include "SurvivantAudio/AudioContext.h"
+
 #include "SurvivantEditor/Core/EditorWindow.h"
+#include "SurvivantEditor/Core/LuaEditorBinder.h"
+#include "SurvivantEditor/Panels/HierarchyPanel.h"
 #include "SurvivantEditor/RuntimeBuild/BuildManager.h"
 
 #include <SurvivantCore/Debug/Assertion.h>
@@ -27,6 +31,17 @@ namespace SvEditor::Core
 	void EditorEngine::Init()
 	{
 		s_engine = this;
+
+		//audio
+		if (!SvAudio::AudioContext::GetInstance().Init())
+			ASSERT(false, "Failed to initialize audio context");
+
+		//physics
+		SvPhysics::PhysicsContext::GetInstance().Init();
+
+		//scripts
+		SvScripting::LuaContext::SetUserTypeBinders(&LuaEditorBinder::EditorUserTypeBindings);
+		SvScripting::LuaContext::GetInstance().Init();
 
 		//create scenes
 		//BrowseToDefaultScene(*m_editorWorld); //cant use this func bcs world does not exist
@@ -84,8 +99,11 @@ namespace SvEditor::Core
 		SvScripting::LuaContext& luaContext = SvScripting::LuaContext::GetInstance();
 		luaContext.Reload();
 
+		ResourceManager& resourceManager = ResourceManager::GetInstance();
+		resourceManager.ReloadAll<SvScripting::LuaScript>();
+
 		auto& pieWorld = *m_PIEWorld.lock();
-		pieWorld.CurrentScene() = ResourceManager::GetInstance().Load<Scene>(m_editorSelectedScene.GetPath());
+		pieWorld.CurrentScene() = resourceManager.Load<Scene>(m_editorSelectedScene.GetPath());
 		pieWorld.m_inputs = std::make_shared<SvApp::InputManager::InputBindings>();
 		pieWorld.SetCamera(pieWorld.GetFirstCamera());
 		pieWorld.SetInputs();
@@ -306,6 +324,7 @@ namespace SvEditor::Core
 
 	bool EditorEngine::ChangeSceneInternal()
 	{
+		HierarchyPanel::ToggleSelectable(SvCore::ECS::NULL_ENTITY.GetIndex());
 		std::string scenePath = std::move(m_scenePath);
 
 		if (!m_gameInstance && m_isEditorModifiedScene && scenePath != m_editorWorld->CurrentScene().GetPath())
@@ -332,6 +351,8 @@ namespace SvEditor::Core
 			m_editorSelectedScene = m_editorWorld->CurrentScene();
 
 		m_isEditorModifiedScene = false;
+		HierarchyPanel::ToggleSelectable(currentSelection);
+
 		return true;
 	}
 

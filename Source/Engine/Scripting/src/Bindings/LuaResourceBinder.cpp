@@ -26,6 +26,11 @@ namespace SvScripting::Bindings
             GenericResourceRef(const GenericResourceRef&)
         > ctor;
 
+        sol::table typeTable = p_luaState.create_table_with(
+            "name", typeName,
+            "is", &sol::detail::is_check<GenericResourceRef>
+        );
+
         sol::usertype resourceType = p_luaState.new_usertype<GenericResourceRef>(
             typeName, ctor,
             sol::base_classes, sol::bases<ResourceRef<IResource>, ResourceRefBase>(),
@@ -33,10 +38,14 @@ namespace SvScripting::Bindings
             "type", sol::readonly_property(&GenericResourceRef::GetType),
             "path", sol::readonly_property(&GenericResourceRef::GetPath),
             "fullPath", sol::readonly_property(&GenericResourceRef::GetFullPath),
+            sol::meta_function::type, typeTable,
             sol::meta_function::index, [&p_luaState](const GenericResourceRef& p_self, const sol::object& p_index) -> sol::object
             {
+                if (!p_self)
+                    return sol::nil;
+
                 const LuaTypeInfo& typeInfo = LuaTypeRegistry::GetInstance().GetTypeInfo(p_self.GetType());
-                return typeInfo.ToLua(p_self.GetOrDefault(), p_luaState)[p_index];
+                return typeInfo.ToLua(p_self.Get(), p_luaState)[p_index];
             },
             sol::meta_function::new_index,
             [&p_luaState](const GenericResourceRef& p_self, const sol::object& p_key, sol::object p_value)
@@ -85,8 +94,6 @@ namespace SvScripting::Bindings
                 }
             )
         );
-
-        resourceType["__type"]["name"] = typeName;
 
         static const LuaTypeInfo& typeInfo = LuaTypeRegistry::GetInstance().RegisterType<GenericResourceRef>(typeName);
         return (void)typeInfo;

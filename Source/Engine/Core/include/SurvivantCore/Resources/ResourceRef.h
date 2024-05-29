@@ -120,7 +120,7 @@ namespace SvCore::Resources
          * \brief Gets a pointer to the referenced resource
          * \return A pointer to the referenced resource
          */
-        T* Get() const;
+        virtual T* Get() const;
 
         /**
          * \brief Gets a pointer to the referenced or default resource
@@ -153,6 +153,11 @@ namespace SvCore::Resources
          * \return True on success. False otherwise
          */
         bool Export(bool p_pretty = false, const std::string& p_path = "") const;
+
+        /**
+         * \brief Reloads the resource reference
+         */
+        virtual bool Reload();
 
         /**
          * \brief Resets the resource reference
@@ -290,10 +295,21 @@ namespace SvCore::Resources
         bool CanCastTo(const std::string& p_type) const;
 
         /**
+         * \brief Gets a pointer to the referenced resource
+         * \return A pointer to the referenced resource
+         */
+        IResource* Get() const override;
+
+        /**
+         * \brief Reloads the resource reference
+         */
+        bool Reload() override;
+
+        /**
          * \brief Gets the referenced resource's type
          * \return The referenced resource's type
          */
-        std::string GetType() const;
+        const std::string& GetType() const;
 
         /**
          * \brief Serializes the generic resource reference to json

@@ -1,13 +1,13 @@
 #include "SurvivantEditor/PanelItems/PanelScript.h"
 
-#include "SurvivantEditor/PanelItems/PanelButton.h"
 #include "SurvivantEditor/PanelItems/PanelCheckbox.h"
 #include "SurvivantEditor/PanelItems/PanelDisabledTextInput.h"
 #include "SurvivantEditor/PanelItems/PanelDoubleInput.h"
 #include "SurvivantEditor/PanelItems/PanelEntitySelector.h"
 #include "SurvivantEditor/PanelItems/PanelFloatInput.h"
+#include "SurvivantEditor/PanelItems/PanelGenericResourceSelector.h"
+#include "SurvivantEditor/PanelItems/PanelGroup.h"
 #include "SurvivantEditor/PanelItems/PanelIntInput.h"
-#include "SurvivantEditor/PanelItems/PanelTextBox.h"
 #include "SurvivantEditor/PanelItems/PanelTextInput.h"
 #include "SurvivantEditor/PanelItems/PanelTransformInput.h"
 #include "SurvivantEditor/PanelItems/PanelVec2Input.h"
@@ -34,21 +34,20 @@ namespace SvEditor::PanelItems
 {
     namespace
     {
-        void AddLuaTableToPanel(PanelScript::Items& p_items, sol::table p_table, uint8_t p_depth = 0);
+        void AddLuaTableToPanel(PanelScript::Items& p_items, sol::table p_table, const std::string& p_name = "");
 
-        std::string GetDisplayName(const sol::object& p_key, const uint8_t p_depth)
+        std::string GetDisplayName(const sol::object& p_key, const bool p_isFirst)
         {
-            static constexpr size_t KEY_OFFSET = 2;
-
             std::string displayName;
-
-            if (p_depth > 0)
-                displayName.append(KEY_OFFSET * p_depth, ' ');
 
             if (p_key.get_type() == sol::type::string)
             {
                 const std::string& keyStr = p_key.as<const std::string&>();
-                return displayName.append(p_depth == 0 ? keyStr : "." + keyStr);
+
+                if (keyStr[0] == '_' || LuaScriptList::s_ignoredFields.contains(keyStr))
+                    return {};
+
+                return displayName.append(p_isFirst ? keyStr : "." + keyStr);
             }
 
             if (p_key.get_type() == sol::type::number)
@@ -98,12 +97,18 @@ namespace SvEditor::PanelItems
             }
             else if (typeId == LuaTypeRegistry::GetTypeId<Transform>())
             {
-                p_items.emplace_back(std::make_shared<DefaultText>(p_displayName));
-                p_items.emplace_back(std::make_shared<PanelTransformInput>(
-                    [p_table, p_key]() mutable -> Transform& {
-                        return *p_table[p_key].get<Transform*>();
-                    }
-                ));
+                PanelGroup::GroupSettings settings{
+                    .m_label = p_displayName,
+                    .m_offset = { IPanelable::X_OFFSET, 0.f }
+                };
+
+                p_items.emplace_back(std::make_shared<PanelGroup>(PanelGroup::Items{
+                    std::make_shared<PanelTransformInput>(
+                        [p_table, p_key]() mutable -> Transform& {
+                            return *p_table[p_key].get<Transform*>();
+                        }
+                    )
+                }, settings));
             }
             else if (typeId == LuaTypeRegistry::GetTypeId<Degree>())
             {
@@ -159,6 +164,14 @@ namespace SvEditor::PanelItems
                     )
                 ));
             }
+            else if (typeId == LuaTypeRegistry::GetTypeId<GenericResourceRef>())
+            {
+                p_items.emplace_back(std::make_shared<PanelGenericResourceSelector>(p_displayName,
+                    [p_table, p_key]() mutable -> GenericResourceRef& {
+                        return *p_table[p_key].get<GenericResourceRef*>();
+                    }
+                ));
+            }
             else
             {
                 // TODO: Add other known lua user types to script inspector panel
@@ -166,16 +179,24 @@ namespace SvEditor::PanelItems
             }
         }
 
-        void AddLuaTableToPanel(PanelScript::Items& p_items, sol::table p_table, const uint8_t p_depth)
+        void AddLuaTableToPanel(PanelScript::Items& p_items, sol::table p_table, const std::string& p_name)
         {
             using namespace SvCore::Serialization;
             using namespace SvCore::Utility;
 
+            PanelGroup::GroupSettings groupSettings
+            {
+                .m_label = p_name,
+                .m_offset = { IPanelable::X_OFFSET, 0.f }
+            };
+
+            PanelGroup::Items items;
+
             for (auto [key, value] : p_table)
             {
-                std::string displayName = GetDisplayName(key, p_depth);
+                std::string displayName = GetDisplayName(key, p_name.empty());
 
-                if (displayName.empty() || displayName[0] == '_' || LuaScriptList::s_ignoredFields.contains(displayName))
+                if (displayName.empty())
                     continue;
 
                 switch (value.get_type())
@@ -183,13 +204,13 @@ namespace SvEditor::PanelItems
                 case sol::type::none:
                 case sol::type::lua_nil:
                 {
-                    p_items.emplace_back(std::make_shared<PanelDisabledTextInput>(displayName,
+                    items.emplace_back(std::make_shared<PanelDisabledTextInput>(displayName,
                         sol::type_name(nullptr, value.get_type())));
                     break;
                 }
                 case sol::type::string:
                 {
-                    p_items.emplace_back(std::make_shared<PanelTextInput>(displayName,
+                    items.emplace_back(std::make_shared<PanelTextInput>(displayName,
                         [p_table, key]
                         {
                             return p_table[key].get<std::string>();
@@ -206,7 +227,7 @@ namespace SvEditor::PanelItems
                 case sol::type::number:
                 {
                     if (value.is<int>())
-                        p_items.emplace_back(std::make_shared<PanelIntInput>(displayName,
+                        items.emplace_back(std::make_shared<PanelIntInput>(displayName,
                             [p_table, key]
                             {
                                 return p_table[key].get<int>();
@@ -217,7 +238,7 @@ namespace SvEditor::PanelItems
                             }
                         ));
                     else
-                        p_items.emplace_back(std::make_shared<PanelDoubleInput>(displayName,
+                        items.emplace_back(std::make_shared<PanelDoubleInput>(displayName,
                             [p_table, key]
                             {
                                 return p_table[key].get<double>();
@@ -232,7 +253,7 @@ namespace SvEditor::PanelItems
                 }
                 case sol::type::boolean:
                 {
-                    p_items.emplace_back(std::make_shared<PanelCheckbox>(displayName,
+                    items.emplace_back(std::make_shared<PanelCheckbox>(displayName,
                         [p_table, key]
                         {
                             return p_table[key].get<bool>();
@@ -247,16 +268,12 @@ namespace SvEditor::PanelItems
                 }
                 case sol::type::userdata:
                 {
-                    AddLuaUserTypeToPanel(p_items, p_table, key, displayName);
+                    AddLuaUserTypeToPanel(items, p_table, key, displayName);
                     break;
                 }
                 case sol::type::table:
                 {
-                    ASSERT(~p_depth != 0, "Max lua table depth (%u) reached - Unable to add sub table \"%s\"",
-                        static_cast<uint8_t>(~0), displayName.c_str());
-
-                    p_items.emplace_back(std::make_shared<DefaultText>(displayName));
-                    AddLuaTableToPanel(p_items, value.as<sol::table>(), p_depth + 1);
+                    AddLuaTableToPanel(items, value.as<sol::table>(), displayName);
                     break;
                 }
                 case sol::type::lightuserdata:
@@ -267,6 +284,8 @@ namespace SvEditor::PanelItems
                     break;
                 }
             }
+
+            p_items.emplace_back(std::make_shared<PanelGroup>(items, groupSettings));
         }
     }
 

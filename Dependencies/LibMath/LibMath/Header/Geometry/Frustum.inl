@@ -6,22 +6,22 @@ namespace LibMath
     // Adapted from https://www8.cs.umu.se/kurser/5DV051/HT12/lab/plane_extraction.pdf
     inline Frustum::Frustum(const Matrix4& p_viewProjection)
     {
-        for (int8_t i               = 0; i < 4; ++i)
+        for (int8_t i = 0; i < 4; ++i)
             m_planes[PLANE_LEFT][i] = p_viewProjection(3, i) + p_viewProjection(0, i);
 
-        for (int8_t i                = 0; i < 4; ++i)
+        for (int8_t i = 0; i < 4; ++i)
             m_planes[PLANE_RIGHT][i] = p_viewProjection(3, i) - p_viewProjection(0, i);
 
-        for (int8_t i              = 0; i < 4; ++i)
+        for (int8_t i = 0; i < 4; ++i)
             m_planes[PLANE_TOP][i] = p_viewProjection(3, i) - p_viewProjection(1, i);
 
-        for (int8_t i                 = 0; i < 4; ++i)
+        for (int8_t i = 0; i < 4; ++i)
             m_planes[PLANE_BOTTOM][i] = p_viewProjection(3, i) + p_viewProjection(1, i);
 
-        for (int8_t i               = 0; i < 4; ++i)
+        for (int8_t i = 0; i < 4; ++i)
             m_planes[PLANE_NEAR][i] = p_viewProjection(3, i) + p_viewProjection(2, i);
 
-        for (int8_t i              = 0; i < 4; ++i)
+        for (int8_t i = 0; i < 4; ++i)
             m_planes[PLANE_FAR][i] = p_viewProjection(3, i) - p_viewProjection(2, i);
 
         for (Vector4& plane : m_planes)
