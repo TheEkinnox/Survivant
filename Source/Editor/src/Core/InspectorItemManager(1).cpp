@@ -22,11 +22,14 @@
 #include <SurvivantPhysics/Collider/CapsuleCollider.h>
 #include <SurvivantPhysics/Collider/SphereCollider.h>
 
+#include <SurvivantAudio/AudioClip.h>
+
 #include <SurvivantScripting/LuaScriptList.h>
 
 #include <Transform.h>
 
 using namespace LibMath;
+using namespace SvAudio;
 using namespace SvCore::ECS;
 using namespace SvEditor::PanelItems;
 using namespace SvRendering::Components;
@@ -44,13 +47,13 @@ namespace SvEditor::Core
 	void InspectorItemManager::Init()
 	{
 		//resources
-		CHECK(AddResourceToPanelable<Scene>(&AddResourceScene, "Scene"),			"Couldn't init resource type : Scene");
-		CHECK(AddResourceToPanelable<Model>(&AddResourceDefault, "Model"),			"Couldn't init resource type : Model");
-		CHECK(AddResourceToPanelable<::Material>(&AddResourceMaterial, "Material"),	"Couldn't init resource type : Material");
-		CHECK(AddResourceToPanelable<LuaScript>(&AddResourceDefault, "Script"),		"Couldn't init resource type : Script");
-		CHECK(AddResourceToPanelable<IShader>(&AddResourceDefault, "Shader"),		"Couldn't init resource type : Shader");
-		CHECK(AddResourceToPanelable<ITexture>(&AddResourceDefault, "Texture"),		"Couldn't init resource type : Texture");
-
+		CHECK(AddResourceToPanelable<Scene>(&AddResourceScene, "Scene"),						"Couldn't init resource type : Scene");
+		CHECK(AddResourceToPanelable<Model>(&AddResourceDefault, "Model"),						"Couldn't init resource type : Model");
+		CHECK(AddResourceToPanelable<::Material>(&AddResourceMaterial, "Material"),				"Couldn't init resource type : Material");
+		CHECK(AddResourceToPanelable<LuaScript>(&AddResourceDefault, "Script"),					"Couldn't init resource type : Script");
+		CHECK(AddResourceToPanelable<IShader>(&AddResourceDefault, "Shader"),					"Couldn't init resource type : Shader");
+		CHECK(AddResourceToPanelable<ITexture>(&AddResourceDefault, "Texture"),					"Couldn't init resource type : Texture");
+		CHECK(AddResourceToPanelable<AudioClip>(&AddResourceDefault, "AudioClip"),				"Couldn't init resource type : AudioClip");
 		CHECK(AddResourceToPanelable<PhysicsMaterial>(&AddResourceDefault, "PhysicsMaterial"),	"Couldn't init resource type : Physics Material");
 
 		//components

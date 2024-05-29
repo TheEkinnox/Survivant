@@ -351,7 +351,6 @@ namespace SvEditor::Core
 			m_editorSelectedScene = m_editorWorld->CurrentScene();
 
 		m_isEditorModifiedScene = false;
-		HierarchyPanel::ToggleSelectable(currentSelection);
 
 		return true;
 	}
