@@ -77,7 +77,6 @@ namespace SvScripting::Bindings
 
     void LuaAudioBinder::BindAudioHandle(sol::state& p_luaState)
     {
-        // TODO: Audio handle bindings
         static constexpr const char* typeName = "AudioHandle";
 
         sol::constructors<
