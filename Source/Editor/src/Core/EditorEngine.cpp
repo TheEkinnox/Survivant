@@ -74,8 +74,11 @@ namespace SvEditor::Core
 		SvScripting::LuaContext& luaContext = SvScripting::LuaContext::GetInstance();
 		luaContext.Reload();
 
+		ResourceManager& resourceManager = ResourceManager::GetInstance();
+		resourceManager.ReloadAll<SvScripting::LuaScript>();
+
 		auto& pieWorld = *m_PIEWorld.lock();
-		pieWorld.CurrentScene() = ResourceManager::GetInstance().Load<Scene>(m_editorSelectedScene.GetPath());
+		pieWorld.CurrentScene() = resourceManager.Load<Scene>(m_editorSelectedScene.GetPath());
 		pieWorld.m_inputs = std::make_shared<SvApp::InputManager::InputBindings>();
 		pieWorld.SetCamera(pieWorld.GetFirstCamera());
 		pieWorld.SetInputs();
