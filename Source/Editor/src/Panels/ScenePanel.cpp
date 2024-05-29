@@ -45,9 +45,6 @@ namespace SvEditor::Panels
 
 		if (s_world.lock()->m_isVisalbe = ImGui::Begin(m_name.c_str(), &showWindow, window_flags))
 		{
-			//focus
-			s_world.lock()->m_isFocused = ImGui::IsWindowFocused();
-
 			if (IsWindowDifferentSize(m_imageSize))
 			{
 				s_onResizeEvent.Invoke(m_imageSize);
@@ -72,8 +69,12 @@ namespace SvEditor::Panels
 			sceneHovered &= !ImGui::IsItemHovered();
 
 			//click 
-			if (!m_gizmos.UsingGizmo() && ImGui::IsMouseClicked(0) && sceneHovered)
+			if (!m_gizmos.UsingGizmo() && ImGui::IsMouseClicked(0) &&
+				s_world.lock()->m_isFocused && sceneHovered)
 				InvokeClickScene();
+
+			//focus
+			s_world.lock()->m_isFocused = ImGui::IsWindowFocused();
 		}
 
 		ImGui::End();
