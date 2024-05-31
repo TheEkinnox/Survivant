@@ -56,7 +56,21 @@ namespace SvScripting::Bindings
             sol::meta_function::multiplication, sol::resolve<T(T, float)>(&operator*),
             sol::meta_function::division, sol::resolve<T(T, float)>(&operator/),
             "Wrap", &T::wrap,
-            "raw", sol::readonly_property(&T::raw)
+            "raw", sol::readonly_property(&T::raw),
+            "rawDegree", sol::readonly_property(
+                [](const T& p_self)
+                {
+                    return Degree(p_self).raw();
+                }
+            ),
+            "rawRadian", sol::readonly_property(
+                [](const T& p_self)
+                {
+                    return Radian(p_self).raw();
+                }
+            ),
+            "GetWrappedDegree", sol::readonly_property(&T::degree),
+            "GetWrappedRadian", sol::readonly_property(&T::radian)
         );
 
         angleType["__type"]["name"] = p_typeName;
