@@ -20,6 +20,10 @@ EComponentSearchOrigin = {
 ---@field public components table<number, Component> READ-ONLY
 Entity = {}
 
+---Creates an empty entity
+---@return Entity
+function Entity.new() end
+
 ---Creates a copy of the entity
 ---@return Entity
 function Entity:Copy() end

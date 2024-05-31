@@ -4,32 +4,29 @@ local GogglesTrigger = {
     player = Entity.new()
 }
 
-local shoudlDestroy = false
+local shouldDestroy = false
 
 ---@param triggerInfo TriggerInfo
-function GogglesTrigger:OnTriggerEnter(triggerInfo)    
+function GogglesTrigger:OnTriggerEnter(triggerInfo)
     if triggerInfo.otherCollider.owner == self.player then
         ---@type SwitchCam
         print(self.player)
-        local switchCam = self.player:GetScript("scripts.Player.switchCam")
-
+        local switchCam = self.player:GetScriptInChildren("scripts.Player.switchCam")
 
         if switchCam.isValid then
             switchCam.UnlockSwitch()
         else
             warn("Player entity does not have script 'scripts.Player.switchCam'")
         end
-        
-        shoudlDestroy = true
+
+        shouldDestroy = true
     end
 end
 
-function GogglesTrigger:OnUpdate(deltaTime) 
-    if shoudlDestroy then
+function GogglesTrigger:OnUpdate(deltaTime)
+    if shouldDestroy then
         self.owner:Destroy()
     end
-end   
-
-
+end
 
 return GogglesTrigger
