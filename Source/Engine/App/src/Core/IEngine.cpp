@@ -13,14 +13,14 @@
 
 namespace SvApp::Core
 {
-    bool IEngine::PrepareSceneChange(WorldContext& p_context, WorldContext::SceneRef& p_newLevel, const std::string& p_path)
+    bool IEngine::PrepareSceneChange(WorldContext& /*p_context*/, WorldContext::SceneRef& p_newLevel, const std::string& p_path)
     {
         //init destination scene
         using namespace SvCore::Resources;
 
-        //switch and the unload old scene
-        if (p_context.CurrentScene())
-            p_context.CurrentScene()->Clear();
+        ////switch and the unload old scene
+        //if (p_context.CurrentScene())
+        //    p_context.CurrentScene()->Clear();
 
         p_newLevel = ResourceManager::GetInstance().Load<Scene>(p_path);
 
@@ -86,7 +86,7 @@ namespace SvApp::Core
     bool IEngine::BrowseToScene(WorldContext& p_worldContext, const std::string& p_path)
     {
         //update current scene
-        WorldContext::SceneRef sceneRef;
+         WorldContext::SceneRef sceneRef;
 
         if (!(PrepareSceneChange(p_worldContext, sceneRef, p_path) &&
             CommitSceneChange(p_worldContext, sceneRef)))

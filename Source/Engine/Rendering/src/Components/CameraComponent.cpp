@@ -430,6 +430,11 @@ namespace SvRendering::Components
         return *this;
     }
 
+    const LibMath::Matrix4& CameraComponent::GetProjection() const
+    {
+        return m_projection;
+    }
+
     void CameraComponent::BuildProjection()
     {
         if (!m_isDirty)

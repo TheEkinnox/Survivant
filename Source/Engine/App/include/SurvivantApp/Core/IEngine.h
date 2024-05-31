@@ -28,7 +28,7 @@ namespace SvApp::Core
 		virtual void		Init() = 0;
 		virtual void		Update() = 0;
 		virtual SceneRef	GetCurrentScene() const = 0;
-		virtual bool		ChangeScene(const std::string& p_scenePath) = 0;
+		virtual void		ChangeScene(const std::string& p_scenePath) = 0;
 		virtual bool		ChangeCamera(const SvCore::ECS::EntityHandle& p_camera) = 0;
 		virtual float		GetDeltaTime() = 0;
 		virtual void		BakeLights() = 0;
@@ -54,7 +54,6 @@ namespace SvApp::Core
 		//acces GameInstace members
 		std::weak_ptr<WorldContext>&	GetWorldContextRef(GameInstance& p_instance);
 
-	private:
 		bool PrepareSceneChange(WorldContext& p_context, WorldContext::SceneRef& p_newLevel, const std::string& p_path);
 		bool CommitSceneChange(WorldContext& p_context, const WorldContext::SceneRef& p_newLevel);
 	};

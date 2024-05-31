@@ -18,7 +18,22 @@ namespace SvPhysics
         const Vector3 rightDir    = (rotationMat * Vector4::right()).xyz();
         const Vector3 frontDir    = (rotationMat * Vector4::front()).xyz();
 
-        const Vector3 halfSize = (m_axis * m_height + rightDir * m_radius + frontDir * m_radius) * .5f;
+        const Vector3 halfSize = m_axis * (.5f * m_height + m_radius) + rightDir * m_radius + frontDir * m_radius;
+
+        return
+        {
+            m_offset - halfSize,
+            m_offset + halfSize
+        };
+    }
+
+    LibMath::BoundingBox CapsuleCollider::GetUpwardsBoundingBox() const
+    {
+        const Vector3 upDir = Vector3::up();
+        const Vector3 rightDir = Vector3::right();
+        const Vector3 frontDir = Vector3::front();
+
+        const Vector3 halfSize = upDir * (.5f * m_height + m_radius) + rightDir * m_radius + frontDir * m_radius;
 
         return
         {
@@ -91,7 +106,7 @@ namespace SvPhysics
         float   halfHeight = m_height * .5f;
         Vector3 offset     = m_offset;
 
-        const Quaternion rotation = Quaternion::fromTo(Vector3::up(), m_axis);
+        const Quaternion rotation = Quaternion::fromTo(Vector3::right(), m_axis);
 
         if (p_transform)
         {

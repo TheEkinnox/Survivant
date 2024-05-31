@@ -1,9 +1,11 @@
 //PanelEntity.cpp
 #include "SurvivantEditor/PanelItems/PanelEntity.h"
 
+#include "SurvivantEditor/Core/EditorEngine.h"
 #include "SurvivantEditor/Core/InspectorItemManager.h"
 #include "SurvivantEditor/Core/IUI.h"
 #include "SurvivantEditor/MenuItems/MenuButton.h"
+
 
 #include <SurvivantCore/ECS/ComponentRegistry.h>
 #include <SurvivantCore/ECS/Components/TagComponent.h>
@@ -11,6 +13,8 @@
 #include <SurvivantScripting/LuaScriptList.h>
 
 #include <imgui.h>
+
+using namespace SvApp;
 
 namespace SvEditor::PanelItems
 {
@@ -122,7 +126,10 @@ namespace SvEditor::PanelItems
             (*it)->DisplayAndUpdatePanel();
 
             if ((*it)->NeedToRemove())
+            {
+                SV_EVENT_MANAGER().Invoke<Core::EditorEngine::OnEditorModifiedScene>();
                 it = RemoveComponent(it);
+            }
             else
                 ++it;
         }
@@ -199,7 +206,8 @@ namespace SvEditor::PanelItems
 
             m_addComponent->m_items.emplace_back(std::make_shared<MenuButton>(MenuButton(
                 name, [this, type = compReg.GetTypeInfo(name)](char) {
-                    AddAndSortComponent(InspectorItemManager::AddPanelableComponent(type, m_entity));}
+                    AddAndSortComponent(InspectorItemManager::AddPanelableComponent(type, m_entity));
+                    SV_EVENT_MANAGER().Invoke<Core::EditorEngine::OnEditorModifiedScene>(); }
             )));
         }
     }

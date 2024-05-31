@@ -16,6 +16,7 @@ namespace SvEditor::PanelItems
 
         ImGui::PushID(m_name.c_str());
         ImGui::BeginDisabled();
+        ImGui::SetNextItemWidth(-1);
         ImGui::InputText("##", m_string.data(), m_string.size(), ImGuiInputTextFlags_ReadOnly);
         ImGui::EndDisabled();
         ImGui::PopID();

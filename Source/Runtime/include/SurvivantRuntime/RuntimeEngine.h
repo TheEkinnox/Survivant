@@ -28,7 +28,7 @@ namespace SvRuntime
 		void		Init() override;
 		void		BakeLights() override;
 		SceneRef	GetCurrentScene() const override;
-		bool		ChangeScene(const std::string& p_scenePath) override;
+		void		ChangeScene(const std::string& p_scenePath) override;
 		bool		ChangeCamera(const SvCore::ECS::EntityHandle& p_camera) override;
 		float		GetDeltaTime() override;
 

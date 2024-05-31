@@ -33,9 +33,7 @@ namespace SvEditor::PanelItems
 		static void ClearPanelText(PanelTextInput& p_panel);
 
 	private:
-		//static int TextPanelCallBack(ImGuiInputTextCallbackData* data);
-
 		std::string		m_name;
-		std::string		m_string;
+		std::string		m_string; //TODO: remove this and GetUpdatedText() ?
 	};
 }

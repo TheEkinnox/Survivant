@@ -4,6 +4,8 @@
 #include "SurvivantEditor/Interfaces/IPanelable.h"
 #include "SurvivantCore/Utility/TypeTraits.h"
 
+#include "imgui.h"
+
 #include <memory>
 #include <functional>
 
@@ -51,6 +53,12 @@ namespace SvEditor::PanelItems
 				val = p_getCopy();
 				return val;
 			};
+	}
+
+	template<class T, typename ...Params>
+	inline void PanelInputBase<T, Params...>::DisplayAndUpdatePanel()
+	{
+		ImGui::SetNextItemWidth(-1);
 	}
 
 	template<class T, typename ...Params >

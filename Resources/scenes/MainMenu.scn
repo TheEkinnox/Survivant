@@ -1,0 +1,288 @@
+{
+    "entities": 5,
+    "components": [
+        {
+            "type": "Tag",
+            "data": [
+                {
+                    "owner": 2,
+                    "data": "quit"
+                },
+                {
+                    "owner": 1,
+                    "data": "Quit"
+                },
+                {
+                    "owner": 3,
+                    "data": "Buttons"
+                },
+                {
+                    "owner": 4,
+                    "data": "start"
+                }
+            ]
+        },
+        {
+            "type": "Model",
+            "data": [
+                {
+                    "owner": 4,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/unlitGreen.mat"
+                        },
+                        "layers": 4294967295
+                    }
+                },
+                {
+                    "owner": 1,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/white.mat"
+                        },
+                        "layers": 4294967295
+                    }
+                },
+                {
+                    "owner": 2,
+                    "data": {
+                        "model": {
+                            "path": "models/cube.obj"
+                        },
+                        "material": {
+                            "path": "materials/unlitRed.mat"
+                        },
+                        "layers": 4294967295
+                    }
+                }
+            ]
+        },
+        {
+            "type": "Hierarchy",
+            "data": [
+                {
+                    "owner": 4,
+                    "data": {
+                        "parent": 3
+                    }
+                },
+                {
+                    "owner": 3,
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
+                },
+                {
+                    "owner": 2,
+                    "data": {
+                        "parent": 3
+                    }
+                },
+                {
+                    "owner": 1,
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
+                }
+            ]
+        },
+        {
+            "type": "Transform",
+            "data": [
+                {
+                    "owner": 0,
+                    "data": {
+                        "position": "{0,10,0}",
+                        "rotation": "{-0.707107,0,0,0.707107}",
+                        "scale": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 1,
+                    "data": {
+                        "position": "{0,-1,0}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{33,1,22}"
+                    }
+                },
+                {
+                    "owner": 2,
+                    "data": {
+                        "position": "{0,1,4}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{3,1,2}"
+                    }
+                },
+                {
+                    "owner": 4,
+                    "data": {
+                        "position": "{0,1,0}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{5,1,2}"
+                    }
+                },
+                {
+                    "owner": 3,
+                    "data": {
+                        "position": "{0,0,0}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,1,1}"
+                    }
+                }
+            ]
+        },
+        {
+            "type": "ScriptList",
+            "data": [
+                {
+                    "owner": 0,
+                    "data": [
+                        {
+                            "name": "scripts.freeLook",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "rotation_speed"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Degree",
+                                            "data": 90.0
+                                        }
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "move_speed"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 3.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "mouse_sensitivity"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 0.005
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "owner": 4,
+                    "data": [
+                        {
+                            "name": "scripts.Menu.sceneButton",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "scenePath"
+                                    },
+                                    "value": {
+                                        "type": 4,
+                                        "data": "scenes/Level1.scn"
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "sceneKey"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 71.0
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "owner": 2,
+                    "data": [
+                        {
+                            "name": "scripts.Menu.quitButton",
+                            "data": []
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "Camera",
+            "data": [
+                {
+                    "owner": 0,
+                    "data": {
+                        "type": "perspective",
+                        "active": true,
+                        "order": 0,
+                        "clear_mask": 7,
+                        "clear_color": "{0,0,0,1}",
+                        "culling_mask": 4294967295,
+                        "perspective_fov": 90.0,
+                        "perspective_near": 0.0010000000474974513,
+                        "perspective_far": 50.0,
+                        "orthographic_size": 0.0,
+                        "orthographic_near": 0.0,
+                        "orthographic_far": 0.0
+                    }
+                }
+            ]
+        },
+        {
+            "type": "BoxCollider",
+            "data": [
+                {
+                    "owner": 4,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 1,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 2,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                }
+            ]
+        }
+    ]
+}

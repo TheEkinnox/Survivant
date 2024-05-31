@@ -46,6 +46,7 @@ namespace SvEditor::PanelItems
         ImGui::SameLine();
 
         ImGui::PushID(m_name.c_str());
+        PanelInputBase::DisplayAndUpdatePanel();
         if (ImGui::InputFloat2("##", value.getArray(), "%0.3f", flags))
         {
             value.m_x = LibMath::clamp(value.m_x, m_min, m_max);

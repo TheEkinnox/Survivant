@@ -19,6 +19,12 @@ namespace SvPhysics
         LibMath::BoundingBox GetBoundingBox() const override;
 
         /**
+         * \brief Gets the capsule collider's bounding box while using the 'up' axis
+         * \return The capsule collider's bounding box
+         */
+        LibMath::BoundingBox GetUpwardsBoundingBox() const;
+
+        /**
          * \brief Gets the capsule collider's bounding sphere
          * \return The capsule collider's bounding sphere
          */

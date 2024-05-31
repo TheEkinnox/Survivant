@@ -24,42 +24,27 @@ namespace SvEditor::PanelItems
         const std::string& p_name, const GetCopyFunc& p_getCopy, const Callback& p_callback) :
         PanelInputBase(p_getCopy, p_callback),
         m_name(p_name)
-    {
-        m_callback = p_callback;
-    }
+    {}
 
     void PanelTextInput::DisplayAndUpdatePanel()
     {
-        //Command-line
-        static ImGuiInputTextFlags input_text_flags =
-            ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory;
-
-        bool reclaim_focus = false;
+        static ImGuiInputTextFlags input_text_flags = ImGuiInputTextFlags_EnterReturnsTrue;
 
         auto& buffer = GetRef();
-
 
         ImGui::Text(m_name.c_str());
         ImGui::SameLine();
 
         ImGui::PushID(m_name.c_str());
+        PanelInputBase::DisplayAndUpdatePanel();
         if (ImGui::InputText("##", &buffer, input_text_flags, nullptr, this))
         {
             m_string = buffer;
 
-            //when iconTxt is finished being inputed
             if (m_callback)
                 m_callback({ this });
-
-            reclaim_focus = true;
         }
         ImGui::PopID();
-
-
-        // Auto-focus on window apparition
-        ImGui::SetItemDefaultFocus();
-        if (reclaim_focus)
-            ImGui::SetKeyboardFocusHere(-1); // Auto focus previous widget
     }
 
     void PanelTextInput::Clear()

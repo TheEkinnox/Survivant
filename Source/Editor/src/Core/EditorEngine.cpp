@@ -59,6 +59,25 @@ namespace SvEditor::Core
 	{
 		m_time.Tick();
 
+		if (!m_scenePath.empty())
+		{
+			bool changeSuccess = ChangeSceneInternal();
+
+			if (m_gameInstance && !CHECK(changeSuccess))
+			{
+				SetPaused(false);
+				DestroyGameInstance();
+			}
+			else
+			{
+				while (!m_gameInstance)
+				{
+					ASSERT(changeSuccess, "ChangeScene in Editor failed");
+					break;
+				}
+			}
+		}
+
 		if (m_editorWorld->m_isFocused)
 			m_editorWorld->m_renderingContext->UpdateCameraInput();
 	}
@@ -121,7 +140,8 @@ namespace SvEditor::Core
 
 		//while playing, loaded new scene, so go back to selected
 		if (scene != m_editorSelectedScene)
-			BrowseToScene(*m_editorWorld, m_editorSelectedScene.GetPath());
+			ChangeScene(m_editorSelectedScene.GetPath());
+			//BrowseToScene(*m_editorWorld, m_editorSelectedScene.GetPath());
 
 		m_editorWorld->SetInputs();
 
@@ -302,6 +322,39 @@ namespace SvEditor::Core
 			}));
 	}
 
+	bool EditorEngine::ChangeSceneInternal()
+	{
+		HierarchyPanel::ToggleSelectable(SvCore::ECS::NULL_ENTITY.GetIndex());
+		std::string scenePath = std::move(m_scenePath);
+
+		if (!m_gameInstance && m_isEditorModifiedScene && scenePath != m_editorWorld->CurrentScene().GetPath())
+			SV_EVENT_MANAGER().Invoke<OnSave>();
+
+		SvScripting::LuaContext& luaContext = SvScripting::LuaContext::GetInstance();
+
+		SvPhysics::PhysicsContext::GetInstance().Reload();
+		Timer::GetInstance().Refresh();
+
+		if (m_gameInstance)
+			luaContext.Reload();
+
+		//couldnt browse to scene
+		if (!BrowseToScene(*m_editorWorld, scenePath))
+			return false;
+
+		if (m_gameInstance)
+		{
+			CommitSceneChange(*m_PIEWorld.lock(), m_editorWorld->CurrentScene());
+			luaContext.Start();
+		}
+		else //update editorWorld level. Dont bcs change back
+			m_editorSelectedScene = m_editorWorld->CurrentScene();
+
+		m_isEditorModifiedScene = false;
+
+		return true;
+	}
+
 	std::string EditorEngine::GetTemporaryScenePath() const
 	{
 		if (!m_editorSelectedScene)
@@ -415,28 +468,9 @@ namespace SvEditor::Core
 		return world.CurrentScene();
 	}
 
-	bool EditorEngine::ChangeScene(const std::string& p_scenePath)
+	void EditorEngine::ChangeScene(const std::string& p_scenePath)
 	{
-		const auto currentSelection = RenderingContext::s_editorSelectedEntity.GetEntity().GetIndex();
-		HierarchyPanel::ToggleSelectable(SvCore::ECS::NULL_ENTITY.GetIndex());
-
-		auto& world = m_gameInstance ? *m_PIEWorld.lock() : *m_editorWorld;
-
-		if (!m_gameInstance && m_isEditorModifiedScene && p_scenePath != world.CurrentScene().GetPath())
-			SV_EVENT_MANAGER().Invoke<OnSave>();
-
-		//couldnt browse to scene
-		if (!BrowseToScene(world, p_scenePath))
-			return false;
-
-		//update editorWorld level. Dont bcs change back
-		if (!m_gameInstance)
-			m_editorSelectedScene = m_editorWorld->CurrentScene();
-
-		m_isEditorModifiedScene = false;
-		HierarchyPanel::ToggleSelectable(currentSelection);
-
-		return true;
+		m_scenePath = p_scenePath;
 	}
 
 	float EditorEngine::GetDeltaTime()

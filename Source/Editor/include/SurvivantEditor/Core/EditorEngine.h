@@ -44,7 +44,7 @@ namespace SvEditor::Core
 		void Update() override;
 		void BakeLights() override;
 		SceneRef GetCurrentScene() const override;
-		bool ChangeScene(const std::string& p_scenePath) override;
+		void ChangeScene(const std::string& p_scenePath) override;
 		bool ChangeCamera(const SvCore::ECS::EntityHandle& p_camera) override;
 		float GetDeltaTime() override;
 
@@ -68,6 +68,7 @@ namespace SvEditor::Core
 		using Inputs = SvApp::InputManager::InputBindings;
 
 		void SetupEditorEvents();
+		bool ChangeSceneInternal();
 
 		std::string GetTemporaryScenePath() const;
 		bool		SaveSceneState() const;
@@ -81,6 +82,7 @@ namespace SvEditor::Core
 		bool					m_isRunning = true;
 		bool					m_isPaused  = false;
 		bool					m_isEditorModifiedScene = false;
+		std::string				m_scenePath;
 
 		//always exists
 		std::shared_ptr<WorldContext>	m_editorWorld;

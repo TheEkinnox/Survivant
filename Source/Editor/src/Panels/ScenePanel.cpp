@@ -8,14 +8,20 @@
 
 #include "SurvivantApp/Core/WorldContext.h"
 
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_opengl3.h"
+#include "Vector/Vector2.h"
+
+#include "imgui.h"
 
 using namespace SvApp::Core;
+using namespace LibMath;
 
 namespace SvEditor::Panels
 {
-	ScenePanel::ScenePanel()
+	ScenePanel::ScenePanel() :
+		m_gizmos(s_world.lock()->m_renderingContext),
+		m_transformType("Transform", { "Translate", "Rotate", "Scale" }, 
+			PanelUniqueSelection::GetRefFunc([]() -> int& { static int val; return val; }), 
+			[this](int p_val) { SetGizmoTransformType(p_val); })
 	{
 		m_name = NAME;
 
@@ -34,16 +40,11 @@ namespace SvEditor::Panels
 	Panel::ERenderFlags ScenePanel::Render()
 	{
 		static ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoNavInputs;
+		static float SMALL_DISPLAY = 450;
 		bool showWindow = true;
 
 		if (s_world.lock()->m_isVisalbe = ImGui::Begin(m_name.c_str(), &showWindow, window_flags))
 		{
-			//focus
-			s_world.lock()->m_isFocused = ImGui::IsWindowFocused();
-
-			//panelables
-			m_buttons.DisplayAndUpdatePanel();
-
 			if (IsWindowDifferentSize(m_imageSize))
 			{
 				s_onResizeEvent.Invoke(m_imageSize);
@@ -51,24 +52,29 @@ namespace SvEditor::Panels
 					RenderingContext::ETextureType::COLOR));
 			}
 
-			auto pos = ImGui::GetCursorPos();
+			bool isSmallDisplay = m_imageSize.m_x <= SMALL_DISPLAY;
+			ImVec2 topLeft = ImVec2(ImGui::GetCursorPosX() + OFFSET, ImGui::GetCursorPosY() + OFFSET);
 			m_imagePos = { ImGui::GetCursorScreenPos().x , ImGui::GetCursorScreenPos().y };
 
+			ImGui::SetNextItemAllowOverlap();
 			m_image.DisplayAndUpdatePanel();
+			bool sceneHovered = ImGui::IsItemHovered();
+
+			m_gizmos.RenderGizmos(Vector2(m_imageSize.m_x - OFFSET, topLeft.y), isSmallDisplay);
+
+			ImGui::SetCursorPos(topLeft);
+			ImGui::SetNextItemAllowOverlap();
+
+			RenderInfoPanel(isSmallDisplay);
+			sceneHovered &= !ImGui::IsItemHovered();
 
 			//click 
-			if (ImGui::IsMouseClicked(0) && ImGui::IsItemHovered())
-			{
-				auto mousePos = ImGui::GetMousePos();
-				auto uv = CalculateUVCords({ mousePos.x, mousePos.y });
-				
-				if (0 <= uv.m_x && uv.m_x <= 1 &&
-					0 <= uv.m_y && uv.m_y <= 1)
-				{
-					uv.m_y = 1.0f - uv.m_y;
-					s_onClickSceneEvent.Invoke(uv);
-				}
-			}
+			if (!m_gizmos.UsingGizmo() && ImGui::IsMouseClicked(0) &&
+				s_world.lock()->m_isFocused && sceneHovered)
+				InvokeClickScene();
+
+			//focus
+			s_world.lock()->m_isFocused = ImGui::IsWindowFocused();
 		}
 
 		ImGui::End();
@@ -96,6 +102,46 @@ namespace SvEditor::Panels
 			return;
 
 		s_world.lock()->m_renderingContext->s_editorSelectedEntity = p_entity;
+	}
+
+	void ScenePanel::InvokeClickScene()
+	{
+		auto mousePos = ImGui::GetMousePos();
+		auto uv = CalculateUVCords({ mousePos.x, mousePos.y });
+
+		if (0 <= uv.m_x && uv.m_x <= 1 &&
+			0 <= uv.m_y && uv.m_y <= 1)
+		{
+			uv.m_y = 1.0f - uv.m_y;
+			s_onClickSceneEvent.Invoke(uv);
+		}
+	}
+
+	void ScenePanel::RenderInfoPanel(bool p_isSmallDisplay)
+	{
+		float width = p_isSmallDisplay? ImGui::GetContentRegionAvail().x - OFFSET:
+										(ImGui::GetContentRegionAvail().x - OFFSET) * 0.5f - OFFSET;
+		if (ImGui::BeginChild("##", ImVec2(width, 0),
+			ImGuiChildFlags_FrameStyle | ImGuiChildFlags_AutoResizeY, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollWithMouse) &&
+			ImGui::CollapsingHeader("Info", ImGuiTreeNodeFlags_CollapsingHeader))
+		{
+			m_transformType.DisplayAndUpdatePanel();
+		}
+		ImGui::EndChild();
+	}
+
+	void ScenePanel::SetGizmoTransformType(int p_val)
+	{
+		ImGuizmo::OPERATION operation;
+
+		if (p_val == 0)
+			operation = ImGuizmo::OPERATION::TRANSLATE;
+		else if (p_val == 1)
+			operation = ImGuizmo::OPERATION::ROTATE;
+		else if (p_val == 2)
+			operation = ImGuizmo::OPERATION::SCALE;
+
+		m_gizmos.m_transform.SetOperation(operation);
 	}
 
 	LibMath::Vector2 ScenePanel::CalculateUVCords(const LibMath::Vector2& p_cursorPos)
