@@ -136,7 +136,7 @@ namespace SvEditor::PanelItems
 
 		bool foundPath = false;
 
-		if constexpr (!std::is_abstract_v<T>)
+		if constexpr (!std::is_same_v<IResource, T>)
 		{
 			for (const std::string& resourcePath : all)
 			{
@@ -145,8 +145,7 @@ namespace SvEditor::PanelItems
 
 				m_allResources->m_items.emplace_back(std::make_unique<MenuButton>(MenuButton(
 					resourcePath, [this, resourcePath](char) mutable {
-						RefT resource = ResourceManager::GetInstance().Load<T>(resourcePath);
-						this->GetRef() = resource;
+						const RefT& resource = (this->GetRef() = ResourceRef<T>(resourcePath));
 
 						if (this->m_callback)
 							this->m_callback(resource);
