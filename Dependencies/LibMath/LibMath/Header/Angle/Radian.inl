@@ -190,6 +190,12 @@ namespace LibMath
     {
         return Radian(static_cast<float>(angle));
     }
+
+    template <>
+    constexpr Radian LibMath::abs(const Radian angle)
+    {
+        return Radian(abs(angle.raw()));
+    }
 }
 
 #endif // !__LIBMATH__ANGLE__RADIAN_INL__
