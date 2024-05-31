@@ -129,10 +129,20 @@ namespace SvEditor::PanelItems
 			}
 		)));
 
+		auto& ref = this->GetRef();
+
+		const ResourceManager& resourceManager = ResourceManager::GetInstance();
+		const std::string&     currentPath     = resourceManager.GetFullPath(ref.GetPath());
+
+		bool foundPath = false;
+
 		if constexpr (!std::is_abstract_v<T>)
 		{
 			for (const std::string& resourcePath : all)
 			{
+				if (!currentPath.empty() && resourceManager.GetFullPath(resourcePath) == currentPath)
+					foundPath = true;
+
 				m_allResources->m_items.emplace_back(std::make_unique<MenuButton>(MenuButton(
 					resourcePath, [this, resourcePath](char) mutable {
 						RefT resource = ResourceManager::GetInstance().Load<T>(resourcePath);
@@ -144,5 +154,8 @@ namespace SvEditor::PanelItems
 				)));
 			}
 		}
+
+		if (!currentPath.empty() && !foundPath)
+			ref = {};
 	}
 }

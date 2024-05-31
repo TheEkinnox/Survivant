@@ -102,11 +102,22 @@ namespace SvEditor::PanelItems
             }
         ));
 
+        const ResourceManager& resourceManager = ResourceManager::GetInstance();
+
+        auto& ref = GetRef();
+
+        const std::string& currentPath = resourceManager.GetFullPath(ref.GetPath());
+
+        bool foundPath = false;
+
         for (auto& [typeName, branches] : ContentDrawerPanel::GetAllFilePaths())
         {
             for (const auto& branch : branches)
             {
-                const std::string& resourcePath = ResourceManager::GetInstance().GetRelativePath(branch.lock()->GetPath());
+                const std::string& resourcePath = branch.lock()->GetPath();
+
+                if (!currentPath.empty() && resourceManager.GetFullPath(resourcePath) == currentPath)
+                    foundPath = true;
 
                 m_allResources->m_items.emplace_back(std::make_unique<MenuButton>(
                     resourcePath, [this, typeName, resourcePath](char) mutable
@@ -123,6 +134,9 @@ namespace SvEditor::PanelItems
                 ));
             }
         }
+
+        if (!currentPath.empty() && !foundPath)
+            ref = { ref.GetType(), "" };
     }
 
     void PanelGenericResourceSelector::FetchTypedResources()
@@ -132,11 +146,6 @@ namespace SvEditor::PanelItems
 
         const std::string typeName = m_resourceTypes[m_currentType];
         const auto        resPaths = ContentDrawerPanel::GetAllFilePaths(typeName);
-
-        auto& ref = GetRef();
-
-        if (!ref.GetType().empty() && ref.GetType() != typeName)
-            ref = {};
 
         m_allResources->m_items.clear();
         m_allResources->m_items.reserve(resPaths.size() + 1);
@@ -150,9 +159,21 @@ namespace SvEditor::PanelItems
             }
         ));
 
-        for (std::string resourcePath : resPaths)
+        auto&              ref         = GetRef();
+        const std::string& currentType = ref.GetType();
+
+        if ((!currentType.empty() && currentType != typeName))
+            ref = {};
+
+        const ResourceManager& resourceManager = ResourceManager::GetInstance();
+        const std::string&     currentPath     = resourceManager.GetFullPath(ref.GetPath());
+
+        bool foundPath = false;
+
+        for (const std::string& resourcePath : resPaths)
         {
-            resourcePath = ResourceManager::GetInstance().GetRelativePath(resourcePath);
+            if (!currentPath.empty() && resourceManager.GetFullPath(resourcePath) == currentPath)
+                foundPath = true;
 
             m_allResources->m_items.emplace_back(std::make_unique<MenuButton>(
                 resourcePath, [this, resourcePath](char) mutable
@@ -165,5 +186,8 @@ namespace SvEditor::PanelItems
                 }
             ));
         }
+
+        if (!currentPath.empty() && !foundPath)
+            ref = { currentType, "" };
     }
 }
