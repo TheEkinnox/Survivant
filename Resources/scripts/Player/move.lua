@@ -3,10 +3,16 @@ local Move = {
     mouse_sensitivity = 0.005,
     max_speed = 3,
     max_acceleration = 3,
-    rotation_speed = Degree.new(90)
+    rotation_speed = Degree.new(90),
+    camera = Entity.new(),
+    min_x_angle = Degree.new(-85),
+    max_x_angle = Degree.new(85)
 }
 
+---@type Component|Transform
 local transform
+---@type Component|Transform
+local camTransform
 local rigidbody
 local last_mouse_pos
 
@@ -17,10 +23,7 @@ function Move:OnStart()
     last_mouse_pos = Input.mousePos
     transform = self.owner:GetOrCreate(Transform)
     rigidbody = self.owner:GetOrCreate(RigidBody)
-
-    if not PLAYER_CAM_TRANSFORM then
-        PLAYER_CAM_TRANSFORM = transform
-    end
+    camTransform = self.camera:Get(Transform)
 end
 
 local function UpdatePosition(self, deltaTime)
@@ -48,34 +51,61 @@ local function UpdatePosition(self, deltaTime)
     if moveInput.magnitudeSquared > 0 and (rigidbody.velocity.magnitudeSquared < (maxSpeed * maxSpeed)) then
         local moveDir = ((transform.right * moveInput.x) + (transform.back * moveInput.y)).normalized
         local force = moveDir * self.max_acceleration * rigidbody.mass * deltaTime
-        
+
         rigidbody.self:AddForce(force, EForceMode.IMPULSE)
     end
 end
 
-local function UpdateKeyboardRotation(self, deltaTime)
-    local rotateInput = Vector2.new()
+local function UpdateCamRotation(self, deltaTime)
+    if not camTransform.isValid then
+        return
+    end
+
+    local rotateInput = 0
+
+    if Input.IsKeyDown(EKey.UP) then
+        rotateInput = rotateInput + 1
+    end
+
+    if Input.IsKeyDown(EKey.DOWN) then
+        rotateInput = rotateInput - 1
+    end
+
+    if math.abs(rotateInput) > 0 then
+        local x, y, z = camTransform.rotation:ToEuler(ERotationOrder.YXZ)
+
+        x = Degree.new(x + self.rotation_speed * rotateInput * deltaTime)
+        x:Wrap(true)
+        x = Radian.new(math.clamp(x, self.min_x_angle, self.max_x_angle))
+
+        camTransform.rotation = Quaternion.FromEuler(x, y, z, ERotationOrder.YXZ)
+    end
+end
+
+local function UpdatePlayerRotation(self, deltaTime)
+    local rotateInput = 0
 
     if Input.IsKeyDown(EKey.LEFT) then
-        rotateInput.x = rotateInput.x + 1
+        rotateInput = rotateInput + 1
     end
-    
+
     if Input.IsKeyDown(EKey.RIGHT) then
-        rotateInput.x = rotateInput.x - 1
+        rotateInput = rotateInput - 1
     end
 
-    if rotateInput.magnitudeSquared > 0 then
-        local spin = self.rotation_speed * rotateInput.x * deltaTime
+    if math.abs(rotateInput) > 0 then
+        local spin = self.rotation_speed * rotateInput * deltaTime
 
-        rigidbody.angularVelocity = Vector3.new(0, spin.raw, 0)
+        rigidbody.angularVelocity = Vector3.new(0, spin.rawDegree, 0)
     else
-        rigidbody.angularVelocity = Vector3.new(0,0,0)
+        rigidbody.angularVelocity = Vector3.new(0, 0, 0)
     end
 end
 
 function Move:OnUpdate(deltaTime)
     UpdatePosition(self, deltaTime)
-    UpdateKeyboardRotation(self, deltaTime)
+    UpdatePlayerRotation(self, deltaTime)
+    UpdateCamRotation(self, deltaTime)
 end
 
 function Move:OnStop()
