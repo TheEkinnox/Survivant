@@ -118,6 +118,9 @@ namespace SvEditor::Core
 		if (!CHECK(luaContext.IsValid(), "Failed to start lua context"))
 		{
 			m_gameInstance.reset();
+
+			luaContext.Reload();
+			CHECK(RestoreSceneState(), "Failed to restore pre-play scene state");
 			return {};
 		}
 
@@ -136,7 +139,7 @@ namespace SvEditor::Core
 		WorldContext::SceneRef scene = GetWorldContextRef(*m_gameInstance).lock()->CurrentScene();
 		m_gameInstance.reset();
 
-		RestoreSceneState();
+		CHECK(RestoreSceneState(), "Failed to restore pre-play scene state");
 
 		//while playing, loaded new scene, so go back to selected
 		if (scene != m_editorSelectedScene)
@@ -334,9 +337,7 @@ namespace SvEditor::Core
 
 		SvPhysics::PhysicsContext::GetInstance().Reload();
 		Timer::GetInstance().Refresh();
-
-		if (m_gameInstance)
-			luaContext.Reload();
+		luaContext.Reload();
 
 		//couldnt browse to scene
 		if (!BrowseToScene(*m_editorWorld, scenePath))
