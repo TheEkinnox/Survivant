@@ -253,8 +253,7 @@ namespace SvPhysics
             }
         }
 
-        void onAdvance(
-            const PxRigidBody* const* p_bodyBuffer, const PxTransform* p_poseBuffer, PxU32 p_count) override
+        void onAdvance(const PxRigidBody* const* p_bodyBuffer, const PxTransform* p_poseBuffer, PxU32 p_count) override
         {
             auto& actorToEntity = m_context->m_actorToEntity;
 
