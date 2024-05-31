@@ -10,6 +10,12 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_ASSERT(x) ASSERT(x)
+
+#if defined(_DEBUG) || defined(SV_VERBOSE_LOG)
+#define STBI_FAILURE_USERMSG
+#else
+#define STBI_NO_FAILURE_STRINGS
+#endif
 #include <stb_image.h>
 
 using namespace SvCore::Utility;
@@ -168,7 +174,7 @@ namespace SvRendering::RHI
         stbi_set_flip_vertically_on_load(true);
         m_data = stbi_load(p_path.c_str(), &m_width, &m_height, reinterpret_cast<int*>(&m_channels), 0);
 
-        if (!CHECK(m_data != nullptr, "Unable to load texture from path \"%s\"", p_path.c_str()))
+        if (!CHECK(m_data != nullptr, "Unable to load texture from path \"%s\" - %s", p_path.c_str(), stbi_failure_reason()))
             return false;
 
         switch (m_channels)
