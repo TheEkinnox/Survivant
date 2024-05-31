@@ -85,10 +85,11 @@ namespace SvRendering::RHI
         glGenTextures(1, &m_id);
         glBindTexture(GL_TEXTURE_2D, m_id);
 
-        const GLenum texFormat = OpenGLAPI::ToGLEnum(p_format);
-        const GLenum intFormat = OpenGLAPI::ToGLEnum(p_internalFormat);
-        glTexImage2D(GL_TEXTURE_2D, 0, static_cast<GLint>(intFormat), m_width, m_height, 0, texFormat,
-            OpenGLAPI::ToGLEnum(p_dataType), nullptr);
+        const GLint  internalFormat = static_cast<GLint>(OpenGLAPI::ToGLEnum(m_internalFormat));
+        const GLenum dataFormat     = OpenGLAPI::ToGLEnum(m_dataFormat);
+        const GLenum dataType       = OpenGLAPI::ToGLEnum(m_dataType);
+
+        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, m_width, m_height, 0, dataFormat, dataType, nullptr);
     }
 
     OpenGLTexture::OpenGLTexture(const OpenGLTexture& p_other)
@@ -105,8 +106,9 @@ namespace SvRendering::RHI
 
         const GLint  internalFormat = static_cast<GLint>(OpenGLAPI::ToGLEnum(m_internalFormat));
         const GLenum dataFormat     = OpenGLAPI::ToGLEnum(m_dataFormat);
+        const GLenum dataType       = OpenGLAPI::ToGLEnum(m_dataType);
 
-        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, m_width, m_height, 0, dataFormat, OpenGLAPI::ToGLEnum(m_dataType), nullptr);
+        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, m_width, m_height, 0, dataFormat, dataType, nullptr);
 
         glCopyImageSubData(p_other.m_id, GL_TEXTURE_2D, 0, 0, 0, 0,
             m_id, GL_TEXTURE_2D, 0, 0, 0, 0,
@@ -135,7 +137,7 @@ namespace SvRendering::RHI
             texture.m_width          = 1;
             texture.m_height         = 1;
             texture.m_channels       = 3;
-            texture.m_internalFormat = EPixelDataFormat::RGBA;
+            texture.m_internalFormat = EPixelDataFormat::RGB;
             texture.m_dataFormat     = EPixelDataFormat::RGB;
             texture.m_dataType       = EPixelDataType::UNSIGNED_BYTE;
 
@@ -143,7 +145,7 @@ namespace SvRendering::RHI
             glBindTexture(GL_TEXTURE_2D, texture.m_id);
 
             static constexpr GLubyte white[3] = { 255, 255, 255 };
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture.m_width, texture.m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, white);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture.m_width, texture.m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, white);
 
             texture.SetWrapModes(ETextureWrapMode::REPEAT, ETextureWrapMode::REPEAT);
             texture.SetFilters(ETextureFilter::NEAREST, ETextureFilter::NEAREST);
@@ -162,15 +164,20 @@ namespace SvRendering::RHI
         {
             glGenTextures(1, &m_id);
 
-            if (!CHECK(m_id != 0, "Unable to generate opengl texture id."))
+            if (!ASSUME(m_id != 0, "Unable to generate opengl texture id."))
                 return false;
         }
 
         const GLint  internalFormat = static_cast<GLint>(OpenGLAPI::ToGLEnum(m_internalFormat));
         const GLenum dataFormat     = OpenGLAPI::ToGLEnum(m_dataFormat);
+        const GLenum dataType       = OpenGLAPI::ToGLEnum(m_dataType);
 
         glBindTexture(GL_TEXTURE_2D, m_id);
-        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, m_width, m_height, 0, dataFormat, OpenGLAPI::ToGLEnum(m_dataType), m_data);
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, m_width, m_height, 0, dataFormat, dataType, m_data);
+
+        if (m_loadInfo.m_generateMipmap)
+            GenerateMipmap();
 
         glBindTexture(GL_TEXTURE_2D, 0);
         return true;
@@ -204,10 +211,11 @@ namespace SvRendering::RHI
 
         const GLint  internalFormat = static_cast<GLint>(OpenGLAPI::ToGLEnum(m_internalFormat));
         const GLenum dataFormat     = OpenGLAPI::ToGLEnum(m_dataFormat);
+        const GLenum dataType       = OpenGLAPI::ToGLEnum(m_dataType);
 
         glBindTexture(GL_TEXTURE_2D, m_id);
-        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, m_width, m_height, 0, dataFormat, OpenGLAPI::ToGLEnum(m_dataType), nullptr);
-        // glBindTexture(GL_TEXTURE_2D, 0);
+        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, m_width, m_height, 0, dataFormat, dataType, nullptr);
+        glBindTexture(GL_TEXTURE_2D, 0);
     }
 
     void OpenGLTexture::GenerateMipmap()
@@ -243,8 +251,9 @@ namespace SvRendering::RHI
 
         const GLint  internalFormat = static_cast<GLint>(OpenGLAPI::ToGLEnum(m_internalFormat));
         const GLenum dataFormat     = OpenGLAPI::ToGLEnum(m_dataFormat);
+        const GLenum dataType       = OpenGLAPI::ToGLEnum(m_dataType);
 
-        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, m_width, m_height, 0, dataFormat, OpenGLAPI::ToGLEnum(m_dataType), nullptr);
+        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, m_width, m_height, 0, dataFormat, dataType, nullptr);
 
         glCopyImageSubData(other.m_id, GL_TEXTURE_2D, 0, 0, 0, 0,
             m_id, GL_TEXTURE_2D, 0, 0, 0, 0,
