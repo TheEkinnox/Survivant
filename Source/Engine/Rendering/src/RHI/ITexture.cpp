@@ -175,23 +175,26 @@ namespace SvRendering::RHI
         {
         case 1:
             m_dataFormat = EPixelDataFormat::RED;
+            m_internalFormat = EPixelDataFormat::RED;
             break;
         case 2:
             m_dataFormat = EPixelDataFormat::RG;
+            m_internalFormat = EPixelDataFormat::RG;
             break;
         case 3:
             m_dataFormat = EPixelDataFormat::RGB;
+            m_internalFormat = EPixelDataFormat::RGB;
             break;
         case 4:
             m_dataFormat = EPixelDataFormat::RGBA;
+            m_internalFormat = EPixelDataFormat::RGBA;
             break;
         default:
             ASSERT(false, "Failed to deduce texture format from channel count");
             break;
         }
 
-        m_internalFormat = EPixelDataFormat::RGBA;
-        m_dataType       = EPixelDataType::UNSIGNED_BYTE;
+        m_dataType = EPixelDataType::UNSIGNED_BYTE;
 
         const std::string metaPath = GetMetaPath(p_path);
 
