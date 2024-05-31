@@ -27,9 +27,14 @@ local EditorDisplay = {
         degree = Degree.new(45),
         radian = Radian.new(Degree.new(45)),
         quaternion = Quaternion.FromEuler(Degree.new(90), Degree.new(45), Degree.new(30), ERotationOrder.YXZ),
-        emptyResourceRef = Resource.new(),
-        resourceType = Resource.new(),
-        sceneRef = Application.currentScene,
+        resource = {
+            emptyResourceRef = Resource.new(),
+            unknownTypeResourceRef = Resource.new("unknown", "scripts/tests/editor_display.lua"),
+            wrongTypeResourceRef = Resource.new("Scene", "scripts/tests/editor_display.lua"),
+            validResourceRef = Resource.new("Script", "scripts/tests/editor_display.lua"),
+            resourceType = Resource,
+            sceneRef = Application.currentScene
+        },
         entity = Application.currentScene.entities[1]
     },
     "no key"
