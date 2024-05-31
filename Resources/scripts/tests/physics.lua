@@ -11,6 +11,12 @@ local PhysicsTest = {
 local scene
 local remaining_delay
 
+local cube = Resource.new("Model", "models/cube.obj")
+local sphere = Resource.new("Model", "models/sphere.obj")
+local whiteMat = Resource.new("Material", "materials/white.mat")
+local greenMat = Resource.new("Material", "materials/green.mat")
+local redMat = Resource.new("Material", "materials/red.mat")
+
 local function AddRigidBody()
     local entity = scene:Create()
     local rb = entity:GetOrCreate(RigidBody)
@@ -26,8 +32,8 @@ local function AddBoxCollider(entity, material, size, offset)
     collider.offset = offset
 
     local modelComponent = entity:GetOrCreate(Model)
-    modelComponent.model = Resource.new("Model", "models/cube.obj")
-    modelComponent.material = material or Resource.new("Material", "materials/white.mat")
+    modelComponent.model = cube
+    modelComponent.material = material or whiteMat
     return collider
 end
 
@@ -41,8 +47,8 @@ local function AddSphereCollider(entity, material, radius, offset)
     collider.offset = offset
 
     local modelComponent = entity:GetOrCreate(Model)
-    modelComponent.model = Resource.new("Model", "models/sphere.obj")
-    modelComponent.material = material or Resource.new("Material", "materials/white.mat")
+    modelComponent.model = sphere
+    modelComponent.material = material or whiteMat
     return collider
 end
 
@@ -54,7 +60,7 @@ local function AddDeathZone(self, transform, isTrigger)
     local entityTransform = deathZoneEntity:GetOrCreate(Transform)
     entityTransform.self:SetAll(transform.position, transform.rotation, transform.scale)
 
-    local material = isTrigger and Resource.new("Material", "materials/green.mat") or Resource.new("Material", "materials/red.mat")
+    local material = isTrigger and greenMat or redMat
     local deathCollider = AddBoxCollider(deathZoneEntity, material)
     deathCollider.isTrigger = isTrigger
 end
