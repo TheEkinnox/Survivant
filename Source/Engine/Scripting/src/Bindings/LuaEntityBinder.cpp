@@ -8,13 +8,11 @@ using namespace SvCore::ECS;
 
 namespace SvScripting::Bindings
 {
-    void LuaECSBinder::BindEntity(sol::state& p_luaState)
+    namespace
     {
         using SearchOrigin = EntityHandle::EComponentSearchOrigin;
 
-        static constexpr const char* typeName = "Entity";
-
-        static const auto hasComponent = [](const EntityHandle& p_self, const std::string& p_type)
+        bool HasComponent(const EntityHandle& p_self, const std::string& p_type)
         {
             if (!p_self || p_type.empty())
                 return false;
@@ -25,9 +23,9 @@ namespace SvScripting::Bindings
                 return false;
 
             return p_self.Has(typeRegistry.GetRegisteredTypeId(p_type));
-        };
+        }
 
-        static const auto getComponent = [](const EntityHandle& p_self, const std::string& p_type) -> ComponentHandle
+        ComponentHandle GetComponent(const EntityHandle& p_self, const std::string& p_type)
         {
             if (p_type.empty())
                 return {};
@@ -38,9 +36,9 @@ namespace SvScripting::Bindings
                 return {};
 
             return p_self.Get(typeRegistry.GetRegisteredTypeId(p_type));
-        };
+        }
 
-        static const auto getOrCreate = [](const EntityHandle& p_self, const std::string& p_type) -> ComponentHandle
+        ComponentHandle GetOrCreate(const EntityHandle& p_self, const std::string& p_type)
         {
             if (!p_self || p_type.empty())
                 return {};
@@ -51,9 +49,9 @@ namespace SvScripting::Bindings
                 return {};
 
             return p_self.GetOrCreate(typeRegistry.GetRegisteredTypeId(p_type));
-        };
+        }
 
-        static const auto getInParent = [](const EntityHandle& p_self, const std::string& p_type) -> ComponentHandle
+        ComponentHandle GetInParent(const EntityHandle& p_self, const std::string& p_type)
         {
             if (p_type.empty())
                 return {};
@@ -64,9 +62,9 @@ namespace SvScripting::Bindings
                 return {};
 
             return p_self.GetInParent(typeRegistry.GetRegisteredTypeId(p_type));
-        };
+        }
 
-        static const auto getInChildren = [](const EntityHandle& p_self, const std::string& p_type) -> ComponentHandle
+        ComponentHandle GetInChildren(const EntityHandle& p_self, const std::string& p_type)
         {
             if (p_type.empty())
                 return {};
@@ -77,26 +75,22 @@ namespace SvScripting::Bindings
                 return {};
 
             return p_self.GetInChildren(typeRegistry.GetRegisteredTypeId(p_type));
-        };
+        }
 
-        static const auto getInHierarchy
+        ComponentHandle GetInHierarchy(const EntityHandle& p_self, const std::string& p_type, const SearchOrigin p_searchOrigin)
         {
-            [](const EntityHandle& p_self, const std::string& p_type, const SearchOrigin p_searchOrigin)
-            -> ComponentHandle
-            {
-                if (p_type.empty())
-                    return {};
+            if (p_type.empty())
+                return {};
 
-                const LuaTypeRegistry& typeRegistry = LuaTypeRegistry::GetInstance();
+            const LuaTypeRegistry& typeRegistry = LuaTypeRegistry::GetInstance();
 
-                if (!CHECK(typeRegistry.Contains(p_type), "Unkown component type \"%s\"", p_type.c_str()))
-                    return {};
+            if (!CHECK(typeRegistry.Contains(p_type), "Unkown component type \"%s\"", p_type.c_str()))
+                return {};
 
-                return p_self.GetInHierarchy(typeRegistry.GetRegisteredTypeId(p_type), p_searchOrigin);
-            }
-        };
+            return p_self.GetInHierarchy(typeRegistry.GetRegisteredTypeId(p_type), p_searchOrigin);
+        }
 
-        static const auto removeComponent = [](const EntityHandle& p_self, const std::string& p_type)
+        void RemoveComponent(const EntityHandle& p_self, const std::string& p_type)
         {
             if (!p_self || p_type.empty())
                 return;
@@ -108,7 +102,79 @@ namespace SvScripting::Bindings
 
             const auto typeId = typeRegistry.GetRegisteredTypeId(p_type);
             p_self.Remove(typeId);
-        };
+        }
+
+        LuaScriptHandle GetScript(const EntityHandle& p_self, const std::string& p_name)
+        {
+            const LuaScriptList* script = p_self.Get<LuaScriptList>();
+            return script ? script->Get(p_name) : LuaScriptHandle{};
+        }
+
+        LuaScriptHandle GetScriptInParent(const EntityHandle& p_self, const std::string& p_name)
+        {
+            if (LuaScriptHandle script = GetScript(p_self, p_name))
+                return script;
+
+            EntityHandle parent = p_self.GetParent();
+
+            while (parent)
+            {
+                if (LuaScriptHandle script = GetScript(parent, p_name))
+                    return script;
+
+                parent = parent.GetParent();
+            }
+
+            return {};
+        }
+
+        LuaScriptHandle GetScriptInChildren(const EntityHandle& p_self, const std::string& p_name)
+        {
+            if (const LuaScriptHandle script = GetScript(p_self, p_name))
+                return script;
+
+            for (const EntityHandle& child : p_self)
+            {
+                if (const LuaScriptHandle script = GetScriptInChildren(child, p_name))
+                    return script;
+            }
+
+            return {};
+        }
+
+        LuaScriptHandle GetScriptInHierarchy(
+            const EntityHandle& p_self, const std::string& p_name, const SearchOrigin p_searchOrigin)
+        {
+            switch (p_searchOrigin)
+            {
+            case SearchOrigin::ROOT:
+            {
+                return GetScriptInChildren(p_self.GetRoot(), p_name);
+            }
+            case SearchOrigin::PARENT:
+            {
+                if (const LuaScriptHandle script = GetScriptInParent(p_self, p_name))
+                    return script;
+
+                return GetScriptInChildren(p_self, p_name);
+            }
+            case SearchOrigin::CHILDREN:
+            {
+                if (const LuaScriptHandle script = GetScriptInChildren(p_self, p_name))
+                    return script;
+
+                return GetScriptInParent(p_self, p_name);
+            }
+            default:
+                ASSERT(false, "Invalid component search origin");
+                return {};
+            }
+        }
+    }
+
+    void LuaECSBinder::BindEntity(sol::state& p_luaState)
+    {
+        static constexpr const char* typeName = "Entity";
 
         sol::usertype handleType = p_luaState.new_usertype<EntityHandle>(
             typeName,
@@ -147,11 +213,10 @@ namespace SvScripting::Bindings
                 const LuaScriptList* script = p_self.Get<LuaScriptList>();
                 return script ? script->Contains(p_name) : false;
             },
-            "GetScript", [](const EntityHandle& p_self, const std::string& p_name) -> LuaScriptHandle
-            {
-                const LuaScriptList* script = p_self.Get<LuaScriptList>();
-                return script ? script->Get(p_name) : LuaScriptHandle{};
-            },
+            "GetScript", &GetScript,
+            "GetScriptInParent", &GetScriptInParent,
+            "GetScriptInChildren", &GetScriptInChildren,
+            "GetScriptInHierarchy", &GetScriptInHierarchy,
             "AddScript", [](EntityHandle& p_self, const std::string& p_name) -> LuaScriptHandle
             {
                 LuaScriptList* script = p_self.Get<LuaScriptList>();
@@ -180,74 +245,74 @@ namespace SvScripting::Bindings
                     script->Remove(p_name);
             },
             "Has", sol::overload(
-                hasComponent,
+                &HasComponent,
                 [](const EntityHandle& p_self, const sol::table& p_type)
                 {
                     if (!p_type.valid())
                         return false;
 
-                    return hasComponent(p_self, p_type["__type"]["name"].get_or<std::string>({}));
+                    return HasComponent(p_self, p_type["__type"]["name"].get_or<std::string>({}));
                 }
             ),
             "Get", sol::overload(
-                getComponent,
+                &GetComponent,
                 [](const EntityHandle& p_self, const sol::table& p_type) -> ComponentHandle
                 {
                     if (!p_type.valid())
                         return {};
 
-                    return getComponent(p_self, p_type["__type"]["name"].get_or<std::string>({}));
+                    return GetComponent(p_self, p_type["__type"]["name"].get_or<std::string>({}));
                 }
             ),
             "GetOrCreate", sol::overload(
-                getOrCreate,
+                &GetOrCreate,
                 [](const EntityHandle& p_self, const sol::table& p_type) -> ComponentHandle
                 {
                     if (!p_type.valid())
                         return {};
 
-                    return getOrCreate(p_self, p_type["__type"]["name"].get_or<std::string>({}));
+                    return GetOrCreate(p_self, p_type["__type"]["name"].get_or<std::string>({}));
                 }
             ),
             "GetInParent", sol::overload(
-                getInParent,
+                &GetInParent,
                 [](const EntityHandle& p_self, const sol::table& p_type) -> ComponentHandle
                 {
                     if (!p_type.valid())
                         return {};
 
-                    return getInParent(p_self, p_type["__type"]["name"].get_or<std::string>({}));
+                    return GetInParent(p_self, p_type["__type"]["name"].get_or<std::string>({}));
                 }
             ),
             "GetInChildren", sol::overload(
-                getInChildren,
+                &GetInChildren,
                 [](const EntityHandle& p_self, const sol::table& p_type) -> ComponentHandle
                 {
                     if (!p_type.valid())
                         return {};
 
-                    return getInChildren(p_self, p_type["__type"]["name"].get_or<std::string>({}));
+                    return GetInChildren(p_self, p_type["__type"]["name"].get_or<std::string>({}));
                 }
             ),
             "GetInHierarchy", sol::overload(
-                getInHierarchy,
+                &GetInHierarchy,
                 [](const EntityHandle& p_self, const sol::table& p_type, const SearchOrigin p_searchOrigin)
                 -> ComponentHandle
                 {
                     if (!p_type.valid())
                         return {};
 
-                    return getInHierarchy(p_self, p_type["__type"]["name"].get_or<std::string>({}), p_searchOrigin);
+                    return GetInHierarchy(p_self, p_type["__type"]["name"].get_or<std::string>({}), p_searchOrigin);
                 }
             ),
             "Remove", sol::overload(
-                removeComponent,
+                &RemoveComponent,
                 [](const EntityHandle& p_self, const sol::table& p_type)
                 {
                     if (!p_type.valid())
                         return;
 
-                    removeComponent(p_self, p_type["__type"]["name"].get_or<std::string>({}));
+                    RemoveComponent(p_self, p_type["__type"]["name"].get_or<std::string>({}));
                 },
                 [](const EntityHandle& p_self, ComponentHandle& p_component)
                 {

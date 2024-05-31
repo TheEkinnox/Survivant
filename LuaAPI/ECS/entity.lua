@@ -52,6 +52,22 @@ function Entity:HasScript(name) end
 ---@return Script The found script on success. An invalid script otherwise
 function Entity:GetScript(name) end
 
+---Gets the script with the specified name on the entity or one of its parents
+---@param name string
+---@return Script The found script on success. An invalid script otherwise
+function Entity:GetScriptInParent(name) end
+
+---Gets the script with the specified name on the entity or in one of its child hierarchies
+---@param name string
+---@return Script The found script on success. An invalid script otherwise
+function Entity:GetScriptInChildren(name) end
+
+---Gets the script with the specified name on the entity's hierarchy starting at the given origin
+---@param name string
+---@param searchOrigin EComponentSearchOrigin
+---@return Script The found script on success. An invalid script otherwise
+function Entity:GetScriptInHierarchy(name, searchOrigin) end
+
 ---Adds the script with the specified name to the entity
 ---@param name string
 ---@return Script The added script on success. An invalid script otherwise
