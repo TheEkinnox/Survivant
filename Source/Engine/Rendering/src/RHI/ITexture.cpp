@@ -5,6 +5,7 @@
 
 #include <SurvivantCore/Debug/Assertion.h>
 #include <SurvivantCore/Debug/Logger.h>
+#include <SurvivantCore/Utility/Copy.h>
 #include <SurvivantCore/Utility/FileSystem.h>
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -60,8 +61,12 @@ namespace SvRendering::RHI
             return;
         }
 
-        m_data = stbi_load_from_memory(p_other.m_data, p_other.m_width * p_other.m_height * p_other.m_channels, &m_width, &m_height,
-            reinterpret_cast<int*>(&m_channels), 0);
+        const auto bufferSize = m_width * m_height * m_channels;
+
+        m_data = static_cast<unsigned char*>(stbi__malloc(bufferSize));
+
+        const int result = MemCopy(m_data, bufferSize, p_other.m_data, bufferSize);
+        ASSERT(result == 0, "Failed to copy texture");
     }
 
     ITexture::ITexture(ITexture&& p_other) noexcept
@@ -107,10 +112,18 @@ namespace SvRendering::RHI
             stbi_image_free(m_data);
 
         if (p_other.m_data)
-            m_data = stbi_load_from_memory(p_other.m_data, p_other.m_width * p_other.m_height * p_other.m_channels, &m_width,
-                &m_height, reinterpret_cast<int*>(&m_channels), 0);
+        {
+            const auto bufferSize = m_width * m_height * m_channels;
+
+            m_data = static_cast<unsigned char*>(stbi__malloc(bufferSize));
+
+            const int result = MemCopy(m_data, bufferSize, p_other.m_data, bufferSize);
+            ASSERT(result == 0, "Failed to copy texture");
+        }
         else
+        {
             m_data = nullptr;
+        }
     }
 
     void ITexture::Move(ITexture&& p_other)
