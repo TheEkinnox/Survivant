@@ -33,6 +33,8 @@ namespace SvEditor::Core
 
 		EditorUI& GetUI();
 
+		void RenderLogo();
+
 	private:
 		//init on creation
 		std::unique_ptr<EditorUI>	m_ui;

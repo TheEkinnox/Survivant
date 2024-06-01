@@ -1,1 +1,19 @@
-{"shader":{"path":"assets/shaders/Unlit.glsl"},"properties":[{"name":"u_tint","type":7,"value":"{1,0,1,1}"},{"name":"u_diffuse","type":10,"value":{"path":"textures/grid.png"}}]}
+{
+    "shader": {
+        "path": "shaders/Unlit.glsl"
+    },
+    "properties": [
+        {
+            "name": "u_tint",
+            "type": 7,
+            "value": "{0,1,0.329114,1}"
+        },
+        {
+            "name": "u_diffuse",
+            "type": 10,
+            "value": {
+                "path": "textures/game/Sci_fi_Metal_Panel_002_basecolor.jpg"
+            }
+        }
+    ]
+}

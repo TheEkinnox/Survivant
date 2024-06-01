@@ -8,9 +8,11 @@
 #include "SurvivantEditor/Panels/GamePanel.h"
 #include "SurvivantEditor/Panels/HierarchyPanel.h"
 #include "SurvivantEditor/Panels/InspectorPanel.h"
+#include "SurvivantEditor/Panels/LoadingPanel.h"
 #include "SurvivantEditor/Panels/SavePanel.h"
 #include "SurvivantEditor/Panels/ScenePanel.h"
 #include "SurvivantEditor/Panels/TestPanel.h"
+#include "SurvivantEditor/Panels/LogoPanel.h"
 
 #include <SurvivantApp/Core/IEngine.h>
 #include <SurvivantApp/Inputs/InputManager.h>
@@ -156,8 +158,8 @@ namespace SvEditor::Core
         // UpdateScripts the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
-
         ImGui::NewFrame();
+
         ImGuizmo::BeginFrame();
     }
 
@@ -191,17 +193,18 @@ namespace SvEditor::Core
 
     void EditorUI::EndFrameUpdate()
     {
-        ImGui::EndFrame();
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
         for (auto& callback : m_endFrameCallbacks)
         {
             //magic!
-            (this->*callback)();
+            auto panel = (this->*callback)();
+            panel->Render();
         }
-
         m_endFrameCallbacks.clear();
+
+
+        ImGui::Render();
+        //ImGui::EndFrame();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
 
     void EditorUI::ForceGameFocus()
@@ -212,6 +215,11 @@ namespace SvEditor::Core
     void EditorUI::ForceSceneFocus()
     {
         m_main->ForceFocus(ScenePanel::NAME);
+    }
+
+    void EditorUI::SpawnLoadingPanel()
+    {
+        m_endFrameCallbacks.push_back(&EditorUI::CreateLoadingPanel);
     }
 
     namespace
@@ -503,9 +511,20 @@ namespace SvEditor::Core
             SvApp::InputManager::GetInstance().SetInputBindings(m_inputs.lock());
     }
 
+    std::shared_ptr<Panel> EditorUI::AddEndFrameCallbackInternal(const std::function<std::shared_ptr<Panel>()>& p_endFrameCallback)
+    {
+        return p_endFrameCallback();
+    }
+
     ISelectable* EditorUI::GetSelected()
     {
         return m_selected;
+    }
+
+    void EditorUI::RenderLogo()
+    {
+        LogoPanel logoPanel;
+        logoPanel.Render();
     }
 
     ImFont* EditorUI::GetFontDefault()
@@ -634,6 +653,19 @@ namespace SvEditor::Core
 
         return m_currentPanels.insert(
             { BuildPanel::NAME, std::make_shared<BuildPanel>() }).first->second;
+    }
+
+    std::shared_ptr<Panel> SvEditor::Core::EditorUI::CreateLoadingPanel()
+    {
+        auto panel = m_currentPanels.find(LoadingPanel::NAME);
+        if (panel != m_currentPanels.end())
+        {
+            m_main->ForceFocus(LoadingPanel::NAME);
+            return panel->second;
+        }
+
+        return m_currentPanels.insert(
+            { LoadingPanel::NAME, std::make_shared<LoadingPanel>() }).first->second;
     }
 
     void EditorUI::Layout1(int p_dockspaceId)

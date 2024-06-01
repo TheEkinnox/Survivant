@@ -1,6 +1,7 @@
 //PanelResourceSelector.inl
 #pragma once
 
+#include "SurvivantEditor/Core/EditorUI.h"
 #include "SurvivantEditor/MenuItems/MenuButton.h"
 #include "SurvivantEditor/PanelItems/PanelResourceSelector.h"
 #include "SurvivantEditor/Panels/ContentDrawerPanel.h"
@@ -144,8 +145,17 @@ namespace SvEditor::PanelItems
 					foundPath = true;
 
 				m_allResources->m_items.emplace_back(std::make_unique<MenuButton>(MenuButton(
-					resourcePath, [this, resourcePath](char) mutable {
+					resourcePath, [this, resourcePath](char) mutable 
+					{
 						const RefT& resource = (this->GetRef() = ResourceRef<T>(resourcePath));
+						const ResourceManager& resourceManager = ResourceManager::GetInstance();
+
+						if (!resourceManager.Get<T>(resourcePath))
+						{
+							//differ 
+							//spawn loading panel
+							reinterpret_cast<SvEditor::Core::EditorUI*>(SV_CURRENT_UI())->SpawnLoadingPanel();
+						}
 
 						if (this->m_callback)
 							this->m_callback(resource);

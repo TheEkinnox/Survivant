@@ -124,13 +124,13 @@ namespace SvEditor::Gizmo
 			Transform::decomposeMatrix(worldMat.transposed(), pos, rot, scl);
 
 			float newMax;
-			if (scl.magnitudeSquared() >= eTrans.getScale().magnitudeSquared())
-				newMax = LibMath::max(LibMath::max(scl.m_x, scl.m_y), scl.m_z);
-			else
-				newMax = LibMath::min(LibMath::min(scl.m_x, scl.m_y), scl.m_z);
+			//if (/* clicked on corner ||| */ scl.magnitudeSquared() >= eTrans.getScale().magnitudeSquared())
+			newMax = LibMath::max(scl.m_x, scl.m_z);
+			//else
+			//	newMax = LibMath::min(scl.m_x, scl.m_z);
 
 			Vector3 oldScl = eTrans.getScale();
-			float oldMax = LibMath::max(LibMath::max(oldScl.m_x, oldScl.m_y), oldScl.m_z);
+			float oldMax = LibMath::max(oldScl.m_x, oldScl.m_z);
 
 			//box->m_size = m_oldBox.m_size * (2.f * (scl / test.getScale() - 1.f) + 1.f);
 			sph->m_radius = m_oldSph.m_radius * (2.f * (newMax / oldMax - 1.f) + 1.f);

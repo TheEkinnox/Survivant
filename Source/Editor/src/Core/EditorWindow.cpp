@@ -58,6 +58,13 @@ namespace SvEditor::Core
 	{
 		return *m_ui;
 	}
+
+	void EditorWindow::RenderLogo()
+	{
+		Update();
+		m_ui->RenderLogo();
+		EndRender();
+	}
 }
 
 

@@ -44,7 +44,6 @@ namespace SvEditor::Core
 		SvScripting::LuaContext::GetInstance().Init();
 
 		//create scenes
-		//BrowseToDefaultScene(*m_editorWorld); //cant use this func bcs world does not exist
 		m_editorSelectedScene = ResourceManager::GetInstance().GetOrCreate<Scene>(DEFAULT_SCENE_PATH);
 
 		//create editor world world
@@ -68,14 +67,8 @@ namespace SvEditor::Core
 				SetPaused(false);
 				DestroyGameInstance();
 			}
-			else
-			{
-				while (!m_gameInstance)
-				{
-					ASSERT(changeSuccess, "ChangeScene in Editor failed");
-					break;
-				}
-			}
+			else if (!m_gameInstance)
+				ASSERT(changeSuccess, "ChangeScene in Editor failed");
 		}
 
 		if (m_editorWorld->m_isFocused)

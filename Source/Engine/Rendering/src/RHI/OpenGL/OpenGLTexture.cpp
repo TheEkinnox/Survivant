@@ -206,6 +206,10 @@ namespace SvRendering::RHI
     void OpenGLTexture::Resize(const int p_width, const int p_height)
     {
         ASSERT(!m_data, "Resizing texture resource is not supported");
+
+        if (m_width == p_width && m_height == p_height)
+            return;
+
         m_width  = p_width;
         m_height = p_height;
 

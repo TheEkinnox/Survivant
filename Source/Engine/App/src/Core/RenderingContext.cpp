@@ -225,6 +225,8 @@ namespace SvApp::Core
 
         if (cam)
             cam->SetAspect(GetAspect());
+
+
     }
 
     const Renderer& RenderingContext::GetRenderer() const

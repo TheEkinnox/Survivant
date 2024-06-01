@@ -13,6 +13,7 @@ namespace SvEditor::Panels
 	public:
 		enum ERenderFlags
 		{
+			NOTHING =		0,
 			CLOSE =			1 << 0,
 			DefaultInputs =	1 << 1
 		};
