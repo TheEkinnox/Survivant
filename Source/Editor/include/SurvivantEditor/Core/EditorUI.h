@@ -52,15 +52,7 @@ namespace SvEditor::Core
 		void ForceGameFocus();
 		void ForceSceneFocus();
 
-		std::shared_ptr<Panel> CreateNewTestPanel();
-		std::shared_ptr<Panel> CreateSavePanel();
-		std::shared_ptr<Panel> CreateConsolePanel();
-		std::shared_ptr<Panel> CreateContentPanel();
-		std::shared_ptr<Panel> CreateInspectorPanel();
-		std::shared_ptr<Panel> CreateGamePanel();
-		std::shared_ptr<Panel> CreateScenePanel();
-		std::shared_ptr<Panel> CreateHierarchyPanel();
-		std::shared_ptr<Panel> CreateBuildPanel();
+		void SpawnLoadingPanel();
 
 		void TryCreateSavePanel();
 
@@ -72,12 +64,29 @@ namespace SvEditor::Core
 		ISelectable* GetSelected() override;
 		//void SetSelected(ISelectable* p_selected) override;
 
+		void RenderLogo();
+
 	private:
 		typedef std::shared_ptr<Panel> (EditorUI::* CreatePanelCallback)();
 		using Inputs = std::weak_ptr<SvApp::InputManager::InputBindings>;
 
 		MenuBar CreateMenuBar(std::weak_ptr<WorldContext> p_world);
 		void HandlePanelFlags(const std::string& p_name, Panel::ERenderFlags p_flags);
+
+		std::shared_ptr<Panel> AddEndFrameCallbackInternal(const std::function<std::shared_ptr<Panel>()>& p_endFrameCallback);
+
+		std::shared_ptr<Panel> CreateNewTestPanel();
+		std::shared_ptr<Panel> CreateSavePanel();
+		std::shared_ptr<Panel> CreateConsolePanel();
+		std::shared_ptr<Panel> CreateContentPanel();
+		std::shared_ptr<Panel> CreateInspectorPanel();
+		std::shared_ptr<Panel> CreateGamePanel();
+		std::shared_ptr<Panel> CreateScenePanel();
+		std::shared_ptr<Panel> CreateHierarchyPanel();
+		std::shared_ptr<Panel> CreateBuildPanel();
+		std::shared_ptr<Panel> CreateLoadingPanel();
+
+
 
 		//TODO : add ratio vfont sizes
 		static constexpr int DEFAULT_FONT_SIZE = 16;

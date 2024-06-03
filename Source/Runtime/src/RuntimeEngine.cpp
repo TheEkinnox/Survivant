@@ -1,12 +1,20 @@
 //RuntimeEngine.cpp
 #include "SurvivantRuntime/RuntimeEngine.h"
 
+
 #include <SurvivantApp/Core/BuildConfig.h>
 #include <SurvivantApp/Core/TempDefaultScene.h>
 
+#include <SurvivantAudio/AudioContext.h>
+
 #include <SurvivantCore/Debug/Assertion.h>
 
+#include <SurvivantPhysics/PhysicsContext.h>
+
 #include <SurvivantRendering/RHI/IRenderAPI.h>
+
+#include <SurvivantScripting/LuaContext.h>
+
 
 using namespace LibMath;
 
@@ -14,6 +22,7 @@ using namespace SvApp::Core;
 
 using namespace SvCore::ECS;
 using namespace SvCore::Resources;
+using namespace SvCore::Utility;
 
 using namespace SvRendering::RHI;
 using namespace SvRendering::Core;
@@ -26,33 +35,41 @@ namespace SvRuntime
 	{
 		s_engine = this;
 
-		//create scenes
-		//BrowseToDefaultScene(*m_editorWorld); //cant use this func bcs world does not exist
+		//audio
+		if (!SvAudio::AudioContext::GetInstance().Init())
+			ASSERT(false, "Failed to initialize audio context");
 
-		//create editor world world
-		//m_game = std::make_unique<GameInstance>(m_world);
+		//physics
+		SvPhysics::PhysicsContext::GetInstance().Init();
+
+		//scripts
+		SvScripting::LuaContext::SetUserTypeBinders(); //default binders
+		SvScripting::LuaContext::GetInstance().Init();
+
+		//create world
 		m_world = CreateGameWorld();
 		m_game = CreateGameInstance();
 
-		CHECK(InitializeGameInstance(), "couldnt initialize gi");
+		CHECK(InitializeGameInstance(), "couldnt initialize GameInstance");
 
 		m_world->SetInputs();
-		m_camera = EntityHandle(m_world->CurrentScene().Get(), m_world->GetFirstCamera());
+		//m_camera = EntityHandle(m_world->CurrentScene().Get(), m_world->GetFirstCamera());
 
-		m_game->Start();
+		//start game
+		StartGame();
 	}
 
 	void RuntimeEngine::Update()
 	{
 		m_time.Tick();
 
-		//m_editorWorld->m_renderingContext->UpdateCameraInput();
+		if (!m_scenePath.empty())
+		{
+			bool changeSuccess = ChangeSceneInternal();
 
-		//if (m_editorWorld)
-		//	m_editorWorld->RenderContext();
-
-		//if (!m_PIEWorld.expired())
-		//	m_PIEWorld.lock()->RenderContext();
+			if (!CHECK(changeSuccess))
+				m_isRunning = false;
+		}
 	}
 
 	RuntimeEngine::GameInstancePtr RuntimeEngine::CreateGameInstance()
@@ -86,7 +103,8 @@ namespace SvRuntime
 
 	void RuntimeEngine::UpdateGame()
 	{
-		m_game->UpdateScripts();
+		SvScripting::LuaContext::GetInstance().Update(GetDeltaTime());   //use engine time 1 timer
+		SvPhysics::PhysicsContext::GetInstance().Update(GetDeltaTime());
 	}
 
 	bool RuntimeEngine::InitializeGameInstance()
@@ -105,8 +123,59 @@ namespace SvRuntime
 		return true;
 	}
 
+	bool RuntimeEngine::ChangeSceneInternal()
+	{
+		std::string scenePath = std::move(m_scenePath);
+
+		SvScripting::LuaContext& luaContext = SvScripting::LuaContext::GetInstance();
+
+		SvPhysics::PhysicsContext::GetInstance().Reload();
+		Timer::GetInstance().Refresh();
+
+		//if (m_gameInstance)
+		luaContext.Reload();
+
+		//couldnt browse to scene
+		if (!BrowseToScene(*m_world, scenePath))
+			return false;
+
+		//if (m_gameInstance)
+		luaContext.Start();
+
+		return true;
+	}
+
+	void RuntimeEngine::StartGame()
+	{
+		//SvPhysics::PhysicsContext::GetInstance().Reload();
+		//Timer::GetInstance().Refresh();
+		SvScripting::LuaContext& luaContext = SvScripting::LuaContext::GetInstance();
+		//luaContext.Reload();
+
+		//ResourceManager& resourceManager = ResourceManager::GetInstance();
+		//resourceManager.ReloadAll<SvScripting::LuaScript>();
+
+
+		//init
+		m_game->Init(m_world);
+		m_world->m_owningGameInstance = m_game.get();
+
+		luaContext.Start();
+		ASSERT(luaContext.IsValid(), "Failed to start lua context");
+
+		//start
+		m_game->Start();
+	}
+
 	void RuntimeEngine::Render() const
 	{
+		//if (m_editorWorld->m_isVisalbe)
+		//	m_editorWorld->m_renderingContext->Render(m_editorWorld->CurrentScene().Get());
+
+		//if (m_gameInstance && !m_PIEWorld.expired() && m_PIEWorld.lock()->m_isVisalbe)
+		//	m_PIEWorld.lock()->m_renderingContext->Render(m_PIEWorld.lock()->CurrentScene().Get());
+
+
 		Scene* scene = m_world->CurrentScene().Get();
 		Renderer::UpdateLightSSBO(scene, *m_world->m_lightsSSBO);
 
@@ -122,10 +191,11 @@ namespace SvRuntime
 	{
 		IRenderAPI::GetCurrent().SetViewport( { 0, 0 }, p_size);
 
+		//TODO: Cam
 		//camera
-		auto cam = m_camera.Get<CameraComponent>();
-		if (cam)
-			cam->SetAspect(static_cast<float>(p_size.m_x) / static_cast<float>(p_size.m_y));
+		//auto cam = m_camera.Get<CameraComponent>();
+		//if (cam)
+		//	cam->SetAspect(static_cast<float>(p_size.m_x) / static_cast<float>(p_size.m_y));
 	}
 
 	void RuntimeEngine::BakeLights()
@@ -146,28 +216,19 @@ namespace SvRuntime
 		return m_isRunning;
 	}
 
-	void RuntimeEngine::ChangeScene(const std::string& /*p_scenePath*/)
+	void RuntimeEngine::ChangeScene(const std::string& p_scenePath)
 	{
-		//TODO: update change scene like in editor (update)
-		
-		//couldnt browse to scene
-		//if (!BrowseToScene(*m_world, p_scenePath))
-		//	return false;
-
-		//return void;
+		m_scenePath = p_scenePath;
 	}
 
 	bool RuntimeEngine::ChangeCamera(const SvCore::ECS::EntityHandle& p_camera)
 	{
-		auto cam = p_camera.Get<CameraComponent>();
-		auto trans = p_camera.Get<Transform>();
+		if (!p_camera)
+			return false;
 
-		if (!(cam && trans))
-			SV_LOG("Can't change camera, Entity doesn't have a camera or transform component");
+		m_world->SetCamera(p_camera);
 
-		m_camera = p_camera;
-
-		return false;
+		return true;
 	}
 
 	float RuntimeEngine::GetDeltaTime()

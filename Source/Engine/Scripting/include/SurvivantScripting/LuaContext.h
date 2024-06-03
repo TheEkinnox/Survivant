@@ -168,7 +168,7 @@ namespace SvScripting
 
         /**
          * \brief Registers the given user type binder function
-         * \param p_binder The binder function to register
+         * \param p_binder The binder function to register, or default binders
          */
         static void SetUserTypeBinders(Binder p_binder = &LuaContext::DefaultUserTypeBindings);
 

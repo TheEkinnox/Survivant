@@ -35,6 +35,7 @@ namespace SvRuntime
 
 		m_gameIsPaused = false;
 
+		//TODO: does this need to be in runtime?
 		SvCore::Debug::Logger::GetInstance().SetFile("debug.log");
 		ResourceManager::GetInstance().AddSearchPath("assets");
 
@@ -56,11 +57,11 @@ namespace SvRuntime
 		//LoadAllResources();
 		m_window->GetWindow();
 
-		m_runEngine.Init();
-
 		TVector2<int> viewport;
 		m_window->GetSize(viewport.m_x, viewport.m_y);
 		m_runEngine.SetViewport(viewport);
+
+		m_runEngine.Init();
 	}
 
 	void RuntimeApp::Run()
@@ -76,7 +77,6 @@ namespace SvRuntime
 
 			m_runEngine.Render();
 
-			//m_window->RenderUI();
 			m_window->EndRender();
 		}
 	}

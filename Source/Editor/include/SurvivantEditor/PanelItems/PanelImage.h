@@ -25,7 +25,7 @@ namespace SvEditor::PanelItems
 		void SetTexture(void* p_textureId);
 
 	private:
-		void*			m_textureId;
+		void*				m_textureId;
 		LibMath::Vector2	m_size;
 	};
 }

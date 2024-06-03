@@ -2,23 +2,31 @@
     "entities": 5,
     "components": [
         {
-            "type": "Tag",
+            "type": "Hierarchy",
             "data": [
                 {
-                    "owner": 2,
-                    "data": "quit"
-                },
-                {
-                    "owner": 1,
-                    "data": "Quit"
+                    "owner": 4,
+                    "data": {
+                        "parent": 3
+                    }
                 },
                 {
                     "owner": 3,
-                    "data": "Buttons"
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
                 },
                 {
-                    "owner": 4,
-                    "data": "start"
+                    "owner": 2,
+                    "data": {
+                        "parent": 3
+                    }
+                },
+                {
+                    "owner": 1,
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
                 }
             ]
         },
@@ -64,31 +72,71 @@
             ]
         },
         {
-            "type": "Hierarchy",
+            "type": "Tag",
             "data": [
                 {
-                    "owner": 4,
-                    "data": {
-                        "parent": 3
-                    }
-                },
-                {
-                    "owner": 3,
-                    "data": {
-                        "parent": 18446744073709551615
-                    }
-                },
-                {
                     "owner": 2,
-                    "data": {
-                        "parent": 3
-                    }
+                    "data": "quit"
                 },
                 {
                     "owner": 1,
-                    "data": {
-                        "parent": 18446744073709551615
-                    }
+                    "data": "Quit"
+                },
+                {
+                    "owner": 3,
+                    "data": "Buttons"
+                },
+                {
+                    "owner": 4,
+                    "data": "start"
+                }
+            ]
+        },
+        {
+            "type": "ScriptList",
+            "data": [
+                {
+                    "owner": 0,
+                    "data": []
+                },
+                {
+                    "owner": 4,
+                    "data": [
+                        {
+                            "name": "scripts.Menu.sceneButton",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "scenePath"
+                                    },
+                                    "value": {
+                                        "type": 4,
+                                        "data": "scenes/Level1.scn"
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "sceneKey"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 71.0
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "owner": 2,
+                    "data": [
+                        {
+                            "name": "scripts.Menu.quitButton",
+                            "data": []
+                        }
+                    ]
                 }
             ]
         },
@@ -134,93 +182,6 @@
                         "rotation": "{0,0,0,1}",
                         "scale": "{1,1,1}"
                     }
-                }
-            ]
-        },
-        {
-            "type": "ScriptList",
-            "data": [
-                {
-                    "owner": 0,
-                    "data": [
-                        {
-                            "name": "scripts.freeLook",
-                            "data": [
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "rotation_speed"
-                                    },
-                                    "value": {
-                                        "type": 7,
-                                        "data": {
-                                            "type": "Degree",
-                                            "data": 90.0
-                                        }
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "move_speed"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 3.0
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "mouse_sensitivity"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 0.005
-                                    }
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "owner": 4,
-                    "data": [
-                        {
-                            "name": "scripts.Menu.sceneButton",
-                            "data": [
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "scenePath"
-                                    },
-                                    "value": {
-                                        "type": 4,
-                                        "data": "scenes/Level1.scn"
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "sceneKey"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 71.0
-                                    }
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "owner": 2,
-                    "data": [
-                        {
-                            "name": "scripts.Menu.quitButton",
-                            "data": []
-                        }
-                    ]
                 }
             ]
         },

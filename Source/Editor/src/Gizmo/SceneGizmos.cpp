@@ -57,13 +57,7 @@ namespace SvEditor::Gizmo
 
 		
 		if (!isSmallDisplay)
-		{
 			m_orientation.Render(copyCTrans, copyCProj, p_orientationPos + Vector2(winPos.x, winPos.y));
-			//det = copyCTrans.determinant();
-			//copyCTrans = copyCTrans.coMatrix();
-			//copyCTrans /= det;
-			//cTrans->setMatrix(copyCTrans);
-		}
 	}
 
 	bool SceneGizmos::UsingGizmo()

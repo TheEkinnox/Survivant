@@ -42,6 +42,8 @@ namespace SvRuntime
 
 	private:
 		bool InitializeGameInstance();
+		bool ChangeSceneInternal();
+		void StartGame();
 
 		using GameInstancePtr = std::unique_ptr<SvApp::Core::GameInstance>;
 		using WorldContextPtr = std::shared_ptr<SvApp::Core::WorldContext>;
@@ -55,6 +57,6 @@ namespace SvRuntime
 		WorldContextPtr				m_world;
 		GameInstancePtr				m_game;
 
-		SvCore::ECS::EntityHandle		m_camera;
+		std::string						m_scenePath;
 	};
 }

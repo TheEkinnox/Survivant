@@ -22,7 +22,7 @@ namespace SvEditor::Core
 		void Run() override;
 
 	private:
-		void LoadAllResources();
+		void DrawLogo();
 
 		void TogglePlayPIE();
 		void TogglePausePIE();

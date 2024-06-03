@@ -51,11 +51,14 @@ namespace SvEditor::Core
 			.SetCapability(ERenderingCapability::DEPTH_TEST, true)
 			.SetCullFace(ECullFace::BACK);
 
-		renderAPI.SetViewport({ 0, 0 }, { 800, 600 });
+		//TODO: remove this line when draw logo implemented
+		//renderAPI.Clear(true, false, false);
 
+		//draw logo
+		DrawLogo();
+		
 		//engine
 		m_editorEngine.Init();
-		LoadAllResources();
 		SvApp::InputManager::GetInstance().InitWindow(m_window.get());
 
 		m_editorEngine.SetupUI(m_window.get(), {
@@ -63,7 +66,6 @@ namespace SvEditor::Core
 			[this]() { TogglePausePIE(); },
 			[this]() { PressFramePIE(); }
 			});
-
 	}
 
 	void EngineApp::Run()
@@ -78,16 +80,26 @@ namespace SvEditor::Core
 			if (!m_gameInstance.expired() && !m_editorEngine.IsPaused())
 				UpdatePIE();
 
-			m_window->RenderUI();			//update UI
 			m_editorEngine.RenderWorlds();	//render worlds
+			m_window->RenderUI();			//update UI
 
 			m_window->EndRender();			//render UI with worlds
 		}
 	}
 
-	void EngineApp::LoadAllResources()
+	void EngineApp::DrawLogo()
 	{
-		//TODO : make/use resource manager init
+		bool check = false;
+
+		do
+		{
+			m_window->RenderLogo();
+			check = !check;
+
+		} while (check); //must have been the wind
+
+		if (bool yes = !check)
+			m_window->RenderLogo();
 	}
 
 	void EngineApp::TogglePlayPIE()

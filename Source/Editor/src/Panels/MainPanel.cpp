@@ -32,7 +32,7 @@ namespace SvEditor::Panels
         ImGui::SetNextWindowPos(viewport->WorkPos);
         ImGui::SetNextWindowSize(viewport->WorkSize);
         ImGui::SetNextWindowViewport(viewport->ID);
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);        //push 2 styles
         ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, boarderSize);
         windowFlags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
         windowFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
@@ -40,8 +40,7 @@ namespace SvEditor::Panels
         //always begin bcs if not lose docked children
         ImGui::Begin("DockSpace Demo", &open, windowFlags);
 
-        //?
-        ImGui::PopStyleVar(2);
+        ImGui::PopStyleVar(2); //pop 2 styles
 
         // Submit the DockSpace
         ImGuiID dockspaceId = ImGui::GetID("MyDockSpace");

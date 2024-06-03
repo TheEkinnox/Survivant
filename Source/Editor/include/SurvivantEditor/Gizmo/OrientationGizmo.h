@@ -7,6 +7,7 @@
 
 #include "Vector/Vector2.h"
 #include "Matrix/Matrix4.h"
+#include "Transform.h"
 
 namespace SvEditor::Gizmo
 {
@@ -21,7 +22,8 @@ namespace SvEditor::Gizmo
 		bool IsUsing();
 
 	private:
-		bool						m_isUsing = false;
-		LibMath::Vector2			m_size;
+		bool				m_isUsing = false;
+		LibMath::Vector2	m_size;
+		LibMath::Matrix4	m_prevMat;
 	};
 }
