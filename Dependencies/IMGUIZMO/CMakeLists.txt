@@ -2,6 +2,8 @@
 FetchContent_Declare(
 	imguizmo
 	GIT_REPOSITORY https://github.com/CedricGuillemet/ImGuizmo
+	GIT_TAG ba662b119d64f9ab700bb2cd7b2781f9044f5565
+	GIT_SHALLOW ON
 )
 
 set(BUILD_SHARED_LIBS OFF)
@@ -20,11 +22,7 @@ set(TARGET_NAME ${CURRENT_FOLDER_NAME})
 ###############################
 
 # Add source files
-file(GLOB SOURCE_FILES 
-	${imguizmo_SOURCE_DIR}/*.cpp
-)
-
-# list(APPEND SOURCE_FILES ${imguizmo_SOURCE_DIR}/misc/cpp/imguizmo_stdlib.cpp)
+file(GLOB SOURCE_FILES ${imguizmo_SOURCE_DIR}/*.cpp)
 
 # Add header files
 set(TARGET_INCLUDE_DIR ${imguizmo_SOURCE_DIR})
@@ -40,12 +38,6 @@ add_library(${TARGET_NAME} STATIC ${HEADER_FILES} ${SOURCE_FILES})
 target_include_directories(${TARGET_NAME} PRIVATE ${TARGET_INCLUDE_DIR} ${IMGUI_INCLUDE_DIR})
 
 source_group(TREE ${imguizmo_SOURCE_DIR} FILES ${HEADER_FILES} ${SOURCE_FILES})
-
-# if(MSVC)
-	# target_compile_options(${TARGET_NAME} PRIVATE /W4 /WX)
-# else()
-	# target_compile_options(${TARGET_NAME} PRIVATE -Wall -Wextra -Wpedantic -Werror)
-# endif()
 
 set(IMGUIZMO_NAME ${TARGET_NAME} PARENT_SCOPE)
 set(IMGUIZMO_INCLUDE_DIR ${TARGET_INCLUDE_DIR} PARENT_SCOPE)
