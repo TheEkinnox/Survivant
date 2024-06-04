@@ -29,7 +29,7 @@
 //
 //	void EditorWindow::RenderUI()
 //	{
-//		m_ui->RenderPanels();
+//		m_ui->RenderWorldPanels();
 //	}
 //
 //	void EditorWindow::EndRender()

@@ -62,7 +62,7 @@ namespace SvEditor::Gizmo
 
 	bool SceneGizmos::UsingGizmo()
 	{
-		return m_transform.IsUsing() || m_orientation.IsUsing();
+		return m_transform.IsUsing() || m_orientation.IsUsing() || m_collider.IsUsing();
 	}
 }
 

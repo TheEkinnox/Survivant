@@ -38,14 +38,15 @@ namespace SvEditor::Panels
 
     Panel::ERenderFlags SavePanel::Render()
     {   
+        static const ImGuiWindowFlags f = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;
+
         ImGui::OpenPopup(m_name.c_str());
 
-        if (ImGui::BeginPopupModal(m_name.c_str(), &m_open))
+        if (ImGui::BeginPopupModal(m_name.c_str(), &m_open, f))
         {
             m_options.DisplayAndUpdatePanel();
             ImGui::EndPopup();
         }
-
 
         ERenderFlags flags = ERenderFlags();
         if (!m_open)

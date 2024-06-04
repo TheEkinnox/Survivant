@@ -20,6 +20,7 @@ namespace SvEditor::Panels
 		MainPanel(MenuBar&& p_menuBar);
 		~MainPanel() = default;
 
+		void RenderDockSpace();
 		ERenderFlags Render() override;
 
 		void SetMenuBar(MenuBar&& p_menuBar);

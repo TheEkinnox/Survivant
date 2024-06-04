@@ -46,7 +46,9 @@ namespace SvEditor::Core
 		void InitHierarchyPanel(std::weak_ptr<WorldContext> p_world);
 
 		void StartFrameUpdate() override;
-		void RenderPanels();
+		void BeginFrame();
+		void RenderWorldPanels();
+		void RenderInfoPanels();
 		void EndFrameUpdate() override;
 
 		void ForceGameFocus();
@@ -86,16 +88,15 @@ namespace SvEditor::Core
 		std::shared_ptr<Panel> CreateBuildPanel();
 		std::shared_ptr<Panel> CreateLoadingPanel();
 
-
-
 		//TODO : add ratio vfont sizes
 		static constexpr int DEFAULT_FONT_SIZE = 16;
 		static constexpr int ICON_FONT_SIZE = 64;
 
-		std::vector<ImFont*> m_fonts;
+		std::vector<ImFont*>		m_fonts;
 
-		Panels								m_currentPanels;
 		std::shared_ptr<MainPanel>			m_main;
+		Panels								m_worldPanels;
+		Panels								m_infoPanels;
 		std::vector<CreatePanelCallback>	m_endFrameCallbacks;
 		ISelectable*						m_selected;
 		Inputs								m_inputs;

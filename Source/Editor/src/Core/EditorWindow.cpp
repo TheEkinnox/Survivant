@@ -27,11 +27,6 @@ namespace SvEditor::Core
 		m_ui->StartFrameUpdate();
 	}
 
-	void EditorWindow::RenderUI()
-	{
-		m_ui->RenderPanels();
-	}
-
 	void EditorWindow::EndRender()
 	{
 		m_ui->EndFrameUpdate();
@@ -61,9 +56,9 @@ namespace SvEditor::Core
 
 	void EditorWindow::RenderLogo()
 	{
-		Update();
+		SvApp::Window::Update();
 		m_ui->RenderLogo();
-		EndRender();
+		SvApp::Window::EndRender();
 	}
 }
 
