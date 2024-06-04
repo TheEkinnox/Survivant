@@ -6,7 +6,6 @@ local FreeLook = {
 }
 
 local transform
-local last_mouse_pos
 
 function FreeLook:OnInit()
     transform = self.owner:GetOrCreate(Transform)
@@ -14,10 +13,6 @@ function FreeLook:OnInit()
     if not CAM_TRANSFORM then
         CAM_TRANSFORM = transform
     end
-end
-
-function FreeLook:OnStart()
-    last_mouse_pos = Input.mousePos
 end
 
 local function UpdatePosition(self, deltaTime)
@@ -97,14 +92,16 @@ local function UpdateKeyboardRotation(self, deltaTime)
 end
 
 local function UpdateMouseRotation(self)
-    local mouseDelta = Input.mousePos - last_mouse_pos
-    last_mouse_pos = Input.mousePos
-
     if not (Input.IsMouseButtonDown(EMouseButton.LEFT) or Input.IsMouseButtonDown(EMouseButton.RIGHT)) then
+        Input.cursorMode = ECursorMode.NORMAL
         return
     end
 
+    Input.cursorMode = ECursorMode.DISABLED
+
     local rotationSpeed = self.rotation_speed * self.mouse_sensitivity
+
+    local mouseDelta = Input.mouseDelta
 
     if math.isNear(rotationSpeed.raw, 0) or math.isNear(mouseDelta.magnitudeSquared, 0) then
         return
@@ -113,9 +110,8 @@ local function UpdateMouseRotation(self)
     local x, y, z = transform.rotation:ToEuler(ERotationOrder.YXZ)
 
     y = y - rotationSpeed * mouseDelta.x
-    x = Degree.new(x - rotationSpeed * mouseDelta.y)
-    x:Wrap(true)
-    x = Radian.new(Degree.new(math.clamp(x.raw, -85, 85)))
+    x = x - rotationSpeed * mouseDelta.y
+    x = Radian.new(Degree.new(math.clamp(x:GetWrappedDegree(true), -85, 85)))
 
     transform.rotation = Quaternion.FromEuler(x, y, z, ERotationOrder.YXZ)
 end
