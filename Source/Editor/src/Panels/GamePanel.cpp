@@ -38,6 +38,17 @@ namespace SvEditor::Panels
 
 		m_world = s_worldCreator({ 0, 0 });
 		m_prevFocus = false;
+		m_prevCursorMode = InputManager::GetInstance().GetCursorMode();
+
+		m_world->m_inputs = std::make_shared<InputManager::InputBindings>();
+
+		auto& keyCallbacks = m_world->m_inputs->m_keyCallbacks;
+
+		static const auto escKeyType = InputManager::KeyboardKeyType(EKey::ESCAPE, EKeyState::PRESSED, EInputModifier());
+		keyCallbacks[escKeyType] = [this](char)
+		{
+			ImGui::SetWindowFocus(nullptr);
+		};
 
 		m_image.SetTexture(m_world->m_renderingContext->GetTextureId(RenderingContext::ETextureType::COLOR));
 
@@ -69,13 +80,25 @@ namespace SvEditor::Panels
 			{
 				m_world->m_isFocused = true;
 				if (m_world->m_owningGameInstance)
+				{
 					m_world->SetInputs();
+					InputManager::GetInstance().SetCursorMode(m_prevCursorMode);
+				}
+
+				m_world->m_renderingContext->Render(m_world->CurrentScene().Get());
 			}
 			else if (val == -1)
 			{
 				m_world->m_isFocused = false;
+
 				if (m_world->m_owningGameInstance)
-					flags = ERenderFlags(flags | DefaultInputs);
+				{
+					flags = static_cast<ERenderFlags>(flags | DefaultInputs);
+
+					InputManager& inputManager = InputManager::GetInstance();
+					m_prevCursorMode = inputManager.GetCursorMode();
+					inputManager.SetCursorMode(ECursorMode::NORMAL);
+				}
 			}
 
 			if (IsWindowDifferentSize(m_imageSize))

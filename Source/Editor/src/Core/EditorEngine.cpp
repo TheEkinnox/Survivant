@@ -97,7 +97,6 @@ namespace SvEditor::Core
 
 		auto& pieWorld = *m_PIEWorld.lock();
 		pieWorld.CurrentScene() = resourceManager.Load<Scene>(m_editorSelectedScene.GetPath());
-		pieWorld.m_inputs = std::make_shared<SvApp::InputManager::InputBindings>();
 		pieWorld.SetCamera(pieWorld.GetFirstCamera());
 		pieWorld.SetInputs();
 		pieWorld.BakeLighting();

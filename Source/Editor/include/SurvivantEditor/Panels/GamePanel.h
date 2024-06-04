@@ -45,6 +45,7 @@ namespace SvEditor::Panels
 		std::unique_ptr<IPanelable>		m_buttons[3];
 		PanelImage						m_image;
 		bool							m_prevFocus;
+		SvApp::ECursorMode				m_prevCursorMode;
 		LibMath::Vector2				m_imageSize;
 		ResizeEvent						m_onResize;
 	};
