@@ -155,35 +155,65 @@ namespace SvEditor::Core
 
     void EditorUI::StartFrameUpdate()
     {
+        BeginFrame();
+        m_main->RenderDockSpace();
+    }
+
+    void EditorUI::BeginFrame()
+    {
         // UpdateScripts the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-
         ImGuizmo::BeginFrame();
     }
 
-    void EditorUI::RenderPanels()
+    //void EditorUI::RenderDockSpace()
+    //{
+    //    m_main->RenderDockSpace();
+    //}
+
+    void EditorUI::RenderWorldPanels()
     {
         struct PanelFlags
         {
             std::string         m_name;
             Panel::ERenderFlags m_flags = Panel::ERenderFlags();
         };
+        std::vector<PanelFlags> pfArray;
 
+        for (auto& [name, panel] : m_worldPanels)
+        {
+            auto flags = panel->Render();
+            if (flags != Panel::ERenderFlags())
+                pfArray.push_back({ panel->GetName(), flags});
+        }
+
+        //handle m_flags after
+        for (auto& pf : pfArray)
+            HandlePanelFlags(pf.m_name, pf.m_flags);
+    }
+
+    void EditorUI::RenderInfoPanels()
+    {
+        struct PanelFlags
+        {
+            std::string         m_name;
+            Panel::ERenderFlags m_flags = Panel::ERenderFlags();
+        };
         std::vector<PanelFlags> pfArray;
 
         {//main always first
             auto flags = m_main->Render();
             if (flags != Panel::ERenderFlags())
-                pfArray.push_back({ m_main->GetName(), flags});
+                pfArray.push_back({ m_main->GetName(), flags });
         }
 
-        for (auto& [name, panel] : m_currentPanels)
+        for (auto& [name, panel] : m_infoPanels)
         {
             auto flags = panel->Render();
             if (flags != Panel::ERenderFlags())
-                pfArray.push_back({ panel->GetName(), flags});
+                pfArray.push_back({ panel->GetName(), flags });
         }
 
         //handle m_flags after
@@ -505,7 +535,7 @@ namespace SvEditor::Core
     void EditorUI::HandlePanelFlags(const std::string& p_name, Panel::ERenderFlags p_flags)
     {
         if (p_flags & Panel::CLOSE)
-            m_currentPanels.erase(p_name);
+            m_infoPanels.erase(p_name);
 
         if (p_flags & Panel::DefaultInputs)
             SvApp::InputManager::GetInstance().SetInputBindings(m_inputs.lock());
@@ -524,7 +554,10 @@ namespace SvEditor::Core
     void EditorUI::RenderLogo()
     {
         LogoPanel logoPanel;
+
+        BeginFrame();
         logoPanel.Render();
+        EndFrameUpdate();
     }
 
     ImFont* EditorUI::GetFontDefault()
@@ -543,7 +576,7 @@ namespace SvEditor::Core
 
         auto name = std::string("test-") + std::to_string(i++);
 
-        return m_currentPanels.insert({ name, std::make_shared<TestPanel>(name) }).first->second;
+        return m_infoPanels.insert({ name, std::make_shared<TestPanel>(name) }).first->second;
     }
 
     void EditorUI::TryCreateSavePanel()
@@ -557,114 +590,114 @@ namespace SvEditor::Core
 
     std::shared_ptr<Panel> EditorUI::CreateSavePanel()
     {
-        //if (m_currentPanels.contains(SavePanel::NAME))
+        //if (m_infoPanels.contains(SavePanel::NAME))
             //focus
 
-        return m_currentPanels.insert(
+        return m_infoPanels.insert(
             { SavePanel::NAME, std::make_shared<SavePanel>() }).first->second;
     }
 
     std::shared_ptr<Panel> EditorUI::CreateConsolePanel()
     {
-        auto panel = m_currentPanels.find(SavePanel::NAME);
-        if (panel != m_currentPanels.end())
+        auto panel = m_infoPanels.find(SavePanel::NAME);
+        if (panel != m_infoPanels.end())
         {
             m_main->ForceFocus(SavePanel::NAME);
             return panel->second;
         }
 
-        return m_currentPanels.insert(
+        return m_infoPanels.insert(
             { ConsolePanel::NAME, std::make_shared<ConsolePanel>() }).first->second;
     }
 
     std::shared_ptr<Panel> EditorUI::CreateContentPanel()
     {
-        auto panel = m_currentPanels.find(ContentDrawerPanel::NAME);
-        if (panel != m_currentPanels.end())
+        auto panel = m_infoPanels.find(ContentDrawerPanel::NAME);
+        if (panel != m_infoPanels.end())
         {
             m_main->ForceFocus(ContentDrawerPanel::NAME);
             return panel->second;
         }
 
-        return m_currentPanels.insert(
+        return m_infoPanels.insert(
             { ContentDrawerPanel::NAME, std::make_shared<ContentDrawerPanel>() }).first->second;
     }
 
     std::shared_ptr<Panel> EditorUI::CreateInspectorPanel()
     {
-        auto panel = m_currentPanels.find(InspectorPanel::NAME);
-        if (panel != m_currentPanels.end())
+        auto panel = m_infoPanels.find(InspectorPanel::NAME);
+        if (panel != m_infoPanels.end())
         {
             m_main->ForceFocus(InspectorPanel::NAME);
             return panel->second;
         }
 
-        return m_currentPanels.insert(
+        return m_infoPanels.insert(
             { InspectorPanel::NAME, std::make_shared<InspectorPanel>() }).first->second;
     }
 
     std::shared_ptr<Panel> EditorUI::CreateGamePanel()
     {
-        auto panel = m_currentPanels.find(GamePanel::NAME);
-        if (panel != m_currentPanels.end())
+        auto panel = m_worldPanels.find(GamePanel::NAME);
+        if (panel != m_worldPanels.end())
         {
             m_main->ForceFocus(GamePanel::NAME);
             return panel->second;
         }
 
-        return m_currentPanels.insert(
+        return m_worldPanels.insert(
             { GamePanel::NAME, std::make_shared<GamePanel>() }).first->second;
     }
 
     std::shared_ptr<Panel> EditorUI::CreateScenePanel()
     {
-        auto panel = m_currentPanels.find(ScenePanel::NAME);
-        if (panel != m_currentPanels.end())
+        auto panel = m_worldPanels.find(ScenePanel::NAME);
+        if (panel != m_worldPanels.end())
         {
             m_main->ForceFocus(ScenePanel::NAME);
             return panel->second;
         }
 
-        return m_currentPanels.insert(
+        return m_worldPanels.insert(
             { ScenePanel::NAME, std::make_shared<ScenePanel>() }).first->second;
     }
 
     std::shared_ptr<Panel> EditorUI::CreateHierarchyPanel()
     {
-        auto panel = m_currentPanels.find(HierarchyPanel::NAME);
-        if (panel != m_currentPanels.end())
+        auto panel = m_infoPanels.find(HierarchyPanel::NAME);
+        if (panel != m_infoPanels.end())
         {
             m_main->ForceFocus(HierarchyPanel::NAME);
             return panel->second;
         }
 
-        return m_currentPanels.insert(
+        return m_infoPanels.insert(
             { HierarchyPanel::NAME, std::make_shared<HierarchyPanel>() }).first->second;
     }
 
     std::shared_ptr<Panel> EditorUI::CreateBuildPanel()
     {
-        auto panel = m_currentPanels.find(BuildPanel::NAME);
-        if (panel != m_currentPanels.end())
+        auto panel = m_infoPanels.find(BuildPanel::NAME);
+        if (panel != m_infoPanels.end())
         {
             m_main->ForceFocus(BuildPanel::NAME);
             return panel->second;
         }
 
-        return m_currentPanels.insert(
+        return m_infoPanels.insert(
             { BuildPanel::NAME, std::make_shared<BuildPanel>() }).first->second;
     }
 
     std::shared_ptr<Panel> SvEditor::Core::EditorUI::CreateLoadingPanel()
     {
-        auto panel = m_currentPanels.find(LoadingPanel::NAME);
-        if (panel != m_currentPanels.end())
+        auto panel = m_infoPanels.find(LoadingPanel::NAME);
+        if (panel != m_infoPanels.end())
         {
             m_main->ForceFocus(LoadingPanel::NAME);
             return panel->second;
         }
 
-        return m_currentPanels.insert(
+        return m_infoPanels.insert(
             { LoadingPanel::NAME, std::make_shared<LoadingPanel>() }).first->second;
     }
 

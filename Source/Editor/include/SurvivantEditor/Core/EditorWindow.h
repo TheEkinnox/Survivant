@@ -22,7 +22,6 @@ namespace SvEditor::Core
 		~EditorWindow() override = default;
 
 		void Update() override;
-		void RenderUI();
 		void EndRender() override;
 		bool ShouldClose() override;
 

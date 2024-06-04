@@ -80,8 +80,11 @@ namespace SvEditor::Core
 			if (!m_gameInstance.expired() && !m_editorEngine.IsPaused())
 				UpdatePIE();
 
-			m_editorEngine.RenderWorlds();	//render worlds
-			m_window->RenderUI();			//update UI
+			m_window->GetUI().RenderWorldPanels();	//update UI
+			m_editorEngine.RenderWorlds();			//render worlds
+
+			m_window->GetUI().RenderInfoPanels();	//update UI
+
 
 			m_window->EndRender();			//render UI with worlds
 		}

@@ -40,6 +40,11 @@ namespace SvEditor::Gizmo
 		m_entity = p_entity;
 	}
 
+	bool ColliderGizmo::IsUsing()
+	{
+		return m_boxUsing || m_capUsing || m_sphUsing;
+	}
+
 	Vector2 ColliderGizmo::GetOrigin(const LibMath::Matrix4& p_vp, const LibMath::Vector3& p_worldPos)
 	{
 		ImVec2 size = ImGui::GetWindowSize();

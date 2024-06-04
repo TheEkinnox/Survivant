@@ -21,7 +21,7 @@ namespace SvEditor::Panels
         SetMenuBar(std::move(p_menuBar));
     }
 
-    Panel::ERenderFlags MainPanel::Render()
+    void MainPanel::RenderDockSpace()
     {
         static ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_None;
         static float boarderSize = 5.0f;
@@ -46,11 +46,19 @@ namespace SvEditor::Panels
         ImGuiID dockspaceId = ImGui::GetID("MyDockSpace");
         ImGui::DockSpace(dockspaceId, ImVec2(0.0f, 0.0f), dockspaceFlags);
 
-        if (m_layout)
-            SetupLayout(static_cast<int>(dockspaceId));
+        ImGui::End();
+    }
+
+    Panel::ERenderFlags MainPanel::Render()
+    {
+        bool open = true;
+        ImGui::Begin("DockSpace Demo", &open);
 
         if (!m_forceFocus.empty())
             SetForceFocust();
+
+        if (m_layout)
+            SetupLayout(static_cast<int>(ImGui::GetID("MyDockSpace")));
 
         m_panelFlags = ERenderFlags();
         m_menuBar.DisplayAndUpdatePanel();
