@@ -33,16 +33,16 @@ namespace SvCore::Events
 
 		template <class T, typename ...Args>
 		void Invoke(const std::tuple<Args...>& p_paramaters);
-		
+
 		//cant add event bcs of listener ids
 		//template <class T>
 		//T* AddEvent(EventBase* p_event);
 
 		template <class T, class U = T::EventDelegate>
-		EventId AddListenner(const U& p_callback);
+		EventId AddListener(const U& p_callback);
 
 		template <class T>
-		bool RemoveListenner(const Events::Event<>::ListenerId& p_callback);
+		bool RemoveListener(const Events::Event<>::ListenerId& p_callback);
 
 	private:
 		template <class T>
@@ -74,7 +74,7 @@ namespace SvCore::Events
 	}
 
 	template <class T, class U>
-	inline Events::Event<>::ListenerId EventManager::AddListenner(const U& p_callback)
+	inline Events::Event<>::ListenerId EventManager::AddListener(const U& p_callback)
 	{
 		if constexpr (!std::is_same_v<EventBase, T> && !std::is_base_of_v<EventBase, T>)
 			return nullptr;
@@ -88,7 +88,7 @@ namespace SvCore::Events
 	}
 
 	template<class T>
-	inline bool EventManager::RemoveListenner(const Events::Event<>::ListenerId& p_id)
+	inline bool EventManager::RemoveListener(const Events::Event<>::ListenerId& p_id)
 	{
 		if constexpr (!std::is_same_v<EventBase, T> && !std::is_base_of_v<EventBase, T>)
 			return false;

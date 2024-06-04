@@ -41,16 +41,16 @@ namespace SvEditor::Panels
 		ERenderFlags Render()override;
 
 		/// <summary>
-		/// Add listenner to click scene event
+		/// Add listener to click scene event
 		/// </summary>
 		/// <param name="p_callback">callback that takes UV cords as param</param>
-		static void AddClickSceneListenner(const ClickEvent::EventDelegate& p_callback);
+		static void AddClickSceneListener(const ClickEvent::EventDelegate& p_callback);
 
 		/// <summary>
-		/// Add listenner to resize event
+		/// Add listener to resize event
 		/// </summary>
 		/// <param name="p_callback">callback that takes new size as param</param>
-		static void AddResizeListenner(const ResizeEvent::EventDelegate& p_callback);
+		static void AddResizeListener(const ResizeEvent::EventDelegate& p_callback);
 
 		static void SelectEntity(const SvCore::ECS::EntityHandle& p_entity);
 		static constexpr char NAME[] = "Scene";

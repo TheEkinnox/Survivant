@@ -56,7 +56,7 @@ namespace SvEditor::Core
 
 		//draw logo
 		DrawLogo();
-		
+
 		//engine
 		m_editorEngine.Init();
 		SvApp::InputManager::GetInstance().InitWindow(m_window.get());

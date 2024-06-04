@@ -60,7 +60,7 @@ namespace SvEditor::Core
         m_main->ChangePanelLayout(l);
 
         //TODO : add spawn save m_panel on event close request
-        SvCore::Events::EventManager::GetInstance().AddListenner<SvApp::Window::WindowCloseRequest>(
+        SvCore::Events::EventManager::GetInstance().AddListener<SvApp::Window::WindowCloseRequest>(
             SvApp::Window::WindowCloseRequest::EventDelegate(std::bind(&EditorUI::TryCreateSavePanel, this)));
 
         //fonts
@@ -98,9 +98,9 @@ namespace SvEditor::Core
     void EditorUI::InitGamePanel(const WorldContext::WorldCreator& p_worldCreator, const std::array<std::function<void()>, 3> p_playPauseFrameCallbacks)
     {
         GamePanel::SetGameWorldCreator(p_worldCreator);
-        GamePanel::AddPlayListenner(p_playPauseFrameCallbacks[0]);
-        GamePanel::AddPauseListenner(p_playPauseFrameCallbacks[1]);
-        GamePanel::AddFrameListenner(p_playPauseFrameCallbacks[2]);
+        GamePanel::AddPlayListener(p_playPauseFrameCallbacks[0]);
+        GamePanel::AddPauseListener(p_playPauseFrameCallbacks[1]);
+        GamePanel::AddFrameListener(p_playPauseFrameCallbacks[2]);
     }
 
     void EditorUI::InitScenePanel(std::weak_ptr<WorldContext> p_world)
@@ -112,7 +112,7 @@ namespace SvEditor::Core
 
         ScenePanel::SetSceneWorld(p_world);
 
-        ScenePanel::AddClickSceneListenner(
+        ScenePanel::AddClickSceneListener(
             [p_world](const Vector2& p_uv)
             {
                 auto& scene = p_world.lock()->CurrentScene();
@@ -136,7 +136,7 @@ namespace SvEditor::Core
                 //InspectorPanel::SetInpectorInfo(entityPanel, "Entity");
             });
 
-        ScenePanel::AddResizeListenner(
+        ScenePanel::AddResizeListener(
             [p_world](const Vector2& p_size)
             {
                 p_world.lock()->m_renderingContext->Resize(p_size);

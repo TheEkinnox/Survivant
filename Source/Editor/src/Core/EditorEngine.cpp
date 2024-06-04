@@ -278,21 +278,21 @@ namespace SvEditor::Core
 	{
 		using namespace RuntimeBuild;
 
-		SV_EVENT_MANAGER().AddListenner<OnCreateBuildGame>(OnCreateBuildGame::EventDelegate(
+		SV_EVENT_MANAGER().AddListener<OnCreateBuildGame>(OnCreateBuildGame::EventDelegate(
 			[](const std::string& p_buildFileName,
 				const BuildConfig& p_buildInfo)
 			{
 				BuildManager::GetInstance().CreateBuild(p_buildFileName, p_buildInfo);
 			}));
 
-		SV_EVENT_MANAGER().AddListenner<OnCreateBuildAndRun>(OnCreateBuildAndRun::EventDelegate(
+		SV_EVENT_MANAGER().AddListener<OnCreateBuildAndRun>(OnCreateBuildAndRun::EventDelegate(
 			[](const std::string& p_buildFileName,
 				const BuildConfig& p_buildInfo)
 			{
 				BuildManager::GetInstance().CreateAndRunBuild(p_buildFileName, p_buildInfo);
 			}));
 
-		SV_EVENT_MANAGER().AddListenner<OnSave>(OnSave::EventDelegate(
+		SV_EVENT_MANAGER().AddListener<OnSave>(OnSave::EventDelegate(
 			[this]
 			{
 				auto& engine = *this;
@@ -310,7 +310,7 @@ namespace SvEditor::Core
 				}
 			}));
 
-		SV_EVENT_MANAGER().AddListenner<OnEditorModifiedScene>(OnEditorModifiedScene::EventDelegate(
+		SV_EVENT_MANAGER().AddListener<OnEditorModifiedScene>(OnEditorModifiedScene::EventDelegate(
 			[this]
 			{
 				if (!this->IsPlayInEditor())

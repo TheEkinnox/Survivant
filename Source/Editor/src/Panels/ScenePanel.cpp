@@ -19,8 +19,8 @@ namespace SvEditor::Panels
 {
 	ScenePanel::ScenePanel() :
 		m_gizmos(s_world.lock()->m_renderingContext),
-		m_transformType("Transform", { "Translate", "Rotate", "Scale" }, 
-			PanelUniqueSelection::GetRefFunc([]() -> int& { static int val; return val; }), 
+		m_transformType("Transform", { "Translate", "Rotate", "Scale" },
+			PanelUniqueSelection::GetRefFunc([]() -> int& { static int val; return val; }),
 			[this](int p_val) { SetGizmoTransformType(p_val); })
 	{
 		m_name = NAME;
@@ -68,7 +68,7 @@ namespace SvEditor::Panels
 			RenderInfoPanel(isSmallDisplay);
 			sceneHovered &= !ImGui::IsItemHovered();
 
-			//click 
+			//click
 			if (!m_gizmos.UsingGizmo() && ImGui::IsMouseClicked(0) &&
 				s_world.lock()->m_isFocused && sceneHovered)
 				InvokeClickScene();
@@ -86,12 +86,12 @@ namespace SvEditor::Panels
 		return flags;
 	}
 
-	void ScenePanel::AddClickSceneListenner(const ClickEvent::EventDelegate& p_callback)
+	void ScenePanel::AddClickSceneListener(const ClickEvent::EventDelegate& p_callback)
 	{
 		s_onClickSceneEvent.AddListener(p_callback);
 	}
 
-	void ScenePanel::AddResizeListenner(const ResizeEvent::EventDelegate& p_callback)
+	void ScenePanel::AddResizeListener(const ResizeEvent::EventDelegate& p_callback)
 	{
 		s_onResizeEvent.AddListener(p_callback);
 	}

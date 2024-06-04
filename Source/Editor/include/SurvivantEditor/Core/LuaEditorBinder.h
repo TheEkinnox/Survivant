@@ -14,7 +14,7 @@ namespace SvEditor::Core
 		static void EditorUserTypeBindings(sol::state& p_luaState);
 
 	private:
-		static void EditorImputBinder(sol::state& p_luaState);
-		static void EditorImputBindFunctions(sol::state& p_luaState);
+		static void EditorInputBinder(sol::state& p_luaState);
+		static void EditorInputBindFunctions(sol::state& p_luaState);
 	};
 }

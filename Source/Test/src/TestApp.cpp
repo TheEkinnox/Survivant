@@ -49,7 +49,7 @@ namespace SvTest
 {
     TestApp::TestApp()
     {
-        m_resizeListenerId = EventManager::GetInstance().AddListenner<Window::OnFrameBufferSize>(
+        m_resizeListenerId = EventManager::GetInstance().AddListener<Window::OnFrameBufferSize>(
             [this](const int p_width, const int p_height)
             {
                 m_windowSize = { p_width, p_height };
@@ -60,7 +60,7 @@ namespace SvTest
 
     TestApp::~TestApp()
     {
-        EventManager::GetInstance().RemoveListenner<Window::OnFrameBufferSize>(m_resizeListenerId);
+        EventManager::GetInstance().RemoveListener<Window::OnFrameBufferSize>(m_resizeListenerId);
     }
 
     void TestApp::Init()

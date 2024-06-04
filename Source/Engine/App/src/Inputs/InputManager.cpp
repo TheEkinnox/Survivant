@@ -229,7 +229,7 @@ void SvApp::InputManager::Update()
 
 void SvApp::InputManager::CallInput(const KeyboardKeyType& p_type, char p_scancode, bool p_callAtUpdate)
 {
-	ASSERT(m_bindings.get() != nullptr, "Imput Bindings not set");
+	ASSERT(m_bindings.get() != nullptr, "Input Bindings not set");
 
 	auto callback = m_bindings->m_keyCallbacks.find(p_type);
 	if (callback != m_bindings->m_keyCallbacks.end())
@@ -239,7 +239,7 @@ void SvApp::InputManager::CallInput(const KeyboardKeyType& p_type, char p_scanco
 		else
 			callback->second(p_scancode);
 	}
-	
+
 	//call MOD_ANY if exists
 	auto& [key, state, mod] = p_type.m_inputInfo;
 	callback = m_bindings->m_keyCallbacks.find(KeyboardKeyType(key, state, EInputModifier::MOD_ANY));
@@ -254,7 +254,7 @@ void SvApp::InputManager::CallInput(const KeyboardKeyType& p_type, char p_scanco
 
 void SvApp::InputManager::CallInput(const MouseKeyType& p_type, float p_x, float p_y, bool p_callAtUpdate)
 {
-	ASSERT(m_bindings.get() != nullptr, "Imput Bindings not set");
+	ASSERT(m_bindings.get() != nullptr, "Input Bindings not set");
 
 	auto callback = m_bindings->m_mouseKeyCallbacks.find(p_type);
 

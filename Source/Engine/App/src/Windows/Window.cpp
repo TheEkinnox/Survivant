@@ -87,7 +87,7 @@ Window::Window(const std::string& p_name, const bool p_startMaximized)
     SetupInputManagerCallbacks();
 }
 
-Window::Window(const std::string& p_name, int p_width , int p_height, int p_x, int p_y)
+Window::Window(const std::string& p_name, int p_width, int p_height, int p_x, int p_y)
 {
     //init
     m_monitor = glfwGetPrimaryMonitor();
@@ -156,17 +156,17 @@ void Window::GetWindowSize(int& p_width, int& p_height) const
 
 bool Window::EvaluateInput(EKey p_key, EKeyState p_state, EInputModifier p_modif)
 {
-    return  static_cast<int>(p_state) == glfwGetKey(m_window, static_cast<int>(p_key)) &&
-            EvaluteModif(p_modif);
+    return static_cast<int>(p_state) == glfwGetKey(m_window, static_cast<int>(p_key)) &&
+        EvaluateModif(p_modif);
 }
 
 bool Window::EvaluateInput(EMouseButton p_button, EMouseButtonState p_state, EInputModifier p_modif)
 {
-    return  static_cast<int>(p_state) == glfwGetMouseButton(m_window, static_cast<int>(p_button)) &&
-            EvaluteModif(p_modif);
+    return static_cast<int>(p_state) == glfwGetMouseButton(m_window, static_cast<int>(p_button)) &&
+        EvaluateModif(p_modif);
 }
 
-bool Window::EvaluteModif(const EInputModifier p_modif)
+bool Window::EvaluateModif(const EInputModifier p_modif)
 {
     if (p_modif == MOD_ANY)
         return true;
@@ -198,9 +198,9 @@ void Window::ToggleFullScreenMode()
     const GLFWvidmode* mode = glfwGetVideoMode(m_monitor);
     glfwSetWindowMonitor(
         m_window,
-        m_isInFullscreen? nullptr: m_monitor,
+        m_isInFullscreen ? nullptr : m_monitor,
         0,
-        m_isInFullscreen? m_yWindowedPos: 0,
+        m_isInFullscreen ? m_yWindowedPos : 0,
         mode->width,
         mode->height,
         mode->refreshRate);
