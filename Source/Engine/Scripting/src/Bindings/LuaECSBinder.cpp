@@ -210,7 +210,7 @@ namespace SvScripting::Bindings
                     return p_self ? p_self.m_owner : EntityHandle{};
                 }
             ),
-            "table", sol::readonly_property(
+            "self", sol::readonly_property(
                 [](const LuaScriptHandle& p_self) -> sol::table
                 {
                     if (!p_self)
