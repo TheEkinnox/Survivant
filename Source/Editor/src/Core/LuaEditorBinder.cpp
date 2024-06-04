@@ -42,6 +42,7 @@ namespace SvEditor::Core
 		LuaInputBinder::BindInputModifiers(p_luaState);
         EditorImputBindFunctions(p_luaState);			//replace with editor BindFunctions
 	}
+        LuaInputBinder::BindCursorModes(p_luaState);
 
     void LuaEditorBinder::EditorImputBindFunctions(sol::state& p_luaState)
     {
@@ -53,13 +54,14 @@ namespace SvEditor::Core
         sol::usertype inputType = p_luaState.new_usertype<InputManager>(
             typeName,
             sol::meta_function::construct, sol::no_constructor,
-            "mousePos", sol::readonly_property([]()
-                -> Vector2
-                {
-                    TVector2<double> pos;
-                    InputManager::GetInstance().GetMousePos(pos.m_x, pos.m_y);
-                    return pos;
-                }
+            "mousePos", sol::property(
+                &LuaInputBinder::GetMousePos,
+                &LuaInputBinder::SetMousePos
+            ),
+            "mouseDelta", sol::readonly_property(&LuaInputBinder::GetMouseDelta),
+            "cursorMode", sol::property(
+                &InputManager::GetCursorMode,
+                &InputManager::SetCursorMode
             ),
             "IsKeyDown", sol::overload(
                 [](const EKey p_key)
@@ -120,5 +122,6 @@ namespace SvEditor::Core
         );
 
         inputType["__type"]["name"] = typeName;
+        p_luaState[typeName]        = &InputManager::GetInstance();
     }
 }

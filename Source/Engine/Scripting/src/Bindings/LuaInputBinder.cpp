@@ -18,6 +18,7 @@ namespace SvScripting::Bindings
         BindKeys(p_luaState);
         BindMouseButtons(p_luaState);
         BindInputModifiers(p_luaState);
+        BindCursorModes(p_luaState);
         BindFunctions(p_luaState);
     }
 
@@ -31,13 +32,14 @@ namespace SvScripting::Bindings
         sol::usertype inputType = p_luaState.new_usertype<InputManager>(
             typeName,
             sol::meta_function::construct, sol::no_constructor,
-            "mousePos", sol::readonly_property([]()
-                -> Vector2
-                {
-                    TVector2<double> pos;
-                    InputManager::GetInstance().GetMousePos(pos.m_x, pos.m_y);
-                    return pos;
-                }
+            "mousePos", sol::property(
+                &LuaInputBinder::GetMousePos,
+                &LuaInputBinder::SetMousePos
+            ),
+            "mouseDelta", sol::readonly_property(&LuaInputBinder::GetMouseDelta),
+            "cursorMode", sol::property(
+                &InputManager::GetCursorMode,
+                &InputManager::SetCursorMode
             ),
             "IsKeyDown", sol::overload(
                 [](const EKey p_key)
@@ -85,5 +87,23 @@ namespace SvScripting::Bindings
         );
 
         inputType["__type"]["name"] = typeName;
+        p_luaState[typeName]        = &InputManager::GetInstance();
+    }
+
+    Vector2 LuaInputBinder::GetMousePos(const InputManager& p_self)
+    {
+        TVector2<double> pos;
+        p_self.GetMousePos(pos.m_x, pos.m_y);
+        return pos;
+    }
+
+    void LuaInputBinder::SetMousePos(InputManager& p_self, const Vector2& p_pos)
+    {
+        p_self.SetMousePos(p_pos.m_x, p_pos.m_y);
+    }
+
+    Vector2 LuaInputBinder::GetMouseDelta(const InputManager& p_self)
+    {
+        return p_self.GetMouseDelta();
     }
 }
