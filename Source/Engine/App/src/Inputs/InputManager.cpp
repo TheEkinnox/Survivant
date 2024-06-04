@@ -2,7 +2,8 @@
 
 #include "SurvivantApp/Inputs/InputManager.h"
 #include "SurvivantApp/Windows/Window.h"
-#include "SurvivantCore/Debug/Assertion.h"
+
+#include <SurvivantCore/Debug/Assertion.h>
 
 #include <tuple>
 
@@ -208,6 +209,18 @@ void SvApp::InputManager::InitWindow(Window* p_window)
 
 void SvApp::InputManager::Update()
 {
+	LibMath::Vector2D mousePos;
+	m_window->GetMousePos(mousePos.m_x, mousePos.m_y);
+
+	if (m_resetDelta)
+	{
+		m_lastMousePos = mousePos;
+		m_resetDelta = false;
+	}
+
+	m_mouseDelta = mousePos - m_lastMousePos;
+	m_lastMousePos = mousePos;
+
 	for (auto& callback : m_updateCallbacks)
 		callback();
 
@@ -277,9 +290,37 @@ void SvApp::InputManager::SetInputBindings(const std::shared_ptr<InputBindings>&
 	m_bindings = p_bindings;
 }
 
-void SvApp::InputManager::GetMousePos(double& p_x, double& p_y)
+void InputManager::GetMousePos(double& p_x, double& p_y) const
 {
 	m_window->GetMousePos(p_x, p_y);
+}
+
+void InputManager::SetMousePos(const double p_x, const double p_y)
+{
+	m_window->SetMousePos(p_x, p_y);
+}
+
+LibMath::Vector2D InputManager::GetMouseDelta() const
+{
+	return m_mouseDelta;
+}
+
+ECursorMode InputManager::GetCursorMode() const
+{
+	return m_window->GetCursorMode();
+}
+
+void InputManager::SetCursorMode(const ECursorMode p_mode)
+{
+	const ECursorMode currentMode = GetCursorMode();
+
+	if (currentMode == p_mode)
+		return;
+
+	if (currentMode == ECursorMode::DISABLED)
+		m_resetDelta = true;
+
+	m_window->SetCursorMode(p_mode);
 }
 
 bool SvApp::InputManager::EvaluateInput(const KeyboardKeyType& p_key)

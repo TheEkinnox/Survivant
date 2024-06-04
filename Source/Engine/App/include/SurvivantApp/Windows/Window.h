@@ -3,7 +3,9 @@
 
 #include "SurvivantApp/Inputs/InputManager.h"
 #include "SurvivantApp/Inputs/KeyboardInputs.h"
-#include "SurvivantCore/Events/Event.h"
+#include "SurvivantApp/Windows/ECursorMode.h"
+
+#include <SurvivantCore/Events/Event.h>
 
 #include <string>
 
@@ -101,10 +103,14 @@ namespace SvApp
 
 		void SetFocusWindow();
 
+		ECursorMode GetCursorMode() const;
+		void SetCursorMode(ECursorMode p_lockMode);
+
 	protected:
 		void SetupWindowCallbacks()const;
 		void SetupInputManagerCallbacks() const;
 		void GetMousePos(double& p_x, double& p_y) const;
+		void SetMousePos(double p_x, double p_y) const;
 
 		void GetWindowSize(int& p_width, int& p_height) const;
 

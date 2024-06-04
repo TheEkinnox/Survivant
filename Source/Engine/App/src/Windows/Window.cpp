@@ -144,6 +144,11 @@ void Window::GetMousePos(double& p_x, double& p_y) const
     glfwGetCursorPos(m_window, &p_x, &p_y);
 }
 
+void Window::SetMousePos(const double p_x, const double p_y) const
+{
+    glfwSetCursorPos(m_window, p_x, p_y);
+}
+
 void Window::GetWindowSize(int& p_width, int& p_height) const
 {
     glfwGetWindowSize(m_window, &p_width, &p_height);
@@ -237,6 +242,38 @@ void Window::SetWindowIcons(std::vector<GLFWimage> p_images)
 void Window::SetFocusWindow()
 {
     glfwFocusWindow(m_window);
+}
+
+ECursorMode Window::GetCursorMode() const
+{
+    switch (glfwGetInputMode(m_window, GLFW_CURSOR))
+    {
+    case GLFW_CURSOR_NORMAL:
+        return ECursorMode::NORMAL;
+    case GLFW_CURSOR_HIDDEN:
+        return ECursorMode::HIDDEN;
+    case GLFW_CURSOR_DISABLED:
+        return ECursorMode::DISABLED;
+    default:
+        ASSERT(false, "Unknown cursor mode");
+        return {};
+    }
+}
+
+void Window::SetCursorMode(const ECursorMode p_lockMode)
+{
+    switch (p_lockMode)
+    {
+    case ECursorMode::NORMAL:
+        return glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    case ECursorMode::HIDDEN:
+        return glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+    case ECursorMode::DISABLED:
+        return glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    default:
+        ASSERT(false, "Unsupported cursor mode");
+        return;
+    }
 }
 
 void Window::WindowCloseRequest::BeforeInvoke()
