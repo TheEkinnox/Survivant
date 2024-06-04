@@ -13,8 +13,7 @@ namespace SvEditor::PanelItems
 	PanelImage::PanelImage(void* p_textureId, const LibMath::Vector2& p_size) :
 		m_textureId(p_textureId),
 		m_size(p_size)
-	{
-	}
+	{}
 
 	void PanelImage::DisplayAndUpdatePanel()
 	{

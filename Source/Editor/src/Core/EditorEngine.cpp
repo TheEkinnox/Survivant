@@ -140,7 +140,8 @@ namespace SvEditor::Core
 
 		m_editorWorld->SetInputs();
 
-		m_PIEWorld.lock()->m_renderingContext->Render(m_PIEWorld.lock()->CurrentScene().Get());
+		//(*m_PIEWorld.lock()->m_currentSceneRef)->Clear(); //we are in editor. dont clear
+		*m_PIEWorld.lock()->m_currentSceneRef = SceneRef();
 	}
 
 	std::shared_ptr<WorldContext> EditorEngine::CreatePIEWorld()
@@ -405,7 +406,7 @@ namespace SvEditor::Core
 		if (m_editorWorld->m_isVisalbe)
 			m_editorWorld->m_renderingContext->Render(m_editorWorld->CurrentScene().Get());
 
-		if (m_gameInstance && !m_PIEWorld.expired() && m_PIEWorld.lock()->m_isVisalbe)
+		if (!m_PIEWorld.expired() && m_PIEWorld.lock()->m_isVisalbe)
 			m_PIEWorld.lock()->m_renderingContext->Render(m_PIEWorld.lock()->CurrentScene().Get());
 	}
 
