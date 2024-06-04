@@ -69,8 +69,8 @@ namespace SvScripting::Bindings
                     return Radian(p_self).raw();
                 }
             ),
-            "GetWrappedDegree", sol::readonly_property(&T::degree),
-            "GetWrappedRadian", sol::readonly_property(&T::radian)
+            "GetWrappedDegree", &T::degree,
+            "GetWrappedRadian", &T::radian
         );
 
         angleType["__type"]["name"] = p_typeName;
