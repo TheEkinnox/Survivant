@@ -4,7 +4,7 @@ local Move = {
     max_speed = 3,
     max_acceleration = 3,
     rotation_speed = Degree.new(90),
-    camera = Entity.new(),
+    player_camera = Entity.new(),
     min_x_angle = Degree.new(-85),
     max_x_angle = Degree.new(85)
 }
@@ -23,7 +23,13 @@ function Move:OnStart()
     last_mouse_pos = Input.mousePos
     transform = self.owner:GetOrCreate(Transform)
     rigidbody = self.owner:GetOrCreate(RigidBody)
-    camTransform = self.camera:Get(Transform)
+    camTransform = self.player_camera:Get(Transform)
+
+    Input.cursorMode = ECursorMode.DISABLED
+end
+
+function Move:OnDestroy()
+    Input.cursorMode = ECursorMode.NORMAL
 end
 
 local function UpdatePosition(self, deltaTime)
@@ -56,11 +62,39 @@ local function UpdatePosition(self, deltaTime)
     end
 end
 
-local function UpdateCamRotation(self, deltaTime)
-    if not camTransform.isValid then
+local function RotateHorizontal(self, rotateInput, deltaTime)
+    if not rotateInput then
         return
     end
 
+    if math.abs(rotateInput) > 0 then
+        local spin = self.rotation_speed * rotateInput * deltaTime
+
+        rigidbody.angularVelocity = Vector3.new(0, spin.rawDegree, 0)
+    else
+        rigidbody.angularVelocity = Vector3.new(0, 0, 0)
+    end
+end
+
+local function RotateVertical(self, rotateInput, deltaTime)
+    if not camTransform.isValid or not rotateInput then
+        return
+    end
+
+    if math.abs(rotateInput) > 0 then
+        local x, y, z = camTransform.rotation:ToEuler(ERotationOrder.YXZ)
+        x = x + self.rotation_speed * rotateInput * deltaTime
+        x = Radian.new(math.clamp(x:GetWrappedRadian(true), self.min_x_angle.rawRadian, self.max_x_angle.rawRadian))
+        camTransform.rotation = Quaternion.FromEuler(x, y, z, ERotationOrder.YXZ)
+    end
+end
+
+local function Rotate(self, rotateInput, deltaTime)
+    RotateHorizontal(self, rotateInput.x, deltaTime)
+    RotateVertical(self, rotateInput.y, deltaTime)
+end
+
+local function UpdateCamRotation(self, deltaTime)
     local rotateInput = 0
 
     if Input.IsKeyDown(EKey.UP) then
@@ -71,15 +105,7 @@ local function UpdateCamRotation(self, deltaTime)
         rotateInput = rotateInput - 1
     end
 
-    if math.abs(rotateInput) > 0 then
-        local x, y, z = camTransform.rotation:ToEuler(ERotationOrder.YXZ)
-
-        x = Degree.new(x + self.rotation_speed * rotateInput * deltaTime)
-        x:Wrap(true)
-        x = Radian.new(math.clamp(x, self.min_x_angle, self.max_x_angle))
-
-        camTransform.rotation = Quaternion.FromEuler(x, y, z, ERotationOrder.YXZ)
-    end
+    RotateVertical(self, rotateInput, deltaTime)
 end
 
 local function UpdatePlayerRotation(self, deltaTime)
@@ -93,19 +119,29 @@ local function UpdatePlayerRotation(self, deltaTime)
         rotateInput = rotateInput - 1
     end
 
-    if math.abs(rotateInput) > 0 then
-        local spin = self.rotation_speed * rotateInput * deltaTime
+    RotateHorizontal(self, rotateInput, deltaTime)
+end
 
-        rigidbody.angularVelocity = Vector3.new(0, spin.rawDegree, 0)
-    else
-        rigidbody.angularVelocity = Vector3.new(0, 0, 0)
+local function UpdateMouseRotation(self)
+    if Input.cursorMode == ECursorMode.NORMAL then
+        return
     end
+
+    local mouseDelta = Input.mouseDelta * self.mouse_sensitivity
+
+    if math.isNear(self.rotation_speed.raw, 0) or math.isNear(mouseDelta.magnitudeSquared, 0) then
+        return
+    end
+
+    -- No need for delta time here since mouseDelta already takes it into count
+    Rotate(self, -mouseDelta, 1)
 end
 
 function Move:OnUpdate(deltaTime)
     UpdatePosition(self, deltaTime)
     UpdatePlayerRotation(self, deltaTime)
     UpdateCamRotation(self, deltaTime)
+    UpdateMouseRotation(self)
 end
 
 function Move:OnStop()
