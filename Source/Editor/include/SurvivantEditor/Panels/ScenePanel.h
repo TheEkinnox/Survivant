@@ -34,7 +34,7 @@ namespace SvEditor::Panels
 		using WorldContext = SvApp::Core::WorldContext;
 
 		ScenePanel();
-		~ScenePanel();
+		~ScenePanel() override;
 
 		static void SetSceneWorld(std::weak_ptr<WorldContext> p_world);
 

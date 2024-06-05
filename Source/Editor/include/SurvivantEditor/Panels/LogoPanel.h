@@ -13,7 +13,7 @@ namespace SvEditor::Panels
 	{
 	public:
 		LogoPanel() = default;
-		~LogoPanel() = default;
+		~LogoPanel() override = default;
 
 		ERenderFlags Render() override;
 

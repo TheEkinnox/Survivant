@@ -20,7 +20,7 @@ namespace SvEditor::Panels
 	{
 	public:
 		BuildPanel();
-		~BuildPanel() = default;
+		~BuildPanel() override = default;
 
 		ERenderFlags Render()override;
 

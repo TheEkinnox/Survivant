@@ -23,6 +23,7 @@ function Move:OnStart()
     last_mouse_pos = Input.mousePos
     transform = self.owner:GetOrCreate(Transform)
     rigidbody = self.owner:GetOrCreate(RigidBody)
+    
     camTransform = self.player_camera:Get(Transform)
 
     Input.cursorMode = ECursorMode.DISABLED

@@ -19,12 +19,10 @@ namespace SvApp::Core
     RenderingContext::RenderingContext(
         const MainCamera::Cam& p_cam, const Transform& p_trans):
         m_mainCamera(p_cam, p_trans)
-    {
-    }
+    {}
     RenderingContext::RenderingContext(const SvCore::ECS::EntityHandle p_entity) :
         m_mainCamera(p_entity)
-    {
-    }
+    {}
 
     void RenderingContext::Render(Scene* p_scene)
     {

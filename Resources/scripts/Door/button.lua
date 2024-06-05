@@ -1,17 +1,17 @@
 ---@class Button : Script
 local Button = {
-    onActiveYScaleMult = 0.5,
+    onActiveYMove = 0.1,
     onActiveSound = Resource.new("AudioClip", "sounds/click-on.wav"),
     onInactiveSound = Resource.new("AudioClip", "sounds/click-off.wav")
 }
 
 local numCollision = 0
 local transform
-local originalYScale
+local originalPos
 
 function Button:OnStart()
     transform = self.owner:GetOrCreate(Transform)
-    originalYScale = transform.scale.y
+    originalPos = transform.position
 end
 
 function Button.IsActive()
@@ -20,7 +20,7 @@ end
 
 function Button:OnTriggerEnter()
     if numCollision == 0 then
-        transform.scale.y = originalYScale * self.onActiveYScaleMult
+        transform.position = Vector3.new(originalPos.x, originalPos.y - self.onActiveYMove, originalPos.z)
         Audio:Play(self.onActiveSound)
     end
 
@@ -30,10 +30,10 @@ end
 
 function Button:OnTriggerExit()
     numCollision = numCollision - 1
-    print("EXIT triggered")
 
+    print("ON exit")
     if numCollision == 0 then
-        transform.scale.y = originalYScale
+        transform.position = originalPos
         Audio:Play(self.onInactiveSound)
     end
 end

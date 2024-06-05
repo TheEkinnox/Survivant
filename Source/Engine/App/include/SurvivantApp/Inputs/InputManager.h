@@ -38,7 +38,8 @@ namespace SvApp
 			std::unordered_map<MouseKeyType, MouseCallback>		m_mouseKeyCallbacks;
 		};
 
-		InputManager() {}
+		InputManager() = default;
+		~InputManager() = default;
 		InputManager(InputManager const&) = delete;
 		void operator=(InputManager const&) = delete;
 

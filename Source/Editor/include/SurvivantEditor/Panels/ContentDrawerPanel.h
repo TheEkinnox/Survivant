@@ -30,7 +30,7 @@ namespace SvEditor::Panels
 		using TypeToBranch = std::unordered_map<std::string, std::vector<std::weak_ptr<ResourceBranch>>>;
 
 		ContentDrawerPanel();
-		~ContentDrawerPanel() = default;
+		~ContentDrawerPanel() override = default;
 
 		//Panel
 		ERenderFlags Render() override;

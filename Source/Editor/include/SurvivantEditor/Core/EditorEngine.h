@@ -37,7 +37,7 @@ namespace SvEditor::Core
 		class OnEditorModifiedScene : public SvCore::Events::Event<> {};
 
 		EditorEngine() = default;
-		~EditorEngine() override = default;
+		~EditorEngine() override;
 
 		// Inherited via IEngine
 		void Init() override;
