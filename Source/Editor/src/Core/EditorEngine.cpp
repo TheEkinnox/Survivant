@@ -66,7 +66,7 @@ namespace SvEditor::Core
 		//create scenes
 		m_editorSelectedScene = ResourceManager::GetInstance().GetOrCreate<Scene>(DEFAULT_SCENE_PATH);
 
-		////create editor world world
+		//create editor world world
 		m_editorWorld = CreateEditorDefaultWorld(m_editorSelectedScene);
 		m_editorWorld->SetInputs();
 
@@ -162,8 +162,6 @@ namespace SvEditor::Core
 		}
 
 		m_editorWorld->SetInputs();
-
-		//(*m_PIEWorld.lock()->m_currentSceneRef)->Clear(); //we are in editor. dont clear
 		*m_PIEWorld.lock()->m_currentSceneRef = SceneRef();
 	}
 
@@ -171,10 +169,6 @@ namespace SvEditor::Core
 	{
 		auto pieWorld =				IEngine::CreateNewWorldContext(WorldContext::EWorldType::PIE);
 		pieWorld->m_lightsSSBO =	IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, Renderer::LIGHT_SSBO_INDEX);
-		// pieWorld->m_viewport =		p_context.m_viewport;
-
-		//pieWorld->RenderContext();
-		//pieWorld->m_persistentLevel = p_context.m_persistentLevel;
 
 		return pieWorld;
 	}
@@ -341,7 +335,7 @@ namespace SvEditor::Core
 	bool EditorEngine::ChangeSceneInternal()
 	{
 		HierarchyPanel::ToggleSelectable(SvCore::ECS::NULL_ENTITY.GetIndex());
-		std::string scenePath = std::move(m_scenePath);
+		const std::string scenePath = std::move(m_scenePath);
 
 		if (!m_gameInstance && m_isEditorModifiedScene && scenePath != m_editorWorld->CurrentScene().GetPath())
 			SV_EVENT_MANAGER().Invoke<OnSave>();
@@ -455,12 +449,12 @@ namespace SvEditor::Core
 		return m_isPaused;
 	}
 
-	bool SvEditor::Core::EditorEngine::IsGameFocused()
+	bool EditorEngine::IsGameFocused()
 	{
 		return !m_PIEWorld.expired() && m_PIEWorld.lock()->m_isFocused;
 	}
 
-	void EditorEngine::SetupUI(Core::EditorWindow* p_window, const std::array<std::function<void()>, 3>p_playPauseFrameCallbacks)
+	void EditorEngine::SetupUI(EditorWindow* p_window, const std::array<std::function<void()>, 3>p_playPauseFrameCallbacks)
 	{
 		p_window->SetupUI(
 			m_editorWorld,
