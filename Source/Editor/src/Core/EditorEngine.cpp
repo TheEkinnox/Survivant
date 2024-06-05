@@ -156,8 +156,10 @@ namespace SvEditor::Core
 
 		//while playing, loaded new scene, so go back to selected
 		if (scene != m_editorSelectedScene)
+		{
 			ChangeScene(m_editorSelectedScene.GetPath());
-			//BrowseToScene(*m_editorWorld, m_editorSelectedScene.GetPath());
+			ChangeSceneInternal();
+		}
 
 		m_editorWorld->SetInputs();
 
