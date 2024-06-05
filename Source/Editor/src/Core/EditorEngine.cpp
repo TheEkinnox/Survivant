@@ -125,6 +125,7 @@ namespace SvEditor::Core
 		SvScripting::LuaContext& luaContext = SvScripting::LuaContext::GetInstance();
 		luaContext.Stop();
 		luaContext.Reload();
+		SvAudio::AudioContext::GetInstance().StopAll();
 
 		ASSERT(luaContext.IsValid());
 
