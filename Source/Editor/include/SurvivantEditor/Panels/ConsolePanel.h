@@ -12,7 +12,7 @@
 
 #include <SurvivantCore/Debug/Logger.h>
 
-//foward declaration
+//forward declaration
 struct ImVec4;
 
 namespace SvEditor::Panels

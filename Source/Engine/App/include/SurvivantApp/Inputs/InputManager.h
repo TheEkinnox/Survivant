@@ -17,7 +17,7 @@
 
 namespace SvApp
 {
-	//foward declaration
+	//forward declaration
 	class Window;
 
 	class InputManager

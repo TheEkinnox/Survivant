@@ -20,7 +20,7 @@
 
 namespace SvApp::Core
 {
-	//foward declaration
+	//forward declaration
 	class GameInstance;
 
 	struct WorldContext

@@ -3,19 +3,16 @@
 
 #include "SurvivantApp/Core/WorldContext.h"
 #include "SurvivantApp/Inputs/InputManager.h"
-#include "SurvivantCore/Events/Event.h"
 #include "SurvivantEditor/Core/IUI.h"
 #include "SurvivantEditor/Interfaces/ISelectable.h"
 #include "SurvivantEditor/Panels/Panel.h"
 #include "SurvivantEditor/Panels/MainPanel.h"
-#include "SurvivantEditor/MenuItems/Menu.h"
 #include "SurvivantEditor/MenuItems/MenuBar.h"
 
-#include <unordered_set>
 #include <memory>
 #include <array>
 
-//foward declaration
+//forward declaration
 struct ImFont;
 
 namespace SvApp {
