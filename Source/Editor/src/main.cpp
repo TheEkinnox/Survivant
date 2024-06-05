@@ -11,10 +11,12 @@ int main()
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-    SvEditor::Core::EngineApp app;
+    {
+        SvEditor::Core::EngineApp app;
+        app.Init();
+        app.Run();
+    }
 
-    app.Init();
-    app.Run();
 
     return 0;
 }

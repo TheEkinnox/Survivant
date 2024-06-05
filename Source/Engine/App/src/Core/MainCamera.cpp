@@ -10,26 +10,26 @@ namespace SvApp::Core
 {
     MainCamera::MainCamera(
         const Cam& p_cam, const Transform& p_trans) :
-        m_union(p_cam, p_trans)
-    {
-    }
+        m_myCam(MyCam{ .m_cam = p_cam, .m_trans = p_trans}), 
+        m_hasEntity(false)
+    {}
 
     MainCamera::MainCamera(const SvCore::ECS::EntityHandle p_entity) :
-        m_union(p_entity)
-    {
-    }
+        m_myCam(MyCam{ .m_entity = p_entity }),
+        m_hasEntity(true)
+    {}
 
     MainCamera::CamInfo MainCamera::GetCamInfo()
     {
         if (m_hasEntity)
         {
-            if (!m_union.m_entity)
+            if (!m_myCam.m_entity)
                 return { nullptr, nullptr };
 
-            return { m_union.m_entity.Get<Cam>(), m_union.m_entity.Get<Transform>() };
+            return { m_myCam.m_entity.Get<Cam>(), m_myCam.m_entity.Get<Transform>() };
         }
 
-        return { &m_union.m_camInfo.m_cam, &m_union.m_camInfo.m_trans };
+        return { &m_myCam.m_cam, &m_myCam.m_trans };
     }
 
     void MainCamera::UpdateInput()
@@ -40,19 +40,21 @@ namespace SvApp::Core
         if (!(m_moveInput.magnitudeSquared() > 0.f || m_rotateInput.magnitudeSquared() > 0.f))
             return;
 
-        m_union.m_camInfo.m_trans = MoveTransformInput(
-            m_union.m_camInfo.m_trans, m_moveInput, m_rotateInput, SV_DELTA_TIME());
+        m_myCam.m_trans = MoveTransformInput(
+            m_myCam.m_trans, m_moveInput, m_rotateInput, SV_DELTA_TIME());
     }
 
     void MainCamera::SetEntity(const SvCore::ECS::EntityHandle p_entity)
     {
-        m_union.m_entity = p_entity;
+        m_myCam.m_entity = p_entity;
         m_hasEntity = true;
     }
 
     void MainCamera::SetCamera(const Cam& p_cam, const Transform& p_trans)
     {
-        m_union.m_camInfo = { p_cam, p_trans };
+        m_myCam.m_cam = p_cam;
+        m_myCam.m_trans = p_trans;
+
         m_hasEntity = false;
     }
 

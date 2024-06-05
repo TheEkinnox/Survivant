@@ -86,6 +86,14 @@ namespace SvEditor::Core
         ISelectable::s_onClearSelected.AddListener([this]() { m_selected = nullptr; });
     }
 
+    EditorUI::~EditorUI()
+    {
+        ImGui_ImplOpenGL3_Shutdown();
+        ImGui_ImplGlfw_Shutdown();
+
+        ImGui::DestroyContext();
+    }
+
     void EditorUI::InitWindow(SvApp::Window* p_window)
     {
         ImGui_ImplGlfw_InitForOpenGL(p_window->GetWindow(), true);

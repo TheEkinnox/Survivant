@@ -28,6 +28,26 @@ using namespace SvRendering::Enums;
 
 namespace SvEditor::Core
 {
+	EditorEngine::~EditorEngine()
+	{
+		m_editorWorld.reset();
+
+		SvScripting::LuaContext& luaContext = SvScripting::LuaContext::GetInstance();
+		SvCore::Resources::ResourceManager::GetInstance().Clear();
+		SvPhysics::PhysicsContext::GetInstance().Reset();
+		SvAudio::AudioContext::GetInstance().Reset();
+
+		if (m_gameInstance)
+		{
+			luaContext.Stop();
+			m_gameInstance.reset();
+		}
+
+		luaContext.Reset();
+
+
+	}
+
 	void EditorEngine::Init()
 	{
 		s_engine = this;
@@ -46,7 +66,7 @@ namespace SvEditor::Core
 		//create scenes
 		m_editorSelectedScene = ResourceManager::GetInstance().GetOrCreate<Scene>(DEFAULT_SCENE_PATH);
 
-		//create editor world world
+		////create editor world world
 		m_editorWorld = CreateEditorDefaultWorld(m_editorSelectedScene);
 		m_editorWorld->SetInputs();
 
@@ -265,11 +285,8 @@ namespace SvEditor::Core
 		world->m_inputs = CreateEditorInputs();
 
 		//load and render
-		//world->Save();
 		world->BakeLighting();
 		world->m_renderingContext->Render(world->CurrentScene().Get());
-
-		//world->m_persistentLevel = nullptr;
 
 		return world;
 	}

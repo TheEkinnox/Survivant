@@ -58,7 +58,7 @@ namespace SvAudio
 
     void AudioContext::Reset()
     {
-        if (!ASSUME(m_soLoud, "Attempted to reset uninitialized audio context"))
+        if (!m_soLoud)
             return;
 
         m_soLoud.reset();

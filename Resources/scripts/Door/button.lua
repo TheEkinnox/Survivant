@@ -1,15 +1,15 @@
 ---@class Button : Script
 local Button = {
-    onActiveYScaleMult = 0.5
+    onActiveYMove = 0.1
 }
 
 local numCollision = 0
 local transform
-local originalYScale
+local originalPos
 
 function Button:OnStart()
     transform = self.owner:GetOrCreate(Transform)
-    originalYScale = transform.scale.y
+    originalPos = transform.position
 end
 
 function Button.IsActive()
@@ -18,7 +18,7 @@ end
 
 function Button:OnTriggerEnter()
     if numCollision == 0 then
-        transform.scale.y = originalYScale * self.onActiveYScaleMult
+        transform.position = Vector3.new(originalPos.x, originalPos.y - self.onActiveYMove, originalPos.z)
     end
     
     print("ON triggered")
@@ -27,10 +27,10 @@ end
 
 function Button:OnTriggerExit()
     numCollision = numCollision - 1
-    print("EXIT triggered")
-
+    
+    print("ON exit")
     if numCollision == 0 then
-        transform.scale.y = originalYScale
+        transform.position = originalPos
     end
 end
 

@@ -27,7 +27,7 @@ namespace SvEditor::Panels
 		using LogInfo = SvCore::Debug::LogInfo;
 
 		ConsolePanel();
-		~ConsolePanel();
+		~ConsolePanel() override;
 
 		ERenderFlags Render() override;
 

@@ -15,7 +15,7 @@ namespace SvEditor::Panels
 	{
 	public:
 		SavePanel();
-		~SavePanel();
+		~SavePanel() override;
 
 		ERenderFlags Render() override;
 

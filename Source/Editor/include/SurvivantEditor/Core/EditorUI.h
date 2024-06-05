@@ -35,7 +35,7 @@ namespace SvEditor::Core
 		using WorldContext = SvApp::Core::WorldContext;
 
 		EditorUI();
-		~EditorUI() override = default;
+		~EditorUI() override;
 
 		void InitWindow(SvApp::Window* p_window);
 

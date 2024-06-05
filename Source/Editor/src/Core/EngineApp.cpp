@@ -32,6 +32,7 @@ namespace SvEditor::Core
 
 	EngineApp::~EngineApp()
 	{
+		m_editorEngine.~EditorEngine();
 		m_window.reset();
 	}
 
@@ -50,9 +51,6 @@ namespace SvEditor::Core
 		renderAPI.Init(true)
 			.SetCapability(ERenderingCapability::DEPTH_TEST, true)
 			.SetCullFace(ECullFace::BACK);
-
-		//TODO: remove this line when draw logo implemented
-		//renderAPI.Clear(true, false, false);
 
 		//draw logo
 		DrawLogo();
@@ -84,7 +82,6 @@ namespace SvEditor::Core
 			m_editorEngine.RenderWorlds();			//render worlds
 
 			m_window->GetUI().RenderInfoPanels();	//update UI
-
 
 			m_window->EndRender();			//render UI with worlds
 		}

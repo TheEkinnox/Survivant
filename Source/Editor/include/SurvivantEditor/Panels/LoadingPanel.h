@@ -15,7 +15,7 @@ namespace SvEditor::Panels
 	{
 	public:
 		LoadingPanel();
-		~LoadingPanel() = default;
+		~LoadingPanel() override = default;
 
 		ERenderFlags Render() override;
 
