@@ -1,15 +1,14 @@
 ---@class Jump : Script
 local Jump = {
     jump_force = 10,
-    ground_steepness = 0.45
+    ground_steepness = 0.45,
+    jump_sound = Resource.new("AudioClip", "sounds/jump-start.wav"),
+    landing_sound = Resource.new("AudioClip", "sounds/jump-end.wav")
 }
 
 local rigidbody
 local is_grounded
 local holding_jump
-
-function Jump:OnInit()
-end
 
 function Jump:OnStart()
     rigidbody = self.owner:GetOrCreate(RigidBody)
@@ -19,8 +18,9 @@ end
 
 local function UpdateJump(self, deltaTime)
     local jumpkey = Input.IsKeyDown(EKey.SPACE)
-    
+
     if not holding_jump and jumpkey and is_grounded then
+        Audio:Play(self.jump_sound)
         rigidbody.self:AddForce(Vector3.up * self.jump_force * rigidbody.mass, EForceMode.IMPULSE)
     end
 
@@ -45,6 +45,10 @@ local function EvaluateCollision(self, collisionInfo)
         local y = contact.normal.y * mult
 
         if y and y > self.ground_steepness then
+            if not is_grounded then
+                Audio:Play(self.landing_sound)
+            end
+
             is_grounded = true
             break
         end
