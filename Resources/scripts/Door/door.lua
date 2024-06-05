@@ -2,7 +2,10 @@
 local Door = {
     move_speed = 1.0,
     length_and_dir = 2.0,
-    numButtonsToMove = 1
+    numButtonsToMove = 1,
+    on_move_start_sound = Resource.new("AudioClip", "sounds/hydraulics-start.wav"),
+    on_move_sound = Resource.new("AudioClip", "sounds/hydraulics-loop.wav"),
+    on_move_end_sound = Resource.new("AudioClip", "sounds/hydraulics-end.wav")
 }
 
 local transform = nil
@@ -10,6 +13,7 @@ local distance_percent = 0
 local start_pos
 local end_pos
 local abs_length
+local move_loop_handle
 ---@type table<number, Button>
 local buttons
 
@@ -53,17 +57,55 @@ local function GetAdditionalDistancePercent(self, deltaTime)
     return self.move_speed * deltaTime / abs_length
 end
 
+local function StartAudioLoop(self)
+    if self.on_move_start_sound.isValid then
+        Audio:Play(self.on_move_start_sound)
+    end
+
+    if self.on_move_sound.isValid then
+        move_loop_handle = Audio:Play(self.on_move_sound)
+        move_loop_handle.isLooping = true
+    else
+        move_loop_handle = AudioHandle.new()
+    end
+end
+
+local function EndAudioLoop(self)
+    if move_loop_handle then
+        move_loop_handle:Stop()
+        move_loop_handle = nil
+    end
+
+    if self.on_move_end_sound.isValid then
+        Audio:Play(self.on_move_end_sound)
+    end
+end
+
 local function UpdatePosition(self, deltaTime)
-    if NumActiveButtons() >= self.numButtonsToMove and distance_percent < 1 then
+    local canMove = NumActiveButtons() >= self.numButtonsToMove
+
+    if canMove and distance_percent < 1 then
         distance_percent = distance_percent + GetAdditionalDistancePercent(self, deltaTime)
-        
-        distance_percent = distance_percent > 1 and 1 or distance_percent
+
+        if distance_percent >= 1 then
+            EndAudioLoop(self)
+            distance_percent = 1
+        elseif not move_loop_handle then
+            StartAudioLoop(self)
+        end
+
         transform.position = math.lerp(start_pos, end_pos, distance_percent)
 
-    elseif 0 < distance_percent then
+    elseif not canMove and 0 < distance_percent then
         distance_percent = distance_percent - GetAdditionalDistancePercent(self, deltaTime)
-        
-        distance_percent = distance_percent < 0 and 0 or distance_percent
+
+        if distance_percent <= 0 then
+            EndAudioLoop(self)
+            distance_percent = 0
+        elseif not move_loop_handle then
+            StartAudioLoop(self)
+        end
+
         transform.position = math.lerp(start_pos, end_pos, distance_percent)
     end
 end
