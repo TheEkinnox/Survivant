@@ -163,6 +163,10 @@ namespace SvScripting::Bindings
                 [](AudioHandle& p_self, const float p_volume, const float p_pan)
                 {
                     p_self.Play(p_volume, p_pan);
+                },
+                [](AudioHandle& p_self, const float p_volume, const float p_pan, const bool p_paused)
+                {
+                    p_self.Play(p_volume, p_pan, p_paused);
                 }
             ),
             "Stop", &AudioHandle::Stop
