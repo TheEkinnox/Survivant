@@ -169,10 +169,10 @@ namespace SvRuntime
 
 	void RuntimeEngine::Render() const
 	{
-		//if (m_editorWorld->m_isVisalbe)
+		//if (m_editorWorld->m_isVisible)
 		//	m_editorWorld->m_renderingContext->Render(m_editorWorld->CurrentScene().Get());
 
-		//if (m_gameInstance && !m_PIEWorld.expired() && m_PIEWorld.lock()->m_isVisalbe)
+		//if (m_gameInstance && !m_PIEWorld.expired() && m_PIEWorld.lock()->m_isVisible)
 		//	m_PIEWorld.lock()->m_renderingContext->Render(m_PIEWorld.lock()->CurrentScene().Get());
 
 

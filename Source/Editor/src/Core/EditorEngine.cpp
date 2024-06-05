@@ -417,10 +417,10 @@ namespace SvEditor::Core
 
 	void EditorEngine::RenderWorlds()
 	{
-		if (m_editorWorld->m_isVisalbe)
+		if (m_editorWorld->m_isVisible)
 			m_editorWorld->m_renderingContext->Render(m_editorWorld->CurrentScene().Get());
 
-		if (!m_PIEWorld.expired() && m_PIEWorld.lock()->m_isVisalbe)
+		if (!m_PIEWorld.expired() && m_PIEWorld.lock()->m_isVisible)
 			m_PIEWorld.lock()->m_renderingContext->Render(m_PIEWorld.lock()->CurrentScene().Get());
 	}
 

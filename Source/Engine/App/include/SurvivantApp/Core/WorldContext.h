@@ -66,7 +66,7 @@ namespace SvApp::Core
 
 		//editor only
 		std::shared_ptr<RenderingContext>	m_renderingContext = nullptr;
-		bool								m_isVisalbe;
+		bool								m_isVisible;
 		bool								m_isFocused;
 	};
 }
