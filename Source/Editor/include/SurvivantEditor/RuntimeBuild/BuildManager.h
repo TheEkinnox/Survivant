@@ -20,7 +20,11 @@ namespace SvEditor::RuntimeBuild
 		void			RunBuild(std::string p_buildFilePath);
 
 	private:
-		static constexpr const char* RUNTIME_BUILD_LOCAL_PATH = SV_RUNTIME_DIR "\\Debug\\" SV_RUNTIME_EXE;
+#ifdef _DEBUG
+		static constexpr const char* RUNTIME_BUILD_LOCAL_PATH = SV_RUNTIME_DIR "\\debug\\" SV_RUNTIME_EXE;
+#else
+		static constexpr const char* RUNTIME_BUILD_LOCAL_PATH = SV_RUNTIME_DIR "\\release\\" SV_RUNTIME_EXE;
+#endif
 		static constexpr const char* BUILD_CONFIG_FILE_NAME = "buildConfig.txt";
 		static constexpr const char* ASSETS_DIR_LOCAL_PATH = "assets";
 	};

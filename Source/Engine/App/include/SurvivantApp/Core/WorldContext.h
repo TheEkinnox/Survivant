@@ -20,7 +20,7 @@
 
 namespace SvApp::Core
 {
-	//foward declaration
+	//forward declaration
 	class GameInstance;
 
 	struct WorldContext
@@ -57,10 +57,6 @@ namespace SvApp::Core
 		SceneRef&					CurrentScene();
 		std::weak_ptr<SceneRef>		CurrentSceneRef();
 
-
-		//TODO: deal with persistentLevel
-		//std::shared_ptr<Scene>				m_persistentLevel = nullptr;
-
 		EWorldType				m_worldType = EWorldType::NONE;
 		GameInstance*			m_owningGameInstance = nullptr;
 		std::shared_ptr<InputManager::InputBindings>				m_inputs = nullptr;
@@ -70,7 +66,7 @@ namespace SvApp::Core
 
 		//editor only
 		std::shared_ptr<RenderingContext>	m_renderingContext = nullptr;
-		bool								m_isVisalbe;
+		bool								m_isVisible;
 		bool								m_isFocused;
 	};
 }

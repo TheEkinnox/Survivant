@@ -143,6 +143,7 @@ namespace SvEditor::Core
 		SvScripting::LuaContext& luaContext = SvScripting::LuaContext::GetInstance();
 		luaContext.Stop();
 		luaContext.Reload();
+		SvAudio::AudioContext::GetInstance().StopAll();
 
 		ASSERT(luaContext.IsValid());
 
@@ -153,12 +154,12 @@ namespace SvEditor::Core
 
 		//while playing, loaded new scene, so go back to selected
 		if (scene != m_editorSelectedScene)
+		{
 			ChangeScene(m_editorSelectedScene.GetPath());
-			//BrowseToScene(*m_editorWorld, m_editorSelectedScene.GetPath());
+			ChangeSceneInternal();
+		}
 
 		m_editorWorld->SetInputs();
-
-		//(*m_PIEWorld.lock()->m_currentSceneRef)->Clear(); //we are in editor. dont clear
 		*m_PIEWorld.lock()->m_currentSceneRef = SceneRef();
 	}
 
@@ -166,10 +167,6 @@ namespace SvEditor::Core
 	{
 		auto pieWorld =				IEngine::CreateNewWorldContext(WorldContext::EWorldType::PIE);
 		pieWorld->m_lightsSSBO =	IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, Renderer::LIGHT_SSBO_INDEX);
-		// pieWorld->m_viewport =		p_context.m_viewport;
-
-		//pieWorld->RenderContext();
-		//pieWorld->m_persistentLevel = p_context.m_persistentLevel;
 
 		return pieWorld;
 	}
@@ -336,7 +333,7 @@ namespace SvEditor::Core
 	bool EditorEngine::ChangeSceneInternal()
 	{
 		HierarchyPanel::ToggleSelectable(SvCore::ECS::NULL_ENTITY.GetIndex());
-		std::string scenePath = std::move(m_scenePath);
+		const std::string scenePath = std::move(m_scenePath);
 
 		if (!m_gameInstance && m_isEditorModifiedScene && scenePath != m_editorWorld->CurrentScene().GetPath())
 			SV_EVENT_MANAGER().Invoke<OnSave>();
@@ -418,10 +415,10 @@ namespace SvEditor::Core
 
 	void EditorEngine::RenderWorlds()
 	{
-		if (m_editorWorld->m_isVisalbe)
+		if (m_editorWorld->m_isVisible)
 			m_editorWorld->m_renderingContext->Render(m_editorWorld->CurrentScene().Get());
 
-		if (!m_PIEWorld.expired() && m_PIEWorld.lock()->m_isVisalbe)
+		if (!m_PIEWorld.expired() && m_PIEWorld.lock()->m_isVisible)
 			m_PIEWorld.lock()->m_renderingContext->Render(m_PIEWorld.lock()->CurrentScene().Get());
 	}
 
@@ -450,12 +447,12 @@ namespace SvEditor::Core
 		return m_isPaused;
 	}
 
-	bool SvEditor::Core::EditorEngine::IsGameFocused()
+	bool EditorEngine::IsGameFocused()
 	{
 		return !m_PIEWorld.expired() && m_PIEWorld.lock()->m_isFocused;
 	}
 
-	void EditorEngine::SetupUI(Core::EditorWindow* p_window, const std::array<std::function<void()>, 3>p_playPauseFrameCallbacks)
+	void EditorEngine::SetupUI(EditorWindow* p_window, const std::array<std::function<void()>, 3>p_playPauseFrameCallbacks)
 	{
 		p_window->SetupUI(
 			m_editorWorld,

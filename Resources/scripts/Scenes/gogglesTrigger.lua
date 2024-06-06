@@ -14,7 +14,7 @@ function GogglesTrigger:OnTriggerEnter(triggerInfo)
         local switchCam = self.player:GetScriptInChildren("scripts.Player.switchCam")
 
         if switchCam.isValid then
-            switchCam.UnlockSwitch()
+            switchCam.self:UnlockSwitch()
         else
             warn("Player entity does not have script 'scripts.Player.switchCam'")
         end

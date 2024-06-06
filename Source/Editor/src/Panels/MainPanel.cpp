@@ -2,21 +2,18 @@
 
 #include "SurvivantEditor/Panels/MainPanel.h"
 
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_opengl3.h"
+#include <imgui.h>
 
 namespace SvEditor::Panels
 {
     MainPanel::MainPanel() :
         Panel(NAME),
-        m_panelFlags(ERenderFlags()),
-        m_menuBar()
+        m_panelFlags(ERenderFlags())
     {}
 
     MainPanel::MainPanel(MenuBar&& p_menuBar) :
         Panel(NAME),
-        m_panelFlags(ERenderFlags()),
-        m_menuBar()
+        m_panelFlags(ERenderFlags())
     {
         SetMenuBar(std::move(p_menuBar));
     }
@@ -24,7 +21,7 @@ namespace SvEditor::Panels
     void MainPanel::RenderDockSpace()
     {
         static ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_None;
-        static float boarderSize = 5.0f;
+        static float borderSize = 5.0f;
         bool open = true;
         //fullscreen + undockable/cant move
         ImGuiWindowFlags windowFlags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
@@ -33,7 +30,7 @@ namespace SvEditor::Panels
         ImGui::SetNextWindowSize(viewport->WorkSize);
         ImGui::SetNextWindowViewport(viewport->ID);
         ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);        //push 2 styles
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, boarderSize);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, borderSize);
         windowFlags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
         windowFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 

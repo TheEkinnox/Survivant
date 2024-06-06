@@ -1,6 +1,7 @@
 ---@class SwitchCam : Script
 local SwitchCam = {
-    otherCamera = Entity.new()
+    otherCamera = Entity.new(),
+    switchSound = Resource.new("AudioClip", "sounds/swoosh.wav")
 }
 
 local playerCamera
@@ -25,8 +26,10 @@ function SwitchCam:OnStart()
     isSwitchUnlocked = false
 end
 
-local function Switch()
+local function Switch(self)
     if isSwitchUnlocked then
+        Audio:Play(self.switchSound)
+
         playerCamera.isActive = not playerCamera.isActive
         otherCamera.isActive = not otherCamera.isActive
 
@@ -34,17 +37,17 @@ local function Switch()
     end
 end
 
-function SwitchCam.UnlockSwitch()
+function SwitchCam:UnlockSwitch()
     isSwitchUnlocked = true
-    Switch()
+    Switch(self)
 end
 
 
 local function UpdateKeyboardSwitch(self)
     local switchkey = Input.IsKeyDown(EKey.TAB)
-    
+
     if not holding_switch and switchkey then
-        Switch()
+        Switch(self)
     end
 
     holding_switch = switchkey

@@ -49,7 +49,7 @@ namespace SvEditor::Panels
 		static float SMALL_DISPLAY = 450;
 		bool showWindow = true;
 
-		if (s_world.lock()->m_isVisalbe = ImGui::Begin(m_name.c_str(), &showWindow, window_flags))
+		if (s_world.lock()->m_isVisible = ImGui::Begin(m_name.c_str(), &showWindow, window_flags))
 		{
 			if (IsWindowDifferentSize(m_imageSize))
 			{

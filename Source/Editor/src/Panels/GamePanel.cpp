@@ -72,7 +72,7 @@ namespace SvEditor::Panels
 		bool showWindow = true;
 		ERenderFlags flags = ERenderFlags();
 
-		if ((m_world->m_isVisalbe = ImGui::Begin(m_name.c_str(), &showWindow, windowFlags)))
+		if ((m_world->m_isVisible = ImGui::Begin(m_name.c_str(), &showWindow, windowFlags)))
 		{
 			//focus
 			auto val = IsGainedFocus(m_prevFocus);

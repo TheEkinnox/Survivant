@@ -12,7 +12,7 @@
 #define SV_CURRENT_UI() SvEditor::Core::IUI::GetCurrentUI()
 #endif //SV_CURRENT_UI
 
-//foward declaration
+//forward declaration
 struct ImFont;
 
 namespace SvEditor::Core

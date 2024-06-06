@@ -10,7 +10,7 @@
 
 namespace SvApp::Core
 {
-	//foward declaration
+	//forward declaration
 	class GameInstance;
 
 	class MainCamera
