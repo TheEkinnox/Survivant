@@ -24,6 +24,11 @@ namespace SvApp::Core
     {
     }
 
+    void GameInstance::BakeLights()
+    {
+        m_worldContext.lock()->BakeLighting();
+    }
+
     void GameInstance::InitializeStandalone()
     {
         // Creates the world context. This should be the only WorldContext that ever gets created for this GameInstance.

@@ -1,5 +1,5 @@
 {
-    "entities": 62,
+    "entities": 73,
     "components": [
         {
             "type": "Camera",
@@ -54,476 +54,6 @@
                         "orthographic_near": 0.0,
                         "orthographic_far": 0.0
                     }
-                }
-            ]
-        },
-        {
-            "type": "ScriptList",
-            "data": [
-                {
-                    "owner": 0,
-                    "data": [
-                        {
-                            "name": "scripts.Player.jump",
-                            "data": [
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "jump_force"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 4.0
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "ground_steepness"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 0.45
-                                    }
-                                }
-                            ]
-                        },
-                        {
-                            "name": "scripts.Player.move",
-                            "data": [
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "max_acceleration"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 50.0
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "max_speed"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 5.0
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "mouse_sensitivity"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 0.005
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "min_x_angle"
-                                    },
-                                    "value": {
-                                        "type": 7,
-                                        "data": {
-                                            "type": "Degree",
-                                            "data": -85.0
-                                        }
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "rotation_speed"
-                                    },
-                                    "value": {
-                                        "type": 7,
-                                        "data": {
-                                            "type": "Degree",
-                                            "data": 90.0
-                                        }
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "max_x_angle"
-                                    },
-                                    "value": {
-                                        "type": 7,
-                                        "data": {
-                                            "type": "Degree",
-                                            "data": 85.0
-                                        }
-                                    }
-                                }
-                            ]
-                        },
-                        {
-                            "name": "scripts.Player.switchCam",
-                            "data": [
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "otherCamera"
-                                    },
-                                    "value": {
-                                        "type": 7,
-                                        "data": {
-                                            "type": "Entity",
-                                            "data": 61
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "owner": 53,
-                    "data": [
-                        {
-                            "name": "scripts.Door.button",
-                            "data": [
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "onActiveYMove"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 0.1
-                                    }
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "owner": 9,
-                    "data": [
-                        {
-                            "name": "scripts.Door.door",
-                            "data": [
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "length_and_dir"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": -2.0
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "move_speed"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 1.0
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "numButtonsToMove"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 3.0
-                                    }
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "owner": 56,
-                    "data": [
-                        {
-                            "name": "scripts.Door.button",
-                            "data": [
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "onActiveYMove"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 0.1
-                                    }
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "owner": 55,
-                    "data": [
-                        {
-                            "name": "scripts.Door.button",
-                            "data": [
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "onActiveYMove"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 0.1
-                                    }
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "owner": 37,
-                    "data": [
-                        {
-                            "name": "scripts.Door.door",
-                            "data": [
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "length_and_dir"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": -11.0
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "move_speed"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 1.0
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "numButtonsToMove"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 1.0
-                                    }
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "owner": 51,
-                    "data": [
-                        {
-                            "name": "scripts.Door.button",
-                            "data": [
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "onActiveYMove"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 0.1
-                                    }
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "owner": 57,
-                    "data": [
-                        {
-                            "name": "scripts.Door.button",
-                            "data": [
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "onActiveYMove"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 0.1
-                                    }
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "owner": 42,
-                    "data": [
-                        {
-                            "name": "scripts.Door.door",
-                            "data": [
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "length_and_dir"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 4.0
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "move_speed"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 1.0
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "numButtonsToMove"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 1.0
-                                    }
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "owner": 58,
-                    "data": [
-                        {
-                            "name": "scripts.Door.button",
-                            "data": [
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "onActiveYMove"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 0.1
-                                    }
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "owner": 43,
-                    "data": [
-                        {
-                            "name": "scripts.Scenes.switchSceneTrigger",
-                            "data": [
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "scenePath"
-                                    },
-                                    "value": {
-                                        "type": 4,
-                                        "data": "scenes/MainMenu.scn"
-                                    }
-                                }
-                            ]
-                        },
-                        {
-                            "name": "scripts.Effects.bob",
-                            "data": [
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "direction"
-                                    },
-                                    "value": {
-                                        "type": 7,
-                                        "data": {
-                                            "type": "Vector3",
-                                            "data": "{0,0.5,0}"
-                                        }
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "speed"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 1.0
-                                    }
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "owner": 39,
-                    "data": [
-                        {
-                            "name": "scripts.Scenes.gogglesTrigger",
-                            "data": [
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "player"
-                                    },
-                                    "value": {
-                                        "type": 7,
-                                        "data": {
-                                            "type": "Entity",
-                                            "data": 0
-                                        }
-                                    }
-                                }
-                            ]
-                        },
-                        {
-                            "name": "scripts.Effects.bob",
-                            "data": [
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "direction"
-                                    },
-                                    "value": {
-                                        "type": 7,
-                                        "data": {
-                                            "type": "Vector3",
-                                            "data": "{0,0.1,0}"
-                                        }
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "speed"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 1.0
-                                    }
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "owner": 61,
-                    "data": []
                 }
             ]
         },
@@ -973,7 +503,7 @@
                 {
                     "owner": 56,
                     "data": {
-                        "position": "{-3,0.525,3.60873}",
+                        "position": "{-3,0.525,1.12033}",
                         "rotation": "{0,0,0,1}",
                         "scale": "{1,0.5,1}"
                     }
@@ -981,7 +511,7 @@
                 {
                     "owner": 57,
                     "data": {
-                        "position": "{2,0.525,-19.8556}",
+                        "position": "{2,0.525,-18.6798}",
                         "rotation": "{0,0,0,1}",
                         "scale": "{1,0.5,1}"
                     }
@@ -1017,346 +547,727 @@
                         "rotation": "{-0.5,0.5,0.5,0.5}",
                         "scale": "{3,3,3}"
                     }
+                },
+                {
+                    "owner": 63,
+                    "data": {
+                        "position": "{-10.0403,7.29014,-26.3019}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 65,
+                    "data": {
+                        "position": "{3.34882,2.72448,-17.7971}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 66,
+                    "data": {
+                        "position": "{-5.55279,2.72448,-16.7038}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 67,
+                    "data": {
+                        "position": "{4.66274,2.72448,-7.55984}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 68,
+                    "data": {
+                        "position": "{-8.04181,5.4058,-8.50453}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 69,
+                    "data": {
+                        "position": "{-8.04181,5.4058,-25.425}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 70,
+                    "data": {
+                        "position": "{0.173819,6.35848,-30.515}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 71,
+                    "data": {
+                        "position": "{4.54689,5.4058,-25.425}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 72,
+                    "data": {
+                        "position": "{-0.162292,7.29014,-30.8151}",
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,1,1}"
+                    }
                 }
             ]
         },
         {
-            "type": "Hierarchy",
+            "type": "ScriptList",
             "data": [
                 {
-                    "owner": 7,
-                    "data": {
-                        "parent": 18446744073709551615
-                    }
+                    "owner": 0,
+                    "data": [
+                        {
+                            "name": "scripts.Player.jump",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "ground_steepness"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 0.45
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "jump_force"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 4.0
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "scripts.Player.move",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "max_x_angle"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Degree",
+                                            "data": 85.0
+                                        }
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "max_acceleration"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 50.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "mouse_sensitivity"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 0.005
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "rotation_speed"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Degree",
+                                            "data": 90.0
+                                        }
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "min_x_angle"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Degree",
+                                            "data": -85.0
+                                        }
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "max_speed"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 5.0
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "scripts.Player.switchCam",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "otherCamera"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Entity",
+                                            "data": 61
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    ]
                 },
                 {
-                    "owner": 31,
-                    "data": {
-                        "parent": 13
-                    }
-                },
-                {
-                    "owner": 13,
-                    "data": {
-                        "parent": 18446744073709551615
-                    }
-                },
-                {
-                    "owner": 29,
-                    "data": {
-                        "parent": 31
-                    }
-                },
-                {
-                    "owner": 1,
-                    "data": {
-                        "parent": 18446744073709551615
-                    }
-                },
-                {
-                    "owner": 3,
-                    "data": {
-                        "parent": 7
-                    }
-                },
-                {
-                    "owner": 4,
-                    "data": {
-                        "parent": 7
-                    }
-                },
-                {
-                    "owner": 5,
-                    "data": {
-                        "parent": 7
-                    }
-                },
-                {
-                    "owner": 6,
-                    "data": {
-                        "parent": 7
-                    }
-                },
-                {
-                    "owner": 30,
-                    "data": {
-                        "parent": 24
-                    }
-                },
-                {
-                    "owner": 24,
-                    "data": {
-                        "parent": 32
-                    }
-                },
-                {
-                    "owner": 32,
-                    "data": {
-                        "parent": 18446744073709551615
-                    }
-                },
-                {
-                    "owner": 33,
-                    "data": {
-                        "parent": 14
-                    }
-                },
-                {
-                    "owner": 14,
-                    "data": {
-                        "parent": 18446744073709551615
-                    }
+                    "owner": 53,
+                    "data": [
+                        {
+                            "name": "scripts.Door.button",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "onActiveYMove"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 0.1
+                                    }
+                                }
+                            ]
+                        }
+                    ]
                 },
                 {
                     "owner": 9,
-                    "data": {
-                        "parent": 23
-                    }
+                    "data": [
+                        {
+                            "name": "scripts.Door.door",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "move_speed"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 1.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "length_and_dir"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": -2.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "numButtonsToMove"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 3.0
+                                    }
+                                }
+                            ]
+                        }
+                    ]
                 },
                 {
-                    "owner": 23,
-                    "data": {
-                        "parent": 18446744073709551615
-                    }
+                    "owner": 56,
+                    "data": [
+                        {
+                            "name": "scripts.Door.button",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "onActiveYMove"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 0.1
+                                    }
+                                }
+                            ]
+                        }
+                    ]
                 },
                 {
-                    "owner": 8,
-                    "data": {
-                        "parent": 7
-                    }
-                },
-                {
-                    "owner": 10,
-                    "data": {
-                        "parent": 8
-                    }
-                },
-                {
-                    "owner": 11,
-                    "data": {
-                        "parent": 12
-                    }
-                },
-                {
-                    "owner": 12,
-                    "data": {
-                        "parent": 13
-                    }
-                },
-                {
-                    "owner": 19,
-                    "data": {
-                        "parent": 11
-                    }
-                },
-                {
-                    "owner": 18,
-                    "data": {
-                        "parent": 23
-                    }
-                },
-                {
-                    "owner": 28,
-                    "data": {
-                        "parent": 23
-                    }
-                },
-                {
-                    "owner": 2,
-                    "data": {
-                        "parent": 29
-                    }
-                },
-                {
-                    "owner": 16,
-                    "data": {
-                        "parent": 23
-                    }
-                },
-                {
-                    "owner": 17,
-                    "data": {
-                        "parent": 14
-                    }
-                },
-                {
-                    "owner": 20,
-                    "data": {
-                        "parent": 22
-                    }
-                },
-                {
-                    "owner": 22,
-                    "data": {
-                        "parent": 23
-                    }
-                },
-                {
-                    "owner": 21,
-                    "data": {
-                        "parent": 22
-                    }
-                },
-                {
-                    "owner": 15,
-                    "data": {
-                        "parent": 42
-                    }
-                },
-                {
-                    "owner": 42,
-                    "data": {
-                        "parent": 14
-                    }
-                },
-                {
-                    "owner": 25,
-                    "data": {
-                        "parent": 22
-                    }
-                },
-                {
-                    "owner": 27,
-                    "data": {
-                        "parent": 22
-                    }
-                },
-                {
-                    "owner": 26,
-                    "data": {
-                        "parent": 22
-                    }
-                },
-                {
-                    "owner": 34,
-                    "data": {
-                        "parent": 24
-                    }
-                },
-                {
-                    "owner": 35,
-                    "data": {
-                        "parent": 24
-                    }
-                },
-                {
-                    "owner": 36,
-                    "data": {
-                        "parent": 24
-                    }
+                    "owner": 55,
+                    "data": [
+                        {
+                            "name": "scripts.Door.button",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "onActiveYMove"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 0.1
+                                    }
+                                }
+                            ]
+                        }
+                    ]
                 },
                 {
                     "owner": 37,
+                    "data": [
+                        {
+                            "name": "scripts.Door.door",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "move_speed"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 1.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "length_and_dir"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": -11.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "numButtonsToMove"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 1.0
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "owner": 51,
+                    "data": [
+                        {
+                            "name": "scripts.Door.button",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "onActiveYMove"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 0.1
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "owner": 57,
+                    "data": [
+                        {
+                            "name": "scripts.Door.button",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "onActiveYMove"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 0.1
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "owner": 42,
+                    "data": [
+                        {
+                            "name": "scripts.Door.door",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "move_speed"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 1.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "length_and_dir"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 4.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "numButtonsToMove"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 1.0
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "owner": 58,
+                    "data": [
+                        {
+                            "name": "scripts.Door.button",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "onActiveYMove"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 0.1
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "owner": 43,
+                    "data": [
+                        {
+                            "name": "scripts.Scenes.switchSceneTrigger",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "scenePath"
+                                    },
+                                    "value": {
+                                        "type": 4,
+                                        "data": "scenes/MainMenu.scn"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "scripts.Effects.bob",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "direction"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Vector3",
+                                            "data": "{0,0.5,0}"
+                                        }
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "speed"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 1.0
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "owner": 39,
+                    "data": [
+                        {
+                            "name": "scripts.Scenes.gogglesTrigger",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "player"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Entity",
+                                            "data": 0
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "scripts.Effects.bob",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "direction"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Vector3",
+                                            "data": "{0,0.1,0}"
+                                        }
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "speed"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 1.0
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "owner": 61,
+                    "data": []
+                }
+            ]
+        },
+        {
+            "type": "Tag",
+            "data": [
+                {
+                    "owner": 29,
+                    "data": "Collider"
+                },
+                {
+                    "owner": 13,
+                    "data": "STRAIR"
+                },
+                {
+                    "owner": 31,
+                    "data": "stair2"
+                },
+                {
+                    "owner": 12,
+                    "data": "stair1"
+                },
+                {
+                    "owner": 11,
+                    "data": "Collider"
+                },
+                {
+                    "owner": 7,
+                    "data": "start"
+                },
+                {
+                    "owner": 37,
+                    "data": "wall"
+                },
+                {
+                    "owner": 38,
+                    "data": "wall"
+                },
+                {
+                    "owner": 42,
+                    "data": "to_move(0-4)"
+                },
+                {
+                    "owner": 9,
+                    "data": "end_door"
+                },
+                {
+                    "owner": 23,
+                    "data": "end"
+                },
+                {
+                    "owner": 14,
+                    "data": "mid"
+                },
+                {
+                    "owner": 32,
+                    "data": "top_of_stairs"
+                },
+                {
+                    "owner": 0,
+                    "data": "player"
+                },
+                {
+                    "owner": 48,
+                    "data": "wall"
+                },
+                {
+                    "owner": 53,
+                    "data": "button_2"
+                },
+                {
+                    "owner": 56,
+                    "data": "button_3"
+                },
+                {
+                    "owner": 55,
+                    "data": "button_1"
+                },
+                {
+                    "owner": 51,
+                    "data": "button_1"
+                },
+                {
+                    "owner": 57,
+                    "data": "button_1"
+                },
+                {
+                    "owner": 15,
+                    "data": "wall"
+                },
+                {
+                    "owner": 39,
+                    "data": "goggles"
+                },
+                {
+                    "owner": 58,
+                    "data": ""
+                },
+                {
+                    "owner": 61,
+                    "data": "cam"
+                },
+                {
+                    "owner": 62,
+                    "data": "lights"
+                }
+            ]
+        },
+        {
+            "type": "RigidBody",
+            "data": [
+                {
+                    "owner": 0,
                     "data": {
-                        "parent": 32
+                        "mass": 1.0,
+                        "is_kinematic": false,
+                        "use_gravity": true,
+                        "axis_locks": 40,
+                        "collision_mode": 0
                     }
                 },
                 {
                     "owner": 38,
                     "data": {
-                        "parent": 37
+                        "mass": 1.0,
+                        "is_kinematic": true,
+                        "use_gravity": false,
+                        "axis_locks": 0,
+                        "collision_mode": 0
                     }
                 },
                 {
-                    "owner": 59,
+                    "owner": 52,
                     "data": {
-                        "parent": 0
+                        "mass": 3.0,
+                        "is_kinematic": false,
+                        "use_gravity": true,
+                        "axis_locks": 0,
+                        "collision_mode": 0
                     }
                 },
                 {
-                    "owner": 0,
+                    "owner": 54,
                     "data": {
-                        "parent": 18446744073709551615
-                    }
-                },
-                {
-                    "owner": 40,
-                    "data": {
-                        "parent": 14
-                    }
-                },
-                {
-                    "owner": 41,
-                    "data": {
-                        "parent": 14
-                    }
-                },
-                {
-                    "owner": 44,
-                    "data": {
-                        "parent": 8
-                    }
-                },
-                {
-                    "owner": 45,
-                    "data": {
-                        "parent": 14
-                    }
-                },
-                {
-                    "owner": 46,
-                    "data": {
-                        "parent": 23
-                    }
-                },
-                {
-                    "owner": 47,
-                    "data": {
-                        "parent": 23
+                        "mass": 3.0,
+                        "is_kinematic": false,
+                        "use_gravity": true,
+                        "axis_locks": 0,
+                        "collision_mode": 0
                     }
                 },
                 {
                     "owner": 48,
                     "data": {
-                        "parent": 9
+                        "mass": 1.0,
+                        "is_kinematic": true,
+                        "use_gravity": false,
+                        "axis_locks": 0,
+                        "collision_mode": 0
                     }
                 },
                 {
-                    "owner": 49,
+                    "owner": 15,
                     "data": {
-                        "parent": 14
+                        "mass": 1.0,
+                        "is_kinematic": true,
+                        "use_gravity": false,
+                        "axis_locks": 0,
+                        "collision_mode": 0
                     }
                 },
                 {
-                    "owner": 58,
+                    "owner": 50,
                     "data": {
-                        "parent": 42
-                    }
-                },
-                {
-                    "owner": 53,
-                    "data": {
-                        "parent": 9
-                    }
-                },
-                {
-                    "owner": 56,
-                    "data": {
-                        "parent": 9
-                    }
-                },
-                {
-                    "owner": 55,
-                    "data": {
-                        "parent": 9
-                    }
-                },
-                {
-                    "owner": 51,
-                    "data": {
-                        "parent": 37
-                    }
-                },
-                {
-                    "owner": 57,
-                    "data": {
-                        "parent": 37
-                    }
-                },
-                {
-                    "owner": 60,
-                    "data": {
-                        "parent": 0
+                        "mass": 1.0,
+                        "is_kinematic": false,
+                        "use_gravity": true,
+                        "axis_locks": 0,
+                        "collision_mode": 0
                     }
                 }
             ]
@@ -1721,7 +1632,7 @@
                         "material": {
                             "path": "materials/unlitMagenta.mat"
                         },
-                        "layers": 4294967295
+                        "layers": 2
                     }
                 },
                 {
@@ -1907,178 +1818,415 @@
             ]
         },
         {
-            "type": "RigidBody",
+            "type": "Hierarchy",
             "data": [
                 {
-                    "owner": 0,
+                    "owner": 7,
                     "data": {
-                        "mass": 1.0,
-                        "is_kinematic": false,
-                        "use_gravity": true,
-                        "axis_locks": 40,
-                        "collision_mode": 0
+                        "parent": 18446744073709551615
                     }
-                },
-                {
-                    "owner": 38,
-                    "data": {
-                        "mass": 1.0,
-                        "is_kinematic": true,
-                        "use_gravity": false,
-                        "axis_locks": 0,
-                        "collision_mode": 0
-                    }
-                },
-                {
-                    "owner": 52,
-                    "data": {
-                        "mass": 3.0,
-                        "is_kinematic": false,
-                        "use_gravity": true,
-                        "axis_locks": 0,
-                        "collision_mode": 0
-                    }
-                },
-                {
-                    "owner": 54,
-                    "data": {
-                        "mass": 3.0,
-                        "is_kinematic": false,
-                        "use_gravity": true,
-                        "axis_locks": 0,
-                        "collision_mode": 0
-                    }
-                },
-                {
-                    "owner": 48,
-                    "data": {
-                        "mass": 1.0,
-                        "is_kinematic": true,
-                        "use_gravity": false,
-                        "axis_locks": 0,
-                        "collision_mode": 0
-                    }
-                },
-                {
-                    "owner": 15,
-                    "data": {
-                        "mass": 1.0,
-                        "is_kinematic": true,
-                        "use_gravity": false,
-                        "axis_locks": 0,
-                        "collision_mode": 0
-                    }
-                },
-                {
-                    "owner": 50,
-                    "data": {
-                        "mass": 1.0,
-                        "is_kinematic": false,
-                        "use_gravity": true,
-                        "axis_locks": 0,
-                        "collision_mode": 0
-                    }
-                }
-            ]
-        },
-        {
-            "type": "Tag",
-            "data": [
-                {
-                    "owner": 29,
-                    "data": "Collider"
-                },
-                {
-                    "owner": 13,
-                    "data": "STRAIR"
                 },
                 {
                     "owner": 31,
-                    "data": "stair2"
+                    "data": {
+                        "parent": 13
+                    }
                 },
                 {
-                    "owner": 12,
-                    "data": "stair1"
+                    "owner": 13,
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
                 },
                 {
-                    "owner": 11,
-                    "data": "Collider"
+                    "owner": 29,
+                    "data": {
+                        "parent": 31
+                    }
                 },
                 {
-                    "owner": 7,
-                    "data": "start"
+                    "owner": 1,
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
                 },
                 {
-                    "owner": 37,
-                    "data": "wall"
+                    "owner": 3,
+                    "data": {
+                        "parent": 7
+                    }
                 },
                 {
-                    "owner": 38,
-                    "data": "wall"
+                    "owner": 4,
+                    "data": {
+                        "parent": 7
+                    }
                 },
                 {
-                    "owner": 42,
-                    "data": "to_move(0-4)"
+                    "owner": 5,
+                    "data": {
+                        "parent": 7
+                    }
                 },
                 {
-                    "owner": 9,
-                    "data": "end_door"
+                    "owner": 6,
+                    "data": {
+                        "parent": 7
+                    }
                 },
                 {
-                    "owner": 23,
-                    "data": "end"
+                    "owner": 30,
+                    "data": {
+                        "parent": 24
+                    }
                 },
                 {
-                    "owner": 14,
-                    "data": "mid"
+                    "owner": 24,
+                    "data": {
+                        "parent": 32
+                    }
                 },
                 {
                     "owner": 32,
-                    "data": "top_of_stairs"
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
                 },
                 {
-                    "owner": 0,
-                    "data": "player"
+                    "owner": 33,
+                    "data": {
+                        "parent": 14
+                    }
                 },
                 {
-                    "owner": 48,
-                    "data": "wall"
+                    "owner": 14,
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
                 },
                 {
-                    "owner": 53,
-                    "data": "button_2"
+                    "owner": 9,
+                    "data": {
+                        "parent": 23
+                    }
                 },
                 {
-                    "owner": 56,
-                    "data": "button_3"
+                    "owner": 23,
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
                 },
                 {
-                    "owner": 55,
-                    "data": "button_1"
+                    "owner": 8,
+                    "data": {
+                        "parent": 7
+                    }
                 },
                 {
-                    "owner": 51,
-                    "data": "button_1"
+                    "owner": 10,
+                    "data": {
+                        "parent": 8
+                    }
                 },
                 {
-                    "owner": 57,
-                    "data": "button_1"
+                    "owner": 11,
+                    "data": {
+                        "parent": 12
+                    }
+                },
+                {
+                    "owner": 12,
+                    "data": {
+                        "parent": 13
+                    }
+                },
+                {
+                    "owner": 19,
+                    "data": {
+                        "parent": 11
+                    }
+                },
+                {
+                    "owner": 18,
+                    "data": {
+                        "parent": 23
+                    }
+                },
+                {
+                    "owner": 28,
+                    "data": {
+                        "parent": 23
+                    }
+                },
+                {
+                    "owner": 2,
+                    "data": {
+                        "parent": 29
+                    }
+                },
+                {
+                    "owner": 16,
+                    "data": {
+                        "parent": 23
+                    }
+                },
+                {
+                    "owner": 17,
+                    "data": {
+                        "parent": 14
+                    }
+                },
+                {
+                    "owner": 20,
+                    "data": {
+                        "parent": 22
+                    }
+                },
+                {
+                    "owner": 22,
+                    "data": {
+                        "parent": 23
+                    }
+                },
+                {
+                    "owner": 21,
+                    "data": {
+                        "parent": 22
+                    }
                 },
                 {
                     "owner": 15,
-                    "data": "wall"
+                    "data": {
+                        "parent": 42
+                    }
                 },
                 {
-                    "owner": 39,
-                    "data": "goggles"
+                    "owner": 42,
+                    "data": {
+                        "parent": 14
+                    }
+                },
+                {
+                    "owner": 25,
+                    "data": {
+                        "parent": 22
+                    }
+                },
+                {
+                    "owner": 27,
+                    "data": {
+                        "parent": 22
+                    }
+                },
+                {
+                    "owner": 26,
+                    "data": {
+                        "parent": 22
+                    }
+                },
+                {
+                    "owner": 34,
+                    "data": {
+                        "parent": 24
+                    }
+                },
+                {
+                    "owner": 35,
+                    "data": {
+                        "parent": 24
+                    }
+                },
+                {
+                    "owner": 36,
+                    "data": {
+                        "parent": 24
+                    }
+                },
+                {
+                    "owner": 37,
+                    "data": {
+                        "parent": 32
+                    }
+                },
+                {
+                    "owner": 38,
+                    "data": {
+                        "parent": 37
+                    }
+                },
+                {
+                    "owner": 59,
+                    "data": {
+                        "parent": 0
+                    }
+                },
+                {
+                    "owner": 0,
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
+                },
+                {
+                    "owner": 40,
+                    "data": {
+                        "parent": 14
+                    }
+                },
+                {
+                    "owner": 41,
+                    "data": {
+                        "parent": 14
+                    }
+                },
+                {
+                    "owner": 44,
+                    "data": {
+                        "parent": 8
+                    }
+                },
+                {
+                    "owner": 45,
+                    "data": {
+                        "parent": 14
+                    }
+                },
+                {
+                    "owner": 46,
+                    "data": {
+                        "parent": 23
+                    }
+                },
+                {
+                    "owner": 47,
+                    "data": {
+                        "parent": 23
+                    }
+                },
+                {
+                    "owner": 48,
+                    "data": {
+                        "parent": 9
+                    }
+                },
+                {
+                    "owner": 49,
+                    "data": {
+                        "parent": 14
+                    }
                 },
                 {
                     "owner": 58,
-                    "data": ""
+                    "data": {
+                        "parent": 42
+                    }
                 },
                 {
-                    "owner": 61,
-                    "data": "cam"
+                    "owner": 53,
+                    "data": {
+                        "parent": 9
+                    }
+                },
+                {
+                    "owner": 56,
+                    "data": {
+                        "parent": 9
+                    }
+                },
+                {
+                    "owner": 55,
+                    "data": {
+                        "parent": 9
+                    }
+                },
+                {
+                    "owner": 51,
+                    "data": {
+                        "parent": 37
+                    }
+                },
+                {
+                    "owner": 57,
+                    "data": {
+                        "parent": 37
+                    }
+                },
+                {
+                    "owner": 60,
+                    "data": {
+                        "parent": 0
+                    }
+                },
+                {
+                    "owner": 63,
+                    "data": {
+                        "parent": 62
+                    }
+                },
+                {
+                    "owner": 62,
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
+                },
+                {
+                    "owner": 64,
+                    "data": {
+                        "parent": 62
+                    }
+                },
+                {
+                    "owner": 65,
+                    "data": {
+                        "parent": 62
+                    }
+                },
+                {
+                    "owner": 66,
+                    "data": {
+                        "parent": 62
+                    }
+                },
+                {
+                    "owner": 67,
+                    "data": {
+                        "parent": 62
+                    }
+                },
+                {
+                    "owner": 68,
+                    "data": {
+                        "parent": 62
+                    }
+                },
+                {
+                    "owner": 69,
+                    "data": {
+                        "parent": 62
+                    }
+                },
+                {
+                    "owner": 70,
+                    "data": {
+                        "parent": 62
+                    }
+                },
+                {
+                    "owner": 71,
+                    "data": {
+                        "parent": 62
+                    }
+                },
+                {
+                    "owner": 39,
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
+                },
+                {
+                    "owner": 72,
+                    "data": {
+                        "parent": 62
+                    }
                 }
             ]
         },
@@ -2556,6 +2704,220 @@
                         "offset": "{0,0,0}",
                         "is_trigger": false,
                         "size": "{1.02566,2.40931,1}"
+                    }
+                }
+            ]
+        },
+        {
+            "type": "Light",
+            "data": [
+                {
+                    "owner": 62,
+                    "data": {
+                        "type": "ambient",
+                        "data": {
+                            "color": "{1,1,1,0.282353}"
+                        }
+                    }
+                },
+                {
+                    "owner": 64,
+                    "data": {
+                        "type": "directional",
+                        "data": {
+                            "color": "{0.27451,0.27451,1,0.0588235}",
+                            "direction": "{-0.2,-1,0.5}"
+                        }
+                    }
+                },
+                {
+                    "owner": 63,
+                    "data": {
+                        "type": "spot",
+                        "data": {
+                            "color": "{0.477701,1,0.464135,1}",
+                            "position": "{0,0,0}",
+                            "direction": "{0,-1,0}",
+                            "attenuation": {
+                                "constant": 1.0,
+                                "linear": 1.0,
+                                "quadratic": 0.0
+                            },
+                            "cutoff": {
+                                "inner": 1.0,
+                                "outer": 0.800000011920929
+                            }
+                        }
+                    }
+                },
+                {
+                    "owner": 65,
+                    "data": {
+                        "type": "point",
+                        "data": {
+                            "color": "{1,1,1,1}",
+                            "position": "{0,0,0}",
+                            "attenuation": {
+                                "constant": 1.0,
+                                "linear": 1.0,
+                                "quadratic": 0.10000000149011612
+                            }
+                        }
+                    }
+                },
+                {
+                    "owner": 66,
+                    "data": {
+                        "type": "point",
+                        "data": {
+                            "color": "{1,1,1,1}",
+                            "position": "{0,0,0}",
+                            "attenuation": {
+                                "constant": 1.0,
+                                "linear": 1.0,
+                                "quadratic": 0.10000000149011612
+                            }
+                        }
+                    }
+                },
+                {
+                    "owner": 67,
+                    "data": {
+                        "type": "point",
+                        "data": {
+                            "color": "{1,1,1,1}",
+                            "position": "{0,0,0}",
+                            "attenuation": {
+                                "constant": 1.0,
+                                "linear": 1.0,
+                                "quadratic": 0.10000000149011612
+                            }
+                        }
+                    }
+                },
+                {
+                    "owner": 68,
+                    "data": {
+                        "type": "point",
+                        "data": {
+                            "color": "{1,1,1,1}",
+                            "position": "{0,0,0}",
+                            "attenuation": {
+                                "constant": 1.0,
+                                "linear": 1.0,
+                                "quadratic": 0.10000000149011612
+                            }
+                        }
+                    }
+                },
+                {
+                    "owner": 69,
+                    "data": {
+                        "type": "point",
+                        "data": {
+                            "color": "{1,1,1,1}",
+                            "position": "{0,0,0}",
+                            "attenuation": {
+                                "constant": 1.0,
+                                "linear": 1.0,
+                                "quadratic": 0.10000000149011612
+                            }
+                        }
+                    }
+                },
+                {
+                    "owner": 70,
+                    "data": {
+                        "type": "point",
+                        "data": {
+                            "color": "{1,0.909804,0,0.196078}",
+                            "position": "{0,0,0}",
+                            "attenuation": {
+                                "constant": 1.0,
+                                "linear": 1.0,
+                                "quadratic": 0.10000000149011612
+                            }
+                        }
+                    }
+                },
+                {
+                    "owner": 71,
+                    "data": {
+                        "type": "point",
+                        "data": {
+                            "color": "{1,1,1,1}",
+                            "position": "{0,0,0}",
+                            "attenuation": {
+                                "constant": 1.0,
+                                "linear": 1.0,
+                                "quadratic": 0.10000000149011612
+                            }
+                        }
+                    }
+                },
+                {
+                    "owner": 72,
+                    "data": {
+                        "type": "spot",
+                        "data": {
+                            "color": "{1,0,0,2.00784}",
+                            "position": "{0,0,0}",
+                            "direction": "{0,-1,0}",
+                            "attenuation": {
+                                "constant": 1.0,
+                                "linear": 1.0,
+                                "quadratic": 0.0
+                            },
+                            "cutoff": {
+                                "inner": 1.0,
+                                "outer": 0.800000011920929
+                            }
+                        }
+                    }
+                },
+                {
+                    "owner": 50,
+                    "data": {
+                        "type": "point",
+                        "data": {
+                            "color": "{0.962025,1,0,1}",
+                            "position": "{0,0,0}",
+                            "attenuation": {
+                                "constant": 2.0,
+                                "linear": 3.0,
+                                "quadratic": 1.0
+                            }
+                        }
+                    }
+                },
+                {
+                    "owner": 52,
+                    "data": {
+                        "type": "point",
+                        "data": {
+                            "color": "{0.12549,1,0,1}",
+                            "position": "{0,0,0}",
+                            "attenuation": {
+                                "constant": 2.0,
+                                "linear": 3.0,
+                                "quadratic": 1.0
+                            }
+                        }
+                    }
+                },
+                {
+                    "owner": 54,
+                    "data": {
+                        "type": "point",
+                        "data": {
+                            "color": "{0.12549,1,0,1}",
+                            "position": "{0,0,0}",
+                            "attenuation": {
+                                "constant": 2.0,
+                                "linear": 3.0,
+                                "quadratic": 1.0
+                            }
+                        }
                     }
                 }
             ]

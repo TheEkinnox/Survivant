@@ -24,6 +24,8 @@ namespace SvApp::Core
 		void UpdatePhysics();
 
 
+		void BakeLights();
+
 		//TODO: move to editor IEngine
 		void InitializeStandalone();
 

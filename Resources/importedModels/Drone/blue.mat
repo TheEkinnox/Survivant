@@ -1,12 +1,12 @@
 {
     "shader": {
-        "path": "shaders/Unlit.glsl"
+        "path": "shaders/Lit.glsl"
     },
     "properties": [
         {
             "name": "u_tint",
             "type": 7,
-            "value": "{1,1,1,1}"
+            "value": "{1,1,1,0}"
         },
         {
             "name": "u_diffuse",
@@ -14,6 +14,16 @@
             "value": {
                 "path": "importedModels/Drone/_color_3_.png"
             }
+        },
+        {
+            "name": "u_shininess",
+            "type": 4,
+            "value": 64.0
+        },
+        {
+            "name": "u_specularColor",
+            "type": 7,
+            "value": "{0.489451,1,0.812583,0}"
         }
     ]
 }

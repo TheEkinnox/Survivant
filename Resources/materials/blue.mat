@@ -1,19 +1,29 @@
 {
     "shader": {
-        "path": "shaders/Unlit.glsl"
+        "path": "shaders/Lit.glsl"
     },
     "properties": [
         {
             "name": "u_tint",
             "type": 7,
-            "value": "{0.314749,0.312842,0.388186,1}"
+            "value": "{0.827004,0.707479,0.540868,0}"
         },
         {
             "name": "u_diffuse",
             "type": 10,
             "value": {
-                "path": "textures/game/Sci_fi_Metal_Panel_005_basecolor.jpg"
+                "path": "textures/Game/Sci_fi_Metal_Panel_005_basecolor.jpg"
             }
+        },
+        {
+            "name": "u_shininess",
+            "type": 4,
+            "value": 128.0
+        },
+        {
+            "name": "u_specularColor",
+            "type": 7,
+            "value": "{1,0.50211,0.50211,0}"
         }
     ]
 }

@@ -140,6 +140,7 @@ namespace SvEditor::Core
 	{
 		UpdateScripts();
 		UpdatePhysics();
+		m_gameInstance.lock()->BakeLights();
 	}
 
 	void EngineApp::UpdateScripts()
