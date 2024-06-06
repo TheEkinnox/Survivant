@@ -224,6 +224,8 @@ namespace SvEditor::Panels
             set.insert(".obj");
             set.insert(".fbx");
             set.insert(".gltf");
+            set.insert(".glb");
+            set.insert(".dae");
         }
         {
             auto& set = extensions[rr.GetRegisteredTypeName<Material>()];
@@ -243,6 +245,9 @@ namespace SvEditor::Panels
             auto& set = extensions[rr.GetRegisteredTypeName<ITexture>()];
             set.insert(".png");
             set.insert(".jpg");
+            set.insert(".jpeg");
+            set.insert(".tga");
+            set.insert(".bmp");
         }
         {
             auto& set = extensions[rr.GetRegisteredTypeName<Scene>()];
@@ -253,6 +258,7 @@ namespace SvEditor::Panels
             set.insert(".wav");
             set.insert(".mp3");
             set.insert(".ogg");
+            set.insert(".flac");
         }
 
         return extensions;
