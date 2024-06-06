@@ -8,6 +8,7 @@
 #include "SurvivantScripting/Bindings/LuaRenderingBinder.h"
 #include "SurvivantScripting/Bindings/LuaResourceBinder.h"
 #include "SurvivantScripting/Bindings/LuaUtilityBinder.h"
+#include "SurvivantScripting/Bindings/LuaAudioBinder.h"
 
 #include <SurvivantCore/Resources/ResourceManager.h>
 #include <SurvivantCore/Utility/FileSystem.h>
@@ -345,6 +346,7 @@ namespace SvScripting
         Bindings::LuaRenderingBinder::Bind(p_luaState);
         Bindings::LuaResourceBinder::Bind(p_luaState);
         Bindings::LuaPhysicsBinder::Bind(p_luaState);
+        Bindings::LuaAudioBinder::Bind(p_luaState);
     }
 
     void LuaContext::LinkPhysicsEvents()

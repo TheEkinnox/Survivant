@@ -2,6 +2,7 @@
 #include "SurvivantRuntime/RuntimeEngine.h"
 
 
+#include <SurvivantApp/Windows/Window.h>
 #include <SurvivantApp/Core/BuildConfig.h>
 #include <SurvivantApp/Core/TempDefaultScene.h>
 
@@ -103,8 +104,14 @@ namespace SvRuntime
 
 	void RuntimeEngine::UpdateGame()
 	{
+		if (!CHECK(SvScripting::LuaContext::GetInstance().IsValid(), "LuaContext Not valid"))
+		{
+			SV_EVENT_MANAGER().Invoke<SvApp::Window::WindowCloseRequest>();
+			return;
+		}
+
 		SvScripting::LuaContext::GetInstance().Update(GetDeltaTime());   //use engine time 1 timer
-		SvPhysics::PhysicsContext::GetInstance().Update(GetDeltaTime());
+		SvPhysics::PhysicsContext::GetInstance().Update(GetDeltaTime());			
 	}
 
 	bool RuntimeEngine::InitializeGameInstance()

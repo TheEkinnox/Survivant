@@ -543,7 +543,7 @@
                 {
                     "owner": 61,
                     "data": {
-                        "position": "{-1,18,-17}",
+                        "position": "{-1,23,-17}",
                         "rotation": "{-0.5,0.5,0.5,0.5}",
                         "scale": "{3,3,3}"
                     }
@@ -634,6 +634,16 @@
                                 {
                                     "key": {
                                         "type": 4,
+                                        "data": "jump_force"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 4.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
                                         "data": "ground_steepness"
                                     },
                                     "value": {
@@ -644,11 +654,33 @@
                                 {
                                     "key": {
                                         "type": 4,
-                                        "data": "jump_force"
+                                        "data": "landing_sound"
                                     },
                                     "value": {
-                                        "type": 3,
-                                        "data": 4.0
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Resource",
+                                            "data": {
+                                                "type": "AudioClip",
+                                                "path": "sounds/jump-end.wav"
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "jump_sound"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Resource",
+                                            "data": {
+                                                "type": "AudioClip",
+                                                "path": "sounds/jump-start.wav"
+                                            }
+                                        }
                                     }
                                 }
                             ]
@@ -656,6 +688,26 @@
                         {
                             "name": "scripts.Player.move",
                             "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "max_acceleration"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 50.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "max_speed"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 5.0
+                                    }
+                                },
                                 {
                                     "key": {
                                         "type": 4,
@@ -672,34 +724,11 @@
                                 {
                                     "key": {
                                         "type": 4,
-                                        "data": "max_acceleration"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 50.0
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
                                         "data": "mouse_sensitivity"
                                     },
                                     "value": {
                                         "type": 3,
                                         "data": 0.005
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "rotation_speed"
-                                    },
-                                    "value": {
-                                        "type": 7,
-                                        "data": {
-                                            "type": "Degree",
-                                            "data": 90.0
-                                        }
                                     }
                                 },
                                 {
@@ -718,11 +747,14 @@
                                 {
                                     "key": {
                                         "type": 4,
-                                        "data": "max_speed"
+                                        "data": "rotation_speed"
                                     },
                                     "value": {
-                                        "type": 3,
-                                        "data": 5.0
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Degree",
+                                            "data": 90.0
+                                        }
                                     }
                                 }
                             ]
@@ -740,6 +772,22 @@
                                         "data": {
                                             "type": "Entity",
                                             "data": 61
+                                        }
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "switchSound"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Resource",
+                                            "data": {
+                                                "type": "AudioClip",
+                                                "path": "sounds/swoosh.wav"
+                                            }
                                         }
                                     }
                                 }
@@ -762,6 +810,38 @@
                                         "type": 3,
                                         "data": 0.1
                                     }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "onActiveSound"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Resource",
+                                            "data": {
+                                                "type": "AudioClip",
+                                                "path": "sounds/click-on.wav"
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "onInactiveSound"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Resource",
+                                            "data": {
+                                                "type": "AudioClip",
+                                                "path": "sounds/click-off.wav"
+                                            }
+                                        }
+                                    }
                                 }
                             ]
                         }
@@ -776,16 +856,6 @@
                                 {
                                     "key": {
                                         "type": 4,
-                                        "data": "move_speed"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 1.0
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
                                         "data": "length_and_dir"
                                     },
                                     "value": {
@@ -796,11 +866,69 @@
                                 {
                                     "key": {
                                         "type": 4,
+                                        "data": "on_move_sound"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Resource",
+                                            "data": {
+                                                "type": "AudioClip",
+                                                "path": "sounds/hydraulics-loop.wav"
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "on_move_end_sound"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Resource",
+                                            "data": {
+                                                "type": "AudioClip",
+                                                "path": "sounds/hydraulics-end.wav"
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
                                         "data": "numButtonsToMove"
                                     },
                                     "value": {
                                         "type": 3,
-                                        "data": 3.0
+                                        "data": 1.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "move_speed"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 1.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "on_move_start_sound"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Resource",
+                                            "data": {
+                                                "type": "AudioClip",
+                                                "path": "sounds/hydraulics-start.wav"
+                                            }
+                                        }
                                     }
                                 }
                             ]
@@ -822,6 +950,38 @@
                                         "type": 3,
                                         "data": 0.1
                                     }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "onActiveSound"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Resource",
+                                            "data": {
+                                                "type": "AudioClip",
+                                                "path": "sounds/click-on.wav"
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "onInactiveSound"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Resource",
+                                            "data": {
+                                                "type": "AudioClip",
+                                                "path": "sounds/click-off.wav"
+                                            }
+                                        }
+                                    }
                                 }
                             ]
                         }
@@ -842,6 +1002,38 @@
                                         "type": 3,
                                         "data": 0.1
                                     }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "onActiveSound"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Resource",
+                                            "data": {
+                                                "type": "AudioClip",
+                                                "path": "sounds/click-on.wav"
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "onInactiveSound"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Resource",
+                                            "data": {
+                                                "type": "AudioClip",
+                                                "path": "sounds/click-off.wav"
+                                            }
+                                        }
+                                    }
                                 }
                             ]
                         }
@@ -856,16 +1048,6 @@
                                 {
                                     "key": {
                                         "type": 4,
-                                        "data": "move_speed"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 1.0
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
                                         "data": "length_and_dir"
                                     },
                                     "value": {
@@ -876,11 +1058,69 @@
                                 {
                                     "key": {
                                         "type": 4,
+                                        "data": "on_move_sound"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Resource",
+                                            "data": {
+                                                "type": "AudioClip",
+                                                "path": "sounds/hydraulics-loop.wav"
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "on_move_end_sound"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Resource",
+                                            "data": {
+                                                "type": "AudioClip",
+                                                "path": "sounds/hydraulics-end.wav"
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
                                         "data": "numButtonsToMove"
                                     },
                                     "value": {
                                         "type": 3,
                                         "data": 1.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "move_speed"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 1.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "on_move_start_sound"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Resource",
+                                            "data": {
+                                                "type": "AudioClip",
+                                                "path": "sounds/hydraulics-start.wav"
+                                            }
+                                        }
                                     }
                                 }
                             ]
@@ -902,6 +1142,38 @@
                                         "type": 3,
                                         "data": 0.1
                                     }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "onActiveSound"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Resource",
+                                            "data": {
+                                                "type": "AudioClip",
+                                                "path": "sounds/click-on.wav"
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "onInactiveSound"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Resource",
+                                            "data": {
+                                                "type": "AudioClip",
+                                                "path": "sounds/click-off.wav"
+                                            }
+                                        }
+                                    }
                                 }
                             ]
                         }
@@ -922,6 +1194,38 @@
                                         "type": 3,
                                         "data": 0.1
                                     }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "onActiveSound"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Resource",
+                                            "data": {
+                                                "type": "AudioClip",
+                                                "path": "sounds/click-on.wav"
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "onInactiveSound"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Resource",
+                                            "data": {
+                                                "type": "AudioClip",
+                                                "path": "sounds/click-off.wav"
+                                            }
+                                        }
+                                    }
                                 }
                             ]
                         }
@@ -936,16 +1240,6 @@
                                 {
                                     "key": {
                                         "type": 4,
-                                        "data": "move_speed"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 1.0
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
                                         "data": "length_and_dir"
                                     },
                                     "value": {
@@ -956,11 +1250,69 @@
                                 {
                                     "key": {
                                         "type": 4,
+                                        "data": "on_move_sound"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Resource",
+                                            "data": {
+                                                "type": "AudioClip",
+                                                "path": "sounds/hydraulics-loop.wav"
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "on_move_end_sound"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Resource",
+                                            "data": {
+                                                "type": "AudioClip",
+                                                "path": "sounds/hydraulics-end.wav"
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
                                         "data": "numButtonsToMove"
                                     },
                                     "value": {
                                         "type": 3,
                                         "data": 1.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "move_speed"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 1.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "on_move_start_sound"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Resource",
+                                            "data": {
+                                                "type": "AudioClip",
+                                                "path": "sounds/hydraulics-start.wav"
+                                            }
+                                        }
                                     }
                                 }
                             ]
@@ -981,6 +1333,38 @@
                                     "value": {
                                         "type": 3,
                                         "data": 0.1
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "onActiveSound"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Resource",
+                                            "data": {
+                                                "type": "AudioClip",
+                                                "path": "sounds/click-on.wav"
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "onInactiveSound"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Resource",
+                                            "data": {
+                                                "type": "AudioClip",
+                                                "path": "sounds/click-off.wav"
+                                            }
+                                        }
                                     }
                                 }
                             ]
@@ -1011,6 +1395,16 @@
                                 {
                                     "key": {
                                         "type": 4,
+                                        "data": "speed"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 1.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
                                         "data": "direction"
                                     },
                                     "value": {
@@ -1019,16 +1413,6 @@
                                             "type": "Vector3",
                                             "data": "{0,0.5,0}"
                                         }
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "speed"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 1.0
                                     }
                                 }
                             ]
@@ -1062,6 +1446,16 @@
                                 {
                                     "key": {
                                         "type": 4,
+                                        "data": "speed"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 1.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
                                         "data": "direction"
                                     },
                                     "value": {
@@ -1070,16 +1464,6 @@
                                             "type": "Vector3",
                                             "data": "{0,0.1,0}"
                                         }
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "speed"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 1.0
                                     }
                                 }
                             ]
