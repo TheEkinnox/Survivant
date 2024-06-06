@@ -79,7 +79,9 @@ namespace SvEditor::RuntimeBuild
             return {};
         }
 
-        std::string buildFilePath = buildDirPath + "\\" + p_buildName + ".exe";
+        const auto  extension     = fs::path(SV_RUNTIME_EXE).extension().string();
+        std::string buildFilePath = buildDirPath + "/" + p_buildName + extension;
+
         if (!(fs::copy_file(RUNTIME_BUILD_LOCAL_PATH, buildFilePath, err) || err.value() == 0))
         {
             SV_LOG_ERROR("Can't Create Build, Can't copy runtime from \"%s\" to \"%s\": %s",
