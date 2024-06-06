@@ -44,8 +44,6 @@ namespace SvEditor::Core
 		}
 
 		luaContext.Reset();
-
-
 	}
 
 	void EditorEngine::Init()
@@ -66,7 +64,7 @@ namespace SvEditor::Core
 		//create scenes
 		m_editorSelectedScene = ResourceManager::GetInstance().GetOrCreate<Scene>(DEFAULT_SCENE_PATH);
 
-		////create editor world world
+		//create editor world world
 		m_editorWorld = CreateEditorDefaultWorld(m_editorSelectedScene);
 		m_editorWorld->SetInputs();
 

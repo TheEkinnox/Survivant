@@ -1,7 +1,7 @@
 ---@class SceneButton : Script
 local SceneButton = {
     scenePath = "",
-    sceneKey = EKey.A
+    sceneKey = EKey.S
 }
 
 local function OnButtonTrigger(self)

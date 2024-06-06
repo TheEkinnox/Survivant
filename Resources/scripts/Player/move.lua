@@ -1,10 +1,9 @@
 ---@class Move : Script
 local Move = {
     mouse_sensitivity = 0.005,
-    max_speed = 3,
-    max_acceleration = 3,
+    max_speed = 5,
+    max_acceleration = 50,
     rotation_speed = Degree.new(90),
-    player_camera = Entity.new(),
     min_x_angle = Degree.new(-85),
     max_x_angle = Degree.new(85)
 }
@@ -14,23 +13,25 @@ local transform
 ---@type Component|Transform
 local camTransform
 local rigidbody
-local last_mouse_pos
+local canMove = true
 
 function Move:OnInit()
 end
 
 function Move:OnStart()
-    last_mouse_pos = Input.mousePos
     transform = self.owner:GetOrCreate(Transform)
     rigidbody = self.owner:GetOrCreate(RigidBody)
-    
-    camTransform = self.player_camera:Get(Transform)
+    camTransform = self.owner:GetInChildren(Camera).owner:Get(Transform)
 
     Input.cursorMode = ECursorMode.DISABLED
 end
 
 function Move:OnDestroy()
     Input.cursorMode = ECursorMode.NORMAL
+end
+
+function Move.ToggleCamMove()
+    canMove = not canMove
 end
 
 local function UpdatePosition(self, deltaTime)
@@ -55,11 +56,15 @@ local function UpdatePosition(self, deltaTime)
     local desiredVelocity = Vector3.zero
     local maxSpeed = math.max(0, self.max_speed)
 
-    if moveInput.magnitudeSquared > 0 and (rigidbody.velocity.magnitudeSquared < (maxSpeed * maxSpeed)) then
-        local moveDir = ((transform.right * moveInput.x) + (transform.back * moveInput.y)).normalized
-        local force = moveDir * self.max_acceleration * rigidbody.mass * deltaTime
-
-        rigidbody.self:AddForce(force, EForceMode.IMPULSE)
+    if moveInput.magnitudeSquared > 0 and canMove then
+        if rigidbody.velocity.magnitudeSquared < (maxSpeed * maxSpeed) then
+            local moveDir = ((transform.right * moveInput.x) + (transform.back * moveInput.y)).normalized
+            local force = moveDir * self.max_acceleration * rigidbody.mass * deltaTime
+    
+            rigidbody.self:AddForce(force, EForceMode.IMPULSE)
+        end
+    else
+        rigidbody.velocity = Vector3.new(0, rigidbody.velocity.y, 0)
     end
 end
 
@@ -68,7 +73,7 @@ local function RotateHorizontal(self, rotateInput, deltaTime)
         return
     end
 
-    if math.abs(rotateInput) > 0 then
+    if canMove and math.abs(rotateInput) > 0 then
         local spin = self.rotation_speed * rotateInput * deltaTime
 
         rigidbody.angularVelocity = Vector3.new(0, spin.rawDegree, 0)
@@ -82,7 +87,7 @@ local function RotateVertical(self, rotateInput, deltaTime)
         return
     end
 
-    if math.abs(rotateInput) > 0 then
+    if canMove and math.abs(rotateInput) > 0 then
         local x, y, z = camTransform.rotation:ToEuler(ERotationOrder.YXZ)
         x = x + self.rotation_speed * rotateInput * deltaTime
         x = Radian.new(math.clamp(x:GetWrappedRadian(true), self.min_x_angle.rawRadian, self.max_x_angle.rawRadian))

@@ -24,6 +24,16 @@ namespace SvEditor::Gizmo
 	public:
 		using Context = std::weak_ptr<SvApp::Core::RenderingContext>;
 
+		enum EGizmoFlag
+		{
+			NONE		= 0,
+			TRANSFORM	= 1 << 0,
+			ORIENTATION = 1 << 1,
+			GRID		= 1 << 2,
+			COLLIDER	= 1 << 3,
+			ALL			= TRANSFORM | ORIENTATION | GRID | COLLIDER
+		};
+
 		SceneGizmos(const Context& p_context);
 		~SceneGizmos() = default;
 
@@ -35,6 +45,8 @@ namespace SvEditor::Gizmo
 		OrientationGizmo	m_orientation;
 		GridGizmo			m_grid;
 		ColliderGizmo		m_collider;
+
+		EGizmoFlag			m_displayed;
 	private:
 		Context				m_context;
 	};

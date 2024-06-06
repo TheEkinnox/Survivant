@@ -8,11 +8,15 @@ local otherCamera
 local holding_switch
 local isSwitchUnlocked
 
+---@type Move
+local playerMove
+
 function SwitchCam:OnInit()
 end
 
 function SwitchCam:OnStart()
-    playerCamera = self.owner:GetOrCreate(Camera)
+    playerCamera = self.owner:GetInChildren(Camera)
+    playerMove = self.owner:GetScript("scripts.Player.move")
     otherCamera = self.otherCamera:GetOrCreate(Camera)
 
     playerCamera.isActive = true
@@ -25,6 +29,8 @@ local function Switch()
     if isSwitchUnlocked then
         playerCamera.isActive = not playerCamera.isActive
         otherCamera.isActive = not otherCamera.isActive
+
+        playerMove.ToggleCamMove()
     end
 end
 

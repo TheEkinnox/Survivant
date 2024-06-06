@@ -14,14 +14,20 @@
 
 using namespace SvApp::Core;
 using namespace LibMath;
+using namespace SvEditor::Gizmo;
 
 namespace SvEditor::Panels
 {
 	ScenePanel::ScenePanel() :
 		m_gizmos(s_world.lock()->m_renderingContext),
-		m_transformType("Transform", { "Translate", "Rotate", "Scale" },
+		m_displayGizmos("Gizmos ", { "TRANSFORM", "ORIENTATION", "GRID", "COLLIDER" }, 
+			PanelMultipleSelection::GetCopyFunc([this]() -> int { return static_cast<int>(m_gizmos.m_displayed); }),
+			[this](int p_val) { m_gizmos.m_displayed = SceneGizmos::EGizmoFlag(p_val); }),
+		m_transformType("   Transform Type ", { "TRANSLATE", "ROTATE", "SCALE" },
 			PanelUniqueSelection::GetRefFunc([]() -> int& { static int val; return val; }),
-			[this](int p_val) { SetGizmoTransformType(p_val); })
+			[this](int p_val) { SetGizmoTransformType(p_val); }),
+		m_gridHeight(   "   Grid Height    ",
+			[this]() -> float& { return m_gizmos.m_grid.m_height; })
 	{
 		m_name = NAME;
 
@@ -125,7 +131,13 @@ namespace SvEditor::Panels
 			ImGuiChildFlags_FrameStyle | ImGuiChildFlags_AutoResizeY, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollWithMouse) &&
 			ImGui::CollapsingHeader("Info", ImGuiTreeNodeFlags_CollapsingHeader))
 		{
-			m_transformType.DisplayAndUpdatePanel();
+			m_displayGizmos.DisplayAndUpdatePanel();
+
+			if (m_gizmos.m_displayed & SceneGizmos::EGizmoFlag::TRANSFORM)
+				m_transformType.DisplayAndUpdatePanel();
+
+			if (m_gizmos.m_displayed & SceneGizmos::EGizmoFlag::GRID)
+				m_gridHeight.DisplayAndUpdatePanel();
 		}
 		ImGui::EndChild();
 	}

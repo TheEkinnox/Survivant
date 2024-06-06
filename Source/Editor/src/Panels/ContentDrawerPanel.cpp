@@ -298,6 +298,7 @@ namespace SvEditor::Panels
         if (s_fileExtensions.at(rr.GetRegisteredTypeName<Scene>()).contains(extension)
             && !(dynamic_cast<Core::EditorEngine*>(SV_ENGINE())->IsPlayInEditor()))
         {
+            reinterpret_cast<SvEditor::Core::EditorUI*>(SV_CURRENT_UI())->SpawnLoadingPanel();
             SV_ENGINE()->ChangeScene(path);
         }
 

@@ -1,50 +1,22 @@
 {
-    "entities": 5,
+    "entities": 2,
     "components": [
         {
-            "type": "Hierarchy",
+            "type": "Tag",
             "data": [
                 {
-                    "owner": 4,
-                    "data": {
-                        "parent": 3
-                    }
-                },
-                {
-                    "owner": 3,
-                    "data": {
-                        "parent": 18446744073709551615
-                    }
-                },
-                {
-                    "owner": 2,
-                    "data": {
-                        "parent": 3
-                    }
-                },
-                {
                     "owner": 1,
-                    "data": {
-                        "parent": 18446744073709551615
-                    }
+                    "data": "bg"
+                },
+                {
+                    "owner": 0,
+                    "data": "cam"
                 }
             ]
         },
         {
             "type": "Model",
             "data": [
-                {
-                    "owner": 4,
-                    "data": {
-                        "model": {
-                            "path": "models/cube.obj"
-                        },
-                        "material": {
-                            "path": "materials/unlitGreen.mat"
-                        },
-                        "layers": 4294967295
-                    }
-                },
                 {
                     "owner": 1,
                     "data": {
@@ -56,87 +28,17 @@
                         },
                         "layers": 4294967295
                     }
-                },
-                {
-                    "owner": 2,
-                    "data": {
-                        "model": {
-                            "path": "models/cube.obj"
-                        },
-                        "material": {
-                            "path": "materials/unlitRed.mat"
-                        },
-                        "layers": 4294967295
-                    }
                 }
             ]
         },
         {
-            "type": "Tag",
+            "type": "Hierarchy",
             "data": [
-                {
-                    "owner": 2,
-                    "data": "quit"
-                },
                 {
                     "owner": 1,
-                    "data": "Quit"
-                },
-                {
-                    "owner": 3,
-                    "data": "Buttons"
-                },
-                {
-                    "owner": 4,
-                    "data": "start"
-                }
-            ]
-        },
-        {
-            "type": "ScriptList",
-            "data": [
-                {
-                    "owner": 0,
-                    "data": []
-                },
-                {
-                    "owner": 4,
-                    "data": [
-                        {
-                            "name": "scripts.Menu.sceneButton",
-                            "data": [
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "scenePath"
-                                    },
-                                    "value": {
-                                        "type": 4,
-                                        "data": "scenes/Level1.scn"
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "sceneKey"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 71.0
-                                    }
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "owner": 2,
-                    "data": [
-                        {
-                            "name": "scripts.Menu.quitButton",
-                            "data": []
-                        }
-                    ]
+                    "data": {
+                        "parent": 18446744073709551615
+                    }
                 }
             ]
         },
@@ -158,30 +60,28 @@
                         "rotation": "{0,0,0,1}",
                         "scale": "{33,1,22}"
                     }
+                }
+            ]
+        },
+        {
+            "type": "ScriptList",
+            "data": [
+                {
+                    "owner": 0,
+                    "data": []
                 },
                 {
-                    "owner": 2,
-                    "data": {
-                        "position": "{0,1,4}",
-                        "rotation": "{0,0,0,1}",
-                        "scale": "{3,1,2}"
-                    }
-                },
-                {
-                    "owner": 4,
-                    "data": {
-                        "position": "{0,1,0}",
-                        "rotation": "{0,0,0,1}",
-                        "scale": "{5,1,2}"
-                    }
-                },
-                {
-                    "owner": 3,
-                    "data": {
-                        "position": "{0,0,0}",
-                        "rotation": "{0,0,0,1}",
-                        "scale": "{1,1,1}"
-                    }
+                    "owner": 1,
+                    "data": [
+                        {
+                            "name": "scripts.Menu.quitButton",
+                            "data": null
+                        },
+                        {
+                            "name": "scripts.Menu.sceneButton",
+                            "data": null
+                        }
+                    ]
                 }
             ]
         },
@@ -195,7 +95,7 @@
                         "active": true,
                         "order": 0,
                         "clear_mask": 7,
-                        "clear_color": "{0,0,0,1}",
+                        "clear_color": "{0.755274,0.325055,0.325055,1}",
                         "culling_mask": 4294967295,
                         "perspective_fov": 90.0,
                         "perspective_near": 0.0010000000474974513,
@@ -211,29 +111,7 @@
             "type": "BoxCollider",
             "data": [
                 {
-                    "owner": 4,
-                    "data": {
-                        "material": {
-                            "path": ""
-                        },
-                        "offset": "{0,0,0}",
-                        "is_trigger": false,
-                        "size": "{1,1,1}"
-                    }
-                },
-                {
                     "owner": 1,
-                    "data": {
-                        "material": {
-                            "path": ""
-                        },
-                        "offset": "{0,0,0}",
-                        "is_trigger": false,
-                        "size": "{1,1,1}"
-                    }
-                },
-                {
-                    "owner": 2,
                     "data": {
                         "material": {
                             "path": ""

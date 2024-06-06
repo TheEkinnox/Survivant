@@ -301,7 +301,7 @@ namespace SvEditor::PanelItems
         if (!m_script)
             return;
 
-        static constexpr ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen;
+        static constexpr ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanAvailWidth/* | ImGuiTreeNodeFlags_DefaultOpen*/;
 
         const bool wasActive = m_isActive;
 

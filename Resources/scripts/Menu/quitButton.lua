@@ -8,7 +8,8 @@ end
 local isHovered = false
 
 function QuitButton:OnUpdate(deltaTime)
-    if isHovered and (Input.IsKeyDown(EKey.ENTER) or Input.IsMouseButtonDown(EMouseButton.LEFT)) then
+    if isHovered and (Input.IsKeyDown(EKey.ENTER) or Input.IsMouseButtonDown(EMouseButton.LEFT)) or
+       Input.IsKeyDown(EKey.Q) then
         OnButtonTrigger(self)
         isHovered = false
     end

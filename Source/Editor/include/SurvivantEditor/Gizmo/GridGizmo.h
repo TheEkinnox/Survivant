@@ -26,5 +26,6 @@ namespace SvEditor::Gizmo
 			const LibMath::Matrix4& p_view, const LibMath::Matrix4& p_proj, 
 			const LibMath::Vector3& p_pos, float p_percent);
 
+		float m_height;
 	};
 }

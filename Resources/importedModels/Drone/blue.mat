@@ -1,0 +1,19 @@
+{
+    "shader": {
+        "path": "shaders/Unlit.glsl"
+    },
+    "properties": [
+        {
+            "name": "u_tint",
+            "type": 7,
+            "value": "{1,1,1,1}"
+        },
+        {
+            "name": "u_diffuse",
+            "type": 10,
+            "value": {
+                "path": "importedModels/Drone/_color_3_.png"
+            }
+        }
+    ]
+}

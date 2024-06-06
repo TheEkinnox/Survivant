@@ -18,7 +18,8 @@ namespace SvEditor::Gizmo
 {
 	SceneGizmos::SceneGizmos(const Context& p_context) :
 		m_context(p_context),
-		m_orientation(Vector2(200, 200))
+		m_orientation(Vector2(200, 200)),
+		m_displayed(EGizmoFlag::ALL)
 	{
 		m_transform.SetEntity(p_context.lock()->s_editorSelectedEntity);
 	}
@@ -47,16 +48,23 @@ namespace SvEditor::Gizmo
 		yaw.wrap(true);
 		yaw = yaw * (yaw < Radian(0.f) ? -1.f : 1.f);
 		float percent = LibMath::sin(yaw);
-		m_grid.Render(*cam, copyCTrans, copyCProj, cTrans->getPosition(), percent);
 
-		m_transform.SetEntity(m_context.lock()->s_editorSelectedEntity);
-		m_transform.Render(copyCTrans, copyCProj);
+		if (m_displayed & EGizmoFlag::GRID)
+			m_grid.Render(*cam, copyCTrans, copyCProj, cTrans->getPosition(), percent);
 
-		m_collider.SetEntity(m_context.lock()->s_editorSelectedEntity);
-		m_collider.Render(copyCTrans, copyCProj, (*cam)->GetViewProjection(), *cTrans);
+		if (m_displayed & EGizmoFlag::TRANSFORM)
+		{
+			m_transform.SetEntity(m_context.lock()->s_editorSelectedEntity);
+			m_transform.Render(copyCTrans, copyCProj);
+		}
 
-		
-		if (!isSmallDisplay)
+		if (m_displayed & EGizmoFlag::COLLIDER)
+		{
+			m_collider.SetEntity(m_context.lock()->s_editorSelectedEntity);
+			m_collider.Render(copyCTrans, copyCProj, (*cam)->GetViewProjection(), *cTrans);
+		}
+
+		if (!isSmallDisplay && m_displayed & EGizmoFlag::ORIENTATION)
 			m_orientation.Render(copyCTrans, copyCProj, p_orientationPos + Vector2(winPos.x, winPos.y));
 	}
 

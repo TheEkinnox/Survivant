@@ -33,7 +33,7 @@ namespace SvEditor::Gizmo
         float mult = LibMath::clamp((LibMath::abs(p_pos.m_y) * HeightMult + p_percent) / 2.f, 0.001f, 1.f);
 
         Matrix4 newView = (p_view.transposed() * translation(
-            (float)((int)p_pos.m_x), 0.f, (float)((int)p_pos.m_z))).transposed();
+            (float)((int)p_pos.m_x), m_height, (float)((int)p_pos.m_z))).transposed();
 
         ImGuizmo::DrawGrid(newView.getArray(), p_proj.getArray(), Mat.getArray(),
             (float)(int)(mult * viewWidth * (aspect > 1.f ? aspect : 1.f / aspect)));

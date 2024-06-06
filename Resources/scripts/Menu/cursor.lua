@@ -7,3 +7,5 @@ function Cursor:OnInit()
 
     rigidBody.isKinematic = true
 end
+
+return Cursor

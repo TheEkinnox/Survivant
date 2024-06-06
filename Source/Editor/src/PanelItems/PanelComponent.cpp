@@ -12,7 +12,7 @@ namespace SvEditor::PanelItems
 
     void PanelComponent::DisplayAndUpdatePanel()
     {
-        static ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen;
+        ImGuiTreeNodeFlags flags = GetPrio() != 0?  ImGuiTreeNodeFlags_DefaultOpen : ImGuiTreeNodeFlags_None;
 
         if (!ImGui::CollapsingHeader(m_name.c_str(), &m_isActive, flags))
             return;

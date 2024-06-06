@@ -1,31 +1,31 @@
 {
-    "entities": 29,
+    "entities": 31,
     "components": [
         {
             "type": "Tag",
             "data": [
                 {
-                    "owner": 20,
-                    "data": "goggle"
+                    "owner": 1,
+                    "data": "Cam"
                 },
                 {
-                    "owner": 9,
+                    "owner": 10,
                     "data": "Spawn"
                 },
                 {
-                    "owner": 5,
+                    "owner": 6,
                     "data": "Base"
                 },
                 {
-                    "owner": 11,
+                    "owner": 12,
                     "data": "Start"
                 },
                 {
-                    "owner": 13,
+                    "owner": 14,
                     "data": "Floor"
                 },
                 {
-                    "owner": 18,
+                    "owner": 19,
                     "data": "End"
                 },
                 {
@@ -45,24 +45,24 @@
                     "data": "Wall2"
                 },
                 {
-                    "owner": 3,
+                    "owner": 4,
                     "data": "Wall3"
                 },
                 {
-                    "owner": 4,
+                    "owner": 5,
                     "data": "WALLS"
                 },
                 {
-                    "owner": 0,
+                    "owner": 2,
                     "data": "player"
                 },
                 {
-                    "owner": 12,
+                    "owner": 13,
                     "data": "end"
                 },
                 {
-                    "owner": 1,
-                    "data": "Cam"
+                    "owner": 29,
+                    "data": "Goggles"
                 }
             ]
         },
@@ -94,7 +94,7 @@
                     }
                 },
                 {
-                    "owner": 3,
+                    "owner": 4,
                     "data": {
                         "model": {
                             "path": "models/cube.obj"
@@ -115,18 +115,6 @@
                             "path": "materials/unlitMagenta.mat"
                         },
                         "layers": 2
-                    }
-                },
-                {
-                    "owner": 6,
-                    "data": {
-                        "model": {
-                            "path": "models/cube.obj"
-                        },
-                        "material": {
-                            "path": "materials/blue.mat"
-                        },
-                        "layers": 4294967295
                     }
                 },
                 {
@@ -160,7 +148,7 @@
                             "path": "models/cube.obj"
                         },
                         "material": {
-                            "path": "materials/white.mat"
+                            "path": "materials/blue.mat"
                         },
                         "layers": 4294967295
                     }
@@ -172,19 +160,19 @@
                             "path": "models/cube.obj"
                         },
                         "material": {
-                            "path": "materials/blue.mat"
+                            "path": "materials/unlitWhite.mat"
                         },
                         "layers": 4294967295
                     }
                 },
                 {
-                    "owner": 12,
+                    "owner": 11,
                     "data": {
                         "model": {
-                            "path": "models/sphere.obj"
+                            "path": "models/cube.obj"
                         },
                         "material": {
-                            "path": "materials/red.mat"
+                            "path": "materials/blue.mat"
                         },
                         "layers": 4294967295
                     }
@@ -193,10 +181,10 @@
                     "owner": 13,
                     "data": {
                         "model": {
-                            "path": "models/cube.obj"
+                            "path": "models/Banana.fbx"
                         },
                         "material": {
-                            "path": "materials/white.mat"
+                            "path": "materials/red.mat"
                         },
                         "layers": 4294967295
                     }
@@ -208,7 +196,7 @@
                             "path": "models/cube.obj"
                         },
                         "material": {
-                            "path": "materials/blue.mat"
+                            "path": "materials/unlitWhite.mat"
                         },
                         "layers": 4294967295
                     }
@@ -250,7 +238,7 @@
                     }
                 },
                 {
-                    "owner": 19,
+                    "owner": 18,
                     "data": {
                         "model": {
                             "path": "models/cube.obj"
@@ -265,12 +253,24 @@
                     "owner": 20,
                     "data": {
                         "model": {
-                            "path": "models/sphere.obj"
+                            "path": "models/cube.obj"
                         },
                         "material": {
-                            "path": "materials/unlitYellow.mat"
+                            "path": "materials/blue.mat"
                         },
                         "layers": 4294967295
+                    }
+                },
+                {
+                    "owner": 28,
+                    "data": {
+                        "model": {
+                            "path": "importedModels/Robot/MR-V01.fbx"
+                        },
+                        "material": {
+                            "path": "importedModels/Robot/blue.mat"
+                        },
+                        "layers": 2
                     }
                 },
                 {
@@ -292,7 +292,7 @@
                             "path": "models/cube.obj"
                         },
                         "material": {
-                            "path": "materials/white.mat"
+                            "path": "materials/unlitWhite.mat"
                         },
                         "layers": 4294967295
                     }
@@ -322,15 +322,15 @@
                     }
                 },
                 {
-                    "owner": 28,
+                    "owner": 29,
                     "data": {
                         "model": {
-                            "path": "models/Sting-Sword-lowpoly.obj"
+                            "path": "importedModels/Drone/Dron DL-3 MODEL RIGING.fbx"
                         },
                         "material": {
-                            "path": "materials/unlitGreen.mat"
+                            "path": "importedModels/Drone/blue.mat"
                         },
-                        "layers": 2
+                        "layers": 4294967295
                     }
                 }
             ]
@@ -340,30 +340,6 @@
             "data": [
                 {
                     "owner": 27,
-                    "data": {
-                        "parent": 4
-                    }
-                },
-                {
-                    "owner": 4,
-                    "data": {
-                        "parent": 18446744073709551615
-                    }
-                },
-                {
-                    "owner": 3,
-                    "data": {
-                        "parent": 4
-                    }
-                },
-                {
-                    "owner": 26,
-                    "data": {
-                        "parent": 4
-                    }
-                },
-                {
-                    "owner": 24,
                     "data": {
                         "parent": 5
                     }
@@ -375,91 +351,115 @@
                     }
                 },
                 {
-                    "owner": 0,
+                    "owner": 4,
                     "data": {
-                        "parent": 18446744073709551615
+                        "parent": 5
+                    }
+                },
+                {
+                    "owner": 26,
+                    "data": {
+                        "parent": 5
+                    }
+                },
+                {
+                    "owner": 24,
+                    "data": {
+                        "parent": 6
                     }
                 },
                 {
                     "owner": 6,
                     "data": {
-                        "parent": 5
+                        "parent": 18446744073709551615
                     }
                 },
                 {
-                    "owner": 7,
-                    "data": {
-                        "parent": 5
-                    }
-                },
-                {
-                    "owner": 8,
-                    "data": {
-                        "parent": 5
-                    }
-                },
-                {
-                    "owner": 9,
-                    "data": {
-                        "parent": 5
-                    }
-                },
-                {
-                    "owner": 10,
-                    "data": {
-                        "parent": 5
-                    }
-                },
-                {
-                    "owner": 25,
-                    "data": {
-                        "parent": 4
-                    }
-                },
-                {
-                    "owner": 11,
+                    "owner": 2,
                     "data": {
                         "parent": 18446744073709551615
                     }
                 },
                 {
-                    "owner": 13,
+                    "owner": 7,
                     "data": {
-                        "parent": 11
+                        "parent": 6
                     }
                 },
                 {
-                    "owner": 14,
+                    "owner": 8,
                     "data": {
-                        "parent": 11
+                        "parent": 6
                     }
                 },
                 {
-                    "owner": 15,
+                    "owner": 9,
                     "data": {
-                        "parent": 11
+                        "parent": 6
                     }
                 },
                 {
-                    "owner": 16,
+                    "owner": 10,
                     "data": {
-                        "parent": 11
+                        "parent": 6
                     }
                 },
                 {
-                    "owner": 17,
+                    "owner": 11,
+                    "data": {
+                        "parent": 6
+                    }
+                },
+                {
+                    "owner": 25,
                     "data": {
                         "parent": 5
                     }
                 },
                 {
-                    "owner": 19,
+                    "owner": 12,
                     "data": {
-                        "parent": 18
+                        "parent": 18446744073709551615
+                    }
+                },
+                {
+                    "owner": 14,
+                    "data": {
+                        "parent": 12
+                    }
+                },
+                {
+                    "owner": 15,
+                    "data": {
+                        "parent": 12
+                    }
+                },
+                {
+                    "owner": 16,
+                    "data": {
+                        "parent": 12
+                    }
+                },
+                {
+                    "owner": 17,
+                    "data": {
+                        "parent": 12
                     }
                 },
                 {
                     "owner": 18,
+                    "data": {
+                        "parent": 6
+                    }
+                },
+                {
+                    "owner": 20,
+                    "data": {
+                        "parent": 19
+                    }
+                },
+                {
+                    "owner": 19,
                     "data": {
                         "parent": 18446744073709551615
                     }
@@ -467,25 +467,37 @@
                 {
                     "owner": 21,
                     "data": {
-                        "parent": 18
+                        "parent": 19
                     }
                 },
                 {
                     "owner": 22,
                     "data": {
-                        "parent": 18
+                        "parent": 19
                     }
                 },
                 {
                     "owner": 23,
                     "data": {
-                        "parent": 18
+                        "parent": 19
                     }
                 },
                 {
                     "owner": 28,
                     "data": {
-                        "parent": 0
+                        "parent": 2
+                    }
+                },
+                {
+                    "owner": 0,
+                    "data": {
+                        "parent": 2
+                    }
+                },
+                {
+                    "owner": 29,
+                    "data": {
+                        "parent": 18446744073709551615
                     }
                 }
             ]
@@ -494,7 +506,7 @@
             "type": "Transform",
             "data": [
                 {
-                    "owner": 4,
+                    "owner": 5,
                     "data": {
                         "position": "{0,0,0}",
                         "rotation": "{0,0,0,1}",
@@ -502,18 +514,18 @@
                     }
                 },
                 {
-                    "owner": 0,
+                    "owner": 2,
                     "data": {
-                        "position": "{0,2,0}",
-                        "rotation": "{0,0,0,1}",
+                        "position": "{-0.0303084,1.5,-1.38167}",
+                        "rotation": "{0,0.0574276,0,0.99835}",
                         "scale": "{1,1,1}"
                     }
                 },
                 {
-                    "owner": 12,
+                    "owner": 13,
                     "data": {
-                        "position": "{0,2,-21}",
-                        "rotation": "{0,0,0,1}",
+                        "position": "{0,1.89258,-21}",
+                        "rotation": "{0.270645,0.653169,-0.270551,0.653394}",
                         "scale": "{0.5,0.5,0.5}"
                     }
                 },
@@ -526,7 +538,7 @@
                     }
                 },
                 {
-                    "owner": 6,
+                    "owner": 7,
                     "data": {
                         "position": "{6.5,1,0}",
                         "rotation": "{0,0,0,1}",
@@ -534,7 +546,7 @@
                     }
                 },
                 {
-                    "owner": 7,
+                    "owner": 8,
                     "data": {
                         "position": "{4,1,9.5}",
                         "rotation": "{0,0,0,1}",
@@ -542,7 +554,7 @@
                     }
                 },
                 {
-                    "owner": 8,
+                    "owner": 9,
                     "data": {
                         "position": "{-6.5,1,0}",
                         "rotation": "{0,0,0,1}",
@@ -550,7 +562,7 @@
                     }
                 },
                 {
-                    "owner": 9,
+                    "owner": 10,
                     "data": {
                         "position": "{0,0,0}",
                         "rotation": "{0,0,0,1}",
@@ -558,7 +570,7 @@
                     }
                 },
                 {
-                    "owner": 10,
+                    "owner": 11,
                     "data": {
                         "position": "{-4,1,-9.5}",
                         "rotation": "{0,0,0,1}",
@@ -566,7 +578,7 @@
                     }
                 },
                 {
-                    "owner": 5,
+                    "owner": 6,
                     "data": {
                         "position": "{0,0,-10.5}",
                         "rotation": "{0,0,0,1}",
@@ -574,15 +586,15 @@
                     }
                 },
                 {
-                    "owner": 20,
+                    "owner": 0,
                     "data": {
-                        "position": "{0,2,-4}",
-                        "rotation": "{0,0,0,1}",
-                        "scale": "{0.5,0.5,0.5}"
+                        "position": "{0,0,0}",
+                        "rotation": "{-0.109734,0,0,0.993961}",
+                        "scale": "{1,1,1}"
                     }
                 },
                 {
-                    "owner": 13,
+                    "owner": 14,
                     "data": {
                         "position": "{0,0,0}",
                         "rotation": "{0,0,0,1}",
@@ -590,7 +602,7 @@
                     }
                 },
                 {
-                    "owner": 14,
+                    "owner": 15,
                     "data": {
                         "position": "{-2,1,1}",
                         "rotation": "{0,0,0,1}",
@@ -598,7 +610,7 @@
                     }
                 },
                 {
-                    "owner": 15,
+                    "owner": 16,
                     "data": {
                         "position": "{0,1,2}",
                         "rotation": "{0,0,0,1}",
@@ -606,7 +618,7 @@
                     }
                 },
                 {
-                    "owner": 16,
+                    "owner": 17,
                     "data": {
                         "position": "{2,1,1}",
                         "rotation": "{0,0,0,1}",
@@ -614,7 +626,7 @@
                     }
                 },
                 {
-                    "owner": 11,
+                    "owner": 12,
                     "data": {
                         "position": "{0,0,0}",
                         "rotation": "{0,0,0,1}",
@@ -622,7 +634,7 @@
                     }
                 },
                 {
-                    "owner": 17,
+                    "owner": 18,
                     "data": {
                         "position": "{-4,1,9.5}",
                         "rotation": "{0,0,0,1}",
@@ -630,7 +642,7 @@
                     }
                 },
                 {
-                    "owner": 19,
+                    "owner": 20,
                     "data": {
                         "position": "{2,1,-1}",
                         "rotation": "{0,0,0,1}",
@@ -638,7 +650,7 @@
                     }
                 },
                 {
-                    "owner": 2,
+                    "owner": 3,
                     "data": {
                         "position": "{0,0,0}",
                         "rotation": "{0,0,0,1}",
@@ -670,7 +682,7 @@
                     }
                 },
                 {
-                    "owner": 18,
+                    "owner": 19,
                     "data": {
                         "position": "{0,0,-21}",
                         "rotation": "{0,0,0,1}",
@@ -710,7 +722,7 @@
                     }
                 },
                 {
-                    "owner": 3,
+                    "owner": 4,
                     "data": {
                         "position": "{3.5,1.5,-14}",
                         "rotation": "{0,0,0,1}",
@@ -720,9 +732,25 @@
                 {
                     "owner": 28,
                     "data": {
+                        "position": "{0.030399,-1.08047,1.51471}",
+                        "rotation": "{2.46941e-08,0.707094,0.707094,-0.353534}",
+                        "scale": "{0.0200015,0.0200014,0.03}"
+                    }
+                },
+                {
+                    "owner": 29,
+                    "data": {
+                        "position": "{-0.0436587,1.6099,-4.71353}",
+                        "rotation": "{-0.500087,-0.499913,-0.499913,0.500087}",
+                        "scale": "{3,3,3}"
+                    }
+                },
+                {
+                    "owner": 30,
+                    "data": {
                         "position": "{0,0,0}",
-                        "rotation": "{0.707107,-0,0,0.707107}",
-                        "scale": "{0.05,0.05,0.05}"
+                        "rotation": "{0,0,0,1}",
+                        "scale": "{1,1,1}"
                     }
                 }
             ]
@@ -731,11 +759,11 @@
             "type": "ScriptList",
             "data": [
                 {
-                    "owner": 2,
+                    "owner": 3,
                     "data": []
                 },
                 {
-                    "owner": 0,
+                    "owner": 2,
                     "data": [
                         {
                             "name": "scripts.Player.jump",
@@ -743,21 +771,21 @@
                                 {
                                     "key": {
                                         "type": 4,
-                                        "data": "ground_steepness"
+                                        "data": "jump_force"
                                     },
                                     "value": {
                                         "type": 3,
-                                        "data": 0.5
+                                        "data": 4.0
                                     }
                                 },
                                 {
                                     "key": {
                                         "type": 4,
-                                        "data": "jump_force"
+                                        "data": "ground_steepness"
                                     },
                                     "value": {
                                         "type": 3,
-                                        "data": 5.0
+                                        "data": 0.45
                                     }
                                 }
                             ]
@@ -772,7 +800,43 @@
                                     },
                                     "value": {
                                         "type": 3,
-                                        "data": 4.0
+                                        "data": 5.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "max_acceleration"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 50.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "max_x_angle"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Degree",
+                                            "data": 85.0
+                                        }
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "rotation_speed"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Degree",
+                                            "data": 90.0
+                                        }
                                     }
                                 },
                                 {
@@ -788,24 +852,14 @@
                                 {
                                     "key": {
                                         "type": 4,
-                                        "data": "rotation_speed"
+                                        "data": "min_x_angle"
                                     },
                                     "value": {
                                         "type": 7,
                                         "data": {
                                             "type": "Degree",
-                                            "data": 300.0
+                                            "data": -85.0
                                         }
-                                    }
-                                },
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "max_acceleration"
-                                    },
-                                    "value": {
-                                        "type": 3,
-                                        "data": 12.0
                                     }
                                 }
                             ]
@@ -822,7 +876,7 @@
                                         "type": 7,
                                         "data": {
                                             "type": "Entity",
-                                            "data": 1
+                                            "data": 18446744073709551615
                                         }
                                     }
                                 }
@@ -831,8 +885,84 @@
                     ]
                 },
                 {
-                    "owner": 20,
+                    "owner": 13,
                     "data": [
+                        {
+                            "name": "scripts.Scenes.switchSceneTrigger",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "scenePath"
+                                    },
+                                    "value": {
+                                        "type": 4,
+                                        "data": ""
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "scripts.Effects.bob",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "speed"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 1.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "direction"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Vector3",
+                                            "data": "{0,1,0}"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "owner": 29,
+                    "data": [
+                        {
+                            "name": "scripts.Effects.bob",
+                            "data": [
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "speed"
+                                    },
+                                    "value": {
+                                        "type": 3,
+                                        "data": 1.0
+                                    }
+                                },
+                                {
+                                    "key": {
+                                        "type": 4,
+                                        "data": "direction"
+                                    },
+                                    "value": {
+                                        "type": 7,
+                                        "data": {
+                                            "type": "Vector3",
+                                            "data": "{0,1,0}"
+                                        }
+                                    }
+                                }
+                            ]
+                        },
                         {
                             "name": "scripts.Scenes.gogglesTrigger",
                             "data": [
@@ -845,28 +975,8 @@
                                         "type": 7,
                                         "data": {
                                             "type": "Entity",
-                                            "data": 0
+                                            "data": 18446744073709551615
                                         }
-                                    }
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "owner": 12,
-                    "data": [
-                        {
-                            "name": "scripts.Scenes.switchSceneTrigger",
-                            "data": [
-                                {
-                                    "key": {
-                                        "type": 4,
-                                        "data": "scenePath"
-                                    },
-                                    "value": {
-                                        "type": 4,
-                                        "data": "scenes/Level2.scn"
                                     }
                                 }
                             ]
@@ -876,10 +986,28 @@
             ]
         },
         {
+            "type": "CapsuleCollider",
+            "data": [
+                {
+                    "owner": 2,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "axis": "{0,1,0}",
+                        "height": 1.0,
+                        "radius": 0.5
+                    }
+                }
+            ]
+        },
+        {
             "type": "SphereCollider",
             "data": [
                 {
-                    "owner": 12,
+                    "owner": 13,
                     "data": {
                         "material": {
                             "path": ""
@@ -887,6 +1015,17 @@
                         "offset": "{0,0,0}",
                         "is_trigger": true,
                         "radius": 1.0
+                    }
+                },
+                {
+                    "owner": 29,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": true,
+                        "radius": 0.15671852231025696
                     }
                 }
             ]
@@ -915,7 +1054,7 @@
                     "owner": 1,
                     "data": {
                         "type": "perspective",
-                        "active": true,
+                        "active": false,
                         "order": 0,
                         "clear_mask": 7,
                         "clear_color": "{0,0,0,1}",
@@ -934,51 +1073,40 @@
             "type": "BoxCollider",
             "data": [
                 {
-                    "owner": 13,
-                    "data": {
-                        "material": {
-                            "path": ""
-                        },
-                        "offset": "{0,0,0}",
-                        "is_trigger": false,
-                        "size": "{1,1,1}"
-                    }
-                },
-                {
-                    "owner": 9,
-                    "data": {
-                        "material": {
-                            "path": ""
-                        },
-                        "offset": "{0,0,0}",
-                        "is_trigger": false,
-                        "size": "{1,1,1}"
-                    }
-                },
-                {
-                    "owner": 0,
-                    "data": {
-                        "material": {
-                            "path": ""
-                        },
-                        "offset": "{0,0,0}",
-                        "is_trigger": false,
-                        "size": "{1,2,1}"
-                    }
-                },
-                {
-                    "owner": 17,
-                    "data": {
-                        "material": {
-                            "path": ""
-                        },
-                        "offset": "{0,0,0}",
-                        "is_trigger": false,
-                        "size": "{1,1,1}"
-                    }
-                },
-                {
                     "owner": 14,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 10,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 22,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 18,
                     "data": {
                         "material": {
                             "path": ""
@@ -1011,29 +1139,7 @@
                     }
                 },
                 {
-                    "owner": 7,
-                    "data": {
-                        "material": {
-                            "path": ""
-                        },
-                        "offset": "{0,0,0}",
-                        "is_trigger": false,
-                        "size": "{1,1,1}"
-                    }
-                },
-                {
-                    "owner": 6,
-                    "data": {
-                        "material": {
-                            "path": ""
-                        },
-                        "offset": "{0,0,0}",
-                        "is_trigger": false,
-                        "size": "{1,1,1}"
-                    }
-                },
-                {
-                    "owner": 25,
+                    "owner": 17,
                     "data": {
                         "material": {
                             "path": ""
@@ -1055,7 +1161,40 @@
                     }
                 },
                 {
-                    "owner": 3,
+                    "owner": 7,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 25,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 9,
+                    "data": {
+                        "material": {
+                            "path": ""
+                        },
+                        "offset": "{0,0,0}",
+                        "is_trigger": false,
+                        "size": "{1,1,1}"
+                    }
+                },
+                {
+                    "owner": 4,
                     "data": {
                         "material": {
                             "path": ""
@@ -1099,7 +1238,7 @@
                     }
                 },
                 {
-                    "owner": 10,
+                    "owner": 11,
                     "data": {
                         "material": {
                             "path": ""
@@ -1121,7 +1260,7 @@
                     }
                 },
                 {
-                    "owner": 19,
+                    "owner": 20,
                     "data": {
                         "material": {
                             "path": ""
@@ -1141,28 +1280,6 @@
                         "is_trigger": false,
                         "size": "{1,1,1}"
                     }
-                },
-                {
-                    "owner": 20,
-                    "data": {
-                        "material": {
-                            "path": ""
-                        },
-                        "offset": "{0,0,0}",
-                        "is_trigger": true,
-                        "size": "{1,1,1}"
-                    }
-                },
-                {
-                    "owner": 22,
-                    "data": {
-                        "material": {
-                            "path": ""
-                        },
-                        "offset": "{0,0,0}",
-                        "is_trigger": false,
-                        "size": "{1,1,1}"
-                    }
                 }
             ]
         },
@@ -1170,7 +1287,7 @@
             "type": "RigidBody",
             "data": [
                 {
-                    "owner": 0,
+                    "owner": 2,
                     "data": {
                         "mass": 1.0,
                         "is_kinematic": false,

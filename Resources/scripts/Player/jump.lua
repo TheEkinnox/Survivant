@@ -1,6 +1,6 @@
 ---@class Jump : Script
 local Jump = {
-    jump_force = 10,
+    jump_force = 4,
     ground_steepness = 0.45
 }
 

@@ -6,6 +6,8 @@
 #include "SurvivantEditor/PanelItems/PanelImage.h"
 #include "SurvivantEditor/PanelItems/PanelButtonList.h"
 #include "SurvivantEditor/PanelItems/PanelUniqueSelection.h"
+#include "SurvivantEditor/PanelItems/PanelMultipleSelection.h"
+#include "SurvivantEditor/PanelItems/PanelFloatInput.h"
 
 #include <SurvivantCore/ECS/EntityHandle.h>
 #include <SurvivantCore/Events/Event.h>
@@ -69,8 +71,10 @@ namespace SvEditor::Panels
 		static inline std::weak_ptr<WorldContext>	s_world;
 
 		PanelButtonList			m_buttons;
-		PanelUniqueSelection	m_transformType;
 		PanelImage				m_image;
+		PanelMultipleSelection	m_displayGizmos;
+		PanelUniqueSelection	m_transformType;
+		PanelFloatInput			m_gridHeight;
 
 		LibMath::Vector2	m_imagePos;
 		LibMath::Vector2	m_imageSize;
