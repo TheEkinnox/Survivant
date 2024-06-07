@@ -31,6 +31,7 @@ namespace SvRuntime
 
     RuntimeApp::~RuntimeApp()
     {
+        m_runEngine.~RuntimeEngine();
         m_window.reset();
     }
 
@@ -57,21 +58,18 @@ namespace SvRuntime
                  .SetCapability(ERenderingCapability::DEPTH_TEST, true)
                  .SetCullFace(ECullFace::BACK);
 
+        InputManager::GetInstance().InitWindow(m_window.get());
+
+        m_runEngine.Init();
 
         SV_EVENT_MANAGER().AddListener<Window::OnFrameBufferSize>([this](int p_width, int p_height)
         {
             m_runEngine.SetViewport({ p_width, p_height });
         });
 
-        InputManager::GetInstance().InitWindow(m_window.get());
-
-        m_window->GetWindow();
-
         Vector2I viewport;
         m_window->GetSize(viewport.m_x, viewport.m_y);
         m_runEngine.SetViewport(viewport);
-
-        m_runEngine.Init();
     }
 
     void RuntimeApp::Run()

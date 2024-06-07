@@ -33,9 +33,8 @@ namespace SvEditor::Core
 		m_editorWorld.reset();
 
 		SvScripting::LuaContext& luaContext = SvScripting::LuaContext::GetInstance();
-		SvCore::Resources::ResourceManager::GetInstance().Clear();
+		ResourceManager::GetInstance().Clear();
 		SvPhysics::PhysicsContext::GetInstance().Reset();
-		SvAudio::AudioContext::GetInstance().Reset();
 
 		if (m_gameInstance)
 		{
@@ -44,6 +43,7 @@ namespace SvEditor::Core
 		}
 
 		luaContext.Reset();
+		SvAudio::AudioContext::GetInstance().Reset();
 	}
 
 	void EditorEngine::Init()

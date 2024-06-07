@@ -17,6 +17,7 @@
 
 using namespace LibMath;
 
+using namespace SvApp;
 using namespace SvApp::Core;
 
 using namespace SvCore::ECS;
@@ -51,11 +52,26 @@ namespace SvRuntime
 
         CHECK(InitializeGameInstance(), "couldnt initialize GameInstance");
 
-        m_world->SetInputs();
-        //m_camera = EntityHandle(m_world->CurrentScene().Get(), m_world->GetFirstCamera());
-
         //start game
         StartGame();
+    }
+
+    RuntimeEngine::~RuntimeEngine()
+    {
+        m_world.reset();
+
+        SvScripting::LuaContext& luaContext = SvScripting::LuaContext::GetInstance();
+        ResourceManager::GetInstance().Clear();
+        SvPhysics::PhysicsContext::GetInstance().Reset();
+
+        if (m_game)
+        {
+            luaContext.Stop();
+            m_game.reset();
+        }
+
+        luaContext.Reset();
+        SvAudio::AudioContext::GetInstance().Reset();
     }
 
     void RuntimeEngine::Update()
@@ -78,7 +94,8 @@ namespace SvRuntime
 
     RuntimeEngine::WorldContextPtr RuntimeEngine::CreateGameWorld()
     {
-        auto world                  = CreateNewWorldContext(WorldContext::EWorldType::EDITOR);
+        auto world                  = CreateNewWorldContext(WorldContext::EWorldType::NONE);
+        world->m_renderingContext = std::make_shared<RenderingContext>(EntityHandle());
         world->m_owningGameInstance = nullptr;
 
         world->m_lightsSSBO = IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, 0);
@@ -116,8 +133,8 @@ namespace SvRuntime
     {
         m_world->m_owningGameInstance = m_game.get();
         m_world->CurrentScene()       = GetStartScene();
+        m_world->m_inputs             = std::make_shared<InputManager::InputBindings>();
 
-        // m_world->SetCamera(m_world->GetFirstCamera()); //dont use cam un rendering context
         m_world->BakeLighting();
         m_world->SetInputs();
 
@@ -151,14 +168,7 @@ namespace SvRuntime
 
     void RuntimeEngine::StartGame()
     {
-        //SvPhysics::PhysicsContext::GetInstance().Reload();
-        //Timer::GetInstance().Refresh();
         SvScripting::LuaContext& luaContext = SvScripting::LuaContext::GetInstance();
-        //luaContext.Reload();
-
-        //ResourceManager& resourceManager = ResourceManager::GetInstance();
-        //resourceManager.ReloadAll<SvScripting::LuaScript>();
-
 
         //init
         m_game->Init(m_world);
@@ -176,17 +186,12 @@ namespace SvRuntime
         Scene* scene = m_world->CurrentScene().Get();
         Renderer::UpdateLightSSBO(scene, *m_world->m_lightsSSBO);
 
-        Renderer::RenderInfo renderInfo{
-            .m_aspect = m_world->m_renderingContext->GetAspect(),
-            .m_scene = scene
-        };
-
-        m_world->m_renderingContext->GetRenderer().Render(renderInfo);
+        m_world->m_renderingContext->Render(scene);
     }
 
     void RuntimeEngine::SetViewport(const Vector2I& p_size)
     {
-        IRenderAPI::GetCurrent().SetViewport({ 0, 0 }, p_size);
+        m_world->m_renderingContext->Resize(p_size);
     }
 
     void RuntimeEngine::BakeLights()

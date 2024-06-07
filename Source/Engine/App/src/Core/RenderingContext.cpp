@@ -31,6 +31,17 @@ namespace SvApp::Core
     {
         IRenderAPI::GetCurrent().SetViewport(PosT::zero(), m_viewport);
 
+        Renderer::RenderInfo renderInfo{
+            .m_aspect = GetAspect(),
+            .m_scene = p_scene
+        };
+
+        if (m_frameBuffers.empty())
+        {
+            m_renderer.Render(renderInfo);
+            return;
+        }
+
         for (size_t i = 0; i < m_frameBuffers.size(); i++)
         {
             if (!p_scene)
@@ -42,11 +53,7 @@ namespace SvApp::Core
             }
             else
             {
-                Renderer::RenderInfo renderInfo{
-                    .m_aspect = static_cast<float>(m_viewport.m_x) / static_cast<float>(m_viewport.m_y),
-                    .m_scene = p_scene,
-                    .m_target = m_frameBuffers[i].get()
-                };
+                renderInfo.m_target = m_frameBuffers[i].get();
 
                 switch (m_renderTypes[i])
                 {
@@ -59,7 +66,9 @@ namespace SvApp::Core
                 case ERenderType::ID:
                     IdRender(renderInfo);
                     break;
+                case ERenderType::DEFAULT:
                 default:
+                    m_renderer.Render(renderInfo);
                     break;
                 }
             }
@@ -268,10 +277,10 @@ namespace SvApp::Core
         std::shared_ptr<IShader> shader = IShader::Create();
 
         bool result = shader->Load(EDITOR_SCENE_SHADER_PATH);
-        ASSERT(result, "Failed to load shader at path \"%s\"", EDITORSCENE_SHADER_PATH);
+        ASSERT(result, "Failed to load shader at path \"%s\"", EDITOR_SCENE_SHADER_PATH);
 
         result &= shader->Init();
-        ASSERT(result, "Failed to initialize shader at path \"%s\"", EDITORSCENE_SHADER_PATH);
+        ASSERT(result, "Failed to initialize shader at path \"%s\"", EDITOR_SCENE_SHADER_PATH);
         (void)result;
 
         return shader;

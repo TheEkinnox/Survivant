@@ -16,7 +16,7 @@ namespace SvRuntime
     {
     public:
         RuntimeEngine()           = default;
-        ~RuntimeEngine() override = default;
+        ~RuntimeEngine() override;
 
         // Inherited via IEngine
         void     Update() override;

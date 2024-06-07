@@ -61,6 +61,7 @@ namespace SvAudio
         if (!m_soLoud)
             return;
 
+        StopAll();
         m_soLoud.reset();
     }
 
