@@ -64,8 +64,13 @@ copy_resources(${TARGET_NAME})
 
 if (${PROJECT_PREFIX}_BUILD_RUNTIME)
 	set(${PROJECT_PREFIX}_RUNTIME_DIR "runtime" CACHE STRING "The editor's pre-compiled runtime binaries target path")
+	option(${PROJECT_PREFIX}_BUILD_RUNTIME_ALL_CONFIGS "Enable to always compile all configurations of the base runtime application with the editor" OFF)
 
-	add_dependencies(${TARGET_NAME} ${RUNTIME_NAME})
+	if(${PROJECT_PREFIX}_BUILD_RUNTIME_ALL_CONFIGS)
+		add_dependencies(${TARGET_NAME} ${RUNTIME_ALL_CONFIGS_NAME})
+	else()
+		add_dependencies(${TARGET_NAME} ${RUNTIME_NAME})
+	endif()
 
 	# Create runtimes symlink
 	get_target_property(RUNTIME_BUILD_PATH ${RUNTIME_NAME} RUNTIME_OUTPUT_DIRECTORY)

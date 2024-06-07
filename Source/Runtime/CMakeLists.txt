@@ -57,4 +57,13 @@ else()
 	target_compile_options(${TARGET_NAME} PRIVATE -Wall -Wextra -Wpedantic -Werror)
 endif()
 
+add_custom_target(${TARGET_NAME}_AllConfigs)
+
+foreach(cfg ${CMAKE_CONFIGURATION_TYPES})
+	add_custom_command(TARGET ${TARGET_NAME}_AllConfigs
+		COMMAND ${CMAKE_COMMAND} --build "${CMAKE_BINARY_DIR}" --config ${cfg} --target ${TARGET_NAME}
+	)
+endforeach()
+
 set(RUNTIME_NAME ${TARGET_NAME} PARENT_SCOPE)
+set(RUNTIME_ALL_CONFIGS_NAME ${TARGET_NAME}_AllConfigs PARENT_SCOPE)

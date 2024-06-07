@@ -9,8 +9,6 @@ option(${PROJECT_PREFIX}_BUILD_TESTS "Enable to compile engine tests" ON)
 option(${PROJECT_PREFIX}_BUILD_EDITOR "Enable to compile engine editor" ON)
 cmake_dependent_option(${PROJECT_PREFIX}_BUILD_RUNTIME "Enable to compile engine base runtime application" ON "NOT ${PROJECT_PREFIX}_BUILD_EDITOR" ON)
 
-set(${PROJECT_PREFIX}_BUILD_RUNTIME ${${PROJECT_PREFIX}_BUILD_RUNTIME} OR ${${PROJECT_PREFIX}_BUILD_EDITOR})
-
 set(CMAKE_FOLDER ${BASE_FOLDER}/Engine)
 add_subdirectory(Engine)
 
