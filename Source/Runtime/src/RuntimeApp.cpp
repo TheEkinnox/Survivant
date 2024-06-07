@@ -47,9 +47,8 @@ namespace SvRuntime
         ResourceManager::GetInstance().AddSearchPath("assets");
 
         const bool result = SetWorkingDirectory(GetApplicationDirectory());
-        (void)result;
-
         ASSERT(result, "Failed to update working directory");
+        (void)result;
 
         m_window = std::make_unique<Window>();
 

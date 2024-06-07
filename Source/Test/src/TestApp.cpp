@@ -68,7 +68,10 @@ namespace SvTest
         SvCore::Debug::Logger::GetInstance().SetFile("debug.log");
         ResourceManager::GetInstance().AddSearchPath("assets");
 
-        ASSERT(SetWorkingDirectory(GetApplicationDirectory()), "Failed to update working directory");
+        const bool result = SetWorkingDirectory(GetApplicationDirectory());
+        ASSERT(result, "Failed to update working directory");
+        (void)result;
+
         SV_LOG("Current working directory: \"%s\"", GetWorkingDirectory().c_str());
 
         m_window = std::make_unique<Window>("Survivant - Test", WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);

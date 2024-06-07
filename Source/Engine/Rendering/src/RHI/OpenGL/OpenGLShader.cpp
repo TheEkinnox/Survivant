@@ -72,7 +72,11 @@ namespace SvRendering::RHI
         : IShader(p_other), m_source(p_other.m_source)
     {
         if (p_other.m_program != 0)
-        ASSERT(ParseSource());
+        {
+            const bool result = ParseSource();
+            ASSERT(result, "Failed to parse OpenGL shader source");
+            (void)result;
+        }
     }
 
     OpenGLShader::OpenGLShader(OpenGLShader&& p_other) noexcept
@@ -94,7 +98,11 @@ namespace SvRendering::RHI
         m_source = p_other.m_source;
 
         if (p_other.m_program != 0)
-        ASSERT(ParseSource());
+        {
+            const bool result = ParseSource();
+            ASSERT(result, "Failed to parse OpenGL shader source");
+            (void)result;
+        }
 
         return *this;
     }

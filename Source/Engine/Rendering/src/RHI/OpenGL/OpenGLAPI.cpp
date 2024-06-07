@@ -396,7 +396,9 @@ namespace SvRendering::RHI
 
     OpenGLAPI& OpenGLAPI::Init(const bool p_enableDebug)
     {
-        ASSERT(gladLoadGL(glfwGetProcAddress), "Failed to initialize GLAD");
+        const int result = gladLoadGL(glfwGetProcAddress);
+        ASSERT(result != 0, "Failed to initialize GLAD");
+        (void)result;
 
         if (p_enableDebug)
         {

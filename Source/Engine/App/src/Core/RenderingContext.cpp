@@ -266,8 +266,13 @@ namespace SvApp::Core
     std::shared_ptr<IShader> RenderingContext::CreateEditorSceneShader()
     {
         std::shared_ptr<IShader> shader = IShader::Create();
-        ASSERT(shader->Load(EDITOR_SCENE_SHADER_PATH), "Failed to load shader at path \"%s\"", EDITORSCENE_SHADER_PATH);
-        ASSERT(shader->Init(), "Failed to initialize shader at path \"%s\"", EDITORSCENE_SHADER_PATH);
+
+        bool result = shader->Load(EDITOR_SCENE_SHADER_PATH);
+        ASSERT(result, "Failed to load shader at path \"%s\"", EDITORSCENE_SHADER_PATH);
+
+        result &= shader->Init();
+        ASSERT(result, "Failed to initialize shader at path \"%s\"", EDITORSCENE_SHADER_PATH);
+        (void)result;
 
         return shader;
     }
