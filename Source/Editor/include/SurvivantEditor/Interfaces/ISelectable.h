@@ -24,7 +24,7 @@ namespace SvEditor::Interfaces
 				if (this->m_priority != p_rhs.m_priority)
 					return this->m_priority > p_rhs.m_priority;
 
-				int val = SvCore::Utility::CompareAlphabeticly(this->m_name, p_rhs.m_name);
+				int val = SvCore::Utility::CompareAlphabetically(this->m_name, p_rhs.m_name);
 
 				if (val == -1)
 					return true;
@@ -44,13 +44,13 @@ namespace SvEditor::Interfaces
 		virtual void				DisplayAndUpdatePopupMenu() = 0;
 		virtual bool				GetSelectedState() = 0;
 
-		void ClearSelection() { 
-			
+		void ClearSelection() {
+
 			auto prevState = GetSelectedState();
-			SetSelectedState(false); 
+			SetSelectedState(false);
 
 			if (prevState)
-				s_onClearSelected.Invoke(); 
+				s_onClearSelected.Invoke();
 		};
 
 		bool ToggleSelection()

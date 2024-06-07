@@ -12,73 +12,83 @@
 
 #include <memory>
 
+using namespace LibMath;
+
+using namespace SvApp;
+
 using namespace SvCore::Resources;
 using namespace SvCore::Utility;
+
 using namespace SvRendering::Enums;
 using namespace SvRendering::RHI;
 
 namespace SvRuntime
 {
-	RuntimeApp::RuntimeApp() :
-		m_gameIsPaused(false)
-	{
-	}
+    RuntimeApp::RuntimeApp()
+        : m_gameIsPaused(false)
+    {
+    }
 
-	RuntimeApp::~RuntimeApp()
-	{
-		m_window.reset();
-	}
+    RuntimeApp::~RuntimeApp()
+    {
+        m_window.reset();
+    }
 
-	void RuntimeApp::Init()
-	{
-		using namespace SvApp;
+    void RuntimeApp::Init()
+    {
+        using namespace SvApp;
 
-		m_gameIsPaused = false;
+        m_gameIsPaused = false;
 
-		//TODO: does this need to be in runtime?
-		SvCore::Debug::Logger::GetInstance().SetFile("debug.log");
-		ResourceManager::GetInstance().AddSearchPath("assets");
+#ifdef _DEBUG
+        SvCore::Debug::Logger::GetInstance().SetFile("debug.log");
+#endif
 
-		ASSERT(SetWorkingDirectory(GetApplicationDirectory()), "Failed to update working directory");
+        ResourceManager::GetInstance().AddSearchPath("assets");
 
-		m_window = std::make_unique<Window>();
+        const bool result = SetWorkingDirectory(GetApplicationDirectory());
+        (void)result;
 
-		IRenderAPI& renderAPI = IRenderAPI::SetCurrent(EGraphicsAPI::OPENGL);
-		renderAPI.Init(true)
-			.SetCapability(ERenderingCapability::DEPTH_TEST, true)
-			.SetCullFace(ECullFace::BACK);
+        ASSERT(result, "Failed to update working directory");
+
+        m_window = std::make_unique<Window>();
+
+        IRenderAPI& renderAPI = IRenderAPI::SetCurrent(EGraphicsAPI::OPENGL);
+        renderAPI.Init(true)
+                 .SetCapability(ERenderingCapability::DEPTH_TEST, true)
+                 .SetCullFace(ECullFace::BACK);
 
 
-		SV_EVENT_MANAGER().AddListener<Window::OnFrameBufferSize>([this](int p_width, int p_height) {
-			m_runEngine.SetViewport({ p_width, p_height }); });
+        SV_EVENT_MANAGER().AddListener<Window::OnFrameBufferSize>([this](int p_width, int p_height)
+        {
+            m_runEngine.SetViewport({ p_width, p_height });
+        });
 
-		SvApp::InputManager::GetInstance().InitWindow(m_window.get());
+        InputManager::GetInstance().InitWindow(m_window.get());
 
-		//LoadAllResources();
-		m_window->GetWindow();
+        m_window->GetWindow();
 
-		TVector2<int> viewport;
-		m_window->GetSize(viewport.m_x, viewport.m_y);
-		m_runEngine.SetViewport(viewport);
+        Vector2I viewport;
+        m_window->GetSize(viewport.m_x, viewport.m_y);
+        m_runEngine.SetViewport(viewport);
 
-		m_runEngine.Init();
-	}
+        m_runEngine.Init();
+    }
 
-	void RuntimeApp::Run()
-	{
-		while (!m_window->ShouldClose() && m_runEngine.IsRunning())
-		{
-			m_runEngine.Update();
-			m_window->Update();
-			SvApp::InputManager::GetInstance().Update();
+    void RuntimeApp::Run()
+    {
+        while (!m_window->ShouldClose() && m_runEngine.IsRunning())
+        {
+            m_runEngine.Update();
+            m_window->Update();
+            InputManager::GetInstance().Update();
 
-			if (!m_gameIsPaused)
-				m_runEngine.UpdateGame();
+            if (!m_gameIsPaused)
+                m_runEngine.UpdateGame();
 
-			m_runEngine.Render();
+            m_runEngine.Render();
 
-			m_window->EndRender();
-		}
-	}
+            m_window->EndRender();
+        }
+    }
 }
-

@@ -1,13 +1,11 @@
-//RuntimeWindow.h
+//EditorWindow.h
 #pragma once
 
 #include "SurvivantApp/Inputs/InputManager.h"
 #include "SurvivantApp/Windows/Window.h"
-#include "SurvivantCore/Events/Event.h"
 #include "SurvivantApp/Core/WorldContext.h"
 #include "SurvivantEditor/Core/EditorUI.h"
 
-#include <unordered_map>
 #include <array>
 
 

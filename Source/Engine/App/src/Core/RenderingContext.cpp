@@ -1,13 +1,13 @@
 //WorldContext.cpp
 #include "SurvivantApp/Core/RenderingContext.h"
 
-#include "SurvivantApp/Core/TempDefaultScene.h"
-
 #include <SurvivantRendering/RHI/IFrameBuffer.h>
 #include <SurvivantRendering/RHI/IRenderAPI.h>
 #include <SurvivantRendering/RHI/ITexture.h>
 
 using namespace LibMath;
+
+using namespace SvCore::ECS;
 
 using namespace SvRendering::RHI;
 using namespace SvRendering::Core;
@@ -17,12 +17,15 @@ using namespace SvRendering::Components;
 namespace SvApp::Core
 {
     RenderingContext::RenderingContext(
-        const MainCamera::Cam& p_cam, const Transform& p_trans):
-        m_mainCamera(p_cam, p_trans)
-    {}
-    RenderingContext::RenderingContext(const SvCore::ECS::EntityHandle p_entity) :
-        m_mainCamera(p_entity)
-    {}
+        const MainCamera::Cam& p_cam, const Transform& p_trans)
+        : m_mainCamera(p_cam, p_trans)
+    {
+    }
+
+    RenderingContext::RenderingContext(const SvCore::ECS::EntityHandle p_entity)
+        : m_mainCamera(p_entity)
+    {
+    }
 
     void RenderingContext::Render(Scene* p_scene)
     {
@@ -47,9 +50,15 @@ namespace SvApp::Core
 
                 switch (m_renderTypes[i])
                 {
-                case ERenderType::GAME:     GameRender(renderInfo);     break;
-                case ERenderType::SCENE:    SceneRender(renderInfo);    break;
-                case ERenderType::ID:       IdRender(renderInfo);       break;
+                case ERenderType::GAME:
+                    GameRender(renderInfo);
+                    break;
+                case ERenderType::SCENE:
+                    SceneRender(renderInfo);
+                    break;
+                case ERenderType::ID:
+                    IdRender(renderInfo);
+                    break;
                 default:
                     break;
                 }
@@ -95,43 +104,12 @@ namespace SvApp::Core
 
         idBuff->Unbind();
 
-        return ToRemove::TextureValueToEntity(val, p_scene);
+        return TextureValueToEntity(val, p_scene);
     }
 
     void RenderingContext::GameRender(Renderer::RenderInfo& p_renderInfo) const
     {
         m_renderer.Render(p_renderInfo);
-    }
-
-    namespace
-    {
-        void OnIdDraw(const Renderer::DrawInfo& p_drawInfo)
-        {
-            IShader& shader = *p_drawInfo.m_renderPass->m_shaderOverride;
-            shader.SetUniformInt("u_entityID", ToRemove::EntityToTextureValue(p_drawInfo.m_entity));
-        }
-
-        const Vector4 g_darkenColor = Vector4(0.3f, 0.3f, 0.3f, 1);
-
-        void OnBeforeSceneDraw(const Renderer::DrawInfo& p_drawInfo)
-        {
-            if (p_drawInfo.m_entity == RenderingContext::s_editorSelectedEntity.GetEntity())
-            {
-                Vector4& colorRef = p_drawInfo.m_material->GetProperty<Vector4>("u_tint");
-                colorRef *= g_darkenColor;
-                p_drawInfo.m_material->Bind();
-            }
-        }
-
-        void OnAfterSceneDraw(const Renderer::DrawInfo& p_drawInfo)
-        {
-            if (p_drawInfo.m_entity == RenderingContext::s_editorSelectedEntity.GetEntity())
-            {
-                Vector4& colorRef = p_drawInfo.m_material->GetProperty<Vector4>("u_tint");
-                colorRef /= g_darkenColor;
-                p_drawInfo.m_material->Bind();
-            }
-        }
     }
 
     void RenderingContext::IdRender(Renderer::RenderInfo& p_renderInfo)
@@ -142,7 +120,7 @@ namespace SvApp::Core
 
         p_renderInfo.m_camera = { cam, transform };
 
-        static auto editorSceneShader     = ToRemove::CreateEditorSceneShader();
+        static auto editorSceneShader     = CreateEditorSceneShader();
         p_renderInfo.m_shaderOverride     = editorSceneShader.get();
         p_renderInfo.m_clearColorOverride = &Color::black;
         p_renderInfo.m_onBeforeDraw       = &OnIdDraw;
@@ -171,9 +149,15 @@ namespace SvApp::Core
     {
         switch (p_type)
         {
-        case ERenderType::GAME:     AddColorRenderPass();     break;
-        case ERenderType::SCENE:    AddColorRenderPass();     break;
-        case ERenderType::ID:       AddIdRenderPass();          break;
+        case ERenderType::GAME:
+            AddColorRenderPass();
+            break;
+        case ERenderType::SCENE:
+            AddColorRenderPass();
+            break;
+        case ERenderType::ID:
+            AddIdRenderPass();
+            break;
         default:
             break;
         }
@@ -223,8 +207,6 @@ namespace SvApp::Core
 
         if (cam)
             cam->SetAspect(GetAspect());
-
-
     }
 
     const Renderer& RenderingContext::GetRenderer() const
@@ -242,13 +224,9 @@ namespace SvApp::Core
 
         color->Bind(0);
 
-        auto& frameBuffer = m_frameBuffers.emplace_back(IFrameBuffer::Create());
+        const auto& frameBuffer = m_frameBuffers.emplace_back(IFrameBuffer::Create());
         frameBuffer->Attach(*color, EFrameBufferAttachment::COLOR);
         frameBuffer->Attach(*depth, EFrameBufferAttachment::DEPTH);
-    }
-
-    void RenderingContext::AddDefaultRenderPass()
-    {
     }
 
     void RenderingContext::AddIdRenderPass()
@@ -262,22 +240,73 @@ namespace SvApp::Core
         id->SetFilters(ETextureFilter::NEAREST, ETextureFilter::NEAREST);
         id->Bind(0);
 
-        auto frameBuffer = m_frameBuffers.emplace_back(IFrameBuffer::Create()).get();
+        const auto frameBuffer = m_frameBuffers.emplace_back(IFrameBuffer::Create()).get();
         frameBuffer->Attach(*id, EFrameBufferAttachment::COLOR);
         frameBuffer->Attach(*depth, EFrameBufferAttachment::DEPTH);
     }
 
-    RenderingContext::TexturePtr RenderingContext::CreateTexture(const ETextureType& p_type)
+    RenderingContext::TexturePtr RenderingContext::CreateTexture(const ETextureType& p_type) const
     {
         switch (p_type)
         {
-        case ETextureType::COLOR:   return ITexture::Create(m_viewport.m_x, m_viewport.m_y, EPixelDataFormat::RGB);
-        case ETextureType::DEPTH:   return ITexture::Create(m_viewport.m_x, m_viewport.m_y,
-                                                            EPixelDataFormat::DEPTH_COMPONENT);
-        case ETextureType::ID:      return ITexture::Create(m_viewport.m_x, m_viewport.m_y,
-                                                            EPixelDataFormat::RED_INT_32, EPixelDataFormat::RED_INT,
-                                                            EPixelDataType::UNSIGNED_INT);
-        default: return nullptr;
+        case ETextureType::COLOR:
+            return ITexture::Create(m_viewport.m_x, m_viewport.m_y, EPixelDataFormat::RGB);
+        case ETextureType::DEPTH:
+            return ITexture::Create(m_viewport.m_x, m_viewport.m_y,
+                EPixelDataFormat::DEPTH_COMPONENT);
+        case ETextureType::ID:
+            return ITexture::Create(m_viewport.m_x, m_viewport.m_y,
+                EPixelDataFormat::RED_INT_32, EPixelDataFormat::RED_INT,
+                EPixelDataType::UNSIGNED_INT);
+        default:
+            return nullptr;
+        }
+    }
+
+    std::shared_ptr<IShader> RenderingContext::CreateEditorSceneShader()
+    {
+        std::shared_ptr<IShader> shader = IShader::Create();
+        ASSERT(shader->Load(EDITOR_SCENE_SHADER_PATH), "Failed to load shader at path \"%s\"", EDITORSCENE_SHADER_PATH);
+        ASSERT(shader->Init(), "Failed to initialize shader at path \"%s\"", EDITORSCENE_SHADER_PATH);
+
+        return shader;
+    }
+
+    int RenderingContext::EntityToTextureValue(const Entity p_entity)
+    {
+        uint32_t index = static_cast<uint32_t>(p_entity.GetIndex());
+        return (*reinterpret_cast<int*>(&index)) + 1;
+    }
+
+    Entity RenderingContext::TextureValueToEntity(const int p_value, Scene* p_scene)
+    {
+        const uint32_t index = (*reinterpret_cast<const uint32_t*>(&p_value)) - 1;
+        return p_scene->Find(static_cast<Entity::Index>(index));
+    }
+
+    void RenderingContext::OnIdDraw(const Renderer::DrawInfo& p_drawInfo)
+    {
+        IShader& shader = *p_drawInfo.m_renderPass->m_shaderOverride;
+        shader.SetUniformInt("u_entityID", EntityToTextureValue(p_drawInfo.m_entity));
+    }
+
+    void RenderingContext::OnBeforeSceneDraw(const Renderer::DrawInfo& p_drawInfo)
+    {
+        if (p_drawInfo.m_entity == s_editorSelectedEntity.GetEntity())
+        {
+            Vector4& colorRef = p_drawInfo.m_material->GetProperty<Vector4>("u_tint");
+            colorRef *= SELECTION_TINT;
+            p_drawInfo.m_material->Bind();
+        }
+    }
+
+    void RenderingContext::OnAfterSceneDraw(const Renderer::DrawInfo& p_drawInfo)
+    {
+        if (p_drawInfo.m_entity == s_editorSelectedEntity.GetEntity())
+        {
+            Vector4& colorRef = p_drawInfo.m_material->GetProperty<Vector4>("u_tint");
+            colorRef /= SELECTION_TINT;
+            p_drawInfo.m_material->Bind();
         }
     }
 }

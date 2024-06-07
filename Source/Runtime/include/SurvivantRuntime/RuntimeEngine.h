@@ -2,61 +2,54 @@
 #pragma once
 
 #include <SurvivantApp/Core/IEngine.h>
-#include <SurvivantApp/Inputs/InputManager.h>
 #include <SurvivantApp/Core/GameInstance.h>
-#include <SurvivantCore/Events/Event.h>
 #include <SurvivantCore/ECS/EntityHandle.h>
 #include <SurvivantCore/Utility/Timer.h>
 
-#include <Transform.h>
-
-#include <array>
 #include <memory>
 
 namespace SvRuntime
 {
-	class EditorWindow;
+    class EditorWindow;
 
-	class RuntimeEngine : public SvApp::Core::IEngine
-	{
-	public:
-		RuntimeEngine() = default;
-		~RuntimeEngine() override = default;
+    class RuntimeEngine : public SvApp::Core::IEngine
+    {
+    public:
+        RuntimeEngine()           = default;
+        ~RuntimeEngine() override = default;
 
-		// Inherited via IEngine
-		void		Update() override;
-		void		Init() override;
-		void		BakeLights() override;
-		SceneRef	GetCurrentScene() const override;
-		void		ChangeScene(const std::string& p_scenePath) override;
-		bool		ChangeCamera(const SvCore::ECS::EntityHandle& p_camera) override;
-		float		GetDeltaTime() override;
+        // Inherited via IEngine
+        void     Update() override;
+        void     Init() override;
+        void     BakeLights() override;
+        SceneRef GetCurrentScene() const override;
+        void     ChangeScene(const std::string& p_scenePath) override;
+        bool     ChangeCamera(const SvCore::ECS::EntityHandle& p_camera) override;
+        float    GetDeltaTime() override;
 
-		bool		IsRunning();
+        bool IsRunning() const;
 
-		//create PIE after press play
-		void DestroyGameInstance();
-		void UpdateGame();
-		void Render() const;
-		void SetViewport(const LibMath::TVector2<int>& p_size);
+        void UpdateGame();
+        void Render() const;
+        void SetViewport(const LibMath::Vector2I& p_size);
 
-	private:
-		bool InitializeGameInstance();
-		bool ChangeSceneInternal();
-		void StartGame();
+    private:
+        bool InitializeGameInstance();
+        bool ChangeSceneInternal();
+        void StartGame();
 
-		using GameInstancePtr = std::unique_ptr<SvApp::Core::GameInstance>;
-		using WorldContextPtr = std::shared_ptr<SvApp::Core::WorldContext>;
+        using GameInstancePtr = std::unique_ptr<SvApp::Core::GameInstance>;
+        using WorldContextPtr = std::shared_ptr<SvApp::Core::WorldContext>;
 
-		WorldContextPtr				CreateGameWorld();
-		GameInstancePtr				CreateGameInstance();
-		SceneRef					GetStartScene();
+        WorldContextPtr CreateGameWorld();
+        GameInstancePtr CreateGameInstance();
+        SceneRef        GetStartScene();
 
-		SvCore::Utility::Timer		m_time;
-		bool						m_isRunning = true;
-		WorldContextPtr				m_world;
-		GameInstancePtr				m_game;
+        SvCore::Utility::Timer m_time;
+        bool                   m_isRunning = true;
+        WorldContextPtr        m_world;
+        GameInstancePtr        m_game;
 
-		std::string						m_scenePath;
-	};
+        std::string m_scenePath;
+    };
 }
