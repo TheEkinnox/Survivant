@@ -114,4 +114,9 @@ namespace SvRendering::Core
     {
         return *this = *this / p_other;
     }
+
+    std::ostream& operator<<(std::ostream& p_stream, const Color& p_color)
+    {
+        return p_stream << "{" << p_color.m_r << ", " << p_color.m_g << ", " << p_color.m_b << ", " << p_color.m_a << "}";
+    }
 }

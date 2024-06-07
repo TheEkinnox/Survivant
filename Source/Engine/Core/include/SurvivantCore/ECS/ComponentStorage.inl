@@ -27,41 +27,22 @@ namespace SvCore::ECS
         if (sourceIt == m_entityToComponent.end())
             return false;
 
-        Set(p_target, m_components[sourceIt->second]);
+        EntityHandle sourceHandle(m_scene, p_source);
+        EntityHandle targetHandle(m_scene, p_target);
+
+        const Entity::Index index = sourceIt->second;
+
+        ComponentT copyResult = ComponentTraits::Copy<ComponentT>(sourceHandle, m_components[index], targetHandle);
+        m_onCopy.Invoke(sourceHandle, m_components[index], targetHandle, copyResult);
+
+        Construct(p_target, std::move(copyResult));
         return true;
     }
 
     template <class T>
-    T& ComponentStorage<T>::Set(const Entity p_owner, const ComponentT& p_instance)
+    T& ComponentStorage<T>::Set(Entity p_owner, ComponentT p_instance)
     {
-        const auto   it = m_entityToComponent.find(p_owner);
-        EntityHandle handle(m_scene, p_owner);
-
-        if (it != m_entityToComponent.end())
-        {
-            ComponentT& component = m_components[it->second];
-
-            ComponentTraits::OnBeforeChange<ComponentT>(handle, component);
-            m_onBeforeChange.Invoke(handle, component);
-
-            component = p_instance;
-
-            ComponentTraits::OnChange<ComponentT>(handle, component);
-            m_onChange.Invoke(handle, component);
-
-            return component;
-        }
-
-        ComponentT&  component = m_components.emplace_back(p_instance);
-        const size_t index     = m_components.size() - 1;
-
-        m_componentToEntity[index]   = p_owner;
-        m_entityToComponent[p_owner] = index;
-
-        ComponentTraits::OnAdd<ComponentT>(handle, component);
-        m_onAdd.Invoke(handle, component);
-
-        return component;
+        return Construct(p_owner, std::move(p_instance));
     }
 
     template <class T>
@@ -71,30 +52,29 @@ namespace SvCore::ECS
         const auto   it = m_entityToComponent.find(p_owner);
         EntityHandle handle(m_scene, p_owner);
 
+        // Re-fetch component between events in case one of them triggers a reallocation
         if (it != m_entityToComponent.end())
         {
-            ComponentT& component = m_components[it->second];
+            const Entity::Index index = it->second;
+            ComponentT          newVal(std::forward<Args>(p_args)...);
 
-            ComponentTraits::OnBeforeChange<ComponentT>(handle, component);
-            m_onBeforeChange.Invoke(handle, component);
+            ComponentTraits::OnBeforeChange<ComponentT>(handle, m_components[index], newVal);
+            m_onBeforeChange.Invoke(handle, m_components[index], newVal);
 
-            component = *new(&component) ComponentT(std::forward<Args>(p_args)...);
-
-            ComponentTraits::OnChange<ComponentT>(handle, component);
-            m_onChange.Invoke(handle, component);
-            return component;
+            ComponentTraits::OnChange<ComponentT>(handle, *new(m_components.data() + index) ComponentT(std::move(newVal)));
+            m_onChange.Invoke(handle, m_components[index]);
+            return m_components[index];
         }
 
-        ComponentT&  component = m_components.emplace_back(std::forward<Args>(p_args)...);
-        const size_t index     = m_components.size() - 1;
+        const Entity::Index index = size();
 
         m_componentToEntity[index]   = p_owner;
         m_entityToComponent[p_owner] = index;
 
-        ComponentTraits::OnAdd<ComponentT>(handle, component);
-        m_onAdd.Invoke(handle, component);
+        ComponentTraits::OnAdd<ComponentT>(handle, m_components.emplace_back(std::forward<Args>(p_args)...));
+        m_onAdd.Invoke(handle, m_components[index]);
 
-        return component;
+        return m_components[index];
     }
 
     template <class T>
@@ -111,7 +91,7 @@ namespace SvCore::ECS
         ComponentTraits::OnRemove<ComponentT>(handle, component);
         m_onRemove.Invoke(handle, component);
 
-        const size_t lastIndex = m_components.size() - 1;
+        const Entity::Index lastIndex = size() - 1;
 
         m_componentToEntity[it->second] = m_componentToEntity[lastIndex];
         std::swap(component, m_components[lastIndex]);
@@ -131,9 +111,9 @@ namespace SvCore::ECS
     template <class T>
     void ComponentStorage<T>::Clear()
     {
-        for (size_t i = m_components.size(); i > 0; --i)
+        for (Entity::Index i = size(); i > 0; --i)
         {
-            if (i > m_components.size())
+            if (i > size())
                 continue;
 
             EntityHandle handle(m_scene, m_componentToEntity[i - 1]);
@@ -153,15 +133,40 @@ namespace SvCore::ECS
     }
 
     template <class T>
-    void ComponentStorage<T>::Reserve(const Entity::Id p_count)
+    void ComponentStorage<T>::Reserve(const Entity::Index p_count)
     {
         m_components.reserve(p_count);
     }
 
     template <class T>
-    Entity::Id ComponentStorage<T>::size() const
+    void ComponentStorage<T>::Sort()
     {
-        return static_cast<Entity::Id>(m_components.size());
+        std::vector<ComponentT> components;
+
+        components.reserve(size());
+
+        Entity::Index index = 0;
+        for (const Entity& entity : m_scene->GetStorage<Entity>())
+        {
+            const auto it = m_entityToComponent.find(entity);
+
+            if (it == m_entityToComponent.end())
+                continue;
+
+            components.emplace_back(std::move(m_components[it->second]));
+
+            m_componentToEntity[index] = entity;
+            it->second                 = index;
+            ++index;
+        }
+
+        m_components = std::move(components);
+    }
+
+    template <class T>
+    Entity::Index ComponentStorage<T>::size() const
+    {
+        return static_cast<Entity::Index>(m_components.size());
     }
 
     template <class T>
@@ -206,9 +211,9 @@ namespace SvCore::ECS
     template <class T>
     Entity ComponentStorage<T>::GetOwner(const T& p_component) const
     {
-        size_t index = 0;
+        Entity::Index index = 0;
 
-        while (index < m_components.size())
+        while (index < size())
         {
             if (&m_components[index] == &p_component)
                 break;
@@ -299,7 +304,7 @@ namespace SvCore::ECS
             if (!ComponentRegistry::FromJson(component, it->value, m_scene))
                 return false;
 
-            Set(owner, component);
+            Construct(owner, std::move(component));
         }
 
         return true;

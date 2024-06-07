@@ -1,4 +1,4 @@
-//EditorWindow.cpp
+//RuntimeWindow.cpp
 
 #include "SurvivantCore/Events/EventManager.h"
 #include "SurvivantEditor/Core/EditorWindow.h"
@@ -15,7 +15,7 @@ namespace SvEditor::Core
 	{
 		m_shouldClose = 0;
 
-		SvCore::Events::EventManager::GetInstance().AddListenner<SvApp::Window::WindowClosing>(([this]() { m_shouldClose = true; }));
+		SvCore::Events::EventManager::GetInstance().AddListener<SvApp::Window::WindowClosing>(([this]() { m_shouldClose = true; }));
 
 		m_ui = std::make_unique<EditorUI>();
 		m_ui->InitWindow(this);
@@ -25,11 +25,6 @@ namespace SvEditor::Core
 	{
 		SvApp::Window::Update();
 		m_ui->StartFrameUpdate();
-	}
-
-	void EditorWindow::RenderUI()
-	{
-		m_ui->RenderPanels();
 	}
 
 	void EditorWindow::EndRender()
@@ -57,6 +52,13 @@ namespace SvEditor::Core
 	EditorUI& Core::EditorWindow::GetUI()
 	{
 		return *m_ui;
+	}
+
+	void EditorWindow::RenderLogo()
+	{
+		SvApp::Window::Update();
+		m_ui->RenderLogo();
+		SvApp::Window::EndRender();
 	}
 }
 

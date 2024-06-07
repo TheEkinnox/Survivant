@@ -10,18 +10,17 @@
 
 namespace SvEditor::PanelItems
 {
-	PanelImage::PanelImage(intptr_t p_textureId, const LibMath::Vector2& p_size) :
+	PanelImage::PanelImage(void* p_textureId, const LibMath::Vector2& p_size) :
 		m_textureId(p_textureId),
 		m_size(p_size)
-	{
-	}
+	{}
 
 	void PanelImage::DisplayAndUpdatePanel()
 	{
 		ImGui::Image(
-			(void*)m_textureId,
+			m_textureId,
 			m_size == LibMath::Vector2::zero() ? ImGui::GetContentRegionAvail() : ImVec2(m_size[0], m_size[2]),
-			ImVec2(0, 1), 
+			ImVec2(0, 1),
 			ImVec2(1, 0));
 	}
 
@@ -30,7 +29,7 @@ namespace SvEditor::PanelItems
 		m_size = p_size;
 	}
 
-	void PanelItems::PanelImage::SetTexture(intptr_t p_textureId)
+	void PanelItems::PanelImage::SetTexture(void* p_textureId)
 	{
 		m_textureId = p_textureId;
 	}

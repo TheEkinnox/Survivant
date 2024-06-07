@@ -1,21 +1,23 @@
 //InputManager.h
 
 #pragma once
-#include "KeyboardInputs.h"
-#include "MouseInputs.h"
-#include "InputType.h"
+#include "SurvivantApp/Inputs/InputType.h"
+#include "SurvivantApp/Inputs/KeyboardInputs.h"
+#include "SurvivantApp/Inputs/MouseInputs.h"
+#include "SurvivantApp/Windows/ECursorMode.h"
 
-#include "SurvivantCore/Events/Event.h"
-#include "SurvivantCore/Events/EventManager.h"
+#include <SurvivantCore/Events/Event.h>
+#include <SurvivantCore/Events/EventManager.h>
+
+#include <Vector/Vector2.h>
 
 #include <memory>
-#include <tuple>
 #include <string>
-
+#include <tuple>
 
 namespace SvApp
 {
-	//foward declaration
+	//forward declaration
 	class Window;
 
 	class InputManager
@@ -36,7 +38,8 @@ namespace SvApp
 			std::unordered_map<MouseKeyType, MouseCallback>		m_mouseKeyCallbacks;
 		};
 
-		InputManager() {}
+		InputManager() = default;
+		~InputManager() = default;
 		InputManager(InputManager const&) = delete;
 		void operator=(InputManager const&) = delete;
 
@@ -65,7 +68,13 @@ namespace SvApp
 		template<class Event, typename ...Args>
 		MouseCallback CreateInputEventBinding(const MouseKeyType& p_type, std::tuple<Args...>(*p_translate)(float, float));
 
-		void GetMousePos(double& p_x, double& p_y);
+		void GetMousePos(double& p_x, double& p_y) const;
+		void SetMousePos(double p_x, double p_y);
+
+		LibMath::Vector2D GetMouseDelta() const;
+
+		ECursorMode GetCursorMode() const;
+		void SetCursorMode(ECursorMode p_mode);
 
 		bool EvaluateInput(const KeyboardKeyType& p_key);
 		bool EvaluateInput(const MouseKeyType& p_key);
@@ -78,18 +87,22 @@ namespace SvApp
 		std::vector<std::function<void()>>	m_updateCallbacks;
 
 		SvApp::Window* m_window = nullptr;
+
+	private:
+		LibMath::Vector2D m_lastMousePos;
+		LibMath::Vector2D m_mouseDelta;
+		bool m_resetDelta = true;
 	};
 
 	template<class T, typename ...Args>
 	InputManager::KeyCallback InputManager::CreateInputEventBinding(const KeyboardKeyType& /*p_type*/, std::tuple<Args...>(*p_translate)(KeyCallbackParam))
 	{
-		if constexpr (!std::is_base_of_v<SvCore::Events::Event<Args...>, T> && !std::is_same_v<SvCore::Events::Event<Args...>, T>)
-			return;
+		static_assert(std::is_base_of_v<SvCore::Events::Event<Args...>, T> || std::is_same_v<SvCore::Events::Event<Args...>, T>);
 
 		//needs to capture a copy of translate ptr
-		KeyCallback callback = 
+		KeyCallback callback =
 			[p_translate](KeyCallbackParam p_1)
-			{ 
+			{
 				SvCore::Events::EventManager::GetInstance().Invoke<T>(p_translate(p_1));
 			};
 
@@ -99,8 +112,7 @@ namespace SvApp
 	template<class T, typename ...Args>
 	InputManager::MouseCallback InputManager::CreateInputEventBinding(const MouseKeyType& /*p_type*/, std::tuple<Args...>(*p_translate)(float, float))
 	{
-		if constexpr (!std::is_base_of_v<SvCore::Events::Event<Args...>, T> && !std::is_same_v<SvCore::Events::Event<Args...>, T>)
-			return;
+		static_assert(std::is_base_of_v<SvCore::Events::Event<Args...>, T> || std::is_same_v<SvCore::Events::Event<Args...>, T>);
 
 		//needs to capture a copy of translate ptr
 		MouseCallback callback =

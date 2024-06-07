@@ -18,18 +18,19 @@ namespace SvEditor::PanelItems
 	class PanelTreeBranch : public ISelectable
 	{
 	public:
+		using ValueT = T;
 		using BranchCallback = std::function<bool(PanelTreeBranch&)>;
 		using PriorityFunc = std::function<size_t(const PanelTreeBranch&)>;
-		using Childreen = std::map<ISelectable::SelectablePrioKey, std::shared_ptr<PanelTreeBranch>>;
-		
+		using Children = std::map<ISelectable::SelectablePrioKey, std::shared_ptr<PanelTreeBranch>>;
+
 		PanelTreeBranch(
 			const std::string& p_name,
 			bool p_hideLeafs = true,
 			const T& p_value = T());
 
 		PanelTreeBranch(
-			const std::string& p_name, 
-			const Childreen& p_branches, 
+			const std::string& p_name,
+			const Children& p_branches,
 			bool p_hideLeafs = true,
 			const T& p_value = T());
 		~PanelTreeBranch();
@@ -46,27 +47,29 @@ namespace SvEditor::PanelItems
 		bool				GetSelectedState() override;
 
 		bool				IsBranch()const;
-		const Childreen&	GetChildreen()const;
+		const Children&		GetChildren()const;
 		PanelTreeBranch*	GetParent()const;
-		std::string			GetPathName()const;
+		std::string			GetPath()const;
+		void				SetName(const std::string& p_name);
 		const T&			SetValue(const T& p_value)const;
 		const T&			GetValue()const;
 
-		Childreen&	SetBranches(const Childreen& p_branches);
-		Childreen&	SetBranches(
-			const std::vector<std::shared_ptr<PanelTreeBranch>>& p_branches = 
+		Children&	SetBranches(const Children& p_branches);
+		Children&	SetBranches(
+			const std::vector<std::shared_ptr<PanelTreeBranch>>& p_branches =
 			std::vector<std::shared_ptr<PanelTreeBranch>>());
-		void		AddBranch(const std::shared_ptr<PanelTreeBranch>& p_branch, size_t p_prio);
-		void		AddBranch(const std::shared_ptr<PanelTreeBranch>& p_branch, const PriorityFunc& p_prioFunc = nullptr);
-		void		RemoveBranch(const std::string& p_name);
-		void		ForceOpenParents(bool p_openSelf = false);
-		void		ForceCloseChildreen(bool p_closeSelf = false);
-		void		ForceOpenAll();
+		void			AddBranch(const std::shared_ptr<PanelTreeBranch>& p_branch, size_t p_prio);
+		void			AddBranch(const std::shared_ptr<PanelTreeBranch>& p_branch, const PriorityFunc& p_prioFunc = nullptr);
+		void			RemoveBranch(const std::string& p_name);
+		void			DeleteBranch(std::set<T>* p_deletedElements = nullptr);
+		void			ForceOpenParents(bool p_openSelf = false);
+		void			ForceCloseChildren(bool p_closeSelf = false);
+		void			ForceOpenAll();
 
 		void			SetAllPriority(const PriorityFunc& p_prioFunc);
 		//void			NoPriority(const PriorityFunc& p_prioFunc);
 
-		static size_t	HasChildreenPriority(const PanelTreeBranch& p_branch);
+		static size_t	HasChildrenPriority(const PanelTreeBranch& p_branch);
 
 		static inline BranchCallback s_branchesOnSelect = nullptr;
 		static inline BranchCallback s_leavesOnSelect = nullptr;
@@ -80,7 +83,6 @@ namespace SvEditor::PanelItems
 		// Inherited via ISelectable
 		void				SetSelectedState(bool p_isSelected)override;
 
-
 		enum class EForceState
 		{
 			NOTHING,
@@ -91,7 +93,7 @@ namespace SvEditor::PanelItems
 		bool					m_hideLeafs;
 		std::string				m_name;
 		PanelTreeBranch*		m_parent;
-		Childreen				m_childreen;
+		Children				m_children;
 		T						m_value;
 		EForceState				m_forceState;
 		MenuItems::PopupMenu	m_popup;

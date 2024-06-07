@@ -11,25 +11,27 @@ namespace SvApp::Core
 	class GameInstance
 	{
 	public:
-		friend Engine;
+		friend IEngine;
 
 		class InitEvent : public SvCore::Events::Event<> {};
 
-		GameInstance(std::weak_ptr<WorldContext> p_worldContext);
+		GameInstance() = default;
 		~GameInstance() = default;
 
-		void Init();
+		void Init(const std::weak_ptr<WorldContext>& p_worldContext);
 		void Start();
-		void Update();
+		void UpdateScripts();
+		void UpdatePhysics();
 
-		//TODO: move to editor Engine
+
+		void BakeLights();
+
+		//TODO: move to editor IEngine
 		void InitializeStandalone();
 
 	
 	private:
-		Engine* GetEngine();
-
-		void UpdatePhysics() {}
+		IEngine* GetEngine();
 
 		std::weak_ptr<WorldContext> m_worldContext;
 	};

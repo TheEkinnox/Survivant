@@ -9,10 +9,11 @@ namespace SvEditor::PanelItems
 	SvEditor::PanelItems::PanelResourceDisplay::PanelResourceDisplay(
 		const SvCore::Resources::GenericResourceRef& p_resource,
 		const std::string& p_icon,
-		const Items& p_items) : 
+		const Items& p_items) :
 		m_resource(p_resource),
 		m_icon(p_icon),
-		m_items(p_items)
+		m_items(p_items),
+		m_dirty(false)
 	{
 		m_name = m_resource.GetType();
 	}
@@ -23,7 +24,12 @@ namespace SvEditor::PanelItems
 		ImGui::Separator();
 
 		for (auto& item : m_items)
-			item->DisplayAndUpdatePanel();
+		{
+			if (!m_dirty)
+				item->DisplayAndUpdatePanel();
+		}
+
+		m_dirty = false;
 	}
 
 	const std::string& PanelResourceDisplay::GetIcon()
@@ -34,6 +40,13 @@ namespace SvEditor::PanelItems
 	const std::string& PanelResourceDisplay::GetName()
 	{
 		return m_name;
+	}
+
+	void PanelResourceDisplay::SetItems(const Items& p_items, size_t p_keep)
+	{
+		m_items.resize(p_keep);
+		m_items.insert(m_items.end(), p_items.begin(), p_items.end());
+		m_dirty = true;
 	}
 }
 

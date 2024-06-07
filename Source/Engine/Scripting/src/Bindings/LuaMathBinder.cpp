@@ -48,28 +48,36 @@ namespace SvScripting::Bindings
             &LibMath::clamp<double>,
             &LibMath::clamp<Vector2>,
             &LibMath::clamp<Vector3>,
-            &LibMath::clamp<Vector4>
+            &LibMath::clamp<Vector4>,
+            &LibMath::clamp<Degree>,
+            &LibMath::clamp<Radian>
         ));
 
         math.set_function("snap", sol::overload(
             &LibMath::snap<double>,
             &LibMath::snap<Vector2>,
             &LibMath::snap<Vector3>,
-            &LibMath::snap<Vector4>
+            &LibMath::snap<Vector4>,
+            &LibMath::snap<Degree>,
+            &LibMath::snap<Radian>
         ));
 
         math.set_function("min", sol::overload(
             &LibMath::min<double>,
             &LibMath::min<Vector2>,
             &LibMath::min<Vector3>,
-            &LibMath::min<Vector4>
+            &LibMath::min<Vector4>,
+            &LibMath::min<Degree>,
+            &LibMath::min<Radian>
         ));
 
         math.set_function("max", sol::overload(
             &LibMath::max<double>,
             &LibMath::max<Vector2>,
             &LibMath::max<Vector3>,
-            &LibMath::max<Vector4>
+            &LibMath::max<Vector4>,
+            &LibMath::max<Degree>,
+            &LibMath::max<Radian>
         ));
 
         math.set_function("wrap", &LibMath::wrap<double>);
@@ -79,7 +87,9 @@ namespace SvScripting::Bindings
             &LibMath::isInRange<double>,
             &LibMath::isInRange<Vector2>,
             &LibMath::isInRange<Vector3>,
-            &LibMath::isInRange<Vector4>
+            &LibMath::isInRange<Vector4>,
+            &LibMath::isInRange<Degree>,
+            &LibMath::isInRange<Radian>
         ));
 
         math.set_function("isNear",
@@ -95,7 +105,9 @@ namespace SvScripting::Bindings
             &LibMath::lerp<Vector2, float>,
             &LibMath::lerp<Vector3, float>,
             &LibMath::lerp<Vector4, float>,
-            &LibMath::lerp<Quaternion, float>
+            &LibMath::lerp<Quaternion, float>,
+            &LibMath::lerp<Degree, float>,
+            &LibMath::lerp<Radian, float>
         ));
 
         math.set_function("slerp", sol::overload(

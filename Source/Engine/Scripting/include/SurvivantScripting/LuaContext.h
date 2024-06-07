@@ -20,6 +20,8 @@ namespace SvScripting
     class LuaContext
     {
     public:
+        using Binder = void(*)(sol::state& p_state);
+
         /**
          * \brief Creates a lua context
          */
@@ -159,18 +161,31 @@ namespace SvScripting
         /**
          * \brief Gets the given module's path
          * \param p_module The target module
+         * \param p_fromGetName Whether the function was called from GetModuleName
          * \return The module's path
          */
-        static const std::string& GetModulePath(std::string p_module);
+        static std::string GetModulePath(std::string p_module, bool p_fromGetName = false);
+
+        /**
+         * \brief Registers the given user type binder function
+         * \param p_binder The binder function to register, or default binders
+         */
+        static void SetUserTypeBinders(Binder p_binder = &LuaContext::DefaultUserTypeBindings);
 
     private:
+        using ListenerId = SvCore::Events::Event<>::ListenerId;
+
         static constexpr const char* EXTENSIONS[] = { ".lua", ".lc" };
 
         inline static std::unordered_map<std::string, std::string> s_moduleNames;
         inline static std::unordered_map<std::string, std::string> s_modulePaths;
+        inline static Binder                                       s_userTypeBinders;
 
         std::unique_ptr<sol::state>  m_state;
         std::vector<LuaScriptHandle> m_scripts;
+
+        ListenerId m_collisionListenerId;
+        ListenerId m_triggerListenerId;
 
         bool m_isValid, m_hasStarted;
 
@@ -182,10 +197,20 @@ namespace SvScripting
         static int LoadModule(lua_State* p_luaState);
 
         /**
-         * \brief Binds the necessary custom types
+         * \brief Binds the known default user types to the given lua state
          * \param p_luaState The lua state to bind to
          */
-        static void BindUserTypes(sol::state& p_luaState);
+        static void DefaultUserTypeBindings(sol::state& p_luaState);
+
+        /**
+         * \brief Subscribes the lua context to the physics context's events
+         */
+        void LinkPhysicsEvents();
+
+        /**
+         * \brief Unsubscribes the lua context from the physics context's events
+         */
+        void UnlinkPhysicsEvents();
     };
 }
 

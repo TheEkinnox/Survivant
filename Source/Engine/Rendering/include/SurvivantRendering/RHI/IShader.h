@@ -56,7 +56,7 @@ namespace SvRendering::RHI
          */
         IShader& operator=(IShader&& p_other) noexcept = default;
 
-        bool Save(const std::string&) override
+        bool Save(const std::string&, const bool) override
         {
             return true;
         }

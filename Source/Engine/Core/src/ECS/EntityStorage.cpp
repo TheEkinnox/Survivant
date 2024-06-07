@@ -55,6 +55,14 @@ namespace SvCore::ECS
 
     void EntityStorage::Clear()
     {
+        for (size_t i = m_count; i > 0; --i)
+        {
+            if (i > m_count)
+                continue;
+
+            m_onRemove.Invoke({ m_scene, m_entities[i - 1]});
+        }
+
         m_entities.clear();
         m_count = 0;
     }

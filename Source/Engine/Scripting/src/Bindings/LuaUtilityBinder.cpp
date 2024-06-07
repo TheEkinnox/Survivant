@@ -1,12 +1,17 @@
 #include "SurvivantScripting/Bindings/LuaUtilityBinder.h"
 
+#include <SurvivantApp/Core/IEngine.h>
+
 #include <SurvivantCore/Debug/Logger.h>
 #include <SurvivantCore/Utility/Timer.h>
 
 #include <sol/state.hpp>
 
+using namespace SvApp::Core;
+
 using namespace SvCore::Debug;
 using namespace SvCore::Utility;
+using namespace SvCore::Resources;
 
 namespace SvScripting::Bindings
 {
@@ -14,6 +19,7 @@ namespace SvScripting::Bindings
     {
         BindLogger(p_luaState);
         BindTimer(p_luaState);
+        BindApplication(p_luaState);
     }
 
     void LuaUtilityBinder::BindLogger(sol::state& p_luaState)
@@ -23,25 +29,49 @@ namespace SvScripting::Bindings
         sol::usertype logType = p_luaState.new_usertype<Logger>(
             typeName,
             sol::meta_function::construct, sol::no_constructor,
-            "Log", [&p_luaState](const sol::object& p_object)
-            {
-                Logger::GetInstance().Print("%s\n", ELogType::DEBUG_LOG, p_luaState["tostring"](p_object).get<const char*>());
-            },
-            "LogWarning", [&p_luaState](const sol::object& p_object)
-            {
-                Logger::GetInstance().Print("%s\n", ELogType::WARNING_LOG, p_luaState["tostring"](p_object).get<const char*>());
-            },
-            "LogError", [&p_luaState](const sol::object& p_object)
-            {
-                Logger::GetInstance().Print("%s\n", ELogType::ERROR_LOG, p_luaState["tostring"](p_object).get<const char*>());
-            }
+            "Log", sol::overload(
+                [&p_luaState](const sol::object& p_object)
+                {
+                    Logger::GetInstance().Print("%s\n", ELogType::DEBUG_LOG, p_luaState["tostring"](p_object).get<const char*>());
+                },
+                [](const std::string& p_message)
+                {
+                    Logger::GetInstance().Print("%s\n", ELogType::DEBUG_LOG, p_message.c_str());
+                }
+            ),
+            "LogWarning", sol::overload(
+                [&p_luaState](const sol::object& p_object)
+                {
+                    Logger::GetInstance().Print("%s\n", ELogType::WARNING_LOG, p_luaState["tostring"](p_object).get<const char*>());
+                },
+                [](const std::string& p_message)
+                {
+                    Logger::GetInstance().Print("%s\n", ELogType::WARNING_LOG, p_message.c_str());
+                }
+            ),
+            "LogError", sol::overload(
+                [&p_luaState](const sol::object& p_object)
+                {
+                    Logger::GetInstance().Print("%s\n", ELogType::ERROR_LOG, p_luaState["tostring"](p_object).get<const char*>());
+                },
+                [](const std::string& p_message)
+                {
+                    Logger::GetInstance().Print("%s\n", ELogType::ERROR_LOG, p_message.c_str());
+                }
+            )
         );
 
         p_luaState.globals().set_function("print",
-            [&p_luaState](const sol::object& p_object)
-            {
-                Logger::GetInstance().Print("%s\n", ELogType::DEFAULT_LOG, p_luaState["tostring"](p_object).get<const char*>());
-            }
+            sol::overload(
+                [&p_luaState](const sol::object& p_object)
+                {
+                    Logger::GetInstance().Print("%s\n", ELogType::DEFAULT_LOG, p_luaState["tostring"](p_object).get<const char*>());
+                },
+                [](const std::string& p_message)
+                {
+                    Logger::GetInstance().Print("%s\n", ELogType::DEFAULT_LOG, p_message.c_str());
+                }
+            )
         );
     }
 
@@ -61,5 +91,35 @@ namespace SvScripting::Bindings
         );
 
         p_luaState[typeName] = &Timer::GetInstance();
+    }
+
+    void LuaUtilityBinder::BindApplication(sol::state& p_luaState)
+    {
+        static constexpr const char* typeName = "Application";
+
+        static const auto setCurrentScene = [](IEngine& p_self, const GenericResourceRef& p_sceneRef)
+        {
+            ASSERT(p_sceneRef.GetType() == ResourceRegistry::GetInstance().GetRegisteredTypeName<Scene>());
+            p_self.ChangeScene(p_sceneRef.GetPath());
+        };
+
+        sol::usertype logType = p_luaState.new_usertype<IEngine>(
+            typeName,
+            sol::meta_function::construct, sol::no_constructor,
+            "currentScene", sol::property(
+                [](const IEngine& p_self) -> GenericResourceRef
+                {
+                    return p_self.GetCurrentScene();
+                },
+                setCurrentScene
+            ),
+            "ChangeScene", sol::overload(
+                &IEngine::ChangeScene,
+                setCurrentScene
+            )
+        );
+
+        ASSERT(SV_ENGINE(), "Attempted to bind engine functions for uninitialized engine");
+        p_luaState[typeName] = SV_ENGINE();
     }
 }

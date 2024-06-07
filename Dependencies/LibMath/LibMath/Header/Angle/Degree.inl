@@ -189,6 +189,12 @@ namespace LibMath
     {
         return Degree(static_cast<float>(angle));
     }
+
+    template <>
+    constexpr Degree LibMath::abs(const Degree angle)
+    {
+        return Degree(abs(angle.raw()));
+    }
 }
 
 #endif // !__LIBMATH__ANGLE__DEGREE_INL__

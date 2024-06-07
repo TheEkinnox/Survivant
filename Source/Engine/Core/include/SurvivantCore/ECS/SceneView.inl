@@ -47,6 +47,46 @@ namespace SvCore::ECS
     }
 
     template <class... Components>
+    template <typename T, typename Comparator>
+    void SceneView<Components...>::Sort(Comparator p_comparator)
+    {
+        static_assert(Has<T> || std::is_same_v<Entity, T>);
+
+        Scene*         scene    = const_cast<Scene*>(m_scene);
+        EntityStorage& entities = scene->GetStorage<Entity>();
+
+        if constexpr (std::is_same_v<Entity, T>)
+        {
+            std::sort(entities.begin(), entities.end(), p_comparator);
+        }
+        else if constexpr (std::is_same_v<EntityHandle, T>)
+        {
+            const auto predicate = [scene, &p_comparator](Entity p_left, const Entity p_right)
+            {
+                return p_comparator({ scene, p_left }, { scene, p_right });
+            };
+
+            std::sort(entities.begin(), entities.end(), predicate);
+        }
+        else
+        {
+            const auto predicate = [this, &p_comparator](const Entity p_left, const Entity p_right)
+            {
+                T* leftComp  = Get<T>(p_left);
+                T* rightComp = Get<T>(p_right);
+
+                return leftComp && rightComp
+                           ? p_comparator(*leftComp, *rightComp)
+                           : leftComp || !rightComp && p_left.GetIndex() < p_right.GetIndex();
+            };
+
+            std::sort(entities.begin(), entities.end(), predicate);
+        }
+
+        SortStorages<Components...>();
+    }
+
+    template <class... Components>
     std::tuple<Components*...> SceneView<Components...>::Get(const Entity p_owner)
     {
         return Get<Components...>(p_owner);
@@ -107,6 +147,16 @@ namespace SvCore::ECS
     void SceneView<Components...>::InitializeView()
     {
         SetStorage<T>(const_cast<ComponentStorage<T>&>(m_scene->template GetStorage<T>()));
+
+        if constexpr (sizeof...(Remainder) > 0)
+            InitializeView<Remainder...>();
+    }
+
+    template <class... Components>
+    template <typename T, typename... Remainder>
+    void SceneView<Components...>::SortStorages()
+    {
+        GetStorage<T>().Sort();
 
         if constexpr (sizeof...(Remainder) > 0)
             InitializeView<Remainder...>();

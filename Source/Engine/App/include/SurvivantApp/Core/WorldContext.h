@@ -1,34 +1,34 @@
 //WorldContext.h
 #pragma once
 
-#include "SurvivantCore/ECS/Scene.h"
-#include "SurvivantCore/ECS/EntityHandle.h"
 #include "SurvivantApp/Core/RenderingContext.h"
 #include "SurvivantApp/Inputs/InputManager.h"
 
-#include "SurvivantRendering/RHI/IShaderStorageBuffer.h"
-#include "SurvivantRendering/RHI/IFrameBuffer.h"
-#include "SurvivantRendering/Components/CameraComponent.h"	
+#include <SurvivantCore/ECS/EntityHandle.h>
+#include <SurvivantCore/ECS/Scene.h>
+#include <SurvivantCore/Resources/ResourceRef.h>
 
-#include "Vector/Vector2.h"
-#include "Transform.h"
+#include <SurvivantRendering/Components/CameraComponent.h>
+#include <SurvivantRendering/RHI/IFrameBuffer.h>
+#include <SurvivantRendering/RHI/IShaderStorageBuffer.h>
 
-#include <string>
+#include <Transform.h>
+#include <Vector/Vector2.h>
+
 #include <memory>
 #include <vector>
 
 namespace SvApp::Core
 {
-	//foward declaration
+	//forward declaration
 	class GameInstance;
 
 	struct WorldContext
 	{
 		using FrameBufferArray = std::vector<std::unique_ptr<SvRendering::RHI::IFrameBuffer>>;
 		using DefaultTextureArray = std::vector<std::shared_ptr<SvRendering::RHI::ITexture>>;
-
 		using WorldCreator = std::function<std::shared_ptr<WorldContext>(const LibMath::Vector2I&)>;
-		using ScenePtr = std::shared_ptr<SvCore::ECS::Scene>;
+		using SceneRef = SvCore::Resources::ResourceRef<SvCore::ECS::Scene>;
 
 		enum class EWorldType
 		{
@@ -45,32 +45,28 @@ namespace SvApp::Core
 		};
 
 		void BeginPlay();
-		void Update();
-		void Render();
-		void LoadCurrentScene();
+		bool Save(bool p_pretty = false);
+		void BakeLighting();
 
-		void						SetOwningCamera(
+		SvCore::ECS::EntityHandle	GetFirstCamera();
+		void						SetCamera(
 			const SvRendering::Components::CameraComponent& p_cam, const LibMath::Transform& p_trans);
-		void						SetSceneCamera(const SvCore::ECS::EntityHandle& p_entity);
-		SvCore::ECS::EntityHandle	GetDefaultSceneCamera();
+		void						SetCamera(const SvCore::ECS::EntityHandle& p_camera);
+
 		void						SetInputs();
-		ScenePtr&					CurrentScene();
-		std::weak_ptr<ScenePtr>		CurrentSceneRef();
-
-
-		//TODO: deal with persistentLevel
-		//std::shared_ptr<Scene>				m_persistentLevel = nullptr;
+		SceneRef&					CurrentScene();
+		std::weak_ptr<SceneRef>		CurrentSceneRef();
 
 		EWorldType				m_worldType = EWorldType::NONE;
 		GameInstance*			m_owningGameInstance = nullptr;
-		LibMath::TVector2<int>	m_viewport = LibMath::Vector2(800, 600);
-
+		std::shared_ptr<InputManager::InputBindings>				m_inputs = nullptr;
 		std::unique_ptr<SvRendering::RHI::IShaderStorageBuffer>		m_lightsSSBO = nullptr;
-		std::shared_ptr<InputManager::InputBindings>				m_inputs;
-		std::shared_ptr<RenderingContext>							m_renderingContext;
-		bool														m_isVisalbe;
 
-	private:
-		std::shared_ptr<ScenePtr>	m_currentSceneRef = std::make_shared<ScenePtr>(nullptr);
+		std::shared_ptr<SceneRef>	m_currentSceneRef = std::make_shared<SceneRef>();
+
+		//editor only
+		std::shared_ptr<RenderingContext>	m_renderingContext = nullptr;
+		bool								m_isVisible;
+		bool								m_isFocused;
 	};
 }

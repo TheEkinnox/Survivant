@@ -41,7 +41,8 @@ namespace SvRendering::Resources
 
         const aiScene* scene = importer.ReadFile(p_path.c_str(), aiProcess_Triangulate | aiProcess_JoinIdenticalVertices
             | aiProcess_SortByPType | aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph | aiProcess_RemoveRedundantMaterials
-            | aiProcess_ImproveCacheLocality | aiProcess_GenUVCoords | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace);
+            | aiProcess_ImproveCacheLocality | aiProcess_GenUVCoords | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace
+            | static_cast<unsigned>(aiProcess_GenBoundingBoxes));
 
         if (!CHECK(scene && scene->HasMeshes(), "Unable to load model from path \"%s\"", p_path.c_str()))
             return false;
@@ -56,8 +57,8 @@ namespace SvRendering::Resources
         };
 
         // Ensure assimp vec3s are compatible with ours so we can safely convert from one to the other
-        static_assert(sizeof(aiVector3D) == sizeof(Vector3));
         static_assert(
+            sizeof(aiVector3D) == sizeof(Vector3) &&
             offsetof(aiVector3D, x) == offsetof(Vector3, m_x) &&
             offsetof(aiVector3D, y) == offsetof(Vector3, m_y) &&
             offsetof(aiVector3D, z) == offsetof(Vector3, m_z)
@@ -75,11 +76,11 @@ namespace SvRendering::Resources
 
             for (unsigned int idx = 0; idx < mesh->mNumVertices; ++idx)
             {
-                const Vector3    position  = *reinterpret_cast<Vector3*>(&mesh->mVertices[idx]);
-                const Vector3    normal    = mesh->mNormals ? *reinterpret_cast<Vector3*>(&mesh->mNormals[idx]) : Vector3(0);
-                const aiVector3D uv        = mesh->mTextureCoords[0] ? mesh->mTextureCoords[0][idx] : aiVector3D(0);
-                const Vector3    tangent   = mesh->mTangents ? *reinterpret_cast<Vector3*>(&mesh->mTangents[idx]) : Vector3(0);
-                const Vector3    bitangent = mesh->mBitangents ? *reinterpret_cast<Vector3*>(&mesh->mBitangents[idx]) : Vector3(0);
+                const Vector3 position = reinterpret_cast<const Vector3&>(mesh->mVertices[idx]);
+                const Vector3 normal = mesh->mNormals ? reinterpret_cast<const Vector3&>(mesh->mNormals[idx]) : Vector3(0);
+                const aiVector3D uv = mesh->mTextureCoords[0] ? mesh->mTextureCoords[0][idx] : aiVector3D(0);
+                const Vector3 tangent = mesh->mTangents ? reinterpret_cast<const Vector3&>(mesh->mTangents[idx]) : Vector3(0);
+                const Vector3 bitangent = mesh->mBitangents ? reinterpret_cast<const Vector3&>(mesh->mBitangents[idx]) : Vector3(0);
 
                 vertices.emplace_back(position, normal, Vector2(uv.x, uv.y), tangent, bitangent);
             }
@@ -95,9 +96,15 @@ namespace SvRendering::Resources
                 indices.push_back(face.mIndices[2]);
             }
 
-            const Mesh& newMesh = m_meshes.emplace_back(vertices, indices);
-            m_boundingBox.m_min = min(m_boundingBox.m_min, newMesh.GetBoundingBox().m_min);
-            m_boundingBox.m_max = max(m_boundingBox.m_max, newMesh.GetBoundingBox().m_max);
+            BoundingBox boundingBox
+            {
+                reinterpret_cast<const Vector3&>(mesh->mAABB.mMin),
+                reinterpret_cast<const Vector3&>(mesh->mAABB.mMax)
+            };
+
+            m_meshes.emplace_back(std::move(vertices), std::move(indices), boundingBox);
+            m_boundingBox.m_min = min(m_boundingBox.m_min, boundingBox.m_min);
+            m_boundingBox.m_max = max(m_boundingBox.m_max, boundingBox.m_max);
         }
 
         return true;

@@ -4,12 +4,22 @@
 
 namespace SvCore::ECS
 {
+    struct ComponentHandle;
     class Scene;
+
+    template <bool>
+    class EntityHandleIterator;
 
     class EntityHandle final
     {
     public:
-        enum class EComponentSearchOrigin
+        using iterator = EntityHandleIterator<false>;
+        using const_iterator = iterator;
+
+        using reverse_iterator = EntityHandleIterator<true>;
+        using const_reverse_iterator = reverse_iterator;
+
+        enum class EComponentSearchOrigin : uint8_t
         {
             ROOT,
             PARENT,
@@ -62,6 +72,13 @@ namespace SvCore::ECS
         bool operator==(const EntityHandle& p_other) const;
 
         /**
+         * \brief Checks whether this handle references the given entity
+         * \param p_entity The compared entity
+         * \return True if this handle references the given entity. False otherwise
+         */
+        bool operator==(Entity p_entity) const;
+
+        /**
          * \brief Checks whether the entity is valid or not
          * \return True if the entity is valid. False otherwise.
          */
@@ -97,10 +114,23 @@ namespace SvCore::ECS
         EntityHandle GetParent() const;
 
         /**
+         * \brief Gets the entity's display name
+         * \return The entity's display name
+         */
+        std::string GetDisplayName() const;
+
+        /**
          * \brief Sets the linked entity's parent
          * \param p_parent The entity's new parent
          */
         void SetParent(EntityHandle p_parent);
+
+        /**
+         * \brief Sets the linked entity's parent
+         * \param p_parent The entity's new parent
+         * \param p_keepWorld Whether the entity should keep its current world transform
+         */
+        void SetParent(EntityHandle p_parent, bool p_keepWorld);
 
         /**
          * \brief Gets the entity's next sibling
@@ -118,14 +148,43 @@ namespace SvCore::ECS
          * \brief Gets the entity's child count
          * \return The entity's child count
          */
-        size_t GetChildCount() const;
+        Entity::Index GetChildCount() const;
 
         /**
          * \brief Gets the entity's child at the given index
          * \param p_index The target child's index
          * \return A handle to the child if found or to NULL_ENTITY otherwise
          */
-        EntityHandle GetChild(size_t p_index) const;
+        EntityHandle GetChild(Entity::Index p_index) const;
+
+        /**
+         * \brief Adds a new child entity to this one
+         */
+        EntityHandle AddChild() const;
+
+        /**
+         * \brief Gets an iterator to the entity's first child
+         * \return An iterator to the entity's first child
+         */
+        iterator begin() const;
+
+        /**
+         * \brief Gets an iterator to the end of the entity's children
+         * \return An iterator to the end of the entity's children
+         */
+        iterator end() const;
+
+        /**
+         * \brief Gets an iterator to the entity's first child
+         * \return An iterator to the entity's first child
+         */
+        reverse_iterator rbegin() const;
+
+        /**
+         * \brief Gets an iterator to the end of the entity's children
+         * \return An iterator to the end of the entity's children
+         */
+        reverse_iterator rend() const;
 
         /**
          * \brief Gets the entity's children
@@ -161,7 +220,7 @@ namespace SvCore::ECS
         T* Get();
 
         /**
-         * \brief Finds the component owned by the linked entity
+         * \brief Finds the component of the given type owned by the linked entity
          * \tparam T The component's type
          * \return A constant pointer to the found component on success. Nullptr otherwise
          */
@@ -253,6 +312,55 @@ namespace SvCore::ECS
         void Remove(const T& p_instance);
 
         /**
+         * \brief Checks if the linked entity owns a component of the given type
+         * \param p_type The component's type id
+         * \return True if the entity owns a component of the given type. False otherwise
+         */
+        bool Has(Utility::TypeId p_type) const;
+
+        /**
+         * \brief Finds the component of the given type owned by the linked entity
+         * \param p_type The component's type id
+         * \return A handle to the found component on success. An empty handle otherwise
+         */
+        ComponentHandle Get(Utility::TypeId p_type) const;
+
+        /**
+         * \brief Finds the component of the given type owned by the entity or one of it's parents
+         * \param p_type The component's type id
+         * \return A handle to the found component on success. An empty handle otherwise
+         */
+        ComponentHandle GetInParent(Utility::TypeId p_type) const;
+
+        /**
+         * \brief Finds the component of the given type owned by the entity or one of it's children
+         * \tparam T The component's type
+         * \return A handle to the found component on success. An empty handle otherwise
+         */
+        ComponentHandle GetInChildren(Utility::TypeId p_type) const;
+
+        /**
+         * \brief Finds the component of the given type owned by an entity in the linked entity's hierarchy
+         * \param p_type The component's type id
+         * \param p_searchOrigin The point at which the search should start
+         * \return A handle to the found component on success. An empty handle otherwise
+         */
+        ComponentHandle GetInHierarchy(Utility::TypeId p_type, EComponentSearchOrigin p_searchOrigin) const;
+
+        /**
+         * \brief Finds or creates the component of the given type owned by the linked entity
+         * \param p_type The component's type id
+         * \return A handle to the created component on success. An empty handle otherwise
+         */
+        ComponentHandle GetOrCreate(Utility::TypeId p_type) const;
+
+        /**
+         * \brief Removes the component of the given type from the linked entity
+         * \param p_type The component's type
+         */
+        void Remove(Utility::TypeId p_type) const;
+
+        /**
          * \brief Gets the number of components owned by the linked entity
          * \return The number of components owned by the entity
          */
@@ -269,6 +377,12 @@ namespace SvCore::ECS
          * \return The components owned by the entity
          */
         std::vector<std::pair<Utility::TypeId, void*>> GetComponents() const;
+
+        /**
+         * \brief Gets handles to all the components owned by the linked entity
+         * \return Handles to the components owned by the entity
+         */
+        std::vector<ComponentHandle> GetComponentHandles() const;
 
     private:
         Scene* m_scene;

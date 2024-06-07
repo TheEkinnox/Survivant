@@ -1,3 +1,4 @@
+---@class Test : Script
 local Test = {
     max_tick = 0,
     test_bool = false
@@ -74,18 +75,26 @@ local function TestComponents(entity)
     assert(transform.__type.name == Transform.__type.name)
     assert(entity:Has(componentType))
     assert(entity.componentCount == 2)
+    assert(transform.owner == entity)
 
     local get = entity:Get(componentType)
     assert(get.isValid)
     assert(get == transform)
 
     local startPos = transform.position
-    local newPos = startPos + Vector3.new(1, 2, 3)
+    local offset = Vector3.new(1, 2, 3)
+    local newPos = startPos + offset
 
     transform.position = newPos
 
     assert(transform.position ~= startPos)
     assert(transform.position == newPos)
+    assert(get.position == transform.position)
+
+    transform.self:Translate(-offset)
+
+    assert(transform.position == startPos)
+    assert(transform.position ~= newPos)
     assert(get.position == transform.position)
 end
 
@@ -119,6 +128,19 @@ local function TestScripts(entity)
 
     assert(getTest.test_bool)
     assert(script.test_bool)
+
+    local requireTest = entity:RequireScript("scripts.test")
+
+    assert(requireTest.isValid)
+    assert(requireTest == script)
+
+    assert(script.test_bool)
+    assert(requireTest.test_bool)
+
+    requireTest.test_bool = false
+
+    assert(not requireTest.test_bool)
+    assert(not script.test_bool)
 
     entity:RemoveScript("scripts.test")
     assert(not script.isValid)
@@ -176,7 +198,9 @@ local function TestECS(entity)
 
     TestComponents(copy)
 
-    TestScripts(copy)
+    local tmp = entity.scene:Create()
+    TestScripts(tmp)
+    tmp:Destroy()
 
     TestHierarchy(copy)
 
@@ -189,14 +213,17 @@ end
 function Test:OnInit()
     tick_count = 0
 
-    if not testCalled then
-        testCalled = true
+    if not TEST_CALLED then
+        TEST_CALLED = true
         TestECS(self.owner)
-        self.owner:AddScript("scripts.mathTest")
-        self.owner:AddScript("scripts.utilityTest")
+        self.owner:RequireScript("scripts.tests.math")
+        self.owner:RequireScript("scripts.tests.utility")
 
         local inputEntity = self.owner.scene:Create() -- Create a new entity since this one will be destroyed
-        inputEntity:AddScript("scripts.inputTest")
+        inputEntity:AddScript("scripts.tests.input")
+
+        local physicsEntity = self.owner.scene:Create() -- Create a new entity since this one will be destroyed
+        physicsEntity:AddScript("scripts.tests.physics")
     end
 
     if self.max_tick ~= 0 then

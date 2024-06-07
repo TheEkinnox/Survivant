@@ -26,7 +26,7 @@ file(GLOB_RECURSE HEADER_FILES
 	${CMAKE_CURRENT_SOURCE_DIR}/*.inl
 )
 
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${TARGET_FILES})
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${HEADER_FILES} ${SOURCE_FILES})
 
 
 ###############################
@@ -48,6 +48,7 @@ target_link_libraries(${TARGET_NAME}
 	${LIBMATH_NAME}
 	${CORE_NAME}
 	${RENDERING_NAME}
+	${SCRIPTING_NAME}
 )
 
 if(MSVC)

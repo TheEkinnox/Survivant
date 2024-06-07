@@ -12,8 +12,8 @@ namespace SvEditor::PanelItems
 	{
 	public:
 		PanelTextInput(
-			const std::string& p_name, 
-			std::string& p_buffer, 
+			const std::string& p_name,
+			std::string& p_buffer,
 			const Callback& p_callback = Callback());
 		PanelTextInput(
 			const std::string& p_name,
@@ -23,17 +23,17 @@ namespace SvEditor::PanelItems
 			const std::string& p_name,
 			const GetCopyFunc& p_getCopy,
 			const Callback& p_callback);
-		~PanelTextInput() = default;
+		~PanelTextInput() override = default;
 
 		void DisplayAndUpdatePanel()override;
 		void Clear();
 		const std::string& GetText()const;
+		const std::string& GetUpdatedText() const;
 
 		static void ClearPanelText(PanelTextInput& p_panel);
 
 	private:
-		//static int TextPanelCallBack(ImGuiInputTextCallbackData* data);
-
 		std::string		m_name;
+		std::string		m_string; //TODO: remove this and GetUpdatedText() ?
 	};
 }

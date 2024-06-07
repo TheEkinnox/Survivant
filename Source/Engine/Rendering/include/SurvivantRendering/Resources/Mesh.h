@@ -1,7 +1,8 @@
 #pragma once
 #include "SurvivantRendering/Geometry/Vertex.h"
-#include "SurvivantRendering/Geometry/BoundingBox.h"
 #include "SurvivantRendering/RHI/IVertexArray.h"
+
+#include <Geometry/BoundingBox.h>
 
 #include <vector>
 
@@ -11,11 +12,19 @@ namespace SvRendering::Resources
     {
     public:
         /**
-         * \brief Creates a mesh with the given vertices and indices
+         * \brief Creates a mesh with the given vertices and indices and calculates its bounding box
          * \param p_vertices The mesh's vertices
          * \param p_indices The mesh's indices
          */
         Mesh(std::vector<Geometry::Vertex> p_vertices, std::vector<uint32_t> p_indices);
+
+        /**
+         * \brief Creates a mesh with the given vertices, indices and bounding box
+         * \param p_vertices The mesh's vertices
+         * \param p_indices The mesh's indices
+         * \param p_boundingBox The mesh's bounding box
+         */
+        Mesh(std::vector<Geometry::Vertex> p_vertices, std::vector<uint32_t> p_indices, LibMath::BoundingBox p_boundingBox);
 
         /**
          * \brief Creates a copy of the given mesh
@@ -74,13 +83,13 @@ namespace SvRendering::Resources
          * \brief Gets the mesh's bounding box
          * \return The mesh's bounding box
          */
-        Geometry::BoundingBox GetBoundingBox() const;
+        LibMath::BoundingBox GetBoundingBox() const;
 
     private:
         std::vector<Geometry::Vertex> m_vertices;
         std::vector<uint32_t>         m_indices;
 
-        Geometry::BoundingBox m_boundingBox;
+        LibMath::BoundingBox m_boundingBox;
 
         std::unique_ptr<RHI::IVertexBuffer> m_vbo;
         std::unique_ptr<RHI::IIndexBuffer>  m_ebo;

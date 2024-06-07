@@ -27,8 +27,18 @@ namespace SvScripting
     class LuaTypeRegistry final : public SvCore::Utility::TypeRegistry<LuaTypeInfo>
     {
     public:
+        /**
+         * \brief Gets the current lua type registry
+         * \return A reference to the current lua type registry
+         */
         static LuaTypeRegistry& GetInstance();
 
+        /**
+         * \brief Registers the given type to the lua type registry with the given name
+         * \tparam T The registered type
+         * \param p_name The name under which the type should be registered
+         * \return The registered type's information
+         */
         template <typename T>
         LuaTypeInfo& RegisterType(const std::string& p_name);
     };

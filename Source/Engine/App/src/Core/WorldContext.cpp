@@ -2,60 +2,47 @@
 
 #include "SurvivantApp/Core/WorldContext.h"
 
-#include "SurvivantApp/Core/IEngine.h"
-#include "SurvivantApp/Core/TempDefaultScene.h"
-
+using namespace SvCore::ECS;
+using namespace SvRendering::Core;
+using namespace SvRendering::Components;
 
 namespace SvApp::Core
 {
     void WorldContext::BeginPlay()
     {
-        using namespace ToRemove;
-
-        TestLevelBeginPlay(*CurrentScene());
     }
 
-    void WorldContext::Update()
+    bool WorldContext::Save(const bool p_pretty)
     {
-        using namespace ToRemove;
-
-        SceneView<Temporary>                  temporariesView(*CurrentScene());
-        SceneView<const UserInput, Transform> userInputsView(*CurrentScene());
-        SceneView<const Rotator, Transform>   rotatorsView(*CurrentScene());
-
-        UpdateTemporaries(temporariesView, SV_DELTA_TIME());
-        UpdateInput(userInputsView, ToRemove::GameInfo::moveInput, ToRemove::GameInfo::rotateInput, SV_DELTA_TIME());
-        UpdateRotators(rotatorsView, SV_DELTA_TIME());
+        return CurrentScene().Export(p_pretty);
     }
 
-    void WorldContext::Render()
+    void WorldContext::BakeLighting()
     {
-        m_renderingContext->Render(*CurrentScene());
+        Renderer::UpdateLightSSBO(CurrentScene().Get(), *m_lightsSSBO);
     }
 
-    void WorldContext::LoadCurrentScene()
-    {
-        using namespace ToRemove;
-        MakeScene(*CurrentScene());
-    }
-
-    void WorldContext::SetSceneCamera(const EntityHandle& p_entity)
-    {
-        m_renderingContext->m_mainCamera.SetEntity(p_entity);
-    }
-
-    SvCore::ECS::EntityHandle WorldContext::GetDefaultSceneCamera()
+    EntityHandle WorldContext::GetFirstCamera()
     {
         SceneView<CameraComponent> cameras(*CurrentScene());
 
-        ASSERT(cameras.begin() != cameras.end(), "No Cameras In World");
-        return EntityHandle(CurrentScene().get(), *cameras.begin());
+        EntityHandle entity;
+        if (cameras.begin() != cameras.end())
+            entity = EntityHandle(CurrentScene().Get(), *cameras.begin());
+
+        return entity;
     }
 
-    void WorldContext::SetOwningCamera(
-        const SvRendering::Components::CameraComponent& p_cam, const LibMath::Transform& p_trans)
+    void WorldContext::SetCamera(const CameraComponent& p_cam, const LibMath::Transform& p_trans)
     {
         m_renderingContext->m_mainCamera.SetCamera(p_cam, p_trans);
+        m_renderingContext->ResetCameraAspect();
+    }
+
+    void WorldContext::SetCamera(const EntityHandle& p_camera)
+    {
+        m_renderingContext->m_mainCamera.SetEntity(p_camera);
+        m_renderingContext->ResetCameraAspect();
     }
 
     void WorldContext::SetInputs()
@@ -63,12 +50,12 @@ namespace SvApp::Core
         InputManager::GetInstance().SetInputBindings(m_inputs);
     }
 
-    std::shared_ptr<SvCore::ECS::Scene>& WorldContext::CurrentScene()
+    WorldContext::SceneRef& WorldContext::CurrentScene()
     {
         return *m_currentSceneRef;
     }
 
-    std::weak_ptr<WorldContext::ScenePtr> WorldContext::CurrentSceneRef()
+    std::weak_ptr<WorldContext::SceneRef> WorldContext::CurrentSceneRef()
     {
         return m_currentSceneRef;
     }

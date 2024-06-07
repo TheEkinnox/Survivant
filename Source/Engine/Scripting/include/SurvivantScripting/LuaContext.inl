@@ -14,12 +14,20 @@ namespace SvScripting
         if (!func.valid())
             return ELuaCallResult::NOT_FOUND;
 
-        const auto result = func.call(p_table, std::forward<Args>(p_args)...);
+        const sol::protected_function_result result = func.call(p_table, std::forward<Args>(p_args)...);
 
         if (!result.valid())
         {
-            [[maybe_unused]] const sol::error err = result;
-            CHECK(false, "Call to lua script function %s failed - %s", p_name.c_str(), err.what());
+            try
+            {
+                [[maybe_unused]] const sol::error err = result;
+                CHECK(false, "Call to lua script function \"%s\" failed - %s", p_name.c_str(), err.what());
+            }
+            catch ([[maybe_unused]] const sol::error& err)
+            {
+                CHECK(false, "Call to lua script function \"%s\" triggered panic - %s", p_name.c_str(), err.what());
+            }
+
             return ELuaCallResult::FAILURE;
         }
 

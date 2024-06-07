@@ -39,6 +39,11 @@ namespace SvRendering::RHI
         IFrameBuffer& operator=(IFrameBuffer&& p_other) noexcept = default;
 
         /**
+         * \brief Binds the default frame buffer for the current render api
+         */
+        static void BindDefault();
+
+        /**
          * \brief Binds the frame buffer
          */
         virtual void Bind() = 0;

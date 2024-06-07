@@ -3,17 +3,24 @@
 
 #include "Interpolation.h"
 #include "Quaternion.h"
-#include "TransformNotifier.h"
 
 #include "Matrix/Matrix4.h"
 
 #include "Vector/Vector3.h"
+
+#include <unordered_set>
 
 namespace LibMath
 {
     class Transform
     {
     public:
+        enum class ENotificationType
+        {
+            TRANSFORM_CHANGED,
+            TRANSFORM_DESTROYED
+        };
+
         /**
          * \brief Creates a transform with no translation, no rotation and a scale of 1
          */
@@ -449,9 +456,11 @@ namespace LibMath
         * \param notificationType The notification type
         * \param newParent The new parent after this event
         */
-        inline virtual void notificationHandler(TransformNotifier::ENotificationType notificationType, Transform* newParent);
+        inline virtual void notificationHandler(ENotificationType notificationType, Transform* newParent);
 
     private:
+        using ListenerMap = std::unordered_set<Transform*>;
+
         Vector3    m_position;
         Quaternion m_rotation;
         Vector3    m_scale;
@@ -465,8 +474,27 @@ namespace LibMath
 
         Transform* m_parent;
 
-        TransformNotifier             m_notifier;
-        TransformNotifier::ListenerId m_notificationHandlerId = 0;
+        ListenerMap m_listeners;
+
+        /**
+         * \brief Subscribes a listener to the notifier
+         * \param listener The listener to notify when a notification is broadcast
+         * \return True on success. False otherwise
+         */
+        inline bool subscribe(Transform& listener);
+
+        /**
+        * \brief Broadcasts the given notification to all subscribers
+        * \param notificationType The type of notification to broadcast
+        * \param newOwner The new owner after the change is applied
+        */
+        inline void broadcast(ENotificationType notificationType, Transform* newOwner);
+
+        /**
+         * \brief Unsubscribes the given listener from this notifier
+         * \param listener The listener to unsubscribe
+         */
+        inline bool unsubscribe(Transform& listener);
 
         /**
          * \brief Updates the local transformation data based on the current global transform

@@ -1,9 +1,10 @@
 #include "SurvivantScripting/LuaTypeRegistry.h"
 #include "SurvivantScripting/Bindings/LuaInputBinder.h"
 
+#include <SurvivantApp/Inputs/InputSpecifiers/EInputModifier.h>
 #include <SurvivantApp/Inputs/InputSpecifiers/EKey.h>
 #include <SurvivantApp/Inputs/InputSpecifiers/EMouseButton.h>
-#include <SurvivantApp/Inputs/InputSpecifiers/EInputModifier.h>
+#include <SurvivantApp/Windows/ECursorMode.h>
 
 #include <sol/state.hpp>
 
@@ -180,6 +181,20 @@ namespace SvScripting::Bindings
         );
 
         static const LuaTypeInfo& typeInfo = LuaTypeRegistry::GetInstance().RegisterType<EInputModifier>(typeName);
+        return (void)typeInfo;
+    }
+
+    void LuaInputBinder::BindCursorModes(sol::state& p_luaState)
+    {
+        static constexpr const char* typeName = "ECursorMode";
+
+        p_luaState.new_enum(typeName,
+            "NORMAL", ECursorMode::NORMAL,
+            "HIDDEN", ECursorMode::HIDDEN,
+            "DISABLED", ECursorMode::DISABLED
+        );
+
+        static const LuaTypeInfo& typeInfo = LuaTypeRegistry::GetInstance().RegisterType<ECursorMode>(typeName);
         return (void)typeInfo;
     }
 }

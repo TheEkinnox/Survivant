@@ -51,7 +51,7 @@ namespace SvCore::Resources
         if (p_type.empty() || p_path.empty())
             return {};
 
-        const std::string key = GetFullPath(p_path);
+        const std::string key = GetRelativePath(p_path);
 
         IResource* resource = nullptr;
         const auto it       = m_resources.find(key);
@@ -63,22 +63,24 @@ namespace SvCore::Resources
             resource = !savedResource || savedResource->GetTypeName() == p_type ? savedResource : nullptr;
 
             if (!CHECK(!savedResource || resource || it->second->GetReferenceCount() <= 1,
-                    "Unsafe reloading of resource at path \"%s\"", p_path.c_str()))
+                    "Unsafe reloading of resource at path \"%s\"", key.c_str()))
                 return {};
         }
 
         const bool canReuse = resource;
 
-        if (!resource)
+        if (!canReuse)
             resource = ResourceRegistry::GetInstance().Create(p_type);
 
-        if (!LoadResource(resource, p_path))
+        if (!LoadResource(resource, key))
         {
-            m_resources.erase(it);
+            if (it != m_resources.end())
+                m_resources.erase(it);
+
             return {};
         }
 
-        return canReuse ? *it->second : *(m_resources[key] = std::make_unique<GenericResourceRef>(p_type, p_path, resource));
+        return canReuse ? *it->second : *(m_resources[key] = std::make_unique<GenericResourceRef>(p_type, key, resource));
     }
 
     GenericResourceRef ResourceManager::Get(const std::string& p_type, const std::string& p_path) const
@@ -86,7 +88,7 @@ namespace SvCore::Resources
         if (p_type.empty() || p_path.empty())
             return {};
 
-        const auto it = m_resources.find(GetFullPath(p_path));
+        const auto it = m_resources.find(GetRelativePath(p_path));
 
         if (it == m_resources.end())
             return {};
@@ -102,7 +104,7 @@ namespace SvCore::Resources
     GenericResourceRef ResourceManager::GetOrCreate(const std::string& p_type, const std::string& p_path)
     {
         GenericResourceRef resource = Get(p_type, p_path);
-        return resource ? resource : Create(p_type, p_path);
+        return resource.Get() ? resource : Create(p_type, p_path);
     }
 
     std::vector<GenericResourceRef> ResourceManager::GetAll(const std::string& p_type) const
@@ -123,6 +125,20 @@ namespace SvCore::Resources
         }
 
         return resources;
+    }
+
+    void ResourceManager::ReloadAll(const std::string& p_type)
+    {
+        for (const auto& resource : m_resources | std::ranges::views::values)
+        {
+            if (!resource)
+                continue;
+
+            const GenericResourceRef* genericResource = dynamic_cast<GenericResourceRef*>(resource.get());
+
+            if ((genericResource && genericResource->GetType() == p_type) || (*resource && (*resource)->GetTypeName() == p_type))
+                Create(p_type, resource->GetPath());
+        }
     }
 
     std::vector<char> ResourceManager::ReadFile(const std::string& p_path) const
@@ -149,7 +165,23 @@ namespace SvCore::Resources
 
     void ResourceManager::Remove(const std::string& p_path)
     {
-        m_resources.erase(GetFullPath(p_path));
+        m_resources.erase(GetRelativePath(p_path));
+    }
+
+    void ResourceManager::RemoveAll(const std::string& p_type)
+    {
+        for (auto it = m_resources.begin(); it != m_resources.end(); ++it)
+        {
+            auto& resource = it->second;
+
+            if (!resource)
+                continue;
+
+            const GenericResourceRef* genericResource = dynamic_cast<GenericResourceRef*>(resource.get());
+
+            if ((genericResource && genericResource->GetType() == p_type) || (*resource && (*resource)->GetTypeName() == p_type))
+                it = m_resources.erase(it);
+        }
     }
 
     void ResourceManager::Clear()
@@ -201,7 +233,8 @@ namespace SvCore::Resources
         if (p_path.empty())
             return {};
 
-        p_path = Utility::GetAbsolutePath(GetFullPath(p_path));
+        if (!Utility::IsAbsolutePath(p_path))
+            p_path = Utility::GetAbsolutePath(GetFullPath(p_path));
 
         size_t bestMatch = 0;
 
@@ -218,6 +251,7 @@ namespace SvCore::Resources
                 bestMatch = absSearchPath.size() + 1;
         }
 
+        CHECK(bestMatch > 0, "Resource \"%s\" is not in a known search path", p_path.c_str());
         return p_path.substr(bestMatch);
     }
 

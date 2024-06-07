@@ -35,6 +35,7 @@ namespace SvEditor::PanelItems
         ImGui::SameLine();
 
         ImGui::PushID(m_name.c_str());
+        PanelInputBase::DisplayAndUpdatePanel();
         if (ImGui::ColorEdit4("##", value.getArray()) && m_callback)
             m_callback(value);
 

@@ -17,7 +17,7 @@ namespace LibMath
     }
 
     template <length_t Rows, length_t Cols, class DataT>
-    constexpr TMatrix<Rows, Cols, DataT>::TMatrix(DataT scalar)
+    constexpr TMatrix<Rows, Cols, DataT>::TMatrix(const DataT scalar)
     {
         // Builds a diagonal matrix with the given scalar
         for (length_t row = 0; row < Rows; row++)
@@ -78,7 +78,7 @@ namespace LibMath
     }
 
     template <length_t Rows, length_t Cols, class DataT>
-    constexpr DataT TMatrix<Rows, Cols, DataT>::operator[](size_t index) const
+    constexpr DataT TMatrix<Rows, Cols, DataT>::operator[](const size_t index) const
     {
         if (index >= getSize())
             throw std::out_of_range("Index out of range");
@@ -87,7 +87,7 @@ namespace LibMath
     }
 
     template <length_t Rows, length_t Cols, class DataT>
-    DataT& TMatrix<Rows, Cols, DataT>::operator[](size_t index)
+    DataT& TMatrix<Rows, Cols, DataT>::operator[](const size_t index)
     {
         if (index >= getSize())
             throw std::out_of_range("Index out of range");
@@ -138,7 +138,7 @@ namespace LibMath
     }
 
     template <length_t Rows, length_t Cols, class DataT>
-    TMatrix<Rows, Cols, DataT>& TMatrix<Rows, Cols, DataT>::operator+=(DataT scalar)
+    TMatrix<Rows, Cols, DataT>& TMatrix<Rows, Cols, DataT>::operator+=(const DataT scalar)
     {
         for (size_t i = 0; i < getSize(); i++)
             m_values[i] += scalar;
@@ -147,7 +147,7 @@ namespace LibMath
     }
 
     template <length_t Rows, length_t Cols, class DataT>
-    TMatrix<Rows, Cols, DataT>& TMatrix<Rows, Cols, DataT>::operator-=(DataT scalar)
+    TMatrix<Rows, Cols, DataT>& TMatrix<Rows, Cols, DataT>::operator-=(const DataT scalar)
     {
         for (size_t i = 0; i < getSize(); i++)
             m_values[i] -= scalar;
@@ -156,7 +156,7 @@ namespace LibMath
     }
 
     template <length_t Rows, length_t Cols, class DataT>
-    TMatrix<Rows, Cols, DataT>& TMatrix<Rows, Cols, DataT>::operator*=(DataT scalar)
+    TMatrix<Rows, Cols, DataT>& TMatrix<Rows, Cols, DataT>::operator*=(const DataT scalar)
     {
         for (size_t i = 0; i < getSize(); i++)
             m_values[i] *= scalar;
@@ -165,12 +165,9 @@ namespace LibMath
     }
 
     template <length_t Rows, length_t Cols, class DataT>
-    TMatrix<Rows, Cols, DataT>& TMatrix<Rows, Cols, DataT>::operator/=(DataT scalar)
+    TMatrix<Rows, Cols, DataT>& TMatrix<Rows, Cols, DataT>::operator/=(const DataT scalar)
     {
-        for (size_t i = 0; i < getSize(); i++)
-            m_values[i] /= scalar;
-
-        return *this;
+        return *this *= static_cast<DataT>(1) / scalar;
     }
 
     template <length_t Rows, length_t Cols, class DataT>
@@ -254,16 +251,20 @@ namespace LibMath
     template <length_t Rows, length_t Cols, class DataT>
     constexpr bool TMatrix<Rows, Cols, DataT>::operator==(const TMatrix& other) const
     {
-        if (other.getRowCount() != Rows || other.getColumnCount() != Cols)
-            return false;
-
-        for (size_t i = 0; i < getSize(); i++)
+        if constexpr (other.getRowCount() != Rows || other.getColumnCount() != Cols)
         {
-            if (!floatEquals(m_values[i], other[i]))
-                return false;
+            return false;
         }
+        else
+        {
+            for (size_t i = 0; i < getSize(); i++)
+            {
+                if (!floatEquals(m_values[i], other[i]))
+                    return false;
+            }
 
-        return true;
+            return true;
+        }
     }
 
     template <length_t Rows, length_t Cols, class DataT>
@@ -273,12 +274,12 @@ namespace LibMath
     }
 
     template <length_t Rows, length_t Cols, class DataT>
-    bool TMatrix<Rows, Cols, DataT>::isIdentity() const
+    constexpr bool TMatrix<Rows, Cols, DataT>::isIdentity() const
     {
         if constexpr (Rows != Cols)
             return false;
-
-        return *this == TMatrix(1.f);
+        else
+            return *this == TMatrix(static_cast<DataT>(1));
     }
 
     template <length_t Rows, length_t Cols, class DataT>
@@ -332,12 +333,16 @@ namespace LibMath
         static_assert(Rows == Cols, "Can't compute the cofactor of a non-square matrix");
 
         if constexpr (Rows == 1)
+        {
             return m_values[0];
+        }
+        else
+        {
+            // The multiplier is (-1)^(i+j) so 1 when i + j is pair and -1 otherwise
+            const DataT multiplier = (row + column) % 2 == 0 ? static_cast<DataT>(1) : static_cast<DataT>(-1);
 
-        // The multiplier is (-1)^(i+j) so 1 when i + j is pair and -1 otherwise
-        const DataT multiplier = (row + column) % 2 == 0 ? static_cast<DataT>(1) : static_cast<DataT>(-1);
-
-        return multiplier * minor(row, column).determinant();
+            return multiplier * minor(row, column).determinant();
+        }
     }
 
     template <length_t Rows, length_t Cols, class DataT>
@@ -406,14 +411,7 @@ namespace LibMath
     template <length_t Rows, length_t Cols, class DataT>
     TMatrix<Rows, Cols, DataT> TMatrix<Rows, Cols, DataT>::inverse() const
     {
-        static_assert(Rows == Cols, "Can't invert a non-square matrix");
-
-        const DataT det = determinant();
-
-        if (det == 0.f)
-            throw Exceptions::NonInvertibleMatrix();
-
-        return adjugate() / det;
+        return Details::Inverse<Rows, Cols, DataT>::compute(*this);
     }
 
     template <length_t Rows, length_t Cols, typename DataT>
@@ -469,7 +467,7 @@ namespace LibMath
         std::getline(stream, line, '}');
 
         size_t component = 0;
-        size_t valStart = 0;
+        size_t valStart  = 0;
 
         do
         {
@@ -504,14 +502,34 @@ namespace LibMath
         static_assert(Rows == Cols, "Can't compute the determinant of a non-square matrix");
 
         if constexpr (Rows == 1)
+        {
             return mat[0];
+        }
+        else
+        {
+            DataT determinant = 0;
 
-        DataT determinant = 0;
+            for (length_t col = 0; col < Cols; col++)
+                determinant += mat[col] * mat.cofactor(0, col);
 
-        for (length_t col = 0; col < Cols; col++)
-            determinant += mat[col] * mat.cofactor(0, col);
+            return determinant;
+        }
+    }
 
-        return determinant;
+    template <length_t Rows, length_t Cols, typename DataT>
+    TMatrix<Rows, Cols, DataT> Details::Inverse<Rows, Cols, DataT>::compute(const TMatrix<Rows, Cols, DataT>& mat)
+    {
+        static_assert(Rows == Cols, "Can't invert a non-square matrix");
+
+        if constexpr (Rows == 1)
+        {
+            return TMatrix<1, 1, DataT>(static_cast<DataT>(1) / mat[0]);
+        }
+        else
+        {
+            const DataT detInv = static_cast<DataT>(1) / mat.determinant();
+            return mat.adjugate() * detInv;
+        }
     }
 }
 

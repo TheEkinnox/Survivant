@@ -96,6 +96,17 @@ namespace SvCore::Utility
         return GetTypeInfo(GetTypeId<T>());
     }
 
+    template <class TypeInfo>
+    TypeId TypeRegistry<TypeInfo>::GetRegisteredTypeId(const std::string& p_type) const
+    {
+        const auto it = m_typeIds.find(p_type);
+
+        if (CHECK(it != m_typeIds.end(), "Couldn't find registered id of type \"%s\"", p_type.c_str()))
+            return it->second;
+
+        return 0;
+    }
+
     template <typename TypeInfo>
     const std::string& TypeRegistry<TypeInfo>::GetRegisteredTypeName(const size_t p_typeId) const
     {

@@ -17,14 +17,17 @@ add_subdirectory(GLFW)
 # Add IMGUI
 add_subdirectory(IMGUI)
 
+# Add IMGUIZMO
+add_subdirectory(IMGUIZMO)
+
 # Add LibMath
 add_subdirectory(LibMath)
 
 # Add Lua
 add_subdirectory(Lua)
 
-# Add PhysX (TODO)
-# add_subdirectory(PhysX)
+# Add PhysX
+add_subdirectory(PhysX)
 
 # Add RapidJSON
 add_subdirectory(RapidJSON)
@@ -47,6 +50,9 @@ set(GLFW_INCLUDE_DIR ${GLFW_INCLUDE_DIR} PARENT_SCOPE)
 
 set(IMGUI_NAME ${IMGUI_NAME} PARENT_SCOPE)
 set(IMGUI_INCLUDE_DIR ${IMGUI_INCLUDE_DIR} PARENT_SCOPE)
+
+set(IMGUIZMO_NAME ${IMGUIZMO_NAME} PARENT_SCOPE)
+set(IMGUIZMO_INCLUDE_DIR ${IMGUIZMO_INCLUDE_DIR} PARENT_SCOPE)
 
 set(LIBMATH_NAME ${LIBMATH_NAME} PARENT_SCOPE)
 set(LIBMATH_INCLUDE_DIR ${LIBMATH_INCLUDE_DIR} PARENT_SCOPE)

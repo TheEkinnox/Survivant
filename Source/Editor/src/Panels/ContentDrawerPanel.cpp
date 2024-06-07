@@ -1,23 +1,45 @@
 //ContentDrawerPanel.cpp
-
 #include "SurvivantEditor/Panels/ContentDrawerPanel.h"
 
-#include "SurvivantCore/Events/EventManager.h"
-#include "SurvivantEditor/Core/InspectorComponentManager.h"
+#include "SurvivantEditor/Core/EditorEngine.h"
 #include "SurvivantEditor/Core/EditorUI.h"
+#include "SurvivantEditor/Core/InspectorItemManager.h"
 #include "SurvivantEditor/Panels/InspectorPanel.h"
 
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_opengl3.h"
+#include <SurvivantApp/Core/IEngine.h>
+
+#include <SurvivantAudio/AudioClip.h>
+
+#include <SurvivantCore/Resources/ResourceRegistry.h>
+#include <SurvivantCore/ECS/Scene.h>
+
+#include <SurvivantRendering/Resources/Material.h>
+#include <SurvivantRendering/Resources/Model.h>
+#include <SurvivantRendering/RHI/IShader.h>
+#include <SurvivantRendering/RHI/ITexture.h>
+
+#include <SurvivantScripting/LuaScript.h>
+
+#include <imgui.h>
+
+#include "SurvivantCore/Resources/ResourceManager.h"
 
 namespace SvEditor::Panels
 {
     using namespace Interfaces;
+    using namespace SvCore::Resources;
 
-    ContentDrawerPanel::ContentDrawerPanel() :
-        m_tree()
+    ContentDrawerPanel::ContentDrawerPanel()
     {
         m_name = NAME;
+
+        m_buttonList.m_buttons.emplace_back(PanelButton("Refresh", [this]()
+        {
+            ResourceManager::GetInstance().Clear();
+            SetupTree();
+            m_tree->ForceCloseChildren(true);
+            m_tree->Select();
+        }));
 
         SetupTree();
 
@@ -30,20 +52,20 @@ namespace SvEditor::Panels
             std::bind(&ContentDrawerPanel::TryOpenFile, this, std::placeholders::_1);
 
         ResourceBranch::s_leavesOnSelect =
-            [](ResourceBranch& p_branch) 
-            { 
-                auto panel = Core::InspectorItemManager::GetPanelableResource(p_branch.GetValue());
+            [](ResourceBranch& p_branch)
+            {
+                std::string type = p_branch.GetValue();
+                SvCore::Resources::GenericResourceRef resource;
+
+                if (type != ResourceRegistry::GetInstance().GetRegisteredTypeName<SvCore::ECS::Scene>())
+                    resource = ResourceManager::GetInstance().GetOrCreate(type, p_branch.GetPath());
+
+                auto panel = Core::InspectorItemManager::GetPanelableResource(resource);
                 if (panel)
                     InspectorPanel::SetInpectorInfo(panel, p_branch.GetName());
 
-                return true; 
+                return true;
             };
-
-        m_tree->SetAllPriority(&ResourceBranch::HasChildreenPriority);
-    }
-
-    ContentDrawerPanel::~ContentDrawerPanel()
-    {
     }
 
     Panel::ERenderFlags ContentDrawerPanel::Render()
@@ -51,9 +73,9 @@ namespace SvEditor::Panels
         bool open = true;
         static float treeWidth = ImGui::GetContentRegionAvail().x * 0.5f;
 
-        auto panelSize = ImGui::GetContentRegionAvail();
-        ImGuiWindowFlags    window_flags = ImGuiWindowFlags_None;
-        ImGuiChildFlags     child_flags = ImGuiChildFlags_AutoResizeY;
+        auto             panelSize    = ImGui::GetContentRegionAvail();
+        ImGuiWindowFlags window_flags = ImGuiWindowFlags_None;
+        ImGuiChildFlags  child_flags  = ImGuiChildFlags_AutoResizeY;
 
         if (!ImGui::Begin(m_name.c_str(), &open))
         {
@@ -64,7 +86,10 @@ namespace SvEditor::Panels
         //tree
         {
             if (ImGui::BeginChild("ChildL", ImVec2(treeWidth, ImGui::GetContentRegionAvail().y), child_flags, window_flags))
+            {
+                m_buttonList.DisplayAndUpdatePanel();
                 m_tree.get()->DisplayAndUpdatePanel();
+            }
 
             ImGui::EndChild();
         }
@@ -72,10 +97,9 @@ namespace SvEditor::Panels
         ImGui::SameLine();
         auto pos = ImGui::GetCursorPos();
         ImGui::Button("##", ImVec2(5, ImGui::GetContentRegionAvail().y));
+
         if (ImGui::IsItemHovered())
-        {
             ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
-        }
 
         if (ImGui::IsItemActive())
         {
@@ -104,12 +128,12 @@ namespace SvEditor::Panels
     bool ContentDrawerPanel::SetGridDisplay(ResourceBranch& p_branch)
     {
         p_branch.ForceOpenParents();
-        auto& childreen = p_branch.GetChildreen();
+        auto& children = p_branch.GetChildren();
 
         //"cast" from PanelTreeBranch to ISelectionBoxable
         PanelSelectionBox::SelectableMap gridItems;
 
-        for (auto& pair : childreen)
+        for (auto& pair : children)
             gridItems.insert(pair);
 
         m_grid.SetSelectionBoxable(gridItems);
@@ -120,8 +144,6 @@ namespace SvEditor::Panels
 
     void ContentDrawerPanel::SetupTree()
     {
-        using directory_iterator = std::filesystem::directory_iterator;
-
         auto root = std::filesystem::current_path();
 
         for (const auto& dirEntry : std::filesystem::directory_iterator(root))
@@ -133,12 +155,15 @@ namespace SvEditor::Panels
             }
         }
 
-        m_tree = std::make_shared<ResourceBranch>(root.filename().string());
+        s_typedFiles.clear();
+        s_fileExtensions = CreateExtensions();
+        m_tree           = std::make_shared<ResourceBranch>(root.filename().string());
+
         SetupBranches(m_tree, root);
+        m_tree->SetAllPriority(&ResourceBranch::HasChildrenPriority);
     }
 
-    void ContentDrawerPanel::SetupBranches(
-        std::shared_ptr<ResourceBranch> p_parent, const std::filesystem::path& p_filePath)
+    void ContentDrawerPanel::SetupBranches(std::shared_ptr<ResourceBranch> p_parent, const std::filesystem::path& p_filePath)
     {
         using directory_iterator = std::filesystem::directory_iterator;
         using directory_ptr_and_path = std::pair<std::shared_ptr<ResourceBranch>, std::filesystem::path>;
@@ -148,19 +173,20 @@ namespace SvEditor::Panels
         for (const auto& dirEntry : directory_iterator(p_filePath))
         {
             const auto& path = dirEntry.path();
-            std::string name = path.filename().string();
 
-            auto t = CreateResourceRef(path);
-            auto tmp = ResourceBranch(path.filename().string(), true, t);
-            auto ptrBranch = std::make_shared<ResourceBranch>(tmp);
+            auto type      = GetType(path);
+            auto ptrBranch = std::make_shared<ResourceBranch>(path.filename().string(), true, type);
             p_parent->AddBranch(ptrBranch);
 
+            if (!type.empty())
+                s_typedFiles[type].emplace_back(std::weak_ptr<ResourceBranch>(ptrBranch));
+
             if (dirEntry.is_directory())
-                directories.push_back({ ptrBranch, path });
+                directories.emplace_back(directory_ptr_and_path(ptrBranch, path));
         }
 
-        for (auto& pair : directories)
-            SetupBranches(pair.first, pair.second);
+        for (auto& [branchPtr, path] : directories)
+            SetupBranches(branchPtr, path);
 
         //for (auto& child : files)
         //    p_parent.get()->AddBranch(std::make_shared<PanelTreeBranch>(child));
@@ -169,82 +195,141 @@ namespace SvEditor::Panels
         //    SetupBranches(p_parent.get()->GetChildreens, path);
     }
 
-    std::unordered_map<std::string, std::set<std::string>> ContentDrawerPanel::CreateExtensions()
+    //std::string ContentDrawerPanel::FormatPath(const std::filesystem::path& p_filePath)
+    //{
+    //    std::string path = p_filePath.string();
+
+    //    //erase before dirPath
+    //    auto it = path.find(DIRECTORY_PATH);
+    //    if (it != std::string::npos)
+    //        path = path.substr(it);
+
+    //    return path;
+    //}
+
+    ContentDrawerPanel::TypeExtensions ContentDrawerPanel::CreateExtensions()
     {
-        std::unordered_map<std::string, std::set<std::string>> extensions;
+        using namespace SvCore::Resources;
+        using namespace SvCore::ECS;
+        using namespace SvRendering::Resources;
+        using namespace SvRendering::RHI;
+        using namespace SvScripting;
+        using namespace SvAudio;
+
+        auto& rr = ResourceRegistry::GetInstance();
+
+        TypeExtensions extensions;
         {
-            auto& set = extensions.insert({"Model", std::set<std::string>() }).first->second;
+            auto& set = extensions[rr.GetRegisteredTypeName<Model>()];
             set.insert(".obj");
+            set.insert(".fbx");
+            set.insert(".gltf");
+            set.insert(".glb");
+            set.insert(".dae");
         }
         {
-            /*auto& set = */extensions.insert({"Material", std::set<std::string>() }).first->second;
+            auto& set = extensions[rr.GetRegisteredTypeName<Material>()];
+            set.insert(".mat");
         }
         {
-            auto& set = extensions.insert({"Shader", std::set<std::string>() }).first->second;
+            auto& set = extensions[rr.GetRegisteredTypeName<IShader>()];
             set.insert(".glsl");
             //set.insert(".frag");
             //set.insert(".vert");
         }
         {
-            auto& set = extensions.insert({"Script", std::set<std::string>() }).first->second;
+            auto& set = extensions[rr.GetRegisteredTypeName<LuaScript>()];
             set.insert(".lua");
         }
         {
-            auto& set = extensions.insert({"Texture", std::set<std::string>() }).first->second;
+            auto& set = extensions[rr.GetRegisteredTypeName<ITexture>()];
             set.insert(".png");
+            set.insert(".jpg");
+            set.insert(".jpeg");
+            set.insert(".tga");
+            set.insert(".bmp");
+        }
+        {
+            auto& set = extensions[rr.GetRegisteredTypeName<Scene>()];
+            set.insert(".scn");
+        }
+        {
+            auto& set = extensions[rr.GetRegisteredTypeName<AudioClip>()];
+            set.insert(".wav");
+            set.insert(".mp3");
+            set.insert(".ogg");
+            set.insert(".flac");
         }
 
         return extensions;
     }
 
-    SvCore::Resources::GenericResourceRef ContentDrawerPanel::CreateResourceRef(const std::filesystem::path& p_filePath)
+    std::string ContentDrawerPanel::GetType(const std::filesystem::path& p_filePath)
     {
         using namespace SvCore::Resources;
-        std::string extension = p_filePath.extension().string();
+        using namespace SvCore::Utility;
+        const std::string extension = p_filePath.extension().string();
 
         if (extension.empty())
-            return GenericResourceRef();
+            return {};
 
-        std::string resType;
-        for (auto& [type, set] : FileExtensions)
+        for (auto& [type, set] : s_fileExtensions)
         {
             if (set.contains(extension))
-            {
-                resType = type;
-                break;
-            }
+                return type;
         }
 
-        if (resType.empty())
-            return GenericResourceRef();
-
-        std::string path = p_filePath.string();
-
-        //erase before dirPath
-        auto it = path.find(DIRECTORY_PATH);
-        if (it != std::string::npos)
-            path = path.substr(it);
-
-        //replace all DOUBLE_SLASH for SLASH;
-        size_t start_pos = 0;
-        while ((start_pos = path.find(DOUBLE_SLASH, start_pos)) != std::string::npos)
-        {
-            path.replace(start_pos, DOUBLE_SLASH.length(), SLASH);
-            start_pos += SLASH.length();
-        }
-
-        //"assets/shaders/Lit.glsl"
-
-
-        return GenericResourceRef(resType, path);
+        return {};
     }
 
     bool ContentDrawerPanel::TryOpenFile(ResourceBranch& p_branch)
     {
-        std::string message = "Try to open file, path : " + p_branch.GetPathName();
-        SV_LOG(message.c_str());
+        using namespace SvCore::ECS;
+        using namespace SvCore::Resources;
+
+        auto path = p_branch.GetName();
+
+        const auto it = path.find_last_of('.');
+
+        if (it == std::string::npos)
+            return false;
+
+        const auto extension = path.substr(it);
+
+        path = p_branch.GetPath();
+        SV_LOG(std::string("Try to open file, path : " + path).c_str());
+
+        const auto& rr = ResourceRegistry::GetInstance();
+
+        if (s_fileExtensions.at(rr.GetRegisteredTypeName<Scene>()).contains(extension)
+            && !(dynamic_cast<Core::EditorEngine*>(SV_ENGINE())->IsPlayInEditor()))
+        {
+            reinterpret_cast<SvEditor::Core::EditorUI*>(SV_CURRENT_UI())->SpawnLoadingPanel();
+            SV_ENGINE()->ChangeScene(path);
+        }
 
         //can display other items
         return false;
+    }
+
+    const ContentDrawerPanel::TypeToBranch& ContentDrawerPanel::GetAllFilePaths()
+    {
+        return s_typedFiles;
+    }
+
+    std::vector<std::string> ContentDrawerPanel::GetAllFilePaths(const std::string& p_type)
+    {
+        auto it = s_typedFiles.find(p_type);
+        if (it == s_typedFiles.end())
+            return {};
+
+        auto& [type, branches] = *it;
+        std::vector<std::string> paths;
+        paths.reserve(branches.size());
+
+        for (auto& branch : branches)
+            paths.emplace_back(branch.lock()->GetPath());
+
+        return paths;
     }
 }

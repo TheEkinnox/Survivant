@@ -1,15 +1,16 @@
-//RenderingContext.h
+//MainCamera.h
 #pragma once
 
-#include "SurvivantCore/ECS/EntityHandle.h"
-#include "SurvivantRendering/Components/CameraComponent.h"	
+#include <SurvivantCore/ECS/EntityHandle.h>
 
-#include "Transform.h"
-#include "Vector/Vector2.h"
+#include <SurvivantRendering/Components/CameraComponent.h>
+
+#include <Transform.h>
+#include <Vector/Vector2.h>
 
 namespace SvApp::Core
 {
-	//foward declaration
+	//forward declaration
 	class GameInstance;
 
 	class MainCamera
@@ -26,32 +27,24 @@ namespace SvApp::Core
 		void	SetCamera(const Cam& p_cam, const LibMath::Transform& p_trans);
 		void	SetEntity(SvCore::ECS::EntityHandle p_entity);
 		CamInfo GetCamInfo();
+
 		void	UpdateInput();
 
 		Vec2* MoveInput();
 		Vec2* RotateInput();
 
 	private:
-		LibMath::Transform MoveTransformInput(
-			const LibMath::Transform& p_trans, 
-			const Vec2& p_move, const Vec2& p_rotation, const float p_dt);
+		static LibMath::Transform MoveTransformInput(
+			const LibMath::Transform& p_trans,
+			const Vec2& p_move, const Vec2& p_rotation, float p_dt);
 
-		union UnionCam
+		struct MyCam
 		{
-			UnionCam(
-				const Cam& p_cam, const LibMath::Transform& p_trans) :
-				m_camInfo({ p_cam , p_trans }) {};
-			UnionCam(SvCore::ECS::EntityHandle p_entity) :
-				m_entity(p_entity) {};
-			~UnionCam() {};
-
 			SvCore::ECS::EntityHandle m_entity;
-			struct
-			{
-				Cam					m_cam;
-				LibMath::Transform	m_trans;
-			}m_camInfo;
-		}m_union;
+
+			Cam					m_cam;
+			LibMath::Transform	m_trans;
+		}m_myCam;
 
 		bool m_hasEntity = false;
 

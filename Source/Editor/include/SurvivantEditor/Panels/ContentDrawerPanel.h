@@ -1,13 +1,16 @@
 //ContentDrawerPanel.h
 #pragma once
 
-#include "SurvivantCore/Utility/UnusedIdGenerator.h"
-#include "SurvivantCore/Resources/IResource.h"
-#include "SurvivantCore/Resources/ResourceRef.h"
 #include "SurvivantEditor/Interfaces/IPanelable.h"
 #include "SurvivantEditor/Panels/Panel.h"
+#include "SurvivantEditor/PanelItems/PanelButtonList.h"
 #include "SurvivantEditor/PanelItems/PanelSelectionBox.h"
 #include "SurvivantEditor/PanelItems/PanelTreeBranch.h"
+
+#include <SurvivantCore/Utility/UnusedIdGenerator.h>
+#include <SurvivantCore/Resources/IResource.h>
+#include <SurvivantCore/Resources/ResourceRef.h>
+#include <SurvivantCore/Utility/TypeRegistry.h>
 
 #include <filesystem>
 #include <functional>
@@ -23,10 +26,11 @@ namespace SvEditor::Panels
 	class ContentDrawerPanel : public Panel
 	{
 	public:
-		using ResourceBranch = PanelTreeBranch<SvCore::Resources::GenericResourceRef>;
+		using ResourceBranch = PanelTreeBranch<std::string>;
+		using TypeToBranch = std::unordered_map<std::string, std::vector<std::weak_ptr<ResourceBranch>>>;
 
 		ContentDrawerPanel();
-		~ContentDrawerPanel();
+		~ContentDrawerPanel() override = default;
 
 		//Panel
 		ERenderFlags Render() override;
@@ -36,21 +40,26 @@ namespace SvEditor::Panels
 
 		static constexpr char NAME[] = "ContentDrawer";
 
+		static const TypeToBranch& GetAllFilePaths();
+		static std::vector<std::string> GetAllFilePaths(const std::string& p_type);
+
 	private:
+		using TypeExtensions = std::unordered_map<std::string, std::set<std::string>>;
+
+		static constexpr char DIRECTORY_PATH[] = "assets";
+
+		static TypeExtensions CreateExtensions();
+		static inline TypeExtensions	s_fileExtensions;
+		static inline TypeToBranch		s_typedFiles;
+
+		static std::string GetType(const std::filesystem::path& p_filePath);
+		//static std::string FormatPath(const std::filesystem::path& p_filePath);
+
 		void SetupTree();
 		void SetupBranches(std::shared_ptr<ResourceBranch> p_parent, const std::filesystem::path& p_filePath);
 
-		static constexpr char DIRECTORY_PATH[] = "assets";
-		static inline const std::string DOUBLE_SLASH = "\\";
-		static inline const std::string SLASH = "/";
-
-		static std::unordered_map<std::string, std::set<std::string>> CreateExtensions();
-		static const inline std::unordered_map<std::string, std::set<std::string>> FileExtensions = CreateExtensions();
-
-		static SvCore::Resources::GenericResourceRef CreateResourceRef(const std::filesystem::path& p_filePath);
-
-
-		std::shared_ptr<ResourceBranch>	m_tree;
-		PanelSelectionBox				m_grid;
+		std::shared_ptr<ResourceBranch>		m_tree;
+		PanelSelectionBox					m_grid;
+		PanelButtonList						m_buttonList;
 	};
 }

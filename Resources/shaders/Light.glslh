@@ -64,8 +64,8 @@ SpotLight getSpotLight(mat4 lightMat)
 	SpotLight light =
 	{
 		lightMat[0],
-		{ lightMat[1][0], lightMat[2][0], lightMat[3][0] },
 		{ lightMat[1][1], lightMat[2][1], lightMat[3][1] },
+		{ lightMat[1][0], lightMat[2][0], lightMat[3][0] },
 		lightMat[1][2], lightMat[2][2], lightMat[3][2],
 		lightMat[1][3], lightMat[2][3]
 	};

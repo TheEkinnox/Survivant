@@ -1,0 +1,19 @@
+{
+    "shader": {
+        "path": "shaders/Unlit.glsl"
+    },
+    "properties": [
+        {
+            "name": "u_tint",
+            "type": 7,
+            "value": "{0.996078,0.716356,0.0352941,0.392157}"
+        },
+        {
+            "name": "u_diffuse",
+            "type": 10,
+            "value": {
+                "path": "importedModels/Redshift/Robotex_Robotex_Color.png"
+            }
+        }
+    ]
+}

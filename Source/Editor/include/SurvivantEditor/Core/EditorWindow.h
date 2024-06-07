@@ -3,11 +3,9 @@
 
 #include "SurvivantApp/Inputs/InputManager.h"
 #include "SurvivantApp/Windows/Window.h"
-#include "SurvivantCore/Events/Event.h"
 #include "SurvivantApp/Core/WorldContext.h"
 #include "SurvivantEditor/Core/EditorUI.h"
 
-#include <unordered_map>
 #include <array>
 
 
@@ -19,10 +17,9 @@ namespace SvEditor::Core
 		using WorldContext = SvApp::Core::WorldContext;
 
 		EditorWindow();
-		~EditorWindow() = default;
+		~EditorWindow() override = default;
 
 		void Update() override;
-		void RenderUI();
 		void EndRender() override;
 		bool ShouldClose() override;
 
@@ -33,10 +30,12 @@ namespace SvEditor::Core
 
 		EditorUI& GetUI();
 
+		void RenderLogo();
+
 	private:
 		//init on creation
 		std::unique_ptr<EditorUI>	m_ui;
-		bool						m_shouldClose = false; 
+		bool						m_shouldClose = false;
 
 		std::shared_ptr<SvApp::InputManager::InputBindings>		m_inputs;
 	};

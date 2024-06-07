@@ -59,8 +59,8 @@ namespace SvScripting
         if (p_script.empty())
             return {};
 
-        if (!CHECK(!m_scripts.contains(p_script), "Attempted to add script \"%s\" to entity \"%llu:%u\" more than once",
-                p_script.c_str(), m_owner.GetEntity().GetIndex(), m_owner.GetEntity().GetVersion()))
+        if (!CHECK(!m_scripts.contains(p_script), "Attempted to add script \"%s\" to entity \"%s\" more than once",
+                p_script.c_str(), m_owner.GetEntity().GetString().c_str()))
             return {};
 
         LuaScriptHandle handle = LuaContext::GetInstance().AddScript(p_script, m_owner, p_hint);
@@ -83,10 +83,18 @@ namespace SvScripting
     {
         LuaContext& context = LuaContext::GetInstance();
 
-        for (const auto& script : m_scripts | std::views::keys)
+        for (auto& [script, table] : m_scripts)
+        {
             context.RemoveScript(script, m_owner);
+            table.abandon();
+        }
 
         m_scripts.clear();
+    }
+
+    size_t LuaScriptList::size() const
+    {
+        return m_scripts.size();
     }
 
     sol::optional<sol::object> LuaObjectFromJson(lua_State* p_luaState, const JsonValue& p_json, Scene* p_scene)
@@ -195,8 +203,16 @@ namespace SvCore::ECS
 
         LuaContext& context = LuaContext::GetInstance();
 
-        for (const auto& [script, hint] : p_component.m_scripts)
+        auto scripts = p_component.m_scripts; // Necessary copy - Scripts can be removed during initialization
+
+        for (const auto& [script, hint] : scripts)
+        {
+            // Don't register removed scripts
+            if (!p_component.m_scripts.contains(script))
+                continue;
+
             context.AddScript(script, p_entity, hint);
+        }
     }
 
     template <>
@@ -206,7 +222,7 @@ namespace SvCore::ECS
     }
 
     template <>
-    void ComponentTraits::OnBeforeChange(EntityHandle& p_entity, LuaScriptList& p_component)
+    void ComponentTraits::OnBeforeChange(EntityHandle& p_entity, LuaScriptList& p_component, LuaScriptList&)
     {
         OnRemove(p_entity, p_component);
     }
@@ -300,6 +316,9 @@ namespace SvCore::ECS
             if (valType == sol::type::function || valType == sol::type::thread)
                 continue;
 
+            if (key.is<std::string>() && LuaScriptList::s_ignoredFields.contains(key.as<const std::string&>()))
+                continue;
+
             p_writer.StartObject();
 
             p_writer.Key("key");
@@ -317,6 +336,12 @@ namespace SvCore::ECS
     template <>
     bool ComponentRegistry::FromJson(sol::table& p_out, const JsonValue& p_json, Scene* p_scene)
     {
+        if (p_json.IsNull())
+        {
+            p_out = sol::nil;
+            return true;
+        }
+
         if (!CHECK(p_json.IsArray(), "Unable to deserialize lua table - Json value should be an array"))
             return false;
 

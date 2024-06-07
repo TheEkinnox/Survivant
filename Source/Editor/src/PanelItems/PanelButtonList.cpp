@@ -1,25 +1,18 @@
 //PanelButtonList.cpp
-
 #include "SurvivantEditor/PanelItems/PanelButtonList.h"
 
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_opengl3.h"
+#include <imgui.h>
 
 namespace SvEditor::PanelItems
 {
     void PanelButtonList::DisplayAndUpdatePanel()
     {
-        if (m_buttons.empty())
-            return;
-
-        auto buttonItt = m_buttons.begin();
-        buttonItt->DisplayAndUpdatePanel();
-        buttonItt++;
-
-        for (auto& itt = buttonItt; itt != m_buttons.end(); itt++)
+        for (auto it = m_buttons.begin(); it != m_buttons.end(); ++it)
         {
-            ImGui::SameLine();
-            itt->DisplayAndUpdatePanel();
+            if (it != m_buttons.begin())
+                ImGui::SameLine();
+
+            it->DisplayAndUpdatePanel();
         }
     }
 }

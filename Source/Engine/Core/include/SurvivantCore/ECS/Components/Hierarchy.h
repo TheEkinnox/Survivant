@@ -53,12 +53,6 @@ namespace SvCore::ECS
         Entity GetParent() const;
 
         /**
-         * \brief Sets the hierarchy owner's parent entity
-         * \param p_parent The owner's new parent
-         */
-        void SetParent(Entity p_parent);
-
-        /**
          * \brief Gets the hierarchy owner's first child
          * \return The owner's first child
          */
@@ -80,17 +74,17 @@ namespace SvCore::ECS
          * \brief Gets the hierarchy owner's number of child
          * \return The owner's child count
          */
-        size_t GetChildCount() const;
+        Entity::Index GetChildCount() const;
 
     private:
         friend struct ComponentTraits;
         friend class ComponentRegistry;
 
-        Entity m_parent          = NULL_ENTITY;
-        Entity m_firstChild      = NULL_ENTITY;
-        Entity m_previousSibling = NULL_ENTITY;
-        Entity m_nextSibling     = NULL_ENTITY;
-        size_t m_childCount      = 0;
+        Entity        m_parent          = NULL_ENTITY;
+        Entity        m_firstChild      = NULL_ENTITY;
+        Entity        m_previousSibling = NULL_ENTITY;
+        Entity        m_nextSibling     = NULL_ENTITY;
+        Entity::Index m_childCount      = 0;
     };
 
     std::vector<LibMath::Transform*> GetChildTransforms(const EntityHandle& p_entity);
@@ -108,25 +102,28 @@ namespace SvCore::ECS
     void UnlinkTransforms(const EntityHandle& p_entity);
 
     template <>
-    void ComponentTraits::OnAdd<HierarchyComponent>(EntityHandle&, HierarchyComponent&);
+    void ComponentTraits::OnAdd(EntityHandle&, HierarchyComponent&);
 
     template <>
-    void ComponentTraits::OnRemove<HierarchyComponent>(EntityHandle&, HierarchyComponent&);
+    void ComponentTraits::OnRemove(EntityHandle&, HierarchyComponent&);
 
     template <>
-    void ComponentTraits::OnBeforeChange<HierarchyComponent>(EntityHandle&, HierarchyComponent&);
+    void ComponentTraits::OnBeforeChange(EntityHandle&, HierarchyComponent&, HierarchyComponent&);
 
     template <>
-    void ComponentTraits::OnChange<HierarchyComponent>(EntityHandle&, HierarchyComponent&);
+    void ComponentTraits::OnChange(EntityHandle&, HierarchyComponent&);
 
     template <>
-    void ComponentTraits::OnAdd<LibMath::Transform>(EntityHandle&, LibMath::Transform&);
+    HierarchyComponent ComponentTraits::Copy(EntityHandle&, HierarchyComponent&, EntityHandle&);
 
     template <>
-    void ComponentTraits::OnRemove<LibMath::Transform>(EntityHandle&, LibMath::Transform&);
+    void ComponentTraits::OnAdd(EntityHandle&, LibMath::Transform&);
 
     template <>
-    void ComponentTraits::OnChange<LibMath::Transform>(EntityHandle&, LibMath::Transform&);
+    void ComponentTraits::OnRemove(EntityHandle&, LibMath::Transform&);
+
+    template <>
+    void ComponentTraits::OnChange(EntityHandle&, LibMath::Transform&);
 
     template <>
     bool ComponentRegistry::ToJson(const HierarchyComponent&, Serialization::JsonWriter&, const EntitiesMap&);

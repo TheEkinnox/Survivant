@@ -4,6 +4,8 @@
 #include "SurvivantEditor/Interfaces/IPanelable.h"
 #include "SurvivantCore/Utility/TypeTraits.h"
 
+#include "imgui.h"
+
 #include <memory>
 #include <functional>
 
@@ -14,8 +16,8 @@ namespace SvEditor::PanelItems
 	{
 	public:
 		using Value =				T;
-		using GetRefFunc =			std::function<T&()>;	
-		using GetCopyFunc =			std::function<T()>;	
+		using GetRefFunc =			std::function<T&()>;
+		using GetCopyFunc =			std::function<T()>;
 		using CallbackParams =		std::conditional_t<SvCore::Utility::IsEmpty<Params...>,
 			const T&, const std::tuple<Params...>&>;
 		//using CopyValue = std::conditional_t<SvCore::Utility::IsEmpty<Params...>,
@@ -51,6 +53,12 @@ namespace SvEditor::PanelItems
 				val = p_getCopy();
 				return val;
 			};
+	}
+
+	template<class T, typename ...Params>
+	inline void PanelInputBase<T, Params...>::DisplayAndUpdatePanel()
+	{
+		ImGui::SetNextItemWidth(-1);
 	}
 
 	template<class T, typename ...Params >

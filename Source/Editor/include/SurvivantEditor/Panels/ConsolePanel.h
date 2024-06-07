@@ -7,11 +7,12 @@
 #include "SurvivantEditor/PanelItems/PanelTextInput.h"
 #include "SurvivantEditor/PanelItems/PanelTextBox.h"
 #include "SurvivantEditor/PanelItems/PanelButtonList.h"
+#include "SurvivantEditor/PanelItems/PanelPopupMenuButton.h"
 #include "SurvivantEditor/Panels/Panel.h"
 
 #include <SurvivantCore/Debug/Logger.h>
 
-//foward declaration
+//forward declaration
 struct ImVec4;
 
 namespace SvEditor::Panels
@@ -26,7 +27,7 @@ namespace SvEditor::Panels
 		using LogInfo = SvCore::Debug::LogInfo;
 
 		ConsolePanel();
-		~ConsolePanel();
+		~ConsolePanel() override;
 
 		ERenderFlags Render() override;
 
@@ -67,11 +68,9 @@ namespace SvEditor::Panels
 
 		static inline int s_panelCount = 0;
 
-		std::string								m_inputBuffer;
-		PanelTextInput							m_input;
 		PanelTextBox							m_textBox;
 		PanelButtonList							m_buttons;
-		Menu									m_filterMenu;
+		PanelPopupMenuButton					m_popUp;
 		//cant use vector<bool> bcs not container
 		std::vector<unsigned char>						m_currentFilters;
 		SvCore::Events::Event<LogInfo>::ListenerId		m_eventHandle;

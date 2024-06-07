@@ -6,22 +6,27 @@
 
 namespace SvApp::Core
 {
-    GameInstance::GameInstance(std::weak_ptr<WorldContext> p_worldContext) : 
-        m_worldContext(p_worldContext) 
-    {}
-
-    void GameInstance::Init()
+    void GameInstance::Init(const std::weak_ptr<WorldContext>& p_worldContext)
     {
-        //init here
-        int i = 0; i; 
+        m_worldContext = p_worldContext;
 
     }
 
-    void GameInstance::Update()
+    void GameInstance::UpdateScripts()
     {
-        UpdatePhysics();
 
-        m_worldContext.lock()->Update();
+
+        //put all updates in gameInstance
+        //m_worldContext.lock()->Update();
+    }
+
+    void GameInstance::UpdatePhysics()
+    {
+    }
+
+    void GameInstance::BakeLights()
+    {
+        m_worldContext.lock()->BakeLighting();
     }
 
     void GameInstance::InitializeStandalone()
@@ -42,10 +47,10 @@ namespace SvApp::Core
         m_worldContext.lock()->BeginPlay();
     }
 
-    Engine* GameInstance::GetEngine()
+    IEngine* GameInstance::GetEngine()
     {
         //an engine will exist before any GameInstances
-        ASSERT(Engine::s_engine != nullptr, "Global engine not defined before GameInstance");
-        return Engine::s_engine;
+        ASSERT(IEngine::s_engine != nullptr, "Global engine not defined before GameInstance");
+        return IEngine::s_engine;
     }
 }

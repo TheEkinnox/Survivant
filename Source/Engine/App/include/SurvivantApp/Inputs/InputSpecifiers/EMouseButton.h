@@ -1,11 +1,12 @@
 #pragma once
+#include <cstdint>
 
 namespace SvApp
 {
     /**
      * \brief Wrapper for GLFW_MOUSE_BUTTON_*
      */
-    enum class EMouseButton
+    enum class EMouseButton : uint8_t
     {
         MOUSE_1 = 0,
         MOUSE_2 = 1,

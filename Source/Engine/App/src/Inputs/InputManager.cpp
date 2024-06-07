@@ -2,25 +2,25 @@
 
 #include "SurvivantApp/Inputs/InputManager.h"
 #include "SurvivantApp/Windows/Window.h"
-#include "SurvivantCore/Debug/Assertion.h"
+
+#include <SurvivantCore/Debug/Assertion.h>
 
 #include <tuple>
 
 using namespace SvApp;
 
-InputManager& SvApp::InputManager::GetInstance()
+InputManager& InputManager::GetInstance()
 {
 	static InputManager s_instance;
-
 	return s_instance;
 }
 
-std::string SvApp::InputManager::KeyBindingToString(const KeyboardKeyType& p_key)
+std::string InputManager::KeyBindingToString(const KeyboardKeyType& p_key)
 {
 	std::string str;
 	auto& infoRef = p_key.m_inputInfo;
 	EInputModifier keyModif = std::get<2>(infoRef);
-	
+
 	for (size_t i = 0; i < NUM_INPUT_MODIFIERS; i++)
 	{
 		auto modif = EInputModifier(1 << i);
@@ -32,7 +32,7 @@ std::string SvApp::InputManager::KeyBindingToString(const KeyboardKeyType& p_key
 	return str;
 }
 
-std::string SvApp::InputManager::KeyNameToString(const EKey& p_name)
+std::string InputManager::KeyNameToString(const EKey& p_name)
 {
 	switch (p_name)
 	{
@@ -84,7 +84,7 @@ std::string SvApp::InputManager::KeyNameToString(const EKey& p_name)
 	case EKey::LEFT_BRACKET:
 	case EKey::BACKSLASH:
 	case EKey::RIGHT_BRACKET:
-	case EKey::GRAVE_ACCENT:	return std::string(1, static_cast<char>(p_name));
+	case EKey::GRAVE_ACCENT:	return { 1, static_cast<char>(p_name) };
 	case EKey::WORLD_1:			return "WORLD_1";
 	case EKey::WORLD_2:			return "WORLD_2";
 	case EKey::ESCAPE:			return "ESCAPE";
@@ -105,7 +105,7 @@ std::string SvApp::InputManager::KeyNameToString(const EKey& p_name)
 	case EKey::SCROLL_LOCK:		return "SCROLL_LOCK";
 	case EKey::NUM_LOCK:		return "NUM_LOCK";
 	case EKey::PRINT_SCREEN:	return "PRINT_SCREEN";
-	case EKey::PAUSE:			return "PAUSE"; 
+	case EKey::PAUSE:			return "PAUSE";
 	case EKey::F1 :
 	case EKey::F2 :
 	case EKey::F3 :
@@ -130,7 +130,7 @@ std::string SvApp::InputManager::KeyNameToString(const EKey& p_name)
 	case EKey::F22:
 	case EKey::F23:
 	case EKey::F24:
-	case EKey::F25:				return "F" + std::to_string((static_cast<int>(p_name) % 290) + 1);
+	case EKey::F25:				return "F" + std::to_string(static_cast<int>(p_name) - static_cast<int>(EKey::F1) + 1);
 	case EKey::KP_0:
 	case EKey::KP_1:
 	case EKey::KP_2:
@@ -140,10 +140,10 @@ std::string SvApp::InputManager::KeyNameToString(const EKey& p_name)
 	case EKey::KP_6:
 	case EKey::KP_7:
 	case EKey::KP_8:
-	case EKey::KP_9:			return "KP_" + std::to_string((static_cast<int>(p_name) % 320) + 1);
+	case EKey::KP_9:			return "KP_" + std::to_string(static_cast<int>(p_name) - static_cast<int>(EKey::KP_0));
 	case EKey::KP_DECIMAL:		return "KP_DECIMAL";
 	case EKey::KP_DIVIDE:		return "KP_DIVIDE";
-	case EKey::KP_MULTIPLY:		return "KP_SUBTRACT";
+	case EKey::KP_MULTIPLY:		return "KP_MULTIPLY";
 	case EKey::KP_SUBTRACT:		return "KP_SUBTRACT";
 	case EKey::KP_ADD:			return "KP_ADD";
 	case EKey::KP_ENTER:		return "KP_ENTER";
@@ -162,50 +162,42 @@ std::string SvApp::InputManager::KeyNameToString(const EKey& p_name)
 	}
 }
 
-std::string SvApp::InputManager::KeyModifToString(const EInputModifier& p_modif)
+std::string InputManager::KeyModifToString(const EInputModifier& p_modif)
 {
-#undef MOD_SHIFT
-#undef MOD_CONTROL
-#undef MOD_ALT
 	switch (p_modif)
 	{
-	case SvApp::EInputModifier::MOD_SHIFT:		return "SHIFT";
-	case SvApp::EInputModifier::MOD_CONTROL:		return "CONTROL";
-	case SvApp::EInputModifier::MOD_ALT:			return "ALT";
-	case SvApp::EInputModifier::MOD_SUPER:		return "SUPER";
-	case SvApp::EInputModifier::MOD_CAPS_LOCK:	return "CAPS_LOCK";
-	case SvApp::EInputModifier::MOD_NUM_LOCK:		return "NUM_LOCK";
-
-	default:									return std::string();
+	case EInputModifier::MOD_SHIFT:		return "SHIFT";
+	case EInputModifier::MOD_CONTROL:	return "CONTROL";
+	case EInputModifier::MOD_ALT:		return "ALT";
+	case EInputModifier::MOD_SUPER:		return "SUPER";
+	case EInputModifier::MOD_CAPS_LOCK:	return "CAPS_LOCK";
+	case EInputModifier::MOD_NUM_LOCK:	return "NUM_LOCK";
+	default:							return std::string();
 	}
 }
 
-EKey SvApp::InputManager::GetModifKey(const EInputModifier& p_modif)
+EKey InputManager::GetModifKey(const EInputModifier& p_modif)
 {
-	//gotat put this if I want to use enum. guess not. guess yes
-#undef MOD_SHIFT
-#undef MOD_CONTROL
-#undef MOD_ALT
 	switch (p_modif)
 	{
-	case SvApp::EInputModifier::MOD_SHIFT:
+	case EInputModifier::MOD_SHIFT:
 		return EKey::LEFT_SHIFT;
-	case SvApp::EInputModifier::MOD_CONTROL:
+	case EInputModifier::MOD_CONTROL:
 		return EKey::LEFT_CONTROL;
-	case SvApp::EInputModifier::MOD_ALT:
+	case EInputModifier::MOD_ALT:
 		return EKey::LEFT_ALT;
-	case SvApp::EInputModifier::MOD_SUPER:
+	case EInputModifier::MOD_SUPER:
 		return EKey::LEFT_SUPER;
-	case SvApp::EInputModifier::MOD_CAPS_LOCK:
+	case EInputModifier::MOD_CAPS_LOCK:
 		return EKey::CAPS_LOCK;
-	case SvApp::EInputModifier::MOD_NUM_LOCK:
+	case EInputModifier::MOD_NUM_LOCK:
 		return EKey::NUM_LOCK;
 	default:
 		return EKey();
 	}
 }
 
-void SvApp::InputManager::InitWindow(Window* p_window)
+void InputManager::InitWindow(Window* p_window)
 {
 	if (p_window == nullptr)
 		return;
@@ -213,80 +205,133 @@ void SvApp::InputManager::InitWindow(Window* p_window)
 	m_window = p_window;
 }
 
-void SvApp::InputManager::Update()
+void InputManager::Update()
 {
+	LibMath::Vector2D mousePos;
+	m_window->GetMousePos(mousePos.m_x, mousePos.m_y);
+
+	if (m_resetDelta)
+	{
+		m_lastMousePos = mousePos;
+		m_resetDelta = false;
+	}
+
+	m_mouseDelta = mousePos - m_lastMousePos;
+	m_lastMousePos = mousePos;
+
 	for (auto& callback : m_updateCallbacks)
 		callback();
 
 	m_updateCallbacks.clear();
 }
 
-void SvApp::InputManager::CallInput(const KeyboardKeyType& p_type, char p_scancode, bool p_callAtUpdate)
+void InputManager::CallInput(const KeyboardKeyType& p_type, char p_scancode, bool p_callAtUpdate)
 {
-	ASSERT(m_bindings.get() != nullptr, "Imput Bindings not set");
+	ASSERT(m_bindings.get() != nullptr, "Input Bindings not set");
 
 	auto callback = m_bindings->m_keyCallbacks.find(p_type);
-
-	if (callback == m_bindings->m_keyCallbacks.end())
-		return;
-
-	if (p_callAtUpdate)
+	if (callback != m_bindings->m_keyCallbacks.end())
 	{
-		m_updateCallbacks.push_back(std::bind(callback->second, p_scancode));
-		return;
+		if (p_callAtUpdate)
+			m_updateCallbacks.push_back(std::bind(callback->second, p_scancode));
+		else
+			callback->second(p_scancode);
 	}
 
-	//calls keyboard callback with scancode
-	callback->second(p_scancode);
+	//call MOD_ANY if exists
+	auto& [key, state, mod] = p_type.m_inputInfo;
+	callback = m_bindings->m_keyCallbacks.find(KeyboardKeyType(key, state, EInputModifier::MOD_ANY));
+	if (callback != m_bindings->m_keyCallbacks.end())
+	{
+		if (p_callAtUpdate)
+			m_updateCallbacks.push_back(std::bind(callback->second, p_scancode));
+		else
+			callback->second(p_scancode);
+	}
 }
 
-void SvApp::InputManager::CallInput(const MouseKeyType& p_type, float p_x, float p_y, bool p_callAtUpdate)
+void InputManager::CallInput(const MouseKeyType& p_type, float p_x, float p_y, bool p_callAtUpdate)
 {
-	ASSERT(m_bindings.get() != nullptr, "Imput Bindings not set");
+	ASSERT(m_bindings.get() != nullptr, "Input Bindings not set");
 
 	auto callback = m_bindings->m_mouseKeyCallbacks.find(p_type);
 
-	if (callback == m_bindings->m_mouseKeyCallbacks.end())
-		return;
-
-	if (p_callAtUpdate)
+	if (callback != m_bindings->m_mouseKeyCallbacks.end())
 	{
-		m_updateCallbacks.push_back(std::bind(callback->second, p_x, p_y));
-		return;
+		if (p_callAtUpdate)
+			m_updateCallbacks.push_back(std::bind(callback->second, p_x, p_y));
+		else
+			callback->second(p_x, p_y);
 	}
 
-	//calls mouse key callback with mous pos (x,y)
-	callback->second(p_x, p_y);
+	//call MOD_ANY if exists
+	auto& [key, state, mod] = p_type.m_inputInfo;
+	callback = m_bindings->m_mouseKeyCallbacks.find(MouseKeyType(key, state, EInputModifier::MOD_ANY));
+	if (callback != m_bindings->m_mouseKeyCallbacks.end())
+	{
+		if (p_callAtUpdate)
+			m_updateCallbacks.push_back(std::bind(callback->second, p_x, p_y));
+		else
+			callback->second(p_x, p_y);
+	}
 }
 
-void SvApp::InputManager::CallInput(const MouseKeyType& p_type, bool p_callAtUpdate)
+void InputManager::CallInput(const MouseKeyType& p_type, bool p_callAtUpdate)
 {
 	double i, j;
 	GetMousePos(i, j);
 	CallInput(p_type, static_cast<float>(i), static_cast<float>(j), p_callAtUpdate);
 }
 
-void SvApp::InputManager::SetInputBindings(const std::shared_ptr<InputBindings>& p_bindings)
+void InputManager::SetInputBindings(const std::shared_ptr<InputBindings>& p_bindings)
 {
 	m_bindings = p_bindings;
 }
 
-void SvApp::InputManager::GetMousePos(double& p_x, double& p_y)
+void InputManager::GetMousePos(double& p_x, double& p_y) const
 {
 	m_window->GetMousePos(p_x, p_y);
 }
 
-bool SvApp::InputManager::EvaluateInput(const KeyboardKeyType& p_key)
+void InputManager::SetMousePos(const double p_x, const double p_y)
+{
+	m_window->SetMousePos(p_x, p_y);
+}
+
+LibMath::Vector2D InputManager::GetMouseDelta() const
+{
+	return m_mouseDelta;
+}
+
+ECursorMode InputManager::GetCursorMode() const
+{
+	return m_window->GetCursorMode();
+}
+
+void InputManager::SetCursorMode(const ECursorMode p_mode)
+{
+	const ECursorMode currentMode = GetCursorMode();
+
+	if (currentMode == p_mode)
+		return;
+
+	if (currentMode == ECursorMode::DISABLED)
+		m_resetDelta = true;
+
+	m_window->SetCursorMode(p_mode);
+}
+
+bool InputManager::EvaluateInput(const KeyboardKeyType& p_key)
 {
 	if (m_window == nullptr)
 		return false;
 
-	//std::apply(std::bind_front(&SvApp::Window::EvaluateInput, m_window), p_key.m_inputInfo);
+	//std::apply(std::bind_front(&Window::EvaluateInput, m_window), p_key.m_inputInfo);
 	auto& info = p_key.m_inputInfo;
 	return m_window->EvaluateInput(std::get<0>(info), std::get<1>(info), std::get<2>(info));
 }
 
-bool SvApp::InputManager::EvaluateInput(const MouseKeyType& p_key)
+bool InputManager::EvaluateInput(const MouseKeyType& p_key)
 {
 	if (m_window == nullptr)
 		return false;

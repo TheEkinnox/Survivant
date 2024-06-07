@@ -1,8 +1,9 @@
 //Window.cpp
 
-#include "SurvivantApp/Inputs/InputManager.h"
 #include "SurvivantApp/Windows/Window.h"
-#include "SurvivantCore/Debug/Assertion.h"
+#include "SurvivantApp/Inputs/InputManager.h"
+
+#include <SurvivantCore/Debug/Assertion.h>
 
 #include <GLFW/glfw3.h>
 
@@ -12,12 +13,12 @@ void IMKeyCallback(GLFWwindow* /*p_window*/, int p_key, int p_scancode, int p_ac
 {
     InputManager::GetInstance().CallInput(
         InputManager::KeyboardKeyType(
-            static_cast<EKey>(p_key), 
-            static_cast<EKeyState>(p_action), 
-            static_cast<EInputModifier>(p_mods)), 
+            static_cast<EKey>(p_key),
+            static_cast<EKeyState>(p_action),
+            static_cast<EInputModifier>(p_mods)),
         static_cast<char>(p_scancode),
         true);
-}  
+}
 
 void IMMouseCallback(GLFWwindow* p_window, int p_button, int p_action, int p_mods)
 {
@@ -29,7 +30,7 @@ void IMMouseCallback(GLFWwindow* p_window, int p_button, int p_action, int p_mod
             static_cast<EMouseButton>(p_button),
             static_cast<EMouseButtonState>(p_action),
             static_cast<EInputModifier>(p_mods)),
-        static_cast<float>(xpos), 
+        static_cast<float>(xpos),
         static_cast<float>(ypos),
         true);
 }
@@ -61,7 +62,7 @@ void WindowMinimizeCallback(GLFWwindow* /*window*/, int p_iconified)
     SvCore::Events::EventManager::GetInstance().Invoke<Window::WindowMinimize>(p_iconified != 0);
 }
 
-Window::Window(std::string p_name)
+Window::Window(const std::string& p_name, const bool p_startMaximized)
 {
     //init
     m_monitor = glfwGetPrimaryMonitor();
@@ -71,13 +72,14 @@ Window::Window(std::string p_name)
     glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
     glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
     glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+    glfwWindowHint(GLFW_MAXIMIZED, p_startMaximized);
 
-    m_window = glfwCreateWindow(mode->width, mode->height, p_name.c_str(), nullptr, nullptr);
+    const int width = static_cast<int>(static_cast<float>(mode->width) * .8f);
+    const int height = static_cast<int>(static_cast<float>(mode->height) * .8f);
+    m_window = glfwCreateWindow(width, height, p_name.c_str(), nullptr, nullptr);
     m_isInFullscreen = false;
 
-    int x;
-    glfwGetWindowPos(m_window, &x, &m_yWindowedPos);
-    glfwSetWindowPos(m_window, 0, m_yWindowedPos);
+    glfwGetWindowPos(m_window, nullptr, &m_yWindowedPos);
 
     glfwMakeContextCurrent(m_window);
 
@@ -85,7 +87,7 @@ Window::Window(std::string p_name)
     SetupInputManagerCallbacks();
 }
 
-SvApp::Window::Window(std::string p_name, int p_width , int p_height, int p_x, int p_y)
+Window::Window(const std::string& p_name, int p_width, int p_height, int p_x, int p_y)
 {
     //init
     m_monitor = glfwGetPrimaryMonitor();
@@ -108,17 +110,22 @@ SvApp::Window::Window(std::string p_name, int p_width , int p_height, int p_x, i
     SetupInputManagerCallbacks();
 }
 
-SvApp::Window::~Window()
+Window::~Window()
 {
     glfwDestroyWindow(m_window);
 }
 
-GLFWwindow* SvApp::Window::GetWindow()
+GLFWwindow* Window::GetWindow()
 {
     return m_window;
 }
 
-void SvApp::Window::SetupWindowCallbacks() const
+void Window::GetSize(int& p_width, int& p_height)
+{
+    glfwGetWindowSize(m_window, &p_width, &p_height);
+}
+
+void Window::SetupWindowCallbacks() const
 {
     glfwSetWindowCloseCallback(m_window, WindowCloseCallback);
     glfwSetWindowSizeCallback(m_window, WindowSizeCallback);
@@ -126,116 +133,161 @@ void SvApp::Window::SetupWindowCallbacks() const
     glfwSetWindowIconifyCallback(m_window, WindowMinimizeCallback);
 }
 
-void SvApp::Window::SetupInputManagerCallbacks() const
+void Window::SetupInputManagerCallbacks() const
 {
     glfwSetKeyCallback(m_window, IMKeyCallback);
     glfwSetMouseButtonCallback(m_window, IMMouseCallback);
 }
 
-void SvApp::Window::GetMousePos(double& p_x, double& p_y) const
+void Window::GetMousePos(double& p_x, double& p_y) const
 {
     glfwGetCursorPos(m_window, &p_x, &p_y);
 }
 
-void SvApp::Window::GetWindowSize(int& p_width, int& p_height) const
+void Window::SetMousePos(const double p_x, const double p_y) const
+{
+    glfwSetCursorPos(m_window, p_x, p_y);
+}
+
+void Window::GetWindowSize(int& p_width, int& p_height) const
 {
     glfwGetWindowSize(m_window, &p_width, &p_height);
 }
 
-bool SvApp::Window::EvaluateInput(EKey p_key, EKeyState p_state, EInputModifier p_modif)
+bool Window::EvaluateInput(EKey p_key, EKeyState p_state, EInputModifier p_modif)
 {
-    return  static_cast<int>(p_state) == glfwGetKey(m_window, static_cast<int>(p_key)) &&
-            EvaluteModif(p_modif);
+    return static_cast<int>(p_state) == glfwGetKey(m_window, static_cast<int>(p_key)) &&
+        EvaluateModif(p_modif);
 }
 
-bool SvApp::Window::EvaluateInput(EMouseButton p_button, EMouseButtonState p_state, EInputModifier p_modif)
+bool Window::EvaluateInput(EMouseButton p_button, EMouseButtonState p_state, EInputModifier p_modif)
 {
-    return  static_cast<int>(p_state) == glfwGetMouseButton(m_window, static_cast<int>(p_button)) &&
-            EvaluteModif(p_modif);
+    return static_cast<int>(p_state) == glfwGetMouseButton(m_window, static_cast<int>(p_button)) &&
+        EvaluateModif(p_modif);
 }
 
-bool SvApp::Window::EvaluteModif(EInputModifier p_modif)
+bool Window::EvaluateModif(const EInputModifier p_modif)
 {
-    int disiredModif = static_cast<int>(p_modif);
-    int currentModif = 0;
-
-    if (disiredModif < 0)
+    if (p_modif == MOD_ANY)
         return true;
 
-    for (size_t i = 0; i < NUM_INPUT_MODIFIERS; i++)
+    uint8_t currentModif = 0;
+
+    for (uint8_t i = 0; i < NUM_INPUT_MODIFIERS; i++)
     {
-        int modif = 1 << i;
-        int state = glfwGetKey(m_window, static_cast<int>(InputManager::GetModifKey(static_cast<EInputModifier>(modif))));
-        if (state == static_cast<int>(EKeyState::PRESSED))
-            currentModif += modif;
+        const EInputModifier modif = static_cast<EInputModifier>(1 << i);
+
+        if (!(p_modif & modif))
+            continue;
+
+        const int modifierKey = static_cast<int>(InputManager::GetModifKey(modif));
+        int       state       = glfwGetKey(m_window, modifierKey);
+
+        if (state != GLFW_PRESS && modifierKey >= GLFW_KEY_LEFT_SHIFT && modifierKey <= GLFW_KEY_LEFT_SUPER)
+            state = glfwGetKey(m_window, modifierKey + (GLFW_KEY_RIGHT_SHIFT - GLFW_KEY_LEFT_SHIFT));
+
+        if (state == GLFW_PRESS)
+            currentModif |= modif;
     }
 
-    return disiredModif == currentModif;
+    return static_cast<uint8_t>(p_modif) == currentModif;
 }
 
-void SvApp::Window::ToggleFullScreenMode()
+void Window::ToggleFullScreenMode()
 {
     const GLFWvidmode* mode = glfwGetVideoMode(m_monitor);
     glfwSetWindowMonitor(
-        m_window, 
-        m_isInFullscreen? nullptr: m_monitor,
-        0, 
-        m_isInFullscreen? m_yWindowedPos: 0, 
-        mode->width, 
-        mode->height, 
+        m_window,
+        m_isInFullscreen ? nullptr : m_monitor,
+        0,
+        m_isInFullscreen ? m_yWindowedPos : 0,
+        mode->width,
+        mode->height,
         mode->refreshRate);
 
     m_isInFullscreen = !m_isInFullscreen;
 }
 
-void SvApp::Window::Update()
+void Window::Update()
 {
     glfwPollEvents();
 }
 
 
-void SvApp::Window::EndRender()
+void Window::EndRender()
 {
     glfwSwapBuffers(m_window);
 }
 
-bool SvApp::Window::ShouldClose()
+bool Window::ShouldClose()
 {
     return glfwWindowShouldClose(m_window);
 }
 
-void SvApp::Window::SetWindowSizeLimits(int p_minWidth, int p_minHeight, int p_maxWidth, int p_maxHeight)
+void Window::SetWindowSizeLimits(int p_minWidth, int p_minHeight, int p_maxWidth, int p_maxHeight)
 {
     glfwSetWindowSizeLimits(m_window, p_minWidth, p_minHeight, p_maxWidth, p_maxHeight);
 }
 
-void SvApp::Window::SetAspectRatio(int p_width, int p_height)
+void Window::SetAspectRatio(int p_width, int p_height)
 {
     glfwSetWindowAspectRatio(m_window, p_width, p_height);
 }
 
-void SvApp::Window::SetWindowIcons(std::vector<GLFWimage> p_images)
+void Window::SetWindowIcons(std::vector<GLFWimage> p_images)
 {
     glfwSetWindowIcon(m_window, static_cast<int>(p_images.size()), p_images.data());
 }
 
-void SvApp::Window::SetFocusWindow()
+void Window::SetFocusWindow()
 {
     glfwFocusWindow(m_window);
 }
 
-void SvApp::Window::WindowCloseRequest::BeforeInvoke()
+ECursorMode Window::GetCursorMode() const
+{
+    switch (glfwGetInputMode(m_window, GLFW_CURSOR))
+    {
+    case GLFW_CURSOR_NORMAL:
+        return ECursorMode::NORMAL;
+    case GLFW_CURSOR_HIDDEN:
+        return ECursorMode::HIDDEN;
+    case GLFW_CURSOR_DISABLED:
+        return ECursorMode::DISABLED;
+    default:
+        ASSERT(false, "Unknown cursor mode");
+        return {};
+    }
+}
+
+void Window::SetCursorMode(const ECursorMode p_lockMode)
+{
+    switch (p_lockMode)
+    {
+    case ECursorMode::NORMAL:
+        return glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    case ECursorMode::HIDDEN:
+        return glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+    case ECursorMode::DISABLED:
+        return glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    default:
+        ASSERT(false, "Unsupported cursor mode");
+        return;
+    }
+}
+
+void Window::WindowCloseRequest::BeforeInvoke()
 {
     m_cancelRequest = false;
 }
 
-void SvApp::Window::WindowCloseRequest::AfterInvoke()
+void Window::WindowCloseRequest::AfterInvoke()
 {
     if (!m_cancelRequest)
         SvCore::Events::EventManager::GetInstance().Invoke<WindowClosing>();
 }
 
-void SvApp::Window::WindowCloseRequest::InterceptCloseRequest()
+void Window::WindowCloseRequest::InterceptCloseRequest()
 {
     m_cancelRequest = true;
 }

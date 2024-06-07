@@ -2,29 +2,26 @@
 
 #include "SurvivantEditor/Panels/MainPanel.h"
 
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_opengl3.h"
+#include <imgui.h>
 
 namespace SvEditor::Panels
 {
     MainPanel::MainPanel() :
         Panel(NAME),
-        m_panelFlags(ERenderFlags()),
-        m_menuBar()
+        m_panelFlags(ERenderFlags())
     {}
 
     MainPanel::MainPanel(MenuBar&& p_menuBar) :
         Panel(NAME),
-        m_panelFlags(ERenderFlags()),
-        m_menuBar()
+        m_panelFlags(ERenderFlags())
     {
         SetMenuBar(std::move(p_menuBar));
     }
 
-    Panel::ERenderFlags MainPanel::Render()
+    void MainPanel::RenderDockSpace()
     {
         static ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_None;
-        static float boarderSize = 5.0f;
+        static float borderSize = 5.0f;
         bool open = true;
         //fullscreen + undockable/cant move
         ImGuiWindowFlags windowFlags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
@@ -32,26 +29,33 @@ namespace SvEditor::Panels
         ImGui::SetNextWindowPos(viewport->WorkPos);
         ImGui::SetNextWindowSize(viewport->WorkSize);
         ImGui::SetNextWindowViewport(viewport->ID);
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, boarderSize);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);        //push 2 styles
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, borderSize);
         windowFlags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
         windowFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
-        //always begin bcs if not lose docked childreen
+        //always begin bcs if not lose docked children
         ImGui::Begin("DockSpace Demo", &open, windowFlags);
 
-        //?
-        ImGui::PopStyleVar(2);
+        ImGui::PopStyleVar(2); //pop 2 styles
 
         // Submit the DockSpace
         ImGuiID dockspaceId = ImGui::GetID("MyDockSpace");
         ImGui::DockSpace(dockspaceId, ImVec2(0.0f, 0.0f), dockspaceFlags);
 
-        if (m_layout)
-            SetupLayout(static_cast<int>(dockspaceId));
+        ImGui::End();
+    }
+
+    Panel::ERenderFlags MainPanel::Render()
+    {
+        bool open = true;
+        ImGui::Begin("DockSpace Demo", &open);
 
         if (!m_forceFocus.empty())
             SetForceFocust();
+
+        if (m_layout)
+            SetupLayout(static_cast<int>(ImGui::GetID("MyDockSpace")));
 
         m_panelFlags = ERenderFlags();
         m_menuBar.DisplayAndUpdatePanel();

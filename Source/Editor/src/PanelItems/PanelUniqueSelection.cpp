@@ -2,8 +2,7 @@
 
 #include "SurvivantEditor/PanelItems/PanelUniqueSelection.h"
 
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_opengl3.h"
+#include <imgui.h>
 
 namespace SvEditor::PanelItems
 {
@@ -13,12 +12,12 @@ namespace SvEditor::PanelItems
         int& p_currentSelection,
         const Callback& p_callback) :
         PanelUniqueSelection(p_name, p_selectable,
-            GetRefFunc([p_currentSelection]() mutable -> int& { return p_currentSelection; }), p_callback)
+            GetRefFunc([&p_currentSelection]() mutable -> int& { return p_currentSelection; }), p_callback)
     {}
 
     PanelUniqueSelection::PanelUniqueSelection(
-        const std::string& p_name, const std::vector<std::string>& p_selectable, 
-        const GetRefFunc& p_getRef, const Callback& p_callback) : 
+        const std::string& p_name, const std::vector<std::string>& p_selectable,
+        const GetRefFunc& p_getRef, const Callback& p_callback) :
         PanelInputBase(p_getRef, p_callback),
         m_name(p_name)
     {
@@ -47,6 +46,7 @@ namespace SvEditor::PanelItems
         ImGui::SameLine();
 
         ImGui::PushID(m_name.c_str());
+        PanelInputBase::DisplayAndUpdatePanel();
         if (ImGui::Combo("##", &val, m_items.c_str()) && m_callback)
             m_callback(val);
 

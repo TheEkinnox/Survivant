@@ -1,15 +1,15 @@
 //PanelEntity.h
 #pragma once
 
-#include "SurvivantCore/ECS/EntityHandle.h"
-#include "SurvivantEditor/Interfaces/IPanelable.h"
 #include "SurvivantEditor/Interfaces/IInspectorable.h"
-#include "SurvivantEditor/PanelItems/PanelComponent.h"
 #include "SurvivantEditor/PanelItems/PanelButton.h"
+#include "SurvivantEditor/PanelItems/PanelButtonList.h"
+#include "SurvivantEditor/PanelItems/PanelComponent.h"
+#include "SurvivantEditor/PanelItems/PanelPopupMenuButton.h"
+#include "SurvivantEditor/PanelItems/PanelScriptList.h"
 
-#include "Vector/Vector3.h"
+#include <SurvivantCore/ECS/EntityHandle.h>
 
-#include <functional>
 #include <vector>
 
 namespace SvEditor::PanelItems
@@ -20,7 +20,12 @@ namespace SvEditor::PanelItems
 		using Components = std::vector<std::shared_ptr<PanelComponent>>;
 
 		PanelEntity(const SvCore::ECS::EntityHandle& p_entity, const Components& p_component);
-		~PanelEntity() = default;
+		~PanelEntity() override = default;
+
+		PanelEntity(const PanelEntity& p_other);
+		PanelEntity(PanelEntity&& p_other) noexcept;
+		PanelEntity& operator=(const PanelEntity& p_other);
+		PanelEntity& operator=(PanelEntity&& p_other) noexcept;
 
 		// Inherited via IPanelable
 		virtual void DisplayAndUpdatePanel() override;
@@ -33,11 +38,18 @@ namespace SvEditor::PanelItems
 		static inline const std::string LOGO = "En";
 
 		void AddAndSortComponent(std::shared_ptr<PanelComponent> p_component);
+		void GetAllComponents();
 
+		Components::iterator RemoveComponent(const Components::iterator& p_it);
 
 		std::string					m_index;
 		std::string					m_name;
 		SvCore::ECS::EntityHandle	m_entity;
 		Components					m_components;
+		PanelButtonList				m_buttons;
+
+		std::shared_ptr<PanelPopupMenuButton>	m_addComponent;
+		std::unique_ptr<PanelScriptList>		m_luaScripts;
 	};
 }
+

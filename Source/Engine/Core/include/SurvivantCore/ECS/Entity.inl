@@ -37,6 +37,11 @@ namespace SvCore::ECS
         m_id = Make(GetIndex(), version + 1);
     }
 
+    inline std::string Entity::GetString() const
+    {
+        return Utility::FormatString("%llu:%llu", static_cast<uint64_t>(GetIndex()), static_cast<uint64_t>(GetVersion()));
+    }
+
     constexpr Entity::Id Entity::Make(const Id p_index, const Id p_version)
     {
         return (p_index & INDEX_MASK) | ((p_version & VERSION_MASK) << INDEX_BITS);

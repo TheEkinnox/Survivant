@@ -1,40 +1,49 @@
 //PanelComponent.cpp
-
 #include "SurvivantEditor/PanelItems/PanelComponent.h"
 
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_opengl3.h"
+#include <imgui.h>
 
 namespace SvEditor::PanelItems
 {
-    PanelComponent::PanelComponent(const std::string& p_name, const Items& p_items, size_t p_prio) :
-        m_name(p_name),
-        m_items(p_items),
-        m_isActive(true),
-        m_prio(p_prio)
-    {        
+    PanelComponent::PanelComponent(std::string p_name, Items p_items, const size_t p_prio)
+        : m_name(std::move(p_name)), m_items(std::move(p_items)), m_isActive(true), m_prio(p_prio)
+    {
     }
 
     void PanelComponent::DisplayAndUpdatePanel()
-	{
-        static ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_DefaultOpen;
+    {
+        ImGuiTreeNodeFlags flags = GetPrio() != 0?  ImGuiTreeNodeFlags_DefaultOpen : ImGuiTreeNodeFlags_None;
 
-        bool open = ImGui::CollapsingHeader(m_name.c_str(), &m_isActive, flags);
+        if (!ImGui::CollapsingHeader(m_name.c_str(), &m_isActive, flags))
+            return;
 
-        if (open)
-        {
-            for (auto& item : m_items)
-                item->DisplayAndUpdatePanel();
-        }
-	}
+        ImGui::PushID(m_name.c_str());
+        ImGui::Spacing();
 
-    bool PanelComponent::NeedToRemove()const
+        ImGui::Dummy(ImVec2{ X_OFFSET, 0.f });
+        ImGui::SameLine();
+
+        ImGui::BeginGroup();
+
+        for (const auto& item : m_items)
+            item->DisplayAndUpdatePanel();
+
+        ImGui::EndGroup();
+        ImGui::PopID();
+    }
+
+    bool PanelComponent::NeedToRemove() const
     {
         return !m_isActive;
     }
 
-    size_t PanelComponent::GetPrio()const
+    size_t PanelComponent::GetPrio() const
     {
         return m_prio;
+    }
+
+    const std::string& PanelComponent::GetName() const
+    {
+        return m_name;
     }
 }

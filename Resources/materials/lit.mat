@@ -1,0 +1,29 @@
+{
+    "shader": {
+        "path": "shaders/Lit.glsl"
+    },
+    "properties": [
+        {
+            "name": "u_tint",
+            "type": 7,
+            "value": "{1,1,1,0}"
+        },
+        {
+            "name": "u_diffuse",
+            "type": 10,
+            "value": {
+                "path": ""
+            }
+        },
+        {
+            "name": "u_shininess",
+            "type": 4,
+            "value": 32.0
+        },
+        {
+            "name": "u_specularColor",
+            "type": 7,
+            "value": "{1,1,1,0.713726}"
+        }
+    ]
+}

@@ -1,24 +1,30 @@
 #include "SurvivantScripting/LuaContext.h"
 
 #include "SurvivantScripting/FunctionNames.h"
-#include "SurvivantScripting/LuaScriptList.h"
 #include "SurvivantScripting/Bindings/LuaECSBinder.h"
 #include "SurvivantScripting/Bindings/LuaInputBinder.h"
 #include "SurvivantScripting/Bindings/LuaMathBinder.h"
-#include "SurvivantScripting/Bindings/LuaUtilityBinder.h"
+#include "SurvivantScripting/Bindings/LuaPhysicsBinder.h"
+#include "SurvivantScripting/Bindings/LuaRenderingBinder.h"
 #include "SurvivantScripting/Bindings/LuaResourceBinder.h"
+#include "SurvivantScripting/Bindings/LuaUtilityBinder.h"
+#include "SurvivantScripting/Bindings/LuaAudioBinder.h"
 
 #include <SurvivantCore/Resources/ResourceManager.h>
 #include <SurvivantCore/Utility/FileSystem.h>
+
+#include <SurvivantPhysics/PhysicsContext.h>
 
 using namespace SvCore::ECS;
 using namespace SvCore::Resources;
 using namespace SvCore::Utility;
 
+using namespace SvPhysics;
+
 namespace SvScripting
 {
     LuaContext::LuaContext()
-        : m_isValid(false), m_hasStarted(false)
+        : m_collisionListenerId(0), m_triggerListenerId(0), m_isValid(false), m_hasStarted(false)
     {
     }
 
@@ -27,7 +33,7 @@ namespace SvScripting
         if (m_hasStarted)
             Stop();
 
-        Clear();
+        Reset();
     }
 
     LuaContext& LuaContext::GetInstance()
@@ -46,7 +52,8 @@ namespace SvScripting
         m_state->add_package_loader(&LoadModule);
         m_isValid = true;
 
-        BindUserTypes(*m_state);
+        s_userTypeBinders ? s_userTypeBinders(*m_state) : DefaultUserTypeBindings(*m_state);
+        LinkPhysicsEvents();
     }
 
     void LuaContext::Clear()
@@ -67,6 +74,8 @@ namespace SvScripting
 
     void LuaContext::Reset()
     {
+        UnlinkPhysicsEvents();
+
         Clear();
 
         if (m_state)
@@ -93,12 +102,12 @@ namespace SvScripting
             return false;
 
         if (!CHECK(p_handle.m_script, "Attempted to register unloaded script \"%s\"", p_handle.m_script.GetPath().c_str()))
-            return (m_isValid = false);
+            return false;
 
         const std::string_view source = p_handle.m_script->GetSource();
 
         if (source.empty())
-            return (m_isValid = false);
+            return false;
 
         const auto result = m_state->safe_script(source, &sol::script_pass_on_error, p_handle.m_script.GetPath());
 
@@ -106,18 +115,23 @@ namespace SvScripting
         {
             [[maybe_unused]] const sol::error err = result;
             CHECK(false, "Failed to register script \"%s\" - %s", p_handle.m_script.GetPath().c_str(), err.what());
-            return (m_isValid = false);
+            return false;
         }
 
         if (!CHECK(result.return_count() == 1 && result[0].is<sol::table>(),
                 "Failed to register script \"%s\" - Invalid return", p_handle.m_script.GetPath().c_str()))
-            return (m_isValid = false);
+            return false;
 
         sol::table resultTable = result[0].as<sol::table>();
 
         if (p_handle.m_table != sol::nil)
+        {
             for (auto& [key, value] : p_handle.m_table)
-                resultTable[key] = value;
+            {
+                if (resultTable[key].valid())
+                    resultTable[key] = value;
+            }
+        }
 
         resultTable["owner"] = static_cast<const EntityHandle&>(p_handle.m_owner);
 
@@ -137,7 +151,8 @@ namespace SvScripting
 
         LuaScriptHandle handle = { GetModuleName(p_script), scriptRef, p_owner, p_hint };
 
-        if (!RegisterScript(handle))
+        // Check for handle validity since scripts might be removed on init
+        if (!RegisterScript(handle) || !handle.m_table.valid())
             return {};
 
         const auto insertIt = std::ranges::find_if_not(m_scripts, [&handle](const LuaScriptHandle& p_other)
@@ -242,15 +257,16 @@ namespace SvScripting
 
         const std::string base = p_module;
 
+        p_module = ResourceManager::GetInstance().GetRelativePath(GetModulePath(p_module, true));
+
         for (const auto& extension : EXTENSIONS)
         {
             if (p_module.ends_with(extension))
+            {
                 p_module = p_module.substr(0, p_module.size() - strlen(extension));
+                break;
+            }
         }
-
-        ReplaceInPlace(p_module, ".", "/");
-
-        p_module = ResourceManager::GetInstance().GetRelativePath(p_module);
 
         ReplaceInPlace(p_module, "/", ".");
         ReplaceInPlace(p_module, "\\", ".");
@@ -258,7 +274,7 @@ namespace SvScripting
         return (s_moduleNames[base] = p_module);
     }
 
-    const std::string& LuaContext::GetModulePath(std::string p_module)
+    std::string LuaContext::GetModulePath(std::string p_module, const bool p_fromGetName)
     {
         static std::string empty;
 
@@ -267,24 +283,40 @@ namespace SvScripting
 
         const auto it = s_modulePaths.find(p_module);
 
-        if (it != s_modulePaths.end())
-            return it->second;
+        const ResourceManager& resourceManager = ResourceManager::GetInstance();
+
+        if (it != s_modulePaths.end() && PathExists(it->second))
+            return resourceManager.GetFullPath(it->second);
 
         const std::string base = p_module;
 
-        p_module = Replace(GetModuleName(p_module), ".", "/");
+        p_module = resourceManager.GetFullPath(p_module);
 
-        const ResourceManager& resourceManager = ResourceManager::GetInstance();
+        if (PathExists(p_module))
+        {
+            s_modulePaths[base] = resourceManager.GetRelativePath(p_module);
+            return p_module;
+        }
+
+        p_module = Replace(p_fromGetName ? p_module : GetModuleName(p_module), ".", "/");
 
         for (const auto& extension : EXTENSIONS)
         {
             std::string path(resourceManager.GetFullPath(p_module + extension));
 
             if (PathExists(path))
-                return (s_modulePaths[base] = path);
+            {
+                s_modulePaths[base] = resourceManager.GetRelativePath(path);
+                return path;
+            }
         }
 
         return empty;
+    }
+
+    void LuaContext::SetUserTypeBinders(const Binder p_binder)
+    {
+        s_userTypeBinders = p_binder;
     }
 
     int LuaContext::LoadModule(lua_State* p_luaState)
@@ -305,12 +337,106 @@ namespace SvScripting
         return 1;
     }
 
-    void LuaContext::BindUserTypes(sol::state& p_luaState)
+    void LuaContext::DefaultUserTypeBindings(sol::state& p_luaState)
     {
         Bindings::LuaECSBinder::Bind(p_luaState);
         Bindings::LuaMathBinder::Bind(p_luaState);
         Bindings::LuaInputBinder::Bind(p_luaState);
         Bindings::LuaUtilityBinder::Bind(p_luaState);
+        Bindings::LuaRenderingBinder::Bind(p_luaState);
         Bindings::LuaResourceBinder::Bind(p_luaState);
+        Bindings::LuaPhysicsBinder::Bind(p_luaState);
+        Bindings::LuaAudioBinder::Bind(p_luaState);
+    }
+
+    void LuaContext::LinkPhysicsEvents()
+    {
+        PhysicsContext& context = PhysicsContext::GetInstance();
+
+        m_collisionListenerId = context.m_onCollision.AddListener(
+            [this](const EPhysicsEvent p_event, const CollisionInfo& p_info)
+            {
+                if (!m_isValid)
+                    return;
+
+                ASSERT(p_info.m_colliders[0]);
+                ASSERT(p_info.m_colliders[1]);
+
+                for (size_t i = m_scripts.size(); i > 0 && m_isValid; --i)
+                {
+                    if (i > m_scripts.size())
+                        continue;
+
+                    LuaScriptHandle& handle = m_scripts[i - 1];
+
+                    if (!handle ||
+                        (handle.m_owner != p_info.m_colliders[0].m_owner && handle.m_owner != p_info.m_colliders[1].m_owner))
+                        continue;
+
+                    switch (p_event)
+                    {
+                    case EPhysicsEvent::ENTER:
+                        m_isValid = TryCall(handle.m_table, ScriptingFunctions::COLLISION_ENTER, p_info) != ELuaCallResult::FAILURE;
+                        break;
+                    case EPhysicsEvent::STAY:
+                        m_isValid = TryCall(handle.m_table, ScriptingFunctions::COLLISION_STAY, p_info) != ELuaCallResult::FAILURE;
+                        break;
+                    case EPhysicsEvent::EXIT:
+                        m_isValid = TryCall(handle.m_table, ScriptingFunctions::COLLISION_EXIT, p_info) != ELuaCallResult::FAILURE;
+                        break;
+                    case EPhysicsEvent::NONE:
+                    default:
+                        ASSERT(false, "Invalid collision event type");
+                        return;
+                    }
+                }
+            });
+
+        m_triggerListenerId = context.m_onTrigger.AddListener(
+            [this](const EPhysicsEvent p_event, const TriggerInfo& p_info)
+            {
+                if (!m_isValid)
+                    return;
+
+                ASSERT(p_info.m_triggerCollider);
+                ASSERT(p_info.m_otherCollider);
+
+                for (size_t i = m_scripts.size(); i > 0 && m_isValid; --i)
+                {
+                    if (i > m_scripts.size())
+                        continue;
+
+                    LuaScriptHandle& handle = m_scripts[i - 1];
+
+                    if (!handle || handle.m_owner != p_info.m_triggerCollider.m_owner)
+                        continue;
+
+                    switch (p_event)
+                    {
+                    case EPhysicsEvent::ENTER:
+                        m_isValid = TryCall(handle.m_table, ScriptingFunctions::TRIGGER_ENTER, p_info) != ELuaCallResult::FAILURE;
+                        break;
+                    case EPhysicsEvent::EXIT:
+                        m_isValid = TryCall(handle.m_table, ScriptingFunctions::TRIGGER_EXIT, p_info) != ELuaCallResult::FAILURE;
+                        break;
+                    case EPhysicsEvent::NONE:
+                    case EPhysicsEvent::STAY:
+                    default:
+                        ASSERT(false, "Invalid trigger event type");
+                        return;
+                    }
+                }
+            });
+    }
+
+    void LuaContext::UnlinkPhysicsEvents()
+    {
+        PhysicsContext& context = PhysicsContext::GetInstance();
+
+        context.m_onCollision.RemoveListener(m_collisionListenerId);
+        m_collisionListenerId = 0;
+
+        context.m_onTrigger.RemoveListener(m_triggerListenerId);
+        m_triggerListenerId = 0;
     }
 }

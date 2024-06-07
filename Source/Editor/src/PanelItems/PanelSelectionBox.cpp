@@ -60,7 +60,7 @@ namespace SvEditor::PanelItems
                 ImGui::SameLine();
 
             if (selected)
-                isBreak |= item->Select();
+                isBreak |= item->ToggleSelection();
 
             if (isBreak)
                 break;

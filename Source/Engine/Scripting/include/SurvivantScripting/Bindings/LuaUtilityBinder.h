@@ -28,5 +28,11 @@ namespace SvScripting::Bindings
          * \param p_luaState The target lua state
          */
         static void BindTimer(sol::state& p_luaState);
+
+        /**
+         * \brief Creates or updates the application bindings in the given lua state
+         * \param p_luaState The target lua state
+         */
+        static void BindApplication(sol::state& p_luaState);
     };
 }

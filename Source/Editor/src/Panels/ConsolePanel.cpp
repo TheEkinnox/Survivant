@@ -2,9 +2,11 @@
 
 #include "SurvivantEditor/Panels/ConsolePanel.h"
 
+#include "SurvivantCore/Debug/Assertion.h"
 #include "SurvivantCore/Events/EventManager.h"
 #include "SurvivantCore/Debug/Logger.h"
 #include "SurvivantEditor/MenuItems/MenuCheckBox.h"
+#include "SurvivantEditor/PanelItems/PanelPopupMenuButton.h"
 
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
@@ -12,29 +14,26 @@
 namespace SvEditor::Panels
 {
     ConsolePanel::ConsolePanel() :
-        m_filterMenu("Filters"),
-        m_input("Input", m_inputBuffer, std::bind(&ConsolePanel::TextInputCallback, this, std::placeholders::_1))
+        m_popUp("Filters")
     {
-        static size_t NumLogTypes = 5;
+        static size_t NumLogTypes = 4;
+
         m_name = GetUniqueName(NAME, s_panelCount);
         s_panelCount++;
 
-        m_buttons.m_buttons.emplace_back("Clear", [this]() { m_textBox.Clear(); });
-        m_buttons.m_buttons.emplace_back("Copy", [this]() { m_textBox.Copy(); });
-
-        m_currentFilters = std::vector<unsigned char>(NumLogTypes, static_cast<unsigned char>(false));
+        m_currentFilters = std::vector<unsigned char>(NumLogTypes, static_cast<unsigned char>(true));
         for (size_t i = 0; i < NumLogTypes; i++)
         {
             ELogType type = ELogType(1 << i);
             //convert stored uchar to bool ref
             auto& boolRef = *(bool*)&(m_currentFilters[i]);
 
-            m_filterMenu.m_items.emplace_back(
-                std::make_unique<MenuCheckBox>(LogTypeToString(type), boolRef));
+            m_popUp.m_items.emplace_back(
+                std::make_shared<MenuCheckBox>(LogTypeToString(type), boolRef));
         }
 
-        //debug event
-        //
+        m_buttons.m_buttons.emplace_back("Clear", [this]() { m_textBox.Clear(); });
+        m_buttons.m_buttons.emplace_back("Copy", [this]() { m_textBox.Copy(); });
 
         m_eventHandle = SvCore::Debug::Logger::GetInstance().m_onPrint.AddListener(
             [this](const LogInfo& m_message)
@@ -49,7 +48,7 @@ namespace SvEditor::Panels
 
     ConsolePanel::~ConsolePanel()
     {
-        s_panelCount--;
+        //s_panelCount--;
         SvCore::Debug::Logger::GetInstance().m_onPrint.RemoveListener(m_eventHandle);
     }
 
@@ -64,12 +63,11 @@ namespace SvEditor::Panels
             ImGui::End();
             return Panel::ERenderFlags();
         }
+        std::vector<unsigned char> lastFilters = m_currentFilters;
 
         m_buttons.DisplayAndUpdatePanel();
-        ImGui::Separator();
-
-        std::vector<unsigned char> lastFilters = m_currentFilters;
-        m_filterMenu.DisplayAndUpdatePanel();
+        ImGui::SameLine();
+        m_popUp.DisplayAndUpdatePanel();
         ImGui::Separator();
 
         for (size_t i = 0; i < m_currentFilters.size(); i++)
@@ -81,10 +79,7 @@ namespace SvEditor::Panels
             }
         }
 
-        m_input.DisplayAndUpdatePanel();
-        ImGui::Separator();
         m_textBox.DisplayAndUpdatePanel();
-
         ImGui::End();
 
         auto flags = ERenderFlags();
@@ -109,11 +104,9 @@ namespace SvEditor::Panels
             return "[Warning] ";
         case ConsolePanel::ELogType::ERROR_LOG:
             return "[ERROR]   ";
-            //case UI::ConsolePanel::ELogType::COMMAND_LOG:
-            //    return "[Command] ";
         case ConsolePanel::ELogType::DEFAULT_LOG:
         default:
-            return "          ";
+            return "[LOG]     ";
         }
     }
 
@@ -168,7 +161,7 @@ namespace SvEditor::Panels
             ImGui::PopStyleColor();
 
         ImGui::SameLine();
-        ImGui::TextUnformatted((SPACER + m_logInfo.m_message).c_str());
+        ImGui::TextWrapped((SPACER + m_logInfo.m_message).c_str());
     }
 
     std::string ConsolePanel::LogText::GetString(size_t p_len)const

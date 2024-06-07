@@ -1,6 +1,4 @@
 #pragma once
-#include "SurvivantCore/Resources/ResourceRef.h"
-
 #include "SurvivantScripting/LuaTypeRegistry.h"
 
 namespace SvScripting
