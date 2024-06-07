@@ -96,7 +96,7 @@ namespace SvCore::Utility
     /// <param name="p_str1"> First string </param>
     /// <param name="p_str2"> secon setring </param>
     /// <returns>-1 if less, 0 if equals, 1 if greater</returns>
-    int CompareAlphabeticly(std::string p_str1, std::string p_str2);
+    int CompareAlphabetically(const std::string& p_str1, const std::string& p_str2);
 }
 
 #include "SurvivantCore/Utility/Utility.inl"

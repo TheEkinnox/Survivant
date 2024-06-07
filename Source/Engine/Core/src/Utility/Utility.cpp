@@ -38,18 +38,14 @@ namespace SvCore::Utility
 
     void ToUpperInPlace(std::string& p_str)
     {
-        std::ranges::transform(p_str, p_str.begin(), [](const char p_c)
-        {
-            return static_cast<char>(std::toupper(p_c));
-        });
+        for (char& c : p_str)
+            c = static_cast<char>(std::toupper(c));
     }
 
     void ToLowerInPlace(std::string& p_str)
     {
-        std::ranges::transform(p_str, p_str.begin(), [](const char p_c)
-        {
-            return static_cast<char>(std::tolower(p_c));
-        });
+        for (char& c : p_str)
+            c = static_cast<char>(std::tolower(c));
     }
 
     std::string ToUpper(std::string p_str)
@@ -83,14 +79,14 @@ namespace SvCore::Utility
         return p_str;
     }
 
-    int CompareAlphabeticly(std::string p_str1, std::string p_str2)
+    int CompareAlphabetically(const std::string& p_str1, const std::string& p_str2)
     {
-        size_t len = p_str1.size() < p_str2.size() ? p_str1.size() : p_str2.size();
+        const size_t len = p_str1.size() < p_str2.size() ? p_str1.size() : p_str2.size();
 
         for (size_t i = 0; i < len; i++)
         {
-            auto a = std::tolower(static_cast<unsigned char>(p_str1[i]));
-            auto b = std::tolower(static_cast<unsigned char>(p_str2[i]));
+            const auto a = std::tolower(static_cast<unsigned char>(p_str1[i]));
+            const auto b = std::tolower(static_cast<unsigned char>(p_str2[i]));
 
             if (a != b)
                 return a < b ? -1 : 1;
