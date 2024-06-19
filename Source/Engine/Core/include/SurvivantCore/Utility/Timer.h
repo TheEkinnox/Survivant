@@ -49,12 +49,6 @@ namespace SvCore::Utility
         Timer& operator=(Timer&& p_other) noexcept = default;
 
         /**
-         * \brief Gets the shared timer instance
-         * \return The shared timer instance
-         */
-        static Timer& GetInstance();
-
-        /**
          * \brief Updates the timer's info
          */
         void Tick();

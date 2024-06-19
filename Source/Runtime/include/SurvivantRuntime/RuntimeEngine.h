@@ -15,12 +15,12 @@ namespace SvRuntime
     class RuntimeEngine : public SvApp::Core::IEngine
     {
     public:
-        RuntimeEngine()           = default;
+        RuntimeEngine();
         ~RuntimeEngine() override;
 
         // Inherited via IEngine
-        void     Update() override;
         void     Init() override;
+        void     Update() override;
         void     BakeLights() override;
         SceneRef GetCurrentScene() const override;
         void     ChangeScene(const std::string& p_scenePath) override;

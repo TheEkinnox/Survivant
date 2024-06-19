@@ -56,6 +56,8 @@ namespace SvTest
                 IRenderAPI::GetCurrent().SetViewport(PosT::zero(), m_windowSize);
             }
         );
+
+        ServiceLocator::Provide<Timer>(m_timer);
     }
 
     TestApp::~TestApp()
@@ -98,20 +100,19 @@ namespace SvTest
         LuaContext& luaContext = LuaContext::GetInstance();
         luaContext.Init();
 
-        Timer::GetInstance().Refresh();
+        m_timer.Refresh();
         MakeScene();
 
-        Timer&        timer = Timer::GetInstance();
         InputManager& input = InputManager::GetInstance();
 
         while (!m_window->ShouldClose())
         {
             input.Update();
 
-            timer.Tick();
+            m_timer.Tick();
             m_window->Update();
 
-            const float deltaTime = timer.GetDeltaTime();
+            const float deltaTime = m_timer.GetDeltaTime();
 
             luaContext.Update(deltaTime);
             physicsContext.Update(deltaTime);
@@ -224,7 +225,7 @@ namespace SvTest
     {
         PhysicsContext::GetInstance().Reload();
 
-        Timer::GetInstance().Refresh();
+        m_timer.Refresh();
 
         LuaContext& luaContext = LuaContext::GetInstance();
         luaContext.Reload();

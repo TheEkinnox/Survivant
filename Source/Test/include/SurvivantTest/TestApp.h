@@ -1,11 +1,11 @@
 #pragma once
-#include "SurvivantRendering/Core/Renderer.h"
-
 #include <SurvivantApp/Core/IApp.h>
 #include <SurvivantApp/Windows/Window.h>
 
 #include <SurvivantCore/ECS/Scene.h>
+#include <SurvivantCore/Utility/Timer.h>
 
+#include <SurvivantRendering/Core/Renderer.h>
 #include <SurvivantRendering/Resources/Material.h>
 #include <SurvivantRendering/RHI/IShaderStorageBuffer.h>
 
@@ -34,8 +34,11 @@ namespace SvTest
     private:
         std::unique_ptr<SvApp::Window>                     m_window;
         SvCore::Resources::ResourceRef<SvCore::ECS::Scene> m_scene;
-        LibMath::Vector2                                   m_moveInput, m_rotateInput;
-        LibMath::Vector2I                                  m_windowSize;
+
+        SvCore::Utility::Timer m_timer;
+
+        LibMath::Vector2  m_moveInput, m_rotateInput;
+        LibMath::Vector2I m_windowSize;
 
         std::unique_ptr<SvRendering::Core::Renderer>            m_renderer;
         std::unique_ptr<SvRendering::RHI::IShaderStorageBuffer> m_lightsSSBO;
@@ -45,13 +48,5 @@ namespace SvTest
         void SetupInput();
         void MakeScene();
         void DrawScene() const;
-
-        static void BindCamUBO(const LibMath::Matrix4& p_viewProj, const LibMath::Vector3& p_viewPos);
-        static void BindModelUBO(const LibMath::Matrix4& p_modelMat);
-
-        static void DrawModel(const SvRendering::Resources::Model&    p_model,
-                              const LibMath::Frustum&                 p_viewFrustum,
-                              const LibMath::Matrix4&                 p_transform,
-                              const SvRendering::Resources::Material& p_material);
     };
 }

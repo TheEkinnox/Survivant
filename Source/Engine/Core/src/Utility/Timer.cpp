@@ -9,12 +9,6 @@ namespace SvCore::Utility
     {
     }
 
-    Timer& Timer::GetInstance()
-    {
-        static Timer timer;
-        return timer;
-    }
-
     void Timer::Tick()
     {
         m_timeScale = m_nextTimeScale;

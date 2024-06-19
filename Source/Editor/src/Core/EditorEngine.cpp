@@ -1,14 +1,15 @@
 //EditorEngine.cpp
 #include "SurvivantEditor/Core/EditorEngine.h"
 
-#include "SurvivantAudio/AudioContext.h"
-
 #include "SurvivantEditor/Core/EditorWindow.h"
 #include "SurvivantEditor/Core/LuaEditorBinder.h"
 #include "SurvivantEditor/Panels/HierarchyPanel.h"
 #include "SurvivantEditor/RuntimeBuild/BuildManager.h"
 
+#include <SurvivantAudio/AudioContext.h>
+
 #include <SurvivantCore/Debug/Assertion.h>
+#include <SurvivantCore/Utility/ServiceLocator.h>
 
 #include <SurvivantPhysics/PhysicsContext.h>
 
@@ -28,9 +29,14 @@ using namespace SvRendering::Enums;
 
 namespace SvEditor::Core
 {
-	EditorEngine::~EditorEngine()
-	{
-		m_editorWorld.reset();
+    EditorEngine::EditorEngine()
+    {
+        ServiceLocator::Provide<Timer>(m_gameTime);
+    }
+
+    EditorEngine::~EditorEngine()
+    {
+        m_editorWorld.reset();
 
 		SvScripting::LuaContext& luaContext = SvScripting::LuaContext::GetInstance();
 		ResourceManager::GetInstance().Clear();
@@ -106,9 +112,9 @@ namespace SvEditor::Core
 			return {};
 
 		SvPhysics::PhysicsContext::GetInstance().Reload();
-		Timer::GetInstance().Refresh();
 		SvScripting::LuaContext& luaContext = SvScripting::LuaContext::GetInstance();
 		luaContext.Reload();
+        m_gameTime.Refresh();
 
 		ResourceManager& resourceManager = ResourceManager::GetInstance();
 		resourceManager.ReloadAll<SvScripting::LuaScript>();
@@ -339,6 +345,7 @@ namespace SvEditor::Core
 			SV_EVENT_MANAGER().Invoke<OnSave>();
 
 		SvScripting::LuaContext& luaContext = SvScripting::LuaContext::GetInstance();
+        m_gameTime.Refresh();
 
 		SvPhysics::PhysicsContext::GetInstance().Reload();
 		Timer::GetInstance().Refresh();

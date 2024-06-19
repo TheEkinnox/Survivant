@@ -90,7 +90,7 @@ namespace SvScripting::Bindings
             "frameCount", sol::readonly_property(&Timer::GetFrameCount)
         );
 
-        p_luaState[typeName] = &Timer::GetInstance();
+        p_luaState[typeName] = &SV_SERVICE(Timer);
     }
 
     void LuaUtilityBinder::BindApplication(sol::state& p_luaState)

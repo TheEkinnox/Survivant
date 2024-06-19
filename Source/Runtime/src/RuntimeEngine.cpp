@@ -7,13 +7,13 @@
 #include <SurvivantAudio/AudioContext.h>
 
 #include <SurvivantCore/Debug/Assertion.h>
+#include <SurvivantCore/Utility/ServiceLocator.h>
 
 #include <SurvivantPhysics/PhysicsContext.h>
 
 #include <SurvivantRendering/RHI/IRenderAPI.h>
 
 #include <SurvivantScripting/LuaContext.h>
-
 
 using namespace LibMath;
 
@@ -151,7 +151,7 @@ namespace SvRuntime
         SvScripting::LuaContext& luaContext = SvScripting::LuaContext::GetInstance();
 
         SvPhysics::PhysicsContext::GetInstance().Reload();
-        Timer::GetInstance().Refresh();
+        m_time.Refresh();
 
         //if (m_gameInstance)
         luaContext.Reload();
