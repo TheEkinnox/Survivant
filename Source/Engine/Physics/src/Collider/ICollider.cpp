@@ -15,7 +15,7 @@ namespace SvPhysics
         const PxShapeFlags flags = m_pxShape->getFlags() & ~(PxShapeFlag::eTRIGGER_SHAPE | PxShapeFlag::eSIMULATION_SHAPE);
         m_pxShape->setFlags(flags | (m_isTrigger ? PxShapeFlag::eTRIGGER_SHAPE : PxShapeFlag::eSIMULATION_SHAPE));
 
-        PxMaterial* mat = &PhysicsContext::GetInstance().GetMaterial(m_material.GetOrDefault());
+        PxMaterial* mat = &SV_SERVICE(PhysicsContext).GetMaterial(m_material.GetOrDefault());
         m_pxShape->setMaterials(&mat, 1);
     }
 

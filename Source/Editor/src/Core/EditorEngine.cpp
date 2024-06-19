@@ -31,9 +31,11 @@ namespace SvEditor::Core
 {
     EditorEngine::EditorEngine()
     {
+        m_physicsContext  = std::make_unique<SvPhysics::PhysicsContext>();
         m_audioContext    = std::make_unique<SvAudio::AudioContext>();
 
         ServiceLocator::Provide<Timer>(m_gameTime);
+        ServiceLocator::Provide<SvPhysics::PhysicsContext>(*m_physicsContext);
         ServiceLocator::Provide<SvAudio::AudioContext>(*m_audioContext);
     }
 
@@ -53,6 +55,7 @@ namespace SvEditor::Core
 
 		luaContext.Reset();
         m_audioContext.reset();
+        m_physicsContext.reset();
     }
 
 	void EditorEngine::Init()
@@ -63,8 +66,8 @@ namespace SvEditor::Core
         if (!m_audioContext->Init())
             ASSERT(false, "Failed to initialize audio context");
 
-		//physics
-		SvPhysics::PhysicsContext::GetInstance().Init();
+        //physics
+        m_physicsContext->Init();
 
 		//scripts
 		SvScripting::LuaContext::SetUserTypeBinders(&LuaEditorBinder::EditorUserTypeBindings);
@@ -114,9 +117,9 @@ namespace SvEditor::Core
 		if (!SaveSceneState())
 			return {};
 
-		SvPhysics::PhysicsContext::GetInstance().Reload();
 		SvScripting::LuaContext& luaContext = SvScripting::LuaContext::GetInstance();
 		luaContext.Reload();
+        m_physicsContext->Reload();
         m_gameTime.Refresh();
 
 		ResourceManager& resourceManager = ResourceManager::GetInstance();
@@ -148,10 +151,10 @@ namespace SvEditor::Core
 
 	void EditorEngine::DestroyGameInstance()
 	{
-		SvPhysics::PhysicsContext::GetInstance().Reload();
 		SvScripting::LuaContext& luaContext = SvScripting::LuaContext::GetInstance();
 		luaContext.Stop();
 		luaContext.Reload();
+        m_physicsContext->Reload();
         m_audioContext->StopAll();
 
 		ASSERT(luaContext.IsValid());
@@ -347,7 +350,7 @@ namespace SvEditor::Core
 		if (!m_gameInstance && m_isEditorModifiedScene && scenePath != m_editorWorld->CurrentScene().GetPath())
 			SV_EVENT_MANAGER().Invoke<OnSave>();
 
-		SvScripting::LuaContext& luaContext = SvScripting::LuaContext::GetInstance();
+        m_physicsContext->Reload();
         m_gameTime.Refresh();
 
 		SvPhysics::PhysicsContext::GetInstance().Reload();

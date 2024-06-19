@@ -78,12 +78,6 @@ namespace SvPhysics
         PhysicsContext& operator=(PhysicsContext&& p_other) noexcept = default;
 
         /**
-         * \brief Gets the current physics context
-         * \return The current physics context
-         */
-        static PhysicsContext& GetInstance();
-
-        /**
          * \brief Initializes the physics context
          * \param p_gravity
          */

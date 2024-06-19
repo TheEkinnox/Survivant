@@ -33,9 +33,11 @@ namespace SvRuntime
 {
     RuntimeEngine::RuntimeEngine()
     {
+        m_physicsContext  = std::make_unique<SvPhysics::PhysicsContext>();
         m_audioContext    = std::make_unique<SvAudio::AudioContext>();
 
         ServiceLocator::Provide<Timer>(m_time);
+        ServiceLocator::Provide<SvPhysics::PhysicsContext>(*m_physicsContext);
         ServiceLocator::Provide<SvAudio::AudioContext>(*m_audioContext);
     }
 
@@ -48,7 +50,7 @@ namespace SvRuntime
             ASSERT(false, "Failed to initialize audio context");
 
         //physics
-        SvPhysics::PhysicsContext::GetInstance().Init();
+        m_physicsContext->Init();
 
         //scripts
         SvScripting::LuaContext::SetUserTypeBinders(); //default binders
@@ -134,7 +136,7 @@ namespace SvRuntime
         }
 
         SvScripting::LuaContext::GetInstance().Update(GetDeltaTime());   //use engine time 1 timer
-        SvPhysics::PhysicsContext::GetInstance().Update(GetDeltaTime());
+        m_physicsContext->Update(GetDeltaTime());
     }
 
     bool RuntimeEngine::InitializeGameInstance()
@@ -158,13 +160,10 @@ namespace SvRuntime
 
         SvScripting::LuaContext& luaContext = SvScripting::LuaContext::GetInstance();
 
-        SvPhysics::PhysicsContext::GetInstance().Reload();
+        m_physicsContext->Reload();
         m_time.Refresh();
 
-        //if (m_gameInstance)
-        luaContext.Reload();
-
-        //couldnt browse to scene
+        //couldn't browse to scene
         if (!BrowseToScene(*m_world, scenePath))
             return false;
 

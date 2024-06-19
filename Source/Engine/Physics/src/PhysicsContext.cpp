@@ -328,12 +328,6 @@ namespace SvPhysics
         m_materialToPxMat.clear();
     }
 
-    PhysicsContext& PhysicsContext::GetInstance()
-    {
-        static PhysicsContext instance;
-        return instance;
-    }
-
     void PhysicsContext::Init(const Vector3& p_gravity)
     {
         if (ASSUME_FALSE(m_scene, "Attempted to initialize already initialzed physics context"))

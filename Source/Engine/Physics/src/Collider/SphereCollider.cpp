@@ -71,20 +71,20 @@ namespace SvCore::ECS
     template <>
     void ComponentTraits::OnAdd(EntityHandle& p_entity, SvPhysics::SphereCollider& p_component)
     {
-        SvPhysics::PhysicsContext::GetInstance().AddCollider(p_entity, p_component);
+        SV_SERVICE(SvPhysics::PhysicsContext).AddCollider(p_entity, p_component);
     }
 
     template <>
     void ComponentTraits::OnRemove(EntityHandle& p_entity, SvPhysics::SphereCollider&)
     {
-        auto& context = SvPhysics::PhysicsContext::GetInstance();
+        auto& context = SV_SERVICE(SvPhysics::PhysicsContext);
         context.RemoveCollider({ p_entity, ComponentRegistry::GetTypeId<SvPhysics::SphereCollider>() });
     }
 
     template <>
     void ComponentTraits::OnChange(EntityHandle& p_entity, SvPhysics::SphereCollider& p_component)
     {
-        auto& context = SvPhysics::PhysicsContext::GetInstance();
+        auto& context = SV_SERVICE(SvPhysics::PhysicsContext);
         context.UpdateCollider({ p_entity, ComponentRegistry::GetTypeId<SvPhysics::SphereCollider>() }, p_component);
     }
 }

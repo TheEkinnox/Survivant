@@ -8,6 +8,11 @@
 
 #include <memory>
 
+namespace SvPhysics
+{
+    class PhysicsContext;
+}
+
 namespace SvAudio
 {
     class AudioContext;
@@ -50,6 +55,7 @@ namespace SvRuntime
         GameInstancePtr CreateGameInstance();
         SceneRef        GetStartScene();
 
+        std::unique_ptr<SvPhysics::PhysicsContext>          m_physicsContext;
         std::unique_ptr<SvAudio::AudioContext>              m_audioContext;
 
         SvCore::Utility::Timer m_time;

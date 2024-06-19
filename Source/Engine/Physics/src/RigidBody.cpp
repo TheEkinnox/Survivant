@@ -3,6 +3,7 @@
 #include "SurvivantPhysics/PhysicsContext.h"
 
 #include <SurvivantCore/ECS/Components/Hierarchy.h> // Include this instead of transform to avoid redefinition of Transform Traits
+#include <SurvivantCore/Utility/ServiceLocator.h>
 
 #include <PxRigidDynamic.h>
 
@@ -259,18 +260,18 @@ namespace SvCore::ECS
         if (!p_entity.Has<LibMath::Transform>())
             p_entity.Make<LibMath::Transform>();
 
-        SvPhysics::PhysicsContext::GetInstance().AddRigidBody(p_entity, p_component);
+        SV_SERVICE(SvPhysics::PhysicsContext).AddRigidBody(p_entity, p_component);
     }
 
     template <>
     void ComponentTraits::OnRemove(EntityHandle& p_entity, SvPhysics::RigidBody&)
     {
-        SvPhysics::PhysicsContext::GetInstance().RemoveRigidBody(p_entity);
+        SV_SERVICE(SvPhysics::PhysicsContext).RemoveRigidBody(p_entity);
     }
 
     template <>
     void ComponentTraits::OnChange(EntityHandle& p_entity, SvPhysics::RigidBody& p_component)
     {
-        SvPhysics::PhysicsContext::GetInstance().UpdateRigidBody(p_entity, &p_component);
+        SV_SERVICE(SvPhysics::PhysicsContext).UpdateRigidBody(p_entity, &p_component);
     }
 }
