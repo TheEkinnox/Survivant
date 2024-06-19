@@ -256,24 +256,20 @@ void InputManager::CallInput(const MouseKeyType& p_type, float p_x, float p_y, b
 
 	auto callback = m_bindings->m_mouseKeyCallbacks.find(p_type);
 
-	if (callback != m_bindings->m_mouseKeyCallbacks.end())
+	if (callback == m_bindings->m_mouseKeyCallbacks.end())
 	{
-		if (p_callAtUpdate)
-			m_updateCallbacks.push_back(std::bind(callback->second, p_x, p_y));
-		else
-			callback->second(p_x, p_y);
+		//call MOD_ANY if exists
+		auto& [key, state, mod] = p_type.m_inputInfo;
+		callback = m_bindings->m_mouseKeyCallbacks.find(MouseKeyType(key, state, EInputModifier::MOD_ANY));
 	}
 
-	//call MOD_ANY if exists
-	auto& [key, state, mod] = p_type.m_inputInfo;
-	callback = m_bindings->m_mouseKeyCallbacks.find(MouseKeyType(key, state, EInputModifier::MOD_ANY));
-	if (callback != m_bindings->m_mouseKeyCallbacks.end())
-	{
-		if (p_callAtUpdate)
-			m_updateCallbacks.push_back(std::bind(callback->second, p_x, p_y));
-		else
-			callback->second(p_x, p_y);
-	}
+	if (callback == m_bindings->m_mouseKeyCallbacks.end())
+		return;
+
+	if (p_callAtUpdate)
+		m_updateCallbacks.emplace_back(std::bind(callback->second, p_x, p_y));
+	else
+		callback->second(p_x, p_y);
 }
 
 void InputManager::CallInput(const MouseKeyType& p_type, bool p_callAtUpdate)
