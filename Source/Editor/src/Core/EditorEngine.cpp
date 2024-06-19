@@ -31,11 +31,13 @@ namespace SvEditor::Core
 {
     EditorEngine::EditorEngine()
     {
+        m_resourceManager = std::make_unique<ResourceManager>();
         m_luaContext      = std::make_unique<SvScripting::LuaContext>();
         m_physicsContext  = std::make_unique<SvPhysics::PhysicsContext>();
         m_audioContext    = std::make_unique<SvAudio::AudioContext>();
 
         ServiceLocator::Provide<Timer>(m_gameTime);
+        ServiceLocator::Provide<ResourceManager>(*m_resourceManager);
         ServiceLocator::Provide<SvScripting::LuaContext>(*m_luaContext);
         ServiceLocator::Provide<SvPhysics::PhysicsContext>(*m_physicsContext);
         ServiceLocator::Provide<SvAudio::AudioContext>(*m_audioContext);
@@ -51,7 +53,8 @@ namespace SvEditor::Core
             m_gameInstance.reset();
         }
 
-		luaContext.Reset();
+        m_resourceManager.reset();
+
         m_luaContext.reset();
         m_audioContext.reset();
         m_physicsContext.reset();
@@ -72,8 +75,8 @@ namespace SvEditor::Core
         m_luaContext->SetUserTypeBinders(&LuaEditorBinder::EditorUserTypeBindings);
         m_luaContext->Init();
 
-		//create scenes
-		m_editorSelectedScene = ResourceManager::GetInstance().GetOrCreate<Scene>(DEFAULT_SCENE_PATH);
+        //create scenes
+        m_editorSelectedScene = m_resourceManager->GetOrCreate<Scene>(DEFAULT_SCENE_PATH);
 
 		//create editor world world
 		m_editorWorld = CreateEditorDefaultWorld(m_editorSelectedScene);
@@ -120,14 +123,13 @@ namespace SvEditor::Core
         m_gameTime.Refresh();
         m_luaContext->Reload();
 
-		ResourceManager& resourceManager = ResourceManager::GetInstance();
-		resourceManager.ReloadAll<SvScripting::LuaScript>();
+        m_resourceManager->ReloadAll<SvScripting::LuaScript>();
 
 		auto& pieWorld = *m_PIEWorld.lock();
-		pieWorld.CurrentScene() = resourceManager.Load<Scene>(m_editorSelectedScene.GetPath());
 		pieWorld.SetCamera(pieWorld.GetFirstCamera());
 		pieWorld.SetInputs();
 		pieWorld.BakeLighting();
+        pieWorld.CurrentScene() = m_resourceManager->Load<Scene>(m_editorSelectedScene.GetPath());
 
 		//init
 		m_gameInstance = std::make_shared<GameInstance>();
@@ -403,7 +405,7 @@ namespace SvEditor::Core
 		if (!m_editorSelectedScene)
 			return false;
 
-		m_editorSelectedScene = ResourceManager::GetInstance().Load<Scene>(m_editorSelectedScene.GetPath());
+        m_editorSelectedScene = SV_SERVICE(ResourceManager).Load<Scene>(m_editorSelectedScene.GetPath());
 
 		static constexpr auto options = std::filesystem::copy_options::overwrite_existing;
 

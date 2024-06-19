@@ -22,7 +22,7 @@ namespace SvApp::Core
         //if (p_context.CurrentScene())
         //    p_context.CurrentScene()->Clear();
 
-        p_newLevel = ResourceManager::GetInstance().Load<Scene>(p_path);
+        p_newLevel = SV_SERVICE(ResourceManager).Load<Scene>(p_path);
 
         if (!p_newLevel)
             return false;

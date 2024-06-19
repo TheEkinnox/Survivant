@@ -127,6 +127,6 @@ namespace SvScripting::Bindings
             "GetRelativePath", &ResourceManager::GetRelativePath
         );
 
-        p_luaState[typeName] = &ResourceManager::GetInstance();
+        p_luaState[typeName] = &SV_SERVICE(ResourceManager);
     }
 }

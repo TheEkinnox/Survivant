@@ -33,11 +33,13 @@ namespace SvRuntime
 {
     RuntimeEngine::RuntimeEngine()
     {
+        m_resourceManager = std::make_unique<ResourceManager>();
         m_luaContext      = std::make_unique<SvScripting::LuaContext>();
         m_physicsContext  = std::make_unique<SvPhysics::PhysicsContext>();
         m_audioContext    = std::make_unique<SvAudio::AudioContext>();
 
         ServiceLocator::Provide<Timer>(m_time);
+        ServiceLocator::Provide<ResourceManager>(*m_resourceManager);
         ServiceLocator::Provide<SvScripting::LuaContext>(*m_luaContext);
         ServiceLocator::Provide<SvPhysics::PhysicsContext>(*m_physicsContext);
         ServiceLocator::Provide<SvAudio::AudioContext>(*m_audioContext);
@@ -120,7 +122,7 @@ namespace SvRuntime
         using namespace SvApp::Core;
         static std::string configFilePath = "buildConfig.txt";
 
-        auto& rm = ResourceManager::GetInstance();
+        auto& rm = SV_SERVICE(ResourceManager);
 
         auto config = rm.Load<BuildConfig>(configFilePath);
         auto scene  = rm.Load<Scene>(config->m_scene.GetPath());

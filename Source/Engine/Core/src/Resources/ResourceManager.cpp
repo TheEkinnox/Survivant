@@ -40,12 +40,6 @@ namespace SvCore::Resources
         return *this;
     }
 
-    ResourceManager& ResourceManager::GetInstance()
-    {
-        static ResourceManager instance;
-        return instance;
-    }
-
     GenericResourceRef ResourceManager::Create(const std::string& p_type, const std::string& p_path)
     {
         if (p_type.empty() || p_path.empty())

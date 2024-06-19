@@ -57,12 +57,6 @@ namespace SvCore::Resources
         ResourceManager& operator=(ResourceManager&& p_other) noexcept;
 
         /**
-         * \brief Gets a reference to the current resource manager instance
-         * \return A reference to the current resource manager instance
-         */
-        static ResourceManager& GetInstance();
-
-        /**
          * \brief Tries to load the resource with the given path
          * \tparam T The resource's type
          * \param p_path The path of the resource's file

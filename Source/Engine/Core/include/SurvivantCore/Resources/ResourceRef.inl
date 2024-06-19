@@ -3,6 +3,7 @@
 #include "SurvivantCore/Resources/ResourceRef.h"
 #include "SurvivantCore/Resources/ResourceRegistry.h"
 #include "SurvivantCore/Utility/FileSystem.h"
+#include "SurvivantCore/Utility/ServiceLocator.h"
 
 namespace SvCore::Resources
 {
@@ -177,7 +178,7 @@ namespace SvCore::Resources
     template <class T>
     std::string ResourceRef<T>::GetFullPath() const
     {
-        return ResourceManager::GetInstance().GetFullPath(m_path);
+        return SV_SERVICE(ResourceManager).GetFullPath(m_path);
     }
 
     template <class T>
@@ -188,7 +189,7 @@ namespace SvCore::Resources
 
         std::error_code err;
 
-        const ResourceManager& resourceManager = ResourceManager::GetInstance();
+        const ResourceManager& resourceManager = SV_SERVICE(ResourceManager);
         std::filesystem::path  fullPath        = std::filesystem::absolute(resourceManager.GetFullPath(m_path), err);
 
         if (!CHECK(err.value() == 0, "Failed to get absolute resource path from \"%s\" - %s",
@@ -231,9 +232,9 @@ namespace SvCore::Resources
     bool ResourceRef<T>::Reload()
     {
         if constexpr (!std::is_same_v<IResource, T>)
-            return (*this) = ResourceManager::GetInstance().GetOrCreate<T>(m_path);
+            return (*this) = SV_SERVICE(ResourceManager).GetOrCreate<T>(m_path);
         else
-            return (*this) = ResourceManager::GetInstance().Get<T>(m_path);
+            return (*this) = SV_SERVICE(ResourceManager).Get<T>(m_path);
     }
 
     template <class T>
@@ -351,7 +352,7 @@ namespace SvCore::Resources
 
     inline bool GenericResourceRef::Reload()
     {
-        return (*this) = ResourceManager::GetInstance().GetOrCreate(m_type, m_path);
+        return (*this) = SV_SERVICE(ResourceManager).GetOrCreate(m_type, m_path);
     }
 
     inline const std::string& GenericResourceRef::GetType() const

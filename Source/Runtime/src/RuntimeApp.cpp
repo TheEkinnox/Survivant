@@ -45,7 +45,7 @@ namespace SvRuntime
         SvCore::Debug::Logger::GetInstance().SetFile("debug.log");
 #endif
 
-        ResourceManager::GetInstance().AddSearchPath("assets");
+        SV_SERVICE(ResourceManager).AddSearchPath("assets");
 
         const bool result = SetWorkingDirectory(GetApplicationDirectory());
         ASSERT(result, "Failed to update working directory");

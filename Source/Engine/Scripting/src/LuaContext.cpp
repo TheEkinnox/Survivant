@@ -254,7 +254,7 @@ namespace SvScripting
 
         const std::string base = p_module;
 
-        p_module = ResourceManager::GetInstance().GetRelativePath(GetModulePath(p_module, true));
+        p_module = SV_SERVICE(ResourceManager).GetRelativePath(GetModulePath(p_module, true));
 
         for (const auto& extension : EXTENSIONS)
         {
@@ -280,7 +280,7 @@ namespace SvScripting
 
         const auto it = s_modulePaths.find(p_module);
 
-        const ResourceManager& resourceManager = ResourceManager::GetInstance();
+        const ResourceManager& resourceManager = SV_SERVICE(ResourceManager);
 
         if (it != s_modulePaths.end() && PathExists(it->second))
             return resourceManager.GetFullPath(it->second);
@@ -323,7 +323,7 @@ namespace SvScripting
         if (module.empty())
             return 1;
 
-        const std::vector<char> script = ResourceManager::GetInstance().ReadFile(module);
+        const std::vector<char> script = SV_SERVICE(ResourceManager).ReadFile(module);
 
         if (!script.empty() && luaL_loadbuffer(p_luaState, script.data(), script.size(), module.c_str()) == LUA_OK)
         {

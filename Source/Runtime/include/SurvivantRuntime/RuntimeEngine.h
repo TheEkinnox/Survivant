@@ -60,6 +60,7 @@ namespace SvRuntime
         GameInstancePtr CreateGameInstance();
         SceneRef        GetStartScene();
 
+        std::unique_ptr<SvCore::Resources::ResourceManager> m_resourceManager;
         std::unique_ptr<SvScripting::LuaContext>            m_luaContext;
         std::unique_ptr<SvPhysics::PhysicsContext>          m_physicsContext;
         std::unique_ptr<SvAudio::AudioContext>              m_audioContext;

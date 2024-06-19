@@ -36,10 +36,10 @@ namespace SvEditor::Core
 		m_window.reset();
 	}
 
-	void EngineApp::Init()
-	{
-		SvCore::Debug::Logger::GetInstance().SetFile("debug.log");
-		SvCore::Resources::ResourceManager::GetInstance().AddSearchPath("assets");
+    void EngineApp::Init()
+    {
+        SvCore::Debug::Logger::GetInstance().SetFile("debug.log");
+        SV_SERVICE(SvCore::Resources::ResourceManager).AddSearchPath("assets");
 
 		//setup InspectorComponents
 		InspectorItemManager::Init();
