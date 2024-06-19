@@ -1,8 +1,6 @@
 #include "SurvivantEditor/PanelItems/PanelCheckbox.h"
 
-#include <backends/imgui_impl_glfw.h>
-#include <backends/imgui_impl_opengl3.h>
-
+#include <imgui.h>
 
 namespace SvEditor::PanelItems
 {
@@ -24,7 +22,7 @@ namespace SvEditor::PanelItems
     void PanelCheckbox::DisplayAndUpdatePanel()
     {
         Value& value = GetRef();
-        ImGui::Text(m_name.c_str());
+        ImGui::Text("%s", m_name.c_str());
         ImGui::SameLine();
 
         ImGui::PushID(m_name.c_str());

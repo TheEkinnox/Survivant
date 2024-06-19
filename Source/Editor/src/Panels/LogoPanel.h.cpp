@@ -16,8 +16,8 @@ namespace SvEditor::Panels
 {
     LogoPanel::ERenderFlags LogoPanel::Render()
     {
-        //static auto logo = ResourceManager::GetInstance().Load<ITexture>("textures/game/armor-plating1_albedo.png");
-        static auto logo = ResourceManager::GetInstance().Load<ITexture>("SurvivantLogo.png");
+        //static auto logo = SV_SERVICE(ResourceManager).Load<ITexture>("textures/game/armor-plating1_albedo.png");
+        static auto logo = SV_SERVICE(ResourceManager).Load<ITexture>("SurvivantLogo.png");
 
         bool open = true;
         //fullscreen + undockable/cant move

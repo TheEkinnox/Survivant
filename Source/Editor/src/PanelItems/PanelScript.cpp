@@ -152,16 +152,10 @@ namespace SvEditor::PanelItems
             }
             else if (typeId == LuaTypeRegistry::GetTypeId<EntityHandle>())
             {
-                p_items.emplace_back(std::make_shared<PanelEntitySelector>(PanelEntitySelector(p_displayName,
-                    [p_table, p_key]() mutable -> EntityHandle&
-                    {
+                p_items.emplace_back(std::make_shared<PanelEntitySelector>(p_displayName,
+                    [p_table, p_key]() mutable -> EntityHandle& {
                         return *p_table[p_key].get<EntityHandle*>();
-                    }/*,
-                    [p_table, p_key](const EntityHandle& p_value) mutable
-                    {
-                        p_table[p_key] = p_value;
-                    }*/
-                    )
+                    }
                 ));
             }
             else if (typeId == LuaTypeRegistry::GetTypeId<GenericResourceRef>())

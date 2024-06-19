@@ -7,14 +7,13 @@
 #include <SurvivantCore/Events/EventManager.h>
 #include <SurvivantCore/Resources/ResourceRegistry.h>
 
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_opengl3.h"
+#include <imgui.h>
 
 using namespace SvApp::Core;
 
 namespace SvEditor::Panels
 {
-    BuildPanel::BuildPanel() : 
+    BuildPanel::BuildPanel() :
         m_selectScene("Start Scene",
             SceneSelect::Ref([this]() -> SceneSelect::Value& { return m_scene; })),
         m_buildName("SvBuild"),
@@ -23,8 +22,8 @@ namespace SvEditor::Panels
         m_name = NAME;
         //m_scene = SvCore::Resources::GetDefaultResource<SvCore::ECS::Scene>();
 
-        m_buttons.m_buttons.emplace_back(PanelButton("Build", [this]() 
-            { 
+        m_buttons.m_buttons.emplace_back(PanelButton("Build", [this]()
+            {
                 SV_EVENT_MANAGER().Invoke<Core::EditorEngine::OnCreateBuildGame>(
                     m_buildName, BuildConfig(m_scene));
             }));

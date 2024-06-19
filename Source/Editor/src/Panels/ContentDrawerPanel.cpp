@@ -35,7 +35,7 @@ namespace SvEditor::Panels
 
         m_buttonList.m_buttons.emplace_back(PanelButton("Refresh", [this]()
         {
-            ResourceManager::GetInstance().Clear();
+            SV_SERVICE(ResourceManager).Clear();
             SetupTree();
             m_tree->ForceCloseChildren(true);
             m_tree->Select();
@@ -58,7 +58,7 @@ namespace SvEditor::Panels
                 SvCore::Resources::GenericResourceRef resource;
 
                 if (type != ResourceRegistry::GetInstance().GetRegisteredTypeName<SvCore::ECS::Scene>())
-                    resource = ResourceManager::GetInstance().GetOrCreate(type, p_branch.GetPath());
+                    resource = SV_SERVICE(ResourceManager).GetOrCreate(type, p_branch.GetPath());
 
                 auto panel = Core::InspectorItemManager::GetPanelableResource(resource);
                 if (panel)

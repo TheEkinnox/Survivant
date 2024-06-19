@@ -6,8 +6,7 @@
 #include <SurvivantCore/Events/EventManager.h>
 #include <SurvivantApp/Windows/Window.h>
 
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_opengl3.h"
+#include <imgui.h>
 
 #include <stdexcept>
 
@@ -29,7 +28,7 @@ namespace SvEditor::Panels
 
         if (!m_open)
             return ERenderFlags::CLOSE;
-        
+
 
         ImGui::SetNextWindowFocus();
         ImGui::SetNextWindowBgAlpha(alpha);

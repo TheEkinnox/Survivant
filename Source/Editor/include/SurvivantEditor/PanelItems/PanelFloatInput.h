@@ -4,6 +4,7 @@
 #include "SurvivantEditor/PanelItems/PanelInputBase.h"
 
 #include <functional>
+#include <string>
 
 namespace SvEditor::PanelItems
 {

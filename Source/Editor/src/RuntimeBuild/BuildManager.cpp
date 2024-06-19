@@ -120,7 +120,7 @@ namespace SvEditor::RuntimeBuild
         return buildFilePath;
     }
 
-    std::string BuildManager::CreateAndRunBuild(const std::string& p_buildName, SvApp::Core::BuildConfig p_setup)
+    std::string BuildManager::CreateAndRunBuild(const std::string& p_buildName, const SvApp::Core::BuildConfig& p_setup)
     {
         auto path = CreateBuild(p_buildName, p_setup);
 
@@ -143,7 +143,7 @@ namespace SvEditor::RuntimeBuild
         ZeroMemory(&pi, sizeof(pi));
 
         if (!CreateProcessA(
-            NULL, p_buildFilePath.data(), NULL,
+            p_buildFilePath.c_str(), NULL, NULL,
             NULL, NULL, FALSE, 0, NULL,
             &si, &pi))
         {

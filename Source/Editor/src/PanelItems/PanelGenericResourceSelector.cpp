@@ -102,7 +102,7 @@ namespace SvEditor::PanelItems
             }
         ));
 
-        const ResourceManager& resourceManager = ResourceManager::GetInstance();
+        const ResourceManager& resourceManager = SV_SERVICE(ResourceManager);
 
         auto& ref = GetRef();
 
@@ -165,7 +165,7 @@ namespace SvEditor::PanelItems
         if ((!currentType.empty() && currentType != typeName))
             ref = {};
 
-        const ResourceManager& resourceManager = ResourceManager::GetInstance();
+        const ResourceManager& resourceManager = SV_SERVICE(ResourceManager);
         const std::string&     currentPath     = resourceManager.GetFullPath(ref.GetPath());
 
         bool foundPath = false;

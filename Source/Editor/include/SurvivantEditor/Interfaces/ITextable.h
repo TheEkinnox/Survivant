@@ -3,6 +3,8 @@
 
 #include "SurvivantEditor/Interfaces/IPanelable.h"
 
+#include <string>
+
 namespace SvEditor::Interfaces
 {
 	class ITextable : public IPanelable

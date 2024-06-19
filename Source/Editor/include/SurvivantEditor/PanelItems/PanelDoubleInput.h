@@ -1,6 +1,8 @@
 #pragma once
 #include "SurvivantEditor/PanelItems/PanelInputBase.h"
 
+#include <string>
+
 namespace SvEditor::PanelItems
 {
     class PanelDoubleInput final : public PanelInputBase<double>

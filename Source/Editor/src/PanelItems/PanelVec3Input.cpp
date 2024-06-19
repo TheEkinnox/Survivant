@@ -2,8 +2,7 @@
 
 #include "SurvivantEditor/PanelItems/PanelVec3Input.h"
 
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_opengl3.h"
+#include <imgui.h>
 
 namespace SvEditor::PanelItems
 {
@@ -13,7 +12,7 @@ namespace SvEditor::PanelItems
         const Callback& p_callback,
         float p_min,
         float p_max) :
-        PanelVec3Input(p_name, GetRefFunc([p_value]() mutable -> LibMath::Vector3& { return p_value; }), 
+        PanelVec3Input(p_name, GetRefFunc([p_value]() mutable -> LibMath::Vector3& { return p_value; }),
             p_callback, p_min, p_max)
     {}
 

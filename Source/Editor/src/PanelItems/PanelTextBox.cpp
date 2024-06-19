@@ -2,8 +2,7 @@
 
 #include "SurvivantEditor/PanelItems/PanelTextBox.h"
 
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_opengl3.h"
+#include <imgui.h>
 
 namespace SvEditor::PanelItems
 {
@@ -212,7 +211,7 @@ namespace SvEditor::PanelItems
         ImGui::EndChild();
     }
 
-    DefaultText::DefaultText(const std::string& p_string) : 
+    DefaultText::DefaultText(const std::string& p_string) :
         m_string(p_string)
     {}
 

@@ -4,6 +4,7 @@
 #include "SurvivantEditor/PanelItems/PanelInputBase.h"
 
 #include <functional>
+#include <string>
 
 namespace SvEditor::PanelItems
 {
@@ -24,7 +25,7 @@ namespace SvEditor::PanelItems
 			const Callback& p_callback);
 		~PanelIntInput() = default;
 
-		virtual void DisplayAndUpdatePanel() override;
+		void DisplayAndUpdatePanel() override;
 
 	private:
 		std::string		m_name;

@@ -2,8 +2,7 @@
 
 #include "SurvivantEditor/MenuItems/MenuButton.h"
 
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_opengl3.h"
+#include <imgui.h>
 
 
 namespace SvEditor::MenuItems
@@ -20,7 +19,7 @@ namespace SvEditor::MenuItems
     MenuButton::MenuButton(
         const std::string& p_name,
         const SvApp::InputManager::KeyCallback& p_callback,
-        const SvApp::InputManager::KeyboardKeyType& p_shortcut, 
+        const SvApp::InputManager::KeyboardKeyType& p_shortcut,
         SvApp::InputManager::InputBindings& p_inputs) :
         MenuButton(p_name, p_callback)
     {

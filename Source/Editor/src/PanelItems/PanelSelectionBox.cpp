@@ -4,8 +4,7 @@
 
 #include "SurvivantEditor/Core/IUI.h"
 
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_opengl3.h"
+#include <imgui.h>
 
 namespace SvEditor::PanelItems
 {
