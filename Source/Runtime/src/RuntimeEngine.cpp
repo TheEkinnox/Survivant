@@ -33,10 +33,12 @@ namespace SvRuntime
 {
     RuntimeEngine::RuntimeEngine()
     {
+        m_luaContext      = std::make_unique<SvScripting::LuaContext>();
         m_physicsContext  = std::make_unique<SvPhysics::PhysicsContext>();
         m_audioContext    = std::make_unique<SvAudio::AudioContext>();
 
         ServiceLocator::Provide<Timer>(m_time);
+        ServiceLocator::Provide<SvScripting::LuaContext>(*m_luaContext);
         ServiceLocator::Provide<SvPhysics::PhysicsContext>(*m_physicsContext);
         ServiceLocator::Provide<SvAudio::AudioContext>(*m_audioContext);
     }
@@ -53,8 +55,7 @@ namespace SvRuntime
         m_physicsContext->Init();
 
         //scripts
-        SvScripting::LuaContext::SetUserTypeBinders(); //default binders
-        SvScripting::LuaContext::GetInstance().Init();
+        m_luaContext->Init();
 
         //create world
         m_world = CreateGameWorld();
@@ -129,13 +130,13 @@ namespace SvRuntime
 
     void RuntimeEngine::UpdateGame()
     {
-        if (!CHECK(SvScripting::LuaContext::GetInstance().IsValid(), "LuaContext Not valid"))
+        if (!CHECK(m_luaContext->IsValid(), "LuaContext Not valid"))
         {
             SV_EVENT_MANAGER().Invoke<SvApp::Window::WindowCloseRequest>();
             return;
         }
 
-        SvScripting::LuaContext::GetInstance().Update(GetDeltaTime());   //use engine time 1 timer
+        m_luaContext->Update(GetDeltaTime());   //use engine time 1 timer
         m_physicsContext->Update(GetDeltaTime());
     }
 
@@ -156,10 +157,10 @@ namespace SvRuntime
 
     bool RuntimeEngine::ChangeSceneInternal()
     {
-        std::string scenePath = std::move(m_scenePath);
+        const std::string scenePath = std::move(m_scenePath);
 
-        SvScripting::LuaContext& luaContext = SvScripting::LuaContext::GetInstance();
 
+        m_luaContext->Reload();
         m_physicsContext->Reload();
         m_time.Refresh();
 
@@ -167,22 +168,19 @@ namespace SvRuntime
         if (!BrowseToScene(*m_world, scenePath))
             return false;
 
-        //if (m_gameInstance)
-        luaContext.Start();
+        m_luaContext->Start();
 
         return true;
     }
 
     void RuntimeEngine::StartGame()
     {
-        SvScripting::LuaContext& luaContext = SvScripting::LuaContext::GetInstance();
-
         //init
         m_game->Init(m_world);
         m_world->m_owningGameInstance = m_game.get();
 
-        luaContext.Start();
-        ASSERT(luaContext.IsValid(), "Failed to start lua context");
+        m_luaContext->Start();
+        ASSERT(m_luaContext->IsValid(), "Failed to start lua context");
 
         //start
         m_game->Start();

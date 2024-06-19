@@ -24,7 +24,8 @@ using namespace SvPhysics;
 namespace SvScripting
 {
     LuaContext::LuaContext()
-        : m_collisionListenerId(0), m_triggerListenerId(0), m_isValid(false), m_hasStarted(false)
+        : m_userTypeBinders(&DefaultUserTypeBindings), m_collisionListenerId(0), m_triggerListenerId(0),
+        m_isValid(false), m_hasStarted(false)
     {
     }
 
@@ -34,12 +35,6 @@ namespace SvScripting
             Stop();
 
         Reset();
-    }
-
-    LuaContext& LuaContext::GetInstance()
-    {
-        static LuaContext instance;
-        return instance;
     }
 
     void LuaContext::Init()
@@ -52,7 +47,9 @@ namespace SvScripting
         m_state->add_package_loader(&LoadModule);
         m_isValid = true;
 
-        s_userTypeBinders ? s_userTypeBinders(*m_state) : DefaultUserTypeBindings(*m_state);
+        if (m_userTypeBinders)
+            m_userTypeBinders(*m_state);
+
         LinkPhysicsEvents();
     }
 
@@ -316,7 +313,7 @@ namespace SvScripting
 
     void LuaContext::SetUserTypeBinders(const Binder p_binder)
     {
-        s_userTypeBinders = p_binder;
+        m_userTypeBinders = p_binder;
     }
 
     int LuaContext::LoadModule(lua_State* p_luaState)

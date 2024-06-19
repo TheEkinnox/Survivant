@@ -49,7 +49,7 @@ namespace SvScripting
 
     LuaScriptHandle LuaScriptList::Get(const std::string& p_script) const
     {
-        return LuaContext::GetInstance().GetScript(p_script, m_owner);
+        return SV_SERVICE(LuaContext).GetScript(p_script, m_owner);
     }
 
     LuaScriptHandle LuaScriptList::Add(std::string p_script, const sol::table& p_hint)
@@ -63,7 +63,7 @@ namespace SvScripting
                 p_script.c_str(), m_owner.GetEntity().GetString().c_str()))
             return {};
 
-        LuaScriptHandle handle = LuaContext::GetInstance().AddScript(p_script, m_owner, p_hint);
+        LuaScriptHandle handle = SV_SERVICE(LuaContext).AddScript(p_script, m_owner, p_hint);
 
         if (!handle.m_table.valid())
             return {};
@@ -75,13 +75,13 @@ namespace SvScripting
 
     void LuaScriptList::Remove(const std::string& p_script)
     {
-        LuaContext::GetInstance().RemoveScript(p_script, m_owner);
+        SV_SERVICE(LuaContext).RemoveScript(p_script, m_owner);
         m_scripts.erase(LuaContext::GetModuleName(p_script));
     }
 
     void LuaScriptList::Clear()
     {
-        LuaContext& context = LuaContext::GetInstance();
+        LuaContext& context = SV_SERVICE(LuaContext);
 
         for (auto& [script, table] : m_scripts)
         {
@@ -201,7 +201,7 @@ namespace SvCore::ECS
     {
         p_component.m_owner = p_entity;
 
-        LuaContext& context = LuaContext::GetInstance();
+        LuaContext& context = SV_SERVICE(LuaContext);
 
         auto scripts = p_component.m_scripts; // Necessary copy - Scripts can be removed during initialization
 
@@ -290,7 +290,7 @@ namespace SvCore::ECS
             if (!CHECK(scriptIt != script.MemberEnd(), "Unable to deserialize lua script - Missing script data"))
                 return false;
 
-            sol::table table(LuaContext::GetInstance().GetLuaState(), sol::create);
+            sol::table table(SV_SERVICE(LuaContext).GetLuaState(), sol::create);
 
             if (!FromJson(table, scriptIt->value, p_scene))
                 return false;

@@ -97,7 +97,7 @@ namespace SvTest
         PhysicsContext& physicsContext = SV_SERVICE(PhysicsContext);
         physicsContext.Init();
 
-        LuaContext& luaContext = LuaContext::GetInstance();
+        LuaContext& luaContext = SV_SERVICE(LuaContext);
         luaContext.Init();
 
         m_timer.Refresh();
@@ -227,7 +227,7 @@ namespace SvTest
 
         m_timer.Refresh();
 
-        LuaContext& luaContext = LuaContext::GetInstance();
+        LuaContext& luaContext = SV_SERVICE(LuaContext);
         luaContext.Reload();
 
         m_scene = ResourceManager::GetInstance().Load<Scene>(TEST_SCENE_PATH);

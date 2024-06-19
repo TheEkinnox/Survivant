@@ -18,6 +18,11 @@ namespace SvAudio
     class AudioContext;
 }
 
+namespace SvScripting
+{
+    class LuaContext;
+}
+
 namespace SvRuntime
 {
     class EditorWindow;
@@ -55,6 +60,7 @@ namespace SvRuntime
         GameInstancePtr CreateGameInstance();
         SceneRef        GetStartScene();
 
+        std::unique_ptr<SvScripting::LuaContext>            m_luaContext;
         std::unique_ptr<SvPhysics::PhysicsContext>          m_physicsContext;
         std::unique_ptr<SvAudio::AudioContext>              m_audioContext;
 

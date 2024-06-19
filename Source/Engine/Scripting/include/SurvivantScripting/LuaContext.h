@@ -56,12 +56,6 @@ namespace SvScripting
         LuaContext& operator=(LuaContext&& p_other) noexcept = default;
 
         /**
-         * \brief Gets the current lua context instance
-         * \return The current lua context instance
-         */
-        static LuaContext& GetInstance();
-
-        /**
          * \brief Initializes the lua context
          */
         void Init();
@@ -170,7 +164,7 @@ namespace SvScripting
          * \brief Registers the given user type binder function
          * \param p_binder The binder function to register, or default binders
          */
-        static void SetUserTypeBinders(Binder p_binder = &LuaContext::DefaultUserTypeBindings);
+        void SetUserTypeBinders(Binder p_binder);
 
     private:
         using ListenerId = SvCore::Events::Event<>::ListenerId;
@@ -179,11 +173,11 @@ namespace SvScripting
 
         inline static std::unordered_map<std::string, std::string> s_moduleNames;
         inline static std::unordered_map<std::string, std::string> s_modulePaths;
-        inline static Binder                                       s_userTypeBinders;
 
         std::unique_ptr<sol::state>  m_state;
         std::vector<LuaScriptHandle> m_scripts;
 
+        Binder     m_userTypeBinders;
         ListenerId m_collisionListenerId;
         ListenerId m_triggerListenerId;
 

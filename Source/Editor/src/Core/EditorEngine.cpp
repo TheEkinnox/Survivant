@@ -31,10 +31,12 @@ namespace SvEditor::Core
 {
     EditorEngine::EditorEngine()
     {
+        m_luaContext      = std::make_unique<SvScripting::LuaContext>();
         m_physicsContext  = std::make_unique<SvPhysics::PhysicsContext>();
         m_audioContext    = std::make_unique<SvAudio::AudioContext>();
 
         ServiceLocator::Provide<Timer>(m_gameTime);
+        ServiceLocator::Provide<SvScripting::LuaContext>(*m_luaContext);
         ServiceLocator::Provide<SvPhysics::PhysicsContext>(*m_physicsContext);
         ServiceLocator::Provide<SvAudio::AudioContext>(*m_audioContext);
     }
@@ -43,17 +45,14 @@ namespace SvEditor::Core
     {
         m_editorWorld.reset();
 
-		SvScripting::LuaContext& luaContext = SvScripting::LuaContext::GetInstance();
-		ResourceManager::GetInstance().Clear();
-		SvPhysics::PhysicsContext::GetInstance().Reset();
-
-		if (m_gameInstance)
-		{
-			luaContext.Stop();
-			m_gameInstance.reset();
-		}
+        if (m_gameInstance)
+        {
+            m_luaContext->Stop();
+            m_gameInstance.reset();
+        }
 
 		luaContext.Reset();
+        m_luaContext.reset();
         m_audioContext.reset();
         m_physicsContext.reset();
     }
@@ -69,9 +68,9 @@ namespace SvEditor::Core
         //physics
         m_physicsContext->Init();
 
-		//scripts
-		SvScripting::LuaContext::SetUserTypeBinders(&LuaEditorBinder::EditorUserTypeBindings);
-		SvScripting::LuaContext::GetInstance().Init();
+        //scripts
+        m_luaContext->SetUserTypeBinders(&LuaEditorBinder::EditorUserTypeBindings);
+        m_luaContext->Init();
 
 		//create scenes
 		m_editorSelectedScene = ResourceManager::GetInstance().GetOrCreate<Scene>(DEFAULT_SCENE_PATH);
@@ -117,10 +116,9 @@ namespace SvEditor::Core
 		if (!SaveSceneState())
 			return {};
 
-		SvScripting::LuaContext& luaContext = SvScripting::LuaContext::GetInstance();
-		luaContext.Reload();
         m_physicsContext->Reload();
         m_gameTime.Refresh();
+        m_luaContext->Reload();
 
 		ResourceManager& resourceManager = ResourceManager::GetInstance();
 		resourceManager.ReloadAll<SvScripting::LuaScript>();
@@ -136,31 +134,30 @@ namespace SvEditor::Core
 		m_gameInstance->Init(m_PIEWorld);
 		pieWorld.m_owningGameInstance = m_gameInstance.get();
 
-		luaContext.Start();
-		if (!CHECK(luaContext.IsValid(), "Failed to start lua context"))
-		{
-			m_gameInstance.reset();
+        m_luaContext->Start();
+        if (!CHECK(m_luaContext->IsValid(), "Failed to start lua context"))
+        {
+            m_gameInstance.reset();
 
-			luaContext.Reload();
-			CHECK(RestoreSceneState(), "Failed to restore pre-play scene state");
-			return {};
-		}
+            m_luaContext->Reload();
+            CHECK(RestoreSceneState(), "Failed to restore pre-play scene state");
+            return {};
+        }
 
 		return { m_gameInstance };
 	}
 
-	void EditorEngine::DestroyGameInstance()
-	{
-		SvScripting::LuaContext& luaContext = SvScripting::LuaContext::GetInstance();
-		luaContext.Stop();
-		luaContext.Reload();
+    void EditorEngine::DestroyGameInstance()
+    {
         m_physicsContext->Reload();
+        m_luaContext->Stop();
+        m_luaContext->Reload();
         m_audioContext->StopAll();
 
-		ASSERT(luaContext.IsValid());
+        ASSERT(m_luaContext->IsValid());
 
-		WorldContext::SceneRef scene = GetWorldContextRef(*m_gameInstance).lock()->CurrentScene();
-		m_gameInstance.reset();
+        const WorldContext::SceneRef scene = GetWorldContextRef(*m_gameInstance).lock()->CurrentScene();
+        m_gameInstance.reset();
 
 		CHECK(RestoreSceneState(), "Failed to restore pre-play scene state");
 
@@ -352,22 +349,21 @@ namespace SvEditor::Core
 
         m_physicsContext->Reload();
         m_gameTime.Refresh();
+        m_luaContext->Reload();
 
-		SvPhysics::PhysicsContext::GetInstance().Reload();
-		Timer::GetInstance().Refresh();
-		luaContext.Reload();
+        //couldn't browse to scene
+        if (!BrowseToScene(*m_editorWorld, scenePath))
+            return false;
 
-		//couldnt browse to scene
-		if (!BrowseToScene(*m_editorWorld, scenePath))
-			return false;
-
-		if (m_gameInstance)
-		{
-			CommitSceneChange(*m_PIEWorld.lock(), m_editorWorld->CurrentScene());
-			luaContext.Start();
-		}
-		else //update editorWorld level. Dont bcs change back
-			m_editorSelectedScene = m_editorWorld->CurrentScene();
+        if (m_gameInstance)
+        {
+            CommitSceneChange(*m_PIEWorld.lock(), m_editorWorld->CurrentScene());
+            m_luaContext->Start();
+        }
+        else //update editorWorld level. Dont bcs change back
+        {
+            m_editorSelectedScene = m_editorWorld->CurrentScene();
+        }
 
 		m_isEditorModifiedScene = false;
 
