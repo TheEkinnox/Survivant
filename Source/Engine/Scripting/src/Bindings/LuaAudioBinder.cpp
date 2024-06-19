@@ -72,7 +72,7 @@ namespace SvScripting::Bindings
             "StopAll", &AudioContext::StopAll
         );
 
-        p_luaState[typeName] = &AudioContext::GetInstance();
+        p_luaState[typeName] = &SV_SERVICE(AudioContext);
     }
 
     void LuaAudioBinder::BindAudioHandle(sol::state& p_luaState)

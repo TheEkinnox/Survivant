@@ -31,7 +31,10 @@ namespace SvEditor::Core
 {
     EditorEngine::EditorEngine()
     {
+        m_audioContext    = std::make_unique<SvAudio::AudioContext>();
+
         ServiceLocator::Provide<Timer>(m_gameTime);
+        ServiceLocator::Provide<SvAudio::AudioContext>(*m_audioContext);
     }
 
     EditorEngine::~EditorEngine()
@@ -49,16 +52,16 @@ namespace SvEditor::Core
 		}
 
 		luaContext.Reset();
-		SvAudio::AudioContext::GetInstance().Reset();
-	}
+        m_audioContext.reset();
+    }
 
 	void EditorEngine::Init()
 	{
 		s_engine = this;
 
-		//audio
-		if (!SvAudio::AudioContext::GetInstance().Init())
-			ASSERT(false, "Failed to initialize audio context");
+        //audio
+        if (!m_audioContext->Init())
+            ASSERT(false, "Failed to initialize audio context");
 
 		//physics
 		SvPhysics::PhysicsContext::GetInstance().Init();
@@ -149,7 +152,7 @@ namespace SvEditor::Core
 		SvScripting::LuaContext& luaContext = SvScripting::LuaContext::GetInstance();
 		luaContext.Stop();
 		luaContext.Reload();
-		SvAudio::AudioContext::GetInstance().StopAll();
+        m_audioContext->StopAll();
 
 		ASSERT(luaContext.IsValid());
 

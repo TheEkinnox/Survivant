@@ -8,6 +8,11 @@
 
 #include <memory>
 
+namespace SvAudio
+{
+    class AudioContext;
+}
+
 namespace SvRuntime
 {
     class EditorWindow;
@@ -44,6 +49,8 @@ namespace SvRuntime
         WorldContextPtr CreateGameWorld();
         GameInstancePtr CreateGameInstance();
         SceneRef        GetStartScene();
+
+        std::unique_ptr<SvAudio::AudioContext>              m_audioContext;
 
         SvCore::Utility::Timer m_time;
         bool                   m_isRunning = true;

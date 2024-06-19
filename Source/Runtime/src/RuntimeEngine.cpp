@@ -1,8 +1,8 @@
 //RuntimeEngine.cpp
 #include "SurvivantRuntime/RuntimeEngine.h"
 
-#include <SurvivantApp/Windows/Window.h>
 #include <SurvivantApp/Core/BuildConfig.h>
+#include <SurvivantApp/Windows/Window.h>
 
 #include <SurvivantAudio/AudioContext.h>
 
@@ -31,12 +31,20 @@ using namespace SvRendering::Components;
 
 namespace SvRuntime
 {
+    RuntimeEngine::RuntimeEngine()
+    {
+        m_audioContext    = std::make_unique<SvAudio::AudioContext>();
+
+        ServiceLocator::Provide<Timer>(m_time);
+        ServiceLocator::Provide<SvAudio::AudioContext>(*m_audioContext);
+    }
+
     void RuntimeEngine::Init()
     {
         s_engine = this;
 
         //audio
-        if (!SvAudio::AudioContext::GetInstance().Init())
+        if (!m_audioContext->Init())
             ASSERT(false, "Failed to initialize audio context");
 
         //physics

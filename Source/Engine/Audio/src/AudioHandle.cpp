@@ -23,7 +23,7 @@ namespace SvAudio
 
     void AudioHandle::Play(const float p_volume, const float p_pan, const bool p_paused)
     {
-        const auto& context = AudioContext::GetInstance();
+        const auto& context = SV_SERVICE(AudioContext);
 
         if (CheckHandle())
             context.m_soLoud->stop(m_handle);
@@ -33,12 +33,12 @@ namespace SvAudio
 
     bool AudioHandle::IsPlaying() const
     {
-        return CheckHandle() && !AudioContext::GetInstance().m_soLoud->getPause(m_handle);
+        return CheckHandle() && !SV_SERVICE(AudioContext).m_soLoud->getPause(m_handle);
     }
 
     void AudioHandle::SetPaused(const bool p_state)
     {
-        const auto& context = AudioContext::GetInstance();
+        const auto& context = SV_SERVICE(AudioContext);
 
         if (CHECK(CheckHandle(), "Attempted to set pause state of invalid audio handle"))
             context.m_soLoud->setPause(m_handle, p_state);
@@ -48,7 +48,7 @@ namespace SvAudio
     {
         if (CheckHandle())
         {
-            AudioContext::GetInstance().m_soLoud->stop(m_handle);
+            SV_SERVICE(AudioContext).m_soLoud->stop(m_handle);
             m_handle = 0;
         }
     }
@@ -56,7 +56,7 @@ namespace SvAudio
     float AudioHandle::GetVolume() const
     {
         if (CHECK(CheckHandle(), "Attempted to get volume of invalid audio handle"))
-            return AudioContext::GetInstance().m_soLoud->getVolume(m_handle);
+            return SV_SERVICE(AudioContext).m_soLoud->getVolume(m_handle);
 
         return 0.f;
     }
@@ -64,13 +64,13 @@ namespace SvAudio
     void AudioHandle::SetVolume(const float p_volume)
     {
         if (CHECK(CheckHandle(), "Attempted to set volume of invalid audio handle"))
-            AudioContext::GetInstance().m_soLoud->setVolume(m_handle, p_volume);
+            SV_SERVICE(AudioContext).m_soLoud->setVolume(m_handle, p_volume);
     }
 
     float AudioHandle::GetPan() const
     {
         if (CHECK(CheckHandle(), "Attempted to get pan of invalid audio handle"))
-            return AudioContext::GetInstance().m_soLoud->getPan(m_handle);
+            return SV_SERVICE(AudioContext).m_soLoud->getPan(m_handle);
 
         return 0.f;
     }
@@ -78,13 +78,13 @@ namespace SvAudio
     void AudioHandle::SetPan(const float p_pan)
     {
         if (CHECK(CheckHandle(), "Attempted to set pan of invalid audio handle"))
-            AudioContext::GetInstance().m_soLoud->setPan(m_handle, p_pan);
+            SV_SERVICE(AudioContext).m_soLoud->setPan(m_handle, p_pan);
     }
 
     float AudioHandle::GetSpeed() const
     {
         if (CHECK(CheckHandle(), "Attempted to get speed of invalid audio handle"))
-            return AudioContext::GetInstance().m_soLoud->getRelativePlaySpeed(m_handle);
+            return SV_SERVICE(AudioContext).m_soLoud->getRelativePlaySpeed(m_handle);
 
         return 0.f;
     }
@@ -92,24 +92,24 @@ namespace SvAudio
     void AudioHandle::SetSpeed(const float p_speed)
     {
         if (CHECK(CheckHandle(), "Attempted to set speed of invalid audio handle"))
-            AudioContext::GetInstance().m_soLoud->setPan(m_handle, p_speed);
+            SV_SERVICE(AudioContext).m_soLoud->setPan(m_handle, p_speed);
     }
 
     bool AudioHandle::IsLooping() const
     {
-        return CheckHandle() && !AudioContext::GetInstance().m_soLoud->getLooping(m_handle);
+        return CheckHandle() && !SV_SERVICE(AudioContext).m_soLoud->getLooping(m_handle);
     }
 
     void AudioHandle::SetLooping(bool p_state)
     {
         if (CHECK(CheckHandle(), "Attempted to set loop state of invalid audio handle"))
-            AudioContext::GetInstance().m_soLoud->setLooping(m_handle, p_state);
+            SV_SERVICE(AudioContext).m_soLoud->setLooping(m_handle, p_state);
     }
 
     Time AudioHandle::GetLoopPoint() const
     {
         if (CHECK(CheckHandle(), "Attempted to get loop point of invalid audio handle"))
-            return AudioContext::GetInstance().m_soLoud->getLoopPoint(m_handle);
+            return SV_SERVICE(AudioContext).m_soLoud->getLoopPoint(m_handle);
 
         return 0.f;
     }
@@ -117,13 +117,13 @@ namespace SvAudio
     void AudioHandle::SetLoopPoint(Time p_loopPoint) const
     {
         if (CHECK(CheckHandle(), "Attempted to set loop point of invalid audio handle"))
-            AudioContext::GetInstance().m_soLoud->setLoopPoint(m_handle, p_loopPoint);
+            SV_SERVICE(AudioContext).m_soLoud->setLoopPoint(m_handle, p_loopPoint);
     }
 
     unsigned int AudioHandle::GetLoopCount() const
     {
         if (CHECK(CheckHandle(), "Attempted to get loop count of invalid audio handle"))
-            return AudioContext::GetInstance().m_soLoud->getLoopCount(m_handle);
+            return SV_SERVICE(AudioContext).m_soLoud->getLoopCount(m_handle);
 
         return 0;
     }
@@ -131,11 +131,11 @@ namespace SvAudio
     void AudioHandle::SetLoopCount(unsigned int p_loopCount) const
     {
         if (CHECK(CheckHandle(), "Attempted to set loop count of invalid audio handle"))
-            AudioContext::GetInstance().m_soLoud->setLoopPoint(m_handle, p_loopCount);
+            SV_SERVICE(AudioContext).m_soLoud->setLoopPoint(m_handle, p_loopCount);
     }
 
     bool AudioHandle::CheckHandle() const
     {
-        return AudioContext::GetInstance().m_soLoud->isValidVoiceHandle(m_handle);
+        return SV_SERVICE(AudioContext).m_soLoud->isValidVoiceHandle(m_handle);
     }
 }

@@ -35,18 +35,12 @@ namespace SvAudio
         Reset();
     }
 
-    AudioContext& AudioContext::GetInstance()
-    {
-        static AudioContext instance;
-        return instance;
-    }
-
     bool AudioContext::Init()
     {
         if (ASSUME_FALSE(m_soLoud, "Attempted to initialize audio context more than once"))
             return false;
 
-        m_soLoud = std::make_unique<SoLoud::Soloud>();
+        m_soLoud = new SoLoud::Soloud();
 
         const SoLoud::result result = m_soLoud->init();
 
@@ -62,7 +56,7 @@ namespace SvAudio
             return;
 
         StopAll();
-        m_soLoud.reset();
+        delete m_soLoud;
     }
 
     AudioHandle AudioContext::Play(

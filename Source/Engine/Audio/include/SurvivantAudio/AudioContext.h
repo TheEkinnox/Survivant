@@ -46,12 +46,6 @@ namespace SvAudio
         AudioContext& operator=(AudioContext&& p_other) noexcept = default;
 
         /**
-         * \brief Gets a reference to the current audio context
-         * \return A reference to the current audio context
-         */
-        static AudioContext& GetInstance();
-
-        /**
          * \brief Gets the string representation of the given operation result code
          * \param p_result The operation result code
          * \return The result code's string representation
@@ -88,6 +82,6 @@ namespace SvAudio
     private:
         friend class AudioHandle;
 
-        std::unique_ptr<SoLoud::Soloud> m_soLoud;
+        SoLoud::Soloud* m_soLoud;
     };
 }
