@@ -45,6 +45,23 @@ namespace SvRuntime
         ServiceLocator::Provide<SvAudio::AudioContext>(*m_audioContext);
     }
 
+    RuntimeEngine::~RuntimeEngine()
+    {
+        m_world.reset();
+
+        if (m_game)
+        {
+            m_luaContext->Stop();
+            m_game.reset();
+        }
+
+        m_resourceManager.reset();
+
+        m_luaContext.reset();
+        m_audioContext.reset();
+        m_physicsContext.reset();
+    }
+
     void RuntimeEngine::Init()
     {
         s_engine = this;
@@ -69,24 +86,6 @@ namespace SvRuntime
         StartGame();
     }
 
-    RuntimeEngine::~RuntimeEngine()
-    {
-        m_world.reset();
-
-        SvScripting::LuaContext& luaContext = SvScripting::LuaContext::GetInstance();
-        ResourceManager::GetInstance().Clear();
-        SvPhysics::PhysicsContext::GetInstance().Reset();
-
-        if (m_game)
-        {
-            luaContext.Stop();
-            m_game.reset();
-        }
-
-        luaContext.Reset();
-        SvAudio::AudioContext::GetInstance().Reset();
-    }
-
     void RuntimeEngine::Update()
     {
         m_time.Tick();
@@ -107,12 +106,10 @@ namespace SvRuntime
 
     RuntimeEngine::WorldContextPtr RuntimeEngine::CreateGameWorld()
     {
-        auto world                  = CreateNewWorldContext(WorldContext::EWorldType::NONE);
-        world->m_renderingContext = std::make_shared<RenderingContext>(EntityHandle());
+        WorldContextPtr world       = CreateNewWorldContext(WorldContext::EWorldType::NONE);
+        world->m_renderingContext   = std::make_shared<RenderingContext>(EntityHandle());
+        world->m_lightsSSBO         = IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, Renderer::LIGHT_SSBO_INDEX);
         world->m_owningGameInstance = nullptr;
-
-        world->m_lightsSSBO = IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, 0);
-
 
         return world;
     }

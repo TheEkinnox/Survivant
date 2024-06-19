@@ -9,33 +9,28 @@
 
 namespace SvEditor::Core
 {
-	class EngineApp : public SvApp::Core::IApp
-	{
-	public:
-		using GameInstance = SvApp::Core::GameInstance;
+    class EngineApp : public SvApp::Core::IApp
+    {
+    public:
+        using GameInstance = SvApp::Core::GameInstance;
 
-		EngineApp();
-		~EngineApp() override;
+        EngineApp();
+        ~EngineApp() override;
 
-		// Inherited via IApp
-		void Init() override;
-		void Run() override;
+        // Inherited via IApp
+        void Init() override;
+        void Run() override;
 
-	private:
-		void DrawLogo();
+    private:
+        void DrawLogo() const;
 
-		void TogglePlayPIE();
-		void TogglePausePIE();
-		void PressFramePIE();
-		void UpdatePIE();
+        void TogglePlayPIE();
+        void TogglePausePIE();
+        void PressFramePIE();
+        void UpdatePIE();
 
-		void UpdateScripts();
-		void UpdatePhysics();
-
-		//class GameLoopEvent : public SvCore::Events::Event<> {};
-
-		std::unique_ptr<EditorWindow>			m_window;
-		std::weak_ptr<GameInstance>				m_gameInstance;
-		EditorEngine							m_editorEngine;
-	};
+        std::unique_ptr<EditorWindow> m_window;
+        std::unique_ptr<EditorEngine> m_editorEngine;
+        std::weak_ptr<GameInstance>   m_gameInstance;
+    };
 }

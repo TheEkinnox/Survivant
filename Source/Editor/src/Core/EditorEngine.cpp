@@ -60,9 +60,9 @@ namespace SvEditor::Core
         m_physicsContext.reset();
     }
 
-	void EditorEngine::Init()
-	{
-		s_engine = this;
+    void EditorEngine::Init()
+    {
+        s_engine = this;
 
         //audio
         if (!m_audioContext->Init())
@@ -78,46 +78,48 @@ namespace SvEditor::Core
         //create scenes
         m_editorSelectedScene = m_resourceManager->GetOrCreate<Scene>(DEFAULT_SCENE_PATH);
 
-		//create editor world world
-		m_editorWorld = CreateEditorDefaultWorld(m_editorSelectedScene);
-		m_editorWorld->SetInputs();
+        //create editor world world
+        m_editorWorld = CreateEditorDefaultWorld(m_editorSelectedScene);
+        m_editorWorld->SetInputs();
 
-		//setup events
-		SetupEditorEvents();
-	}
+        //setup events
+        SetupEditorEvents();
+    }
 
-	void EditorEngine::Update()
-	{
-		m_time.Tick();
+    void EditorEngine::Update()
+    {
+        m_time.Tick();
 
-		if (!m_scenePath.empty())
-		{
-			bool changeSuccess = ChangeSceneInternal();
+        if (!m_scenePath.empty())
+        {
+            bool changeSuccess = ChangeSceneInternal();
 
-			if (m_gameInstance && !CHECK(changeSuccess))
-			{
-				SetPaused(false);
-				DestroyGameInstance();
-			}
-			else if (!m_gameInstance)
-				ASSERT(changeSuccess, "ChangeScene in Editor failed");
-		}
+            if (m_gameInstance && !CHECK(changeSuccess))
+            {
+                SetPaused(false);
+                DestroyGameInstance();
+            }
+            else if (!m_gameInstance)
+            {
+                ASSERT(changeSuccess, "ChangeScene in Editor failed");
+            }
+        }
 
-		if (m_editorWorld->m_isFocused)
-			m_editorWorld->m_renderingContext->UpdateCameraInput();
-	}
+        if (m_editorWorld->m_isFocused)
+            m_editorWorld->m_renderingContext->UpdateCameraInput();
+    }
 
-	std::weak_ptr<GameInstance> EditorEngine::CreatePIEGameInstance()
-	{
-		//if dont have PIE world context
-		if (m_PIEWorld.expired())
-		{
-			ASSERT(false, "No PIE world on game instance creation");
-			m_PIEWorld = CreatePIEWorld();
-		}
+    std::weak_ptr<GameInstance> EditorEngine::CreatePIEGameInstance()
+    {
+        //if dont have PIE world context
+        if (m_PIEWorld.expired())
+        {
+            ASSERT(false, "No PIE world on game instance creation");
+            m_PIEWorld = CreatePIEWorld();
+        }
 
-		if (!SaveSceneState())
-			return {};
+        if (!SaveSceneState())
+            return {};
 
         m_physicsContext->Reload();
         m_gameTime.Refresh();
@@ -125,16 +127,16 @@ namespace SvEditor::Core
 
         m_resourceManager->ReloadAll<SvScripting::LuaScript>();
 
-		auto& pieWorld = *m_PIEWorld.lock();
-		pieWorld.SetCamera(pieWorld.GetFirstCamera());
-		pieWorld.SetInputs();
-		pieWorld.BakeLighting();
+        auto& pieWorld          = *m_PIEWorld.lock();
         pieWorld.CurrentScene() = m_resourceManager->Load<Scene>(m_editorSelectedScene.GetPath());
+        pieWorld.SetCamera(pieWorld.GetFirstCamera());
+        pieWorld.SetInputs();
+        pieWorld.BakeLighting();
 
-		//init
-		m_gameInstance = std::make_shared<GameInstance>();
-		m_gameInstance->Init(m_PIEWorld);
-		pieWorld.m_owningGameInstance = m_gameInstance.get();
+        //init
+        m_gameInstance = std::make_shared<GameInstance>();
+        m_gameInstance->Init(m_PIEWorld);
+        pieWorld.m_owningGameInstance = m_gameInstance.get();
 
         m_luaContext->Start();
         if (!CHECK(m_luaContext->IsValid(), "Failed to start lua context"))
@@ -146,8 +148,8 @@ namespace SvEditor::Core
             return {};
         }
 
-		return { m_gameInstance };
-	}
+        return { m_gameInstance };
+    }
 
     void EditorEngine::DestroyGameInstance()
     {
@@ -161,193 +163,193 @@ namespace SvEditor::Core
         const WorldContext::SceneRef scene = GetWorldContextRef(*m_gameInstance).lock()->CurrentScene();
         m_gameInstance.reset();
 
-		CHECK(RestoreSceneState(), "Failed to restore pre-play scene state");
+        CHECK(RestoreSceneState(), "Failed to restore pre-play scene state");
 
-		//while playing, loaded new scene, so go back to selected
-		if (scene != m_editorSelectedScene)
-		{
-			ChangeScene(m_editorSelectedScene.GetPath());
-			ChangeSceneInternal();
-		}
+        //while playing, loaded new scene, so go back to selected
+        if (scene != m_editorSelectedScene)
+        {
+            ChangeScene(m_editorSelectedScene.GetPath());
+            ChangeSceneInternal();
+        }
 
-		m_editorWorld->SetInputs();
-		*m_PIEWorld.lock()->m_currentSceneRef = SceneRef();
-	}
+        m_editorWorld->SetInputs();
+        *m_PIEWorld.lock()->m_currentSceneRef = SceneRef();
+    }
 
-	std::shared_ptr<WorldContext> EditorEngine::CreatePIEWorld()
-	{
-		auto pieWorld =				IEngine::CreateNewWorldContext(WorldContext::EWorldType::PIE);
-		pieWorld->m_lightsSSBO =	IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, Renderer::LIGHT_SSBO_INDEX);
+    std::shared_ptr<WorldContext> EditorEngine::CreatePIEWorld()
+    {
+        auto pieWorld          = IEngine::CreateNewWorldContext(WorldContext::EWorldType::PIE);
+        pieWorld->m_lightsSSBO = IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, Renderer::LIGHT_SSBO_INDEX);
 
-		return pieWorld;
-	}
+        return pieWorld;
+    }
 
-	std::shared_ptr<EditorEngine::Inputs> EditorEngine::CreateEditorInputs()
-	{
-		using namespace SvCore;
-		using namespace SvApp;
-		using namespace Events;
+    std::shared_ptr<EditorEngine::Inputs> EditorEngine::CreateEditorInputs()
+    {
+        using namespace SvCore;
+        using namespace SvApp;
+        using namespace Events;
 
-		std::shared_ptr<EditorEngine::Inputs> input = std::make_shared<EditorEngine::Inputs>();
+        std::shared_ptr<EditorEngine::Inputs> input = std::make_shared<EditorEngine::Inputs>();
 
-		auto& k = input->m_keyCallbacks;
+        auto& k = input->m_keyCallbacks;
 
-		//move camera in scene
-		k.emplace(InputManager::KeyboardKeyType{ EKey::W, EKeyState::PRESSED, EInputModifier::MOD_ANY }, [this](const char)
-			{
-				++m_editorWorld->m_renderingContext->CameraMoveInput().m_y;
-			});
+        //move camera in scene
+        k.emplace(InputManager::KeyboardKeyType{ EKey::W, EKeyState::PRESSED, EInputModifier::MOD_ANY }, [this](const char)
+        {
+            ++m_editorWorld->m_renderingContext->CameraMoveInput().m_y;
+        });
 
-		k.emplace(InputManager::KeyboardKeyType{ EKey::W, EKeyState::RELEASED, EInputModifier::MOD_ANY }, [this](const char)
-			{
-				--m_editorWorld->m_renderingContext->CameraMoveInput().m_y;
-			});
+        k.emplace(InputManager::KeyboardKeyType{ EKey::W, EKeyState::RELEASED, EInputModifier::MOD_ANY }, [this](const char)
+        {
+            --m_editorWorld->m_renderingContext->CameraMoveInput().m_y;
+        });
 
-		k.emplace(InputManager::KeyboardKeyType{ EKey::S, EKeyState::PRESSED, EInputModifier::MOD_ANY }, [this](const char)
-			{
-				--m_editorWorld->m_renderingContext->CameraMoveInput().m_y;
-			});
+        k.emplace(InputManager::KeyboardKeyType{ EKey::S, EKeyState::PRESSED, EInputModifier::MOD_ANY }, [this](const char)
+        {
+            --m_editorWorld->m_renderingContext->CameraMoveInput().m_y;
+        });
 
-		k.emplace(InputManager::KeyboardKeyType{ EKey::S, EKeyState::RELEASED, EInputModifier::MOD_ANY }, [this](const char)
-			{
-				++m_editorWorld->m_renderingContext->CameraMoveInput().m_y;
-			});
+        k.emplace(InputManager::KeyboardKeyType{ EKey::S, EKeyState::RELEASED, EInputModifier::MOD_ANY }, [this](const char)
+        {
+            ++m_editorWorld->m_renderingContext->CameraMoveInput().m_y;
+        });
 
-		k.emplace(InputManager::KeyboardKeyType{ EKey::A, EKeyState::PRESSED, EInputModifier::MOD_ANY }, [this](const char)
-			{
-				--m_editorWorld->m_renderingContext->CameraMoveInput().m_x;
-			});
+        k.emplace(InputManager::KeyboardKeyType{ EKey::A, EKeyState::PRESSED, EInputModifier::MOD_ANY }, [this](const char)
+        {
+            --m_editorWorld->m_renderingContext->CameraMoveInput().m_x;
+        });
 
-		k.emplace(InputManager::KeyboardKeyType{ EKey::A, EKeyState::RELEASED, EInputModifier::MOD_ANY }, [this](const char)
-			{
-				++m_editorWorld->m_renderingContext->CameraMoveInput().m_x;
-			});
+        k.emplace(InputManager::KeyboardKeyType{ EKey::A, EKeyState::RELEASED, EInputModifier::MOD_ANY }, [this](const char)
+        {
+            ++m_editorWorld->m_renderingContext->CameraMoveInput().m_x;
+        });
 
-		k.emplace(InputManager::KeyboardKeyType{ EKey::D, EKeyState::PRESSED, EInputModifier::MOD_ANY }, [this](const char)
-			{
-				++m_editorWorld->m_renderingContext->CameraMoveInput().m_x;
-			});
+        k.emplace(InputManager::KeyboardKeyType{ EKey::D, EKeyState::PRESSED, EInputModifier::MOD_ANY }, [this](const char)
+        {
+            ++m_editorWorld->m_renderingContext->CameraMoveInput().m_x;
+        });
 
-		k.emplace(InputManager::KeyboardKeyType{ EKey::D, EKeyState::RELEASED, EInputModifier::MOD_ANY }, [this](const char)
-			{
-				--m_editorWorld->m_renderingContext->CameraMoveInput().m_x;
-			});
+        k.emplace(InputManager::KeyboardKeyType{ EKey::D, EKeyState::RELEASED, EInputModifier::MOD_ANY }, [this](const char)
+        {
+            --m_editorWorld->m_renderingContext->CameraMoveInput().m_x;
+        });
 
-		k.emplace(InputManager::KeyboardKeyType{ EKey::UP, EKeyState::PRESSED, EInputModifier::MOD_ANY }, [this](const char)
-			{
-				++m_editorWorld->m_renderingContext->CameraRotateInput().m_y;
-			});
+        k.emplace(InputManager::KeyboardKeyType{ EKey::UP, EKeyState::PRESSED, EInputModifier::MOD_ANY }, [this](const char)
+        {
+            ++m_editorWorld->m_renderingContext->CameraRotateInput().m_y;
+        });
 
-		k.emplace(InputManager::KeyboardKeyType{ EKey::UP, EKeyState::RELEASED, EInputModifier::MOD_ANY }, [this](const char)
-			{
-				--m_editorWorld->m_renderingContext->CameraRotateInput().m_y;
-			});
+        k.emplace(InputManager::KeyboardKeyType{ EKey::UP, EKeyState::RELEASED, EInputModifier::MOD_ANY }, [this](const char)
+        {
+            --m_editorWorld->m_renderingContext->CameraRotateInput().m_y;
+        });
 
-		k.emplace(InputManager::KeyboardKeyType{ EKey::DOWN, EKeyState::PRESSED, EInputModifier::MOD_ANY }, [this](const char)
-			{
-				--m_editorWorld->m_renderingContext->CameraRotateInput().m_y;
-			});
+        k.emplace(InputManager::KeyboardKeyType{ EKey::DOWN, EKeyState::PRESSED, EInputModifier::MOD_ANY }, [this](const char)
+        {
+            --m_editorWorld->m_renderingContext->CameraRotateInput().m_y;
+        });
 
-		k.emplace(InputManager::KeyboardKeyType{ EKey::DOWN, EKeyState::RELEASED, EInputModifier::MOD_ANY }, [this](const char)
-			{
-				++m_editorWorld->m_renderingContext->CameraRotateInput().m_y;
-			});
+        k.emplace(InputManager::KeyboardKeyType{ EKey::DOWN, EKeyState::RELEASED, EInputModifier::MOD_ANY }, [this](const char)
+        {
+            ++m_editorWorld->m_renderingContext->CameraRotateInput().m_y;
+        });
 
-		k.emplace(InputManager::KeyboardKeyType{ EKey::LEFT, EKeyState::PRESSED, EInputModifier::MOD_ANY }, [this](const char)
-			{
-				--m_editorWorld->m_renderingContext->CameraRotateInput().m_x;
-			});
+        k.emplace(InputManager::KeyboardKeyType{ EKey::LEFT, EKeyState::PRESSED, EInputModifier::MOD_ANY }, [this](const char)
+        {
+            --m_editorWorld->m_renderingContext->CameraRotateInput().m_x;
+        });
 
-		k.emplace(InputManager::KeyboardKeyType{ EKey::LEFT, EKeyState::RELEASED, EInputModifier::MOD_ANY }, [this](const char)
-			{
-				++m_editorWorld->m_renderingContext->CameraRotateInput().m_x;
-			});
+        k.emplace(InputManager::KeyboardKeyType{ EKey::LEFT, EKeyState::RELEASED, EInputModifier::MOD_ANY }, [this](const char)
+        {
+            ++m_editorWorld->m_renderingContext->CameraRotateInput().m_x;
+        });
 
-		k.emplace(InputManager::KeyboardKeyType{ EKey::RIGHT, EKeyState::PRESSED, EInputModifier::MOD_ANY }, [this](const char)
-			{
-				++m_editorWorld->m_renderingContext->CameraRotateInput().m_x;
-			});
+        k.emplace(InputManager::KeyboardKeyType{ EKey::RIGHT, EKeyState::PRESSED, EInputModifier::MOD_ANY }, [this](const char)
+        {
+            ++m_editorWorld->m_renderingContext->CameraRotateInput().m_x;
+        });
 
-		k.emplace(InputManager::KeyboardKeyType{ EKey::RIGHT, EKeyState::RELEASED, EInputModifier::MOD_ANY }, [this](const char)
-			{
-				--m_editorWorld->m_renderingContext->CameraRotateInput().m_x;
-			});
+        k.emplace(InputManager::KeyboardKeyType{ EKey::RIGHT, EKeyState::RELEASED, EInputModifier::MOD_ANY }, [this](const char)
+        {
+            --m_editorWorld->m_renderingContext->CameraRotateInput().m_x;
+        });
 
 
-		return input;
-	}
+        return input;
+    }
 
-	std::shared_ptr<WorldContext> EditorEngine::CreateEditorDefaultWorld(const WorldContext::SceneRef& p_inScene)
-	{
-		auto world = CreateNewWorldContext(WorldContext::EWorldType::EDITOR);
-		world->m_owningGameInstance = nullptr;
+    std::shared_ptr<WorldContext> EditorEngine::CreateEditorDefaultWorld(const WorldContext::SceneRef& p_inScene)
+    {
+        auto world                  = CreateNewWorldContext(WorldContext::EWorldType::EDITOR);
+        world->m_owningGameInstance = nullptr;
 
-		world->m_lightsSSBO = IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, Renderer::LIGHT_SSBO_INDEX);
-		world->CurrentScene() = p_inScene;
-		CameraComponent cam;
-		cam.SetPerspective(90_deg, .01f, 50.f);
-		cam.SetClearColor(Color::lightGray);
-		world->SetCamera(cam, Transform({ 0.f, 0.f, 0.f }, Quaternion::identity(), Vector3::one()));
-		world->m_inputs = CreateEditorInputs();
+        world->m_lightsSSBO   = IShaderStorageBuffer::Create(EAccessMode::STREAM_DRAW, Renderer::LIGHT_SSBO_INDEX);
+        world->CurrentScene() = p_inScene;
+        CameraComponent cam;
+        cam.SetPerspective(90_deg, .01f, 50.f);
+        cam.SetClearColor(Color::lightGray);
+        world->SetCamera(cam, Transform({ 0.f, 0.f, 0.f }, Quaternion::identity(), Vector3::one()));
+        world->m_inputs = CreateEditorInputs();
 
-		//load and render
-		world->BakeLighting();
-		world->m_renderingContext->Render(world->CurrentScene().Get());
+        //load and render
+        world->BakeLighting();
+        world->m_renderingContext->Render(world->CurrentScene().Get());
 
-		return world;
-	}
+        return world;
+    }
 
-	void EditorEngine::SetupEditorEvents()
-	{
-		using namespace RuntimeBuild;
+    void EditorEngine::SetupEditorEvents()
+    {
+        using namespace RuntimeBuild;
 
-		SV_EVENT_MANAGER().AddListener<OnCreateBuildGame>(OnCreateBuildGame::EventDelegate(
-			[](const std::string& p_buildFileName,
-				const BuildConfig& p_buildInfo)
-			{
-				BuildManager::GetInstance().CreateBuild(p_buildFileName, p_buildInfo);
-			}));
+        SV_EVENT_MANAGER().AddListener<OnCreateBuildGame>(OnCreateBuildGame::EventDelegate(
+            [](const std::string& p_buildFileName,
+               const BuildConfig& p_buildInfo)
+            {
+                BuildManager::GetInstance().CreateBuild(p_buildFileName, p_buildInfo);
+            }));
 
-		SV_EVENT_MANAGER().AddListener<OnCreateBuildAndRun>(OnCreateBuildAndRun::EventDelegate(
-			[](const std::string& p_buildFileName,
-				const BuildConfig& p_buildInfo)
-			{
-				BuildManager::GetInstance().CreateAndRunBuild(p_buildFileName, p_buildInfo);
-			}));
+        SV_EVENT_MANAGER().AddListener<OnCreateBuildAndRun>(OnCreateBuildAndRun::EventDelegate(
+            [](const std::string& p_buildFileName,
+               const BuildConfig& p_buildInfo)
+            {
+                BuildManager::GetInstance().CreateAndRunBuild(p_buildFileName, p_buildInfo);
+            }));
 
-		SV_EVENT_MANAGER().AddListener<OnSave>(OnSave::EventDelegate(
-			[this]
-			{
-				auto& engine = *this;
-				if (engine.IsPlayInEditor())
-				{
-					SV_LOG_WARNING("Can't save scene during play mode");
-					return;
-				}
+        SV_EVENT_MANAGER().AddListener<OnSave>(OnSave::EventDelegate(
+            [this]
+            {
+                auto& engine = *this;
+                if (engine.IsPlayInEditor())
+                {
+                    SV_LOG_WARNING("Can't save scene during play mode");
+                    return;
+                }
 
-				OnSave::s_saveSucceded = m_editorWorld->Save(true);
-				if (OnSave::s_saveSucceded)
-				{
-					m_isEditorModifiedScene = false;
-					SV_LOG("Scene successfully saved to \"%s\"", m_editorWorld->CurrentScene().GetFullPath().c_str());
-				}
-			}));
+                OnSave::s_saveSucceded = m_editorWorld->Save(true);
+                if (OnSave::s_saveSucceded)
+                {
+                    m_isEditorModifiedScene = false;
+                    SV_LOG("Scene successfully saved to \"%s\"", m_editorWorld->CurrentScene().GetFullPath().c_str());
+                }
+            }));
 
-		SV_EVENT_MANAGER().AddListener<OnEditorModifiedScene>(OnEditorModifiedScene::EventDelegate(
-			[this]
-			{
-				if (!this->IsPlayInEditor())
-					m_isEditorModifiedScene = true;
-			}));
-	}
+        SV_EVENT_MANAGER().AddListener<OnEditorModifiedScene>(OnEditorModifiedScene::EventDelegate(
+            [this]
+            {
+                if (!this->IsPlayInEditor())
+                    m_isEditorModifiedScene = true;
+            }));
+    }
 
-	bool EditorEngine::ChangeSceneInternal()
-	{
-		HierarchyPanel::ToggleSelectable(SvCore::ECS::NULL_ENTITY.GetIndex());
-		const std::string scenePath = std::move(m_scenePath);
+    bool EditorEngine::ChangeSceneInternal()
+    {
+        HierarchyPanel::ToggleSelectable(SvCore::ECS::NULL_ENTITY.GetIndex());
+        const std::string scenePath = std::move(m_scenePath);
 
-		if (!m_gameInstance && m_isEditorModifiedScene && scenePath != m_editorWorld->CurrentScene().GetPath())
-			SV_EVENT_MANAGER().Invoke<OnSave>();
+        if (!m_gameInstance && m_isEditorModifiedScene && scenePath != m_editorWorld->CurrentScene().GetPath())
+            SV_EVENT_MANAGER().Invoke<OnSave>();
 
         m_physicsContext->Reload();
         m_gameTime.Refresh();
@@ -367,146 +369,146 @@ namespace SvEditor::Core
             m_editorSelectedScene = m_editorWorld->CurrentScene();
         }
 
-		m_isEditorModifiedScene = false;
+        m_isEditorModifiedScene = false;
 
-		return true;
-	}
+        return true;
+    }
 
-	std::string EditorEngine::GetTemporaryScenePath() const
-	{
-		if (!m_editorSelectedScene)
-			return {};
+    std::string EditorEngine::GetTemporaryScenePath() const
+    {
+        if (!m_editorSelectedScene)
+            return {};
 
-		std::ostringstream oss;
-		oss << m_editorSelectedScene.GetFullPath() << ".tmp";
-		return oss.str();
-	}
+        std::ostringstream oss;
+        oss << m_editorSelectedScene.GetFullPath() << ".tmp";
+        return oss.str();
+    }
 
-	bool EditorEngine::SaveSceneState() const
-	{
-		if (!m_editorSelectedScene)
-			return false;
+    bool EditorEngine::SaveSceneState() const
+    {
+        if (!m_editorSelectedScene)
+            return false;
 
-		std::error_code       err;
-		static constexpr auto options = std::filesystem::copy_options::overwrite_existing;
+        std::error_code       err;
+        static constexpr auto options = std::filesystem::copy_options::overwrite_existing;
 
-		std::filesystem::copy(m_editorSelectedScene.GetFullPath(), GetTemporaryScenePath(), options, err);
+        std::filesystem::copy(m_editorSelectedScene.GetFullPath(), GetTemporaryScenePath(), options, err);
 
-		if (!CHECK(err.value() == 0, "Failed to copy scene state from \"%s\" to \"%s\" - %s",
-				m_editorSelectedScene.GetFullPath().c_str(), GetTemporaryScenePath().c_str(), err.message().c_str()))
-			return false;
+        if (!CHECK(err.value() == 0, "Failed to copy scene state from \"%s\" to \"%s\" - %s",
+                m_editorSelectedScene.GetFullPath().c_str(), GetTemporaryScenePath().c_str(), err.message().c_str()))
+            return false;
 
-		SV_EVENT_MANAGER().Invoke<OnSave>();
-		return OnSave::s_saveSucceded;
-	}
+        SV_EVENT_MANAGER().Invoke<OnSave>();
+        return OnSave::s_saveSucceded;
+    }
 
-	bool EditorEngine::RestoreSceneState()
-	{
-		if (!m_editorSelectedScene)
-			return false;
+    bool EditorEngine::RestoreSceneState()
+    {
+        if (!m_editorSelectedScene)
+            return false;
 
         m_editorSelectedScene = SV_SERVICE(ResourceManager).Load<Scene>(m_editorSelectedScene.GetPath());
 
-		static constexpr auto options = std::filesystem::copy_options::overwrite_existing;
+        static constexpr auto options = std::filesystem::copy_options::overwrite_existing;
 
-		const std::string tempPath = GetTemporaryScenePath();
-		std::error_code   err;
+        const std::string tempPath = GetTemporaryScenePath();
+        std::error_code   err;
 
-		std::filesystem::copy(tempPath, m_editorSelectedScene.GetFullPath(), options, err);
+        std::filesystem::copy(tempPath, m_editorSelectedScene.GetFullPath(), options, err);
 
-		return CHECK(err.value() == 0, "Failed to restore scene state from \"%s\" - %s", tempPath.c_str(), err.message().c_str())
-			&& CHECK(std::filesystem::remove(tempPath, err) || err.value() == 0,
-				"Failed to remove temporary scene data at \"%s\" - %s", tempPath.c_str(), err.message().c_str());
-	}
+        return CHECK(err.value() == 0, "Failed to restore scene state from \"%s\" - %s", tempPath.c_str(), err.message().c_str())
+            && CHECK(std::filesystem::remove(tempPath, err) || err.value() == 0,
+                "Failed to remove temporary scene data at \"%s\" - %s", tempPath.c_str(), err.message().c_str());
+    }
 
-	void EditorEngine::BakeLights()
-	{
-		m_editorWorld->BakeLighting();
-	}
+    void EditorEngine::BakeLights()
+    {
+        m_editorWorld->BakeLighting();
+    }
 
-	void EditorEngine::RenderWorlds()
-	{
-		if (m_editorWorld->m_isVisible)
-			m_editorWorld->m_renderingContext->Render(m_editorWorld->CurrentScene().Get());
+    void EditorEngine::RenderWorlds()
+    {
+        if (m_editorWorld->m_isVisible)
+            m_editorWorld->m_renderingContext->Render(m_editorWorld->CurrentScene().Get());
 
-		if (!m_PIEWorld.expired() && m_PIEWorld.lock()->m_isVisible)
-			m_PIEWorld.lock()->m_renderingContext->Render(m_PIEWorld.lock()->CurrentScene().Get());
-	}
+        if (!m_PIEWorld.expired() && m_PIEWorld.lock()->m_isVisible)
+            m_PIEWorld.lock()->m_renderingContext->Render(m_PIEWorld.lock()->CurrentScene().Get());
+    }
 
-	bool EditorEngine::IsRunning()
-	{
-		return m_isRunning;
-	}
+    bool EditorEngine::IsRunning()
+    {
+        return m_isRunning;
+    }
 
-	bool EditorEngine::IsEditorModifiedScene()
-	{
-		return m_isEditorModifiedScene;
-	}
+    bool EditorEngine::IsEditorModifiedScene()
+    {
+        return m_isEditorModifiedScene;
+    }
 
-	void EditorEngine::TogglePause()
-	{
-		m_isPaused = !m_isPaused;
-	}
+    void EditorEngine::TogglePause()
+    {
+        m_isPaused = !m_isPaused;
+    }
 
-	void EditorEngine::SetPaused(const bool p_state)
-	{
-		m_isPaused = p_state;
-	}
+    void EditorEngine::SetPaused(const bool p_state)
+    {
+        m_isPaused = p_state;
+    }
 
-	bool EditorEngine::IsPaused() const
-	{
-		return m_isPaused;
-	}
+    bool EditorEngine::IsPaused() const
+    {
+        return m_isPaused;
+    }
 
-	bool EditorEngine::IsGameFocused()
-	{
-		return !m_PIEWorld.expired() && m_PIEWorld.lock()->m_isFocused;
-	}
+    bool EditorEngine::IsGameFocused()
+    {
+        return !m_PIEWorld.expired() && m_PIEWorld.lock()->m_isFocused;
+    }
 
-	void EditorEngine::SetupUI(EditorWindow* p_window, const std::array<std::function<void()>, 3>p_playPauseFrameCallbacks)
-	{
-		p_window->SetupUI(
-			m_editorWorld,
-			[this](const Vector2I&)
-			{
-				ASSERT(m_PIEWorld.expired(), "Tried to create PIE world when already exists");
+    void EditorEngine::SetupUI(EditorWindow* p_window, const std::array<std::function<void()>, 3> p_playPauseFrameCallbacks)
+    {
+        p_window->SetupUI(
+            m_editorWorld,
+            [this](const Vector2I&)
+            {
+                ASSERT(m_PIEWorld.expired(), "Tried to create PIE world when already exists");
 
-				auto PIEWorld =	CreatePIEWorld();
-				m_PIEWorld = std::weak_ptr(PIEWorld);
+                auto PIEWorld = CreatePIEWorld();
+                m_PIEWorld    = std::weak_ptr(PIEWorld);
 
-				return PIEWorld;
-			},
-			p_playPauseFrameCallbacks);
-	}
+                return PIEWorld;
+            },
+            p_playPauseFrameCallbacks);
+    }
 
-	IEngine::SceneRef EditorEngine::GetCurrentScene() const
-	{
-		auto& world = m_gameInstance ? *m_PIEWorld.lock() : *m_editorWorld;
-		return world.CurrentScene();
-	}
+    IEngine::SceneRef EditorEngine::GetCurrentScene() const
+    {
+        auto& world = m_gameInstance ? *m_PIEWorld.lock() : *m_editorWorld;
+        return world.CurrentScene();
+    }
 
-	void EditorEngine::ChangeScene(const std::string& p_scenePath)
-	{
-		m_scenePath = p_scenePath;
-	}
+    void EditorEngine::ChangeScene(const std::string& p_scenePath)
+    {
+        m_scenePath = p_scenePath;
+    }
 
-	float EditorEngine::GetDeltaTime()
-	{
-		return m_time.GetDeltaTime();
-	}
+    float EditorEngine::GetDeltaTime()
+    {
+        return m_time.GetDeltaTime();
+    }
 
-	bool EditorEngine::IsPlayInEditor() const
-	{
-		return m_gameInstance.get();
-	}
+    bool EditorEngine::IsPlayInEditor() const
+    {
+        return m_gameInstance.get();
+    }
 
-	bool EditorEngine::ChangeCamera(const SvCore::ECS::EntityHandle& p_camera)
-	{
-		if (!p_camera)
-			return false;
+    bool EditorEngine::ChangeCamera(const SvCore::ECS::EntityHandle& p_camera)
+    {
+        if (!p_camera)
+            return false;
 
-		m_PIEWorld.lock()->SetCamera(p_camera);
+        m_PIEWorld.lock()->SetCamera(p_camera);
 
-		return true;
-	}
+        return true;
+    }
 }

@@ -348,7 +348,7 @@ namespace SvScripting
 
     void LuaContext::LinkPhysicsEvents()
     {
-        PhysicsContext& context = PhysicsContext::GetInstance();
+        PhysicsContext& context = SV_SERVICE(PhysicsContext);
 
         m_collisionListenerId = context.m_onCollision.AddListener(
             [this](const EPhysicsEvent p_event, const CollisionInfo& p_info)
@@ -428,7 +428,10 @@ namespace SvScripting
 
     void LuaContext::UnlinkPhysicsEvents()
     {
-        PhysicsContext& context = PhysicsContext::GetInstance();
+        if (m_collisionListenerId == 0 && m_triggerListenerId == 0)
+            return;
+
+        PhysicsContext& context = SV_SERVICE(PhysicsContext);
 
         context.m_onCollision.RemoveListener(m_collisionListenerId);
         m_collisionListenerId = 0;

@@ -33,8 +33,5 @@ namespace SvEditor::Core
 		virtual void EndFrameUpdate() = 0;
 
 		static inline IUI* m_currentUI = nullptr;
-
-		static LibMath::Vector4 GetColorFromString(const std::string& p_string);
-		static LibMath::Vector4 size_tToRGBA(size_t p_value);
 	};
 }

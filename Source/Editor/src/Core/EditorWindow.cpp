@@ -3,8 +3,7 @@
 #include "SurvivantCore/Events/EventManager.h"
 #include "SurvivantEditor/Core/EditorWindow.h"
 
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_opengl3.h"
+#include <imgui.h>
 
 #include <stdexcept>
 

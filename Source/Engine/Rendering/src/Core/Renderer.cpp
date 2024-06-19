@@ -46,6 +46,7 @@ namespace SvRendering::Core
         if (!p_scene)
         {
             p_lightsSSBO.SetRawData(nullptr, 0);
+            p_lightsSSBO.Bind();
             return;
         }
 
@@ -58,8 +59,8 @@ namespace SvRendering::Core
             lightMatrices.emplace_back(light.GetMatrix(p_scene->Get<Transform>(entity)));
         }
 
-        p_lightsSSBO.Bind();
         p_lightsSSBO.SetData(lightMatrices.data(), lightMatrices.size());
+        p_lightsSSBO.Bind();
     }
 
     void Renderer::Render(RenderInfo& p_renderPass) const

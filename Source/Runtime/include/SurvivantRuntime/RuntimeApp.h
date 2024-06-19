@@ -10,19 +10,19 @@
 
 namespace SvRuntime
 {
-	class RuntimeApp : public SvApp::Core::IApp
-	{
-	public:
-		RuntimeApp();
-		~RuntimeApp() override;
+    class RuntimeApp : public SvApp::Core::IApp
+    {
+    public:
+        RuntimeApp();
+        ~RuntimeApp() override;
 
-		// Inherited via IApp
-		void Init() override;
-		void Run() override;
+        // Inherited via IApp
+        void Init() override;
+        void Run() override;
 
-	private:
-		std::unique_ptr<SvApp::Window>		m_window;
-		bool								m_gameIsPaused;
-		RuntimeEngine						m_runEngine;
-	};
+    private:
+        std::unique_ptr<SvApp::Window> m_window;
+        std::unique_ptr<RuntimeEngine> m_runtimeEngine;
+        bool                           m_gameIsPaused;
+    };
 }

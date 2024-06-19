@@ -25,13 +25,13 @@ using namespace SvRendering::RHI;
 namespace SvRuntime
 {
     RuntimeApp::RuntimeApp()
-        : m_gameIsPaused(false)
+        : m_runtimeEngine(std::make_unique<RuntimeEngine>()), m_gameIsPaused(false)
     {
     }
 
     RuntimeApp::~RuntimeApp()
     {
-        m_runEngine.~RuntimeEngine();
+        m_runtimeEngine.reset();
         m_window.reset();
     }
 
@@ -60,30 +60,30 @@ namespace SvRuntime
 
         InputManager::GetInstance().InitWindow(m_window.get());
 
-        m_runEngine.Init();
+        m_runtimeEngine->Init();
 
         SV_EVENT_MANAGER().AddListener<Window::OnFrameBufferSize>([this](int p_width, int p_height)
         {
-            m_runEngine.SetViewport({ p_width, p_height });
+            m_runtimeEngine->SetViewport({ p_width, p_height });
         });
 
         Vector2I viewport;
         m_window->GetSize(viewport.m_x, viewport.m_y);
-        m_runEngine.SetViewport(viewport);
+        m_runtimeEngine->SetViewport(viewport);
     }
 
     void RuntimeApp::Run()
     {
-        while (!m_window->ShouldClose() && m_runEngine.IsRunning())
+        while (!m_window->ShouldClose() && m_runtimeEngine->IsRunning())
         {
-            m_runEngine.Update();
+            m_runtimeEngine->Update();
             m_window->Update();
             InputManager::GetInstance().Update();
 
             if (!m_gameIsPaused)
-                m_runEngine.UpdateGame();
+                m_runtimeEngine->UpdateGame();
 
-            m_runEngine.Render();
+            m_runtimeEngine->Render();
 
             m_window->EndRender();
         }

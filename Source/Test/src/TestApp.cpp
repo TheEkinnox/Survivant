@@ -42,9 +42,6 @@ constexpr Radian CAM_ROTATION_SPEED = 90_deg;
 
 constexpr size_t TEST_SCRIPTS_COUNT = 256;
 
-constexpr int WINDOW_WIDTH  = 1024;
-constexpr int WINDOW_HEIGHT = 768;
-
 namespace SvTest
 {
     TestApp::TestApp()
@@ -68,7 +65,7 @@ namespace SvTest
     void TestApp::Init()
     {
         SvCore::Debug::Logger::GetInstance().SetFile("debug.log");
-        ResourceManager::GetInstance().AddSearchPath("assets");
+        SV_SERVICE(ResourceManager).AddSearchPath("assets");
 
         const bool result = SetWorkingDirectory(GetApplicationDirectory());
         ASSERT(result, "Failed to update working directory");
@@ -76,8 +73,8 @@ namespace SvTest
 
         SV_LOG("Current working directory: \"%s\"", GetWorkingDirectory().c_str());
 
-        m_window = std::make_unique<Window>("Survivant - Test", WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
-        m_windowSize = { WINDOW_WIDTH, WINDOW_HEIGHT };
+        m_window = std::make_unique<Window>("Survivant - Test", false);
+        m_window->SetWindowSizeLimits(); // Force resize
 
         IRenderAPI& renderAPI = IRenderAPI::SetCurrent(EGraphicsAPI::OPENGL);
         renderAPI.Init(true)
@@ -230,7 +227,7 @@ namespace SvTest
         LuaContext& luaContext = SV_SERVICE(LuaContext);
         luaContext.Reload();
 
-        m_scene = ResourceManager::GetInstance().Load<Scene>(TEST_SCENE_PATH);
+        m_scene = SV_SERVICE(ResourceManager).Load<Scene>(TEST_SCENE_PATH);
 
         for (size_t i = 0; i < TEST_SCRIPTS_COUNT; ++i)
         {

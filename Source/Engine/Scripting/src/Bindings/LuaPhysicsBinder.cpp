@@ -38,7 +38,7 @@ namespace SvScripting::Bindings
             "gravity", sol::property(&PhysicsContext::GetGravity, &PhysicsContext::SetGravity)
         );
 
-        p_luaState[typeName] = &PhysicsContext::GetInstance();
+        p_luaState[typeName] = &SV_SERVICE(PhysicsContext);
     }
 
     void LuaPhysicsBinder::BindRigidBody(sol::state& p_luaState)
