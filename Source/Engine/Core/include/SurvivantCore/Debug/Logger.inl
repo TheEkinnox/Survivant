@@ -1,22 +1,22 @@
 #pragma once
+#include "SurvivantCore/Debug/Logger.h"
+#include "SurvivantCore/Utility/Utility.h"
+
 #include <cassert>
 #include <fstream>
 #include <iostream>
 
-#include "SurvivantCore/Debug/Logger.h"
-#include "SurvivantCore/Utility/Utility.h"
-
 namespace SvCore::Debug
 {
-    inline void Logger::SetFile(const std::filesystem::path& p_filePath)
-    {
-        m_filePath = p_filePath;
-    }
-
     inline Logger& Logger::GetInstance()
     {
         static Logger instance;
         return instance;
+    }
+
+    inline void Logger::SetFile(const std::filesystem::path& p_filePath)
+    {
+        m_filePath = p_filePath;
     }
 
     template <typename... Args>

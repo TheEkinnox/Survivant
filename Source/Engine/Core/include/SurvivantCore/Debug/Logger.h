@@ -33,6 +33,12 @@ namespace SvCore::Debug
         Logger& operator=(Logger&& p_other) noexcept = default;
 
         /**
+        * \brief Accessor to the Logger singleton
+        * \return A reference to the current Logger instance
+        */
+        inline static Logger& GetInstance();
+
+        /**
          * \brief Sets the given file as the log output.
          * \param p_filePath The log file's path
          */
@@ -60,12 +66,6 @@ namespace SvCore::Debug
          */
         template <typename... Args>
         void DebugLog(const char* p_file, size_t p_line, const char* p_format, ELogType p_type, Args... p_args);
-
-        /**
-        * \brief Accessor to the Logger singleton
-        * \return A reference to the current Logger instance
-        */
-        inline static Logger& GetInstance();
 
     private:
         std::filesystem::path m_filePath;
