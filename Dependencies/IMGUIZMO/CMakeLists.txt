@@ -3,7 +3,6 @@ FetchContent_Declare(
 	imguizmo
 	GIT_REPOSITORY https://github.com/CedricGuillemet/ImGuizmo
 	GIT_TAG ba662b119d64f9ab700bb2cd7b2781f9044f5565
-	GIT_SHALLOW ON
 )
 
 set(BUILD_SHARED_LIBS OFF)
